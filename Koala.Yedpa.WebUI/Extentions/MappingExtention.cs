@@ -1,4 +1,4 @@
-﻿using Koala.Yedpa.Service.Mapping;
+using Koala.Yedpa.Service.Mapping;
 
 
 namespace Koala.Yedpa.WebUI.Extentions;
@@ -17,6 +17,7 @@ public static class MappingExtention
             cfg.AddProfile<ModuleProfile>();
             cfg.AddProfile<UserProfile>();
             cfg.AddProfile<SettingsProfile>();
+            cfg.AddProfile<LgXt001211Profile>();
             //cfg.AddProfile<>();
             //cfg.AddProfile<>();
             //cfg.AddProfile<>();
