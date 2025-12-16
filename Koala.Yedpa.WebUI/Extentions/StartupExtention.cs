@@ -1,4 +1,4 @@
-﻿using Hangfire;
+using Hangfire;
 using Koala.Yedpa.Core.Models;
 using Koala.Yedpa.Core.Providers;
 using Koala.Yedpa.Core.Repositories;
@@ -16,7 +16,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Service.Services;
-using System.Reflection;
 using Koala.Yedpa.Core.Helpers;
 
 namespace Koala.Yedpa.WebUI.Extentions
@@ -87,10 +86,10 @@ namespace Koala.Yedpa.WebUI.Extentions
             services.AddScoped<IGeneratedIdsRepository, GeneratedIdsRepository>();
             services.AddScoped<IModuleRepository, ModuleRepository>();
             services.AddScoped<ISettingsRepository, SettingsRepository>();
-            //services.AddScoped<, >();
-            //services.AddScoped<, >();
-            //services.AddScoped<, >();
-            //services.AddScoped<, >();
+            services.AddScoped<ISiteRepository, SiteRepository>();
+            services.AddScoped<ITransactionRepository, TransactionRepository>();
+            services.AddScoped<ITransactionItemRepository, TransactionItemRepository>();
+            services.AddScoped<ITransactionTypeRepository, TransactionTypeRepository>();
             //services.AddScoped<, >();
             services.AddHangfireServer();
 
@@ -114,6 +113,10 @@ namespace Koala.Yedpa.WebUI.Extentions
             services.AddScoped<IModuleService, ModuleService>();
             services.AddScoped<ISeedService, SeedService>();
             services.AddScoped<ISettingsService, SettingsService>();
+            services.AddScoped<ISiteService, SiteService>();
+            services.AddScoped<ITransactionService, TransactionService>();
+            services.AddScoped<ITransactionItemService, TransactionItemService>();
+            services.AddScoped<ITransactionTypeService, TransactionTypeService>();
 
 
             services.AddHostedService<SeedHostedService>();

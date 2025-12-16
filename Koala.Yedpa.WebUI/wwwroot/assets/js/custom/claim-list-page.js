@@ -1,4 +1,4 @@
-﻿"use strict";
+"use strict";
 var ModuleList = function () {
 
 	var initPage = function () {
@@ -69,6 +69,39 @@ var ModuleList = function () {
 
 }();
 
+var Lgxt211List = function () {
+
+	var initPage = function () {
+		var table = $('#Lgxt211Table');
+
+		// begin first table
+		table.DataTable({
+			responsive: true,
+			language: {
+				url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/tr.json'
+			},
+			ordering: true,
+			paging: true,
+			pageLength: 10,
+			columnDefs: [
+				{
+					targets: -1,
+					orderable: false,
+					responsivePriority: 1
+				}
+			]
+		});
+	};
+
+	return {
+		init: function () {
+			initPage();
+		}
+	};
+
+}();
+
 jQuery(document).ready(function () {
 	ModuleList.init();
+	Lgxt211List.init();
 });

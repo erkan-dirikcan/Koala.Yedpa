@@ -1,7 +1,126 @@
-﻿
+@model IEnumerable<Koala.Yedpa.Core.Models.ViewModels.LgXt001211ListViewModel>
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Dükkan Listesi";
+    ViewData["ActivePage"] = "Site";
+    var infoMessage = TempData["InfoMessage"] == null ? "" : TempData["InfoMessage"].ToString();
+    var errorMessage = TempData["ErrorMessage"] == null ? "" : TempData["ErrorMessage"].ToString();
 }
 
-<h1>Index</h1>
+<div class="d-flex flex-column-fluid">
+
+    <div class="container-fluid">
+
+        <div class="row">
+            <div class="col-lg-12">
+
+                <div class="card card-custom">
+                    <div class="card-header flex-wrap border-0 pt-6 pb-0">
+                        <div class="card-title">
+                            <h3 class="card-label">
+                                Dükkan Yönetimi
+                                <span class="d-block text-muted pt-2 font-size-sm">Dükkan Listesi</span>
+                            </h3>
+                        </div>
+                        <div class="card-toolbar">
+
+                          
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        @if (!string.IsNullOrEmpty(infoMessage))
+                        {
+
+                            <div class="alert alert-success" role="alert">
+                                @infoMessage
+                                <div class="alert-close">
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true"><i class="ki ki-close"></i></span>
+                                    </button>
+                                </div>
+                            </div>
+                        }
+                        @if (!string.IsNullOrEmpty(errorMessage))
+                        {
+
+                            <div class="alert alert-danger" role="alert">
+                                @errorMessage
+                                <div class="alert-close">
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true"><i class="ki ki-close"></i></span>
+                                    </button>
+                                </div>
+                            </div>
+                        }
+
+                        <table class="table table-bordered table-hover" id="Lgxt211Table" style="margin-top: 13px !important">
+                            <thead>
+                                <tr>
+                                    <th title="Logo Referans Bilgisi">LogRef</th>
+                                    <th title="Dükkan/Depo Kodu">Dükkan/Depo Kodu</th>
+                                    <th title="Dükkan/Depo Tam Adresi">Dükkan/Depo Adı</th>
+                                    <th title="Cari Kodu">Cari Kodu</th>
+                                    <th title="Cari Ünvanı">Cari Ünvanı</th>
+                                    <th title="Müşteri Tipi">Müşteri Tipi</th>
+                                    <th title="Başlangıç Tarihi">Başlangıç Tarihi</th>
+                                    <th title="Bitiş Tarihi">Bitiş Tarihi</th>
+                                    <th title="Bürüt Metre Kare">Bürüt m²</th>
+                                    <th title="Net Metre Kare">Net m²</th>
+                                    <th title="Yakıt Metre Kare">Yakıt m²</th>
+                                    <th title="İşlemler">İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    var customerTypeText = "";
+                                    switch (item.CustomerType)
+                                    {
+                                        case 1:
+                                            customerTypeText = "Mal Sahibi";
+                                            break;
+                                        case 2:
+                                            customerTypeText = "Kiracı";
+                                            break;
+                                        case 4:
+                                            customerTypeText = "Diğer";
+                                            break;
+                                        default:
+                                            customerTypeText = "-";
+                                            break;
+                                    }
+                                    <tr>
+                                        <td>@item.LogRef</td>
+                                        <td>@item.GroupCode</td>
+                                        <td>@item.GroupName</td>
+                                        <td>@item.ClientCode</td>
+                                        <td>@item.ClientName</td>
+                                        <td>@customerTypeText</td>
+                                        <td>@(item.BegDate?.ToString("dd.MM.yyyy") ?? "-")</td>
+                                        <td>@(item.EndDate?.ToString("dd.MM.yyyy") ?? "-")</td>
+                                        <td>@(item.TotalBrutCoefficientMetre?.ToString("N2") ?? "-")</td>
+                                        <td>@(item.TotalNetMetre?.ToString("N2") ?? "-")</td>
+                                        <td>@(item.TotalFuelMetre?.ToString("N2") ?? "-")</td>
+                                        <td>
+                                            <a asp-controller="Site" asp-action="Update" asp-route-id="@item.Id" class="btn btn-icon btn-warning btn-sm" data-toggle="tooltip" title="Güncelle" data-theme="dark">
+                                                <i class="flaticon-edit"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts
+{
+    <script src="~/assets/js/custom/claim-list-page.js"></script>
+}
+
+
+
 
