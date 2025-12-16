@@ -1,0 +1,158 @@
+﻿@using Koala.Yedpa.Core.Dtos
+@model IEnumerable<Koala.Yedpa.Core.Models.ViewModels.UserListViewModel>
+@{
+    ViewData["Title"] = "Kullanıcılar";
+    ViewData["ActivePage"] = "UserList";
+    ViewData["MenuToggle"] = "User";
+    var infoMessage = TempData["InfoMessage"] == null ? "" : TempData["InfoMessage"].ToString();
+    var errorMessage = TempData["ErrorMessage"] == null ? "" : TempData["ErrorMessage"].ToString();
+}
+
+
+
+<div class="d-flex flex-column-fluid">
+
+    <div class="container-fluid">
+
+        <div class="row">
+            <div class="col-lg-12">
+
+                <div class="card card-custom">
+                    <div class="card-header flex-wrap border-0 pt-6 pb-0">
+                        <div class="card-title">
+                            <h3 class="card-label">
+                                Kullanıcı Yönetimi
+                                <span class="d-block text-muted pt-2 font-size-sm">Kullanıcı Listesi</span>
+                            </h3>
+                        </div>
+                        <div class="card-toolbar">
+
+                            <!--begin::Button-->
+                            <a asp-action="CreateUser" asp-controller="User" class="btn btn-primary font-weight-bolder">
+                                <span class="svg-icon svg-icon-md">
+                                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                            <rect x="0" y="0" width="24" height="24" />
+                                            <circle fill="#000000" cx="9" cy="15" r="6" />
+                                            <path d="M8.8012943,7.00241953 C9.83837775,5.20768121 11.7781543,4 14,4 C17.3137085,4 20,6.6862915 20,10 C20,12.2218457 18.7923188,14.1616223 16.9975805,15.1987057 C16.9991904,15.1326658 17,15.0664274 17,15 C17,10.581722 13.418278,7 9,7 C8.93357256,7 8.86733422,7.00080962 8.8012943,7.00241953 Z" fill="#000000" opacity="0.3" />
+                                        </g>
+                                    </svg>
+                                    <!--end::Svg Icon-->
+                                </span>Kullanıcı Listesi
+                            </a>
+                            <!--end::Button-->
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        @if (!string.IsNullOrEmpty(infoMessage))
+                        {
+
+                            <div class="alert alert-success" role="alert">
+                                @infoMessage
+                                <div class="alert-close">
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true"><i class="ki ki-close"></i></span>
+                                    </button>
+                                </div>
+                            </div>
+                        }
+                        @if (!string.IsNullOrEmpty(errorMessage))
+                        {
+
+                            <div class="alert alert-danger" role="alert">
+                                @errorMessage
+                                <div class="alert-close">
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true"><i class="ki ki-close"></i></span>
+                                    </button>
+                                </div>
+                            </div>
+                        }
+
+                        <table class="table table-hover  " id="UserTable" style="margin-top: 13px !important">
+                            <thead>
+                                <tr>
+                                    <th title="Kullanıcı Adı, Soyadı ve E-Posta Adresi">Kullanıcı</th>
+                                    <th title="Kullanıcı Telefon Numarası">Telefon</th>
+                                    <th title="Kullanıcı Durumu">Durum</th>
+                                    <th title="Kullanıcıya Uygulanabilecek İşlemler">İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    var status = $"<span class=\"label label-sm label-info label-inline mr-2\">In process</span>";
+                                    var mail = $"mailto:{item.Email}";
+                                    switch (item.Status)
+                                    {
+                                        case StatusEnum.Active:
+                                            status = $"<span class=\"label label-sm label-success label-inline mr-2\">Aktif</span>";
+                                            break;
+                                        case StatusEnum.Passive:
+                                            status = $"<span class=\"label label-sm label-warning label-inline mr-2\">Pasif</span>";
+                                            break;
+                                        case StatusEnum.Deleted:
+                                            status = $"<span class=\"label label-sm label-danger label-inline mr-2\">Silinmiş</span>";
+                                            break;
+                                        case StatusEnum.Locked:
+                                            status = $"<span class=\"label label-sm label-danger label-inline mr-2\">Kilitli</span>";
+                                            break;
+                                        case StatusEnum.Unlocked:
+                                            status = $"<span class=\"label label-sm label-info label-inline mr-2\">Kilidi Açılmış</span>";
+                                            break;
+                                        case StatusEnum.Pending:
+                                            status = $"<span class=\"label label-sm label-primary label-inline mr-2\">Beklemede</span>";
+                                            break;
+                                    }
+                                    <tr>
+
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="symbol symbol-50 flex-shrink-0">
+                                                    <img src="/avatars/@item.Avatar" alt="photo">
+                                                </div>
+                                                <div class="ml-3">
+                                                    <span class="text-dark-75 font-weight-bold line-height-sm d-block pb-2">@item.FullName</span>
+                                                    <a href="@mail" class="text-muted text-hover-primary">@item.Email</a>
+                                                </div>
+                                            </div>
+
+                                        </td>
+                                        <td>@item.PhoneNumber</td>
+                                        <td>
+                                            @Html.Raw(status)
+                                        </td>
+
+                                        <td>
+                                            <a asp-controller="User" asp-action="UpdateUser" asp-route-id="@item.Id" class="btn btn-icon btn-warning btn-sm" data-toggle="tooltip" title="Güncelle" data-theme="dark"><i class="flaticon-edit"></i></a>
+
+                                            @if (item.Status == StatusEnum.Active)
+                                            {
+                                                <button class="btn btn-icon btn-danger btn-sm change-status-bt" data-name="@item.FullName" data-user_id="@item.Id" data-status="@StatusEnum.Passive" data-toggle="tooltip" title="Kullanıcıyı Pasife Çek" data-theme="dark"><i class="flaticon2-cancel"></i></button>
+                                            }
+                                            else
+                                            {
+                                                <button class="btn btn-icon btn-success btn-sm change-status-bt" data-name="@item.FullName" data-user_id="@item.Id" data-status="@StatusEnum.Active" data-toggle="tooltip" title="Kullanıcıyı Aktif Et" data-theme="dark"><i class="flaticon2-check-mark"></i></button>
+                                            }
+                                            <a asp-controller="User" asp-action="AsignRoleToUser" asp-route-userId="@item.Id" class="btn btn-icon btn-primary btn-sm" data-toggle="tooltip" title="Kullanıcı Rollerini Güncelle" data-theme="dark">
+                                                <i class="flaticon-map"></i>
+                                            </a>
+
+                                        </td>
+
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script src="~/assets/js/custom/user-list-page.js"></script>
+}

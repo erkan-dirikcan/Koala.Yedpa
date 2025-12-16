@@ -1,0 +1,149 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <base href="">
+    <meta charset="utf-8" />
+    <title>Sistem Koala Yedpa Yönetim | @ViewData["Title"]</title>
+    <meta name="description" content="Sistem bilgisayar tarafında Yedpa Ticaret Merkezi ihtiyaçları  doğrultusunda geliştirilmiş olan yönetim uygulamasıdır" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <link rel="canonical" href="https://sistem-bilgi.com" />
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
+    <link href="~/assets/plugins/custom/fullcalendar/fullcalendar.bundle.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/plugins/custom/prismjs/prismjs.bundle.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
+
+    <link href="~/assets/css/themes/layout/header/base/light.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/css/themes/layout/header/menu/light.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/css/themes/layout/brand/light.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/css/themes/layout/aside/light.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/plugins/custom/kanban/kanban.bundle.css" rel="stylesheet" type="text/css" />
+
+    <link rel="shortcut icon" href="assets/media/logos/favicon.ico" />
+</head>
+
+
+<body id="kt_body" class="page-loading-enabled page-loading header-fixed header-mobile-fixed aside-enabled aside-fixed aside-minimize-hoverable page-loading">
+
+    @Html.Partial("_LoaderParital")
+
+
+    @Html.Partial("_HeaderMobilePartial")
+
+
+    <div class="d-flex flex-column flex-root">
+        <div class="d-flex flex-row flex-column-fluid page">
+
+            @Html.Partial("_MainManuPartial")
+            <div class="d-flex flex-column flex-row-fluid wrapper" id="kt_wrapper">
+
+                @Html.Partial("_HeaderPartial")
+                <div class="content  d-flex flex-column flex-column-fluid" id="kt_content">
+
+                    @RenderBody()
+                </div>
+                @Html.Partial("_FooterPartial")
+            </div>
+        </div>
+    </div>
+
+    @Html.Partial("_ScrollTopPartial")
+    
+
+    <script>
+        var KTAppSettings = {
+            "breakpoints": {
+                "sm": 576,
+                "md": 768,
+                "lg": 992,
+                "xl": 1200,
+                "xxl": 1400
+            },
+            "colors": {
+                "theme": {
+                    "base": {
+                        "white": "#ffffff",
+                        "primary": "#3699FF",
+                        "secondary": "#E5EAEE",
+                        "success": "#1BC5BD",
+                        "info": "#8950FC",
+                        "warning": "#FFA800",
+                        "danger": "#F64E60",
+                        "light": "#E4E6EF",
+                        "dark": "#181C32"
+                    },
+                    "light": {
+                        "white": "#ffffff",
+                        "primary": "#E1F0FF",
+                        "secondary": "#EBEDF3",
+                        "success": "#C9F7F5",
+                        "info": "#EEE5FF",
+                        "warning": "#FFF4DE",
+                        "danger": "#FFE2E5",
+                        "light": "#F3F6F9",
+                        "dark": "#D6D6E0"
+                    },
+                    "inverse": {
+                        "white": "#ffffff",
+                        "primary": "#ffffff",
+                        "secondary": "#3F4254",
+                        "success": "#ffffff",
+                        "info": "#ffffff",
+                        "warning": "#ffffff",
+                        "danger": "#ffffff",
+                        "light": "#464E5F",
+                        "dark": "#ffffff"
+                    }
+                },
+                "gray": {
+                    "gray-100": "#F3F6F9",
+                    "gray-200": "#EBEDF3",
+                    "gray-300": "#E4E6EF",
+                    "gray-400": "#D1D3E0",
+                    "gray-500": "#B5B5C3",
+                    "gray-600": "#7E8299",
+                    "gray-700": "#5E6278",
+                    "gray-800": "#3F4254",
+                    "gray-900": "#181C32"
+                }
+            },
+            "font-family": "Poppins"
+        };
+    </script>
+        
+        <script src="~/assets/plugins/global/plugins.bundle.js"></script>
+        <script src="~/assets/plugins/custom/prismjs/prismjs.bundle.js"></script>
+        <script src="~/assets/js/scripts.bundle.js"></script>
+        <script src="~/assets/js/pages/features/miscellaneous/toastr.js"></script>
+        <script src="~/assets/plugins/custom/fullcalendar/fullcalendar.bundle.js"></script>
+        <script src="~/assets/plugins/custom/datatables/datatables.bundle.js"></script>
+
+    <script src="/assets/plugins/custom/fullcalendar/fullcalendar.bundle.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+    <script src="~/assets/js/custom/chat.bundle.es.js"></script>
+    <script type="module">
+        import { createChat } from "/assets/js/custom/chat.bundle.es.js";
+
+        createChat({
+          webhookUrl: 'https://sistembilgisayar.app.n8n.cloud/webhook/6bc98fe9-b6f8-4db0-9ea4-b332344523ce/chat',
+          initialMessages: [
+            'Merhaba! 👋',
+            'Ben Logo Destek Uzmanı Asistanınızım. Logo yazılım ürünleri hakkında size nasıl yardımcı olabilirim?'
+          ],
+          i18n: {
+            tr: {
+              title: 'Logo Destek',
+              subtitle: 'Teknik Destek Asistanı',
+              footer: '',
+              getStarted: 'Sohbete Başla',
+              inputPlaceholder: 'Sorunuzu yazın...',
+            }
+          },
+          defaultLanguage: 'tr'
+        });
+    </script>
+</body>
+</html>

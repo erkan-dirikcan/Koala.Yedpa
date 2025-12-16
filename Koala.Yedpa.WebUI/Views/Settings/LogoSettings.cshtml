@@ -1,0 +1,70 @@
+﻿@model Koala.Yedpa.Core.Models.ViewModels.LogoSettingViewModel
+@{
+    ViewData["Title"] = "Logo Kullanıcı Ayarları";
+    ViewData["ActivePage"] = "LogoUserSettings";
+    ViewData["MenuToggle"] = "Settings";
+}
+
+<div class="d-flex flex-column-fluid">
+
+    <div class="container-fluid">
+
+        <div class="row">
+
+            <div class="col-lg-12">
+                <form name="CreateModuleForm" id="CreateForm" asp-action="LogoSettings" asp-controller="Settings" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="card card-custom card-stretch gutter-b">
+                        <div class="card-header border-0 py-5">
+                            <h3 class="card-title align-items-start flex-column">
+                                <span class="card-label font-weight-bolder text-dark">Logo Kullanıcı Ayarları</span>
+                                <span class="text-muted mt-3 font-weight-bold font-size-sm">Logo Kullanıcı Ayarlarını Güncelle</span>
+                            </h3>
+                        </div>
+                        <div class="card-body pt-0 pb-3">
+                            <div class="tab-content">
+
+                                <div class="form-group row">
+                                    <span class="text-danger col-md-1 col-form-label"> <label asp-for="UserName" class=""></label> *</span>
+                                    <div class="col-md-5">
+                                        <input class="form-control form-control-sm" asp-for="UserName" type="text" />
+                                        <span asp-validation-for="UserName" class="text-danger"></span>
+                                    </div>
+                                    <span class="text-danger col-md-1 col-form-label"><label asp-for="Password"></label> *</span>
+                                    <div class="col-md-5">
+                                        <input class="form-control form-control-sm" asp-for="Password" type="text" />
+                                        <span asp-validation-for="Password" class="text-danger"></span>
+                                    </div>
+
+                                </div>
+                                <div class="form-group row">
+                                    <span class="text-danger col-md-1 col-form-label"><label asp-for="Firm"></label> *</span>
+                                    <div class="col-md-5">
+                                        <input class="form-control form-control-sm" asp-for="Firm" type="text" />
+                                        <span asp-validation-for="Firm" class="text-danger"></span>
+                                    </div>
+                                    <span class="text-danger col-md-1 col-form-label"><label asp-for="Period"></label> *</span>
+                                    <div class="col-md-5">
+                                        <input class="form-control form-control-sm" asp-for="Period" type="text" />
+                                        <span asp-validation-for="Period" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <button type="submit" class="btn btn-success mr-2">Ayarları Güncelle</button>
+                            <a href="~/Dashboard" class="btn btn-secondary">Vazgeç</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
+
+
+    </div>
+
+</div>
+

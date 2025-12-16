@@ -1,0 +1,159 @@
+﻿@using Koala.Yedpa.Core.Models.ViewModels
+@model List<Koala.Yedpa.Core.Models.ViewModels.ClaimsListViewModel>
+@{
+    var moduleName = (ModuleListViewModel)ViewData["Module"];
+    ViewData["Title"] = $"{moduleName.DisplayName} Adlı Modül Yetkileri";
+    ViewData["ActivePage"] = "ModuleList";
+    ViewData["MenuToggle"] = "Module";
+    var infoMessage = TempData["InfoMessage"] == null ? "" : TempData["InfoMessage"].ToString();
+    var errorMessage = TempData["ErrorMessage"] == null ? "" : TempData["ErrorMessage"].ToString();
+}
+
+<div class="d-flex flex-column-fluid">
+
+    <div class="container-fluid">
+
+        <div class="row">
+            <div class="col-lg-12">
+
+                <div class="card card-custom">
+                    <div class="card-header flex-wrap border-0 pt-6 pb-0">
+                        <div class="card-title">
+                            <h3 class="card-label">
+                                @moduleName.DisplayName - Yetki Yönetimi
+                                <span class="d-block text-muted pt-2 font-size-sm">@moduleName.DisplayName - Yetki Listesi</span>
+                            </h3>
+                        </div>
+                        <div class="card-toolbar">
+
+                            <!--begin::Button-->
+                            <a asp-action="CreateClaim" asp-controller="Claims" asp-route-moduleId="@moduleName.Id" class="btn btn-primary font-weight-bolder">
+                                <span class="svg-icon svg-icon-md">
+                                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                            <rect x="0" y="0" width="24" height="24" />
+                                            <circle fill="#000000" cx="9" cy="15" r="6" />
+                                            <path d="M8.8012943,7.00241953 C9.83837775,5.20768121 11.7781543,4 14,4 C17.3137085,4 20,6.6862915 20,10 C20,12.2218457 18.7923188,14.1616223 16.9975805,15.1987057 C16.9991904,15.1326658 17,15.0664274 17,15 C17,10.581722 13.418278,7 9,7 C8.93357256,7 8.86733422,7.00080962 8.8012943,7.00241953 Z" fill="#000000" opacity="0.3" />
+                                        </g>
+                                    </svg>
+                                    <!--end::Svg Icon-->
+                                </span>Yetki Ekle
+                            </a>
+
+                            <!--end::Button-->
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        @if (!string.IsNullOrEmpty(infoMessage))
+                        {
+
+                            <div class="alert alert-success" role="alert">
+                                @infoMessage
+                                <div class="alert-close">
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true"><i class="ki ki-close"></i></span>
+                                    </button>
+                                </div>
+                            </div>
+                        }
+                        @if (!string.IsNullOrEmpty(errorMessage))
+                        {
+
+                            <div class="alert alert-danger" role="alert">
+                                @errorMessage
+                                <div class="alert-close">
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true"><i class="ki ki-close"></i></span>
+                                    </button>
+                                </div>
+                            </div>
+                        }
+
+                        <table class="table table-bordered table-hover" id="ClaimTable" style="margin-top: 13px !important">
+                            <thead>
+                                <tr>
+                                    <th title="Name">Modül Adı</th>
+                                    <th title="Description">Ad</th>
+                                    <th title="Description">Görünen Ad</th>
+                                    <th title="Description">Açıklama</th>
+                                    <th title="Action">İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+
+
+                                    <tr>
+                                        <td>@item.ModuleName</td>
+                                        <td>@item.Name</td>
+                                        <td>@item.DisplayName</td>
+                                        <td>@item.Description</td>
+
+                                        <td>
+                                            <a asp-controller="Claims" asp-action="UpdateClaim" asp-route-id="@item.Id" class="btn btn-icon btn-info btn-sm" data-toggle="tooltip" title="Yetki Güncelle" data-theme="dark"><i class="flaticon-edit"></i></a>
+                                            @*  <a asp-controller="Module" asp-action="ChangeStatus" asp-route-id="@item.Id" asp-route-status="@false" class="btn btn-icon btn-warning btn-sm" data-toggle="tooltip" title="Pasife Çek" data-theme="dark"> <i class="flaticon2-cancel"></i></a> *@
+                                            <a data-moduleId="@item.ModuleId" data-id="@item.Id" data-name="@item.DisplayName" class="btn btn-icon btn-danger btn-sm delete-module-bt" data-toggle="tooltip" title="Yetki Sil" data-theme="dark"><i class="flaticon2-trash"></i></a>
+                                            @*  @if (item.Status == StatusEnum.Active)
+                                            {
+                                                var cModel = new ModuleChangeStatusViewModel
+                                                {
+                                                    Id = item.Id,
+                                                    Status = StatusEnum.Passive
+                                                };
+                                                <a asp-controller="Module" asp-action="ChangeStatus" asp-route-id="@cModel" asp-route-status="@false" class="btn btn-icon btn-warning btn-sm" data-toggle="tooltip" title="Pasife Çek" data-theme="dark"> <i class="flaticon2-cancel"></i></a>
+                                            }
+                                            else
+                                            {
+                                                var cModel = new ModuleChangeStatusViewModel
+                                                {
+                                                    Id = item.Id,
+                                                    Status = StatusEnum.Active
+                                                };
+                                                <a asp-controller="Module" asp-action="ChangeStatus" asp-route-id="@cModel" asp-route-status="@true" class="btn btn-icon btn-success btn-sm" data-toggle="tooltip" title="Aktif Et" data-theme="dark"><i class="flaticon2-check-mark"></i></a>
+                                            }
+                                            @{
+
+                                                var dModel = new ModuleChangeStatusViewModel
+                                                {
+                                                    Id = item.Id,
+                                                    Status = StatusEnum.Deleted
+                                                };
+                                            }
+                                            <a asp-controller="Module" asp-action="ChangeStatus" asp-route-id="@dModel" class="btn btn-icon btn-danger btn-sm" data-toggle="tooltip" title="Sil" data-theme="dark"><i class="flaticon2-trash"></i></a> *@
+
+                                        </td>
+
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+
+                        </table>
+                    </div>
+                    <div class="card-footer">
+                        <a asp-controller="Module" asp-action="Index" class="btn btn-secondary font-weight-bolder mr-2 ml-2">
+                            <span class="svg-icon svg-icon-secondary svg-icon-2x">
+                                <!--begin::Svg Icon | path:C:\wamp64\www\keenthemes\legacy\metronic\theme\html\demo1\dist/../src/media/svg/icons\Media\Backward.svg-->
+                                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                        <rect x="0" y="0" width="24" height="24" />
+                                        <path d="M11.0879549,18.2771971 L17.8286578,12.3976203 C18.0367595,12.2161036 18.0583109,11.9002555 17.8767943,11.6921539 C17.8622027,11.6754252 17.8465132,11.6596867 17.8298301,11.6450431 L11.0891271,5.72838979 C10.8815919,5.54622572 10.5656782,5.56679309 10.3835141,5.7743283 C10.3034433,5.86555116 10.2592899,5.98278612 10.2592899,6.10416552 L10.2592899,17.9003957 C10.2592899,18.1765381 10.4831475,18.4003957 10.7592899,18.4003957 C10.8801329,18.4003957 10.9968872,18.3566309 11.0879549,18.2771971 Z" fill="#000000" opacity="0.3" transform="translate(14.129645, 12.002277) scale(-1, 1) translate(-14.129645, -12.002277) " />
+                                        <path d="M5.08795487,18.2771971 L11.8286578,12.3976203 C12.0367595,12.2161036 12.0583109,11.9002555 11.8767943,11.6921539 C11.8622027,11.6754252 11.8465132,11.6596867 11.8298301,11.6450431 L5.08912711,5.72838979 C4.8815919,5.54622572 4.56567821,5.56679309 4.38351414,5.7743283 C4.30344325,5.86555116 4.25928988,5.98278612 4.25928988,6.10416552 L4.25928988,17.9003957 C4.25928988,18.1765381 4.48314751,18.4003957 4.75928988,18.4003957 C4.88013293,18.4003957 4.99688719,18.3566309 5.08795487,18.2771971 Z" fill="#000000" transform="translate(8.129645, 12.002277) scale(-1, 1) translate(-8.129645, -12.002277) " />
+                                    </g>
+                                </svg>
+                            </span>Modül Listesine Dön
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts
+{
+    <script src="~/assets/js/custom/claim-list-page.js"></script>
+}

@@ -1,0 +1,102 @@
+﻿@model Koala.Yedpa.Core.Models.ViewModels.CreateAppUserViewModel
+@{
+    ViewData["Title"] = "Kullanıcı Ekle";
+    ViewData["ActivePage"] = "CreateUser";
+    ViewData["MenuToggle"] = "User";
+}
+
+
+<div class="d-flex flex-column-fluid">
+
+    <div class="container-fluid">
+
+        <div class="row">
+            <div class="col-lg-12">
+                <form name="CreateUserForm" id="CreateUserForm" asp-action="CreateUser" asp-controller="User" method="post" enctype="multipart/form-data">
+                    <div class="card card-custom card-stretch gutter-b">
+                        <div class="card-header border-0 py-5">
+                            <h3 class="card-title align-items-start flex-column">
+                                <span class="card-label font-weight-bolder text-dark">Kullanıcı Yönetimi</span>
+                                <span class="text-muted mt-3 font-weight-bold font-size-sm">Yeni Kullanıcı Ekle</span>
+                            </h3>
+                        </div>
+                        <div class="card-body pt-0 pb-3">
+                            <div class="tab-content">
+
+                                <div asp-validation-summary="ModelOnly"></div>
+                                <div class="form-group row">
+
+                                    <div class="image-input image-input-outline" id="kt_image_4" style="background-image: url(/avatars/logo002.png)">
+                                        <div class="image-input-wrapper" style="background-image: url(/avatars/blank.png)"></div>
+
+                                        <label class="btn btn-xs btn-icon btn-circle btn-white btn-hover-text-primary btn-shadow" data-action="change" data-toggle="tooltip" title="" data-original-title="Change avatar">
+                                            <i class="fa fa-pen icon-sm text-muted"></i>
+                                            <input type="file" asp-for="Avatar" value="/avatars/logo002.png" accept=".png, .jpg, .jpeg" />
+                                            <input type="hidden" name="avatar_remove" />
+                                        </label>
+
+                                        <span class="btn btn-xs btn-icon btn-circle btn-white btn-hover-text-primary btn-shadow" data-action="cancel" data-toggle="tooltip" title="Cancel avatar">
+                                            <i class="ki ki-bold-close icon-xs text-muted"></i>
+                                        </span>
+
+                                        <span class="btn btn-xs btn-icon btn-circle btn-white btn-hover-text-primary btn-shadow" data-action="remove" data-toggle="tooltip" title="Remove avatar">
+                                            <i class="ki ki-bold-close icon-xs text-muted"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label asp-for="FirstName" class="col-md-1 col-form-label"></label>
+                                    <div class="col-md-3">
+                                        <input class="form-control form-control-sm" asp-for="FirstName" type="text" />
+                                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                                    </div>
+                                    <label asp-for="MiddleName" class="col-md-1 col-form-label"></label>
+                                    <div class="col-md-3">
+                                        <input class="form-control form-control-sm" asp-for="MiddleName" type="text" />
+                                        <span asp-validation-for="MiddleName" class="text-danger"></span>
+                                    </div>
+                                    <label asp-for="LastName" class="col-md-1 col-form-label"></label>
+                                    <div class="col-md-3">
+                                        <input class="form-control form-control-sm" asp-for="LastName" type="text" />
+                                        <span asp-validation-for="LastName" class="text-danger"></span>
+                                    </div>
+
+                                </div>
+
+                                <div class="form-group row">
+                                    <label asp-for="Email" class="col-md-1 col-form-label"></label>
+                                    <div class="col-md-3">
+                                        <input class="form-control form-control-sm" type="email" asp-for="Email" type="text" />
+                                        <span asp-validation-for="Email" class="text-danger"></span>
+                                    </div>
+                                    <label asp-for="Password" class="col-md-1 col-form-label"></label>
+                                    <div class="col-md-3">
+                                        <input class="form-control form-control-sm" type="password" asp-for="Password" />
+                                        <span asp-validation-for="Password" class="text-danger"></span>
+                                    </div>
+                                    <label asp-for="PhoneNumber" class="col-md-1 col-form-label"></label>
+                                    <div class="col-md-3">
+                                        <input class="form-control form-control-sm" type="text" asp-for="PhoneNumber" />
+                                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+
+                                
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <button type="submit" class="btn btn-primary mr-2">Kullanıcı Ekle</button>
+                            <a href="~/User" class="btn btn-secondary">Vazgeç</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+@section Scripts
+{
+    <script src="~/assets/js/custom/create-user-page.js"></script>
+}

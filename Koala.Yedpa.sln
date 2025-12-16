@@ -1,0 +1,57 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36221.1 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Koala.Yedpa.Core", "Koala.Yedpa.Core", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Koala.Yedpa.Service", "Koala.Yedpa.Service", "{4DD60D5C-5B09-48FA-9847-E1A031D95186}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Koala.Yedpa.Repositories", "Koala.Yedpa.Repositories", "{FAA42A19-6A89-4BF7-A3AB-F8079BA547EF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Koala.Yedpa.Web", "Koala.Yedpa.Web", "{63CAE6B1-6374-4EB7-AFBA-2253165D61C3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Koala.Yedpa.Core", "Koala.Yedpa.Core\Koala.Yedpa.Core.csproj", "{7DC4EA4A-EAE2-4FFE-BCE0-26B9C973D145}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Koala.Yedpa.Repositories", "Koala.Yedpa.Repositories\Koala.Yedpa.Repositories.csproj", "{71261D13-74D5-467C-9C85-093BD150F266}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Koala.Yedpa.Service", "Koala.Yedpa.Service\Koala.Yedpa.Service.csproj", "{55F538CD-1213-4873-B968-928225B9B071}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Koala.Yedpa.WebUI", "Koala.Yedpa.WebUI\Koala.Yedpa.WebUI.csproj", "{18000768-2411-43A3-9400-06EEC77ED18D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7DC4EA4A-EAE2-4FFE-BCE0-26B9C973D145}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7DC4EA4A-EAE2-4FFE-BCE0-26B9C973D145}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7DC4EA4A-EAE2-4FFE-BCE0-26B9C973D145}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7DC4EA4A-EAE2-4FFE-BCE0-26B9C973D145}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71261D13-74D5-467C-9C85-093BD150F266}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71261D13-74D5-467C-9C85-093BD150F266}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71261D13-74D5-467C-9C85-093BD150F266}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71261D13-74D5-467C-9C85-093BD150F266}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55F538CD-1213-4873-B968-928225B9B071}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55F538CD-1213-4873-B968-928225B9B071}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55F538CD-1213-4873-B968-928225B9B071}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55F538CD-1213-4873-B968-928225B9B071}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18000768-2411-43A3-9400-06EEC77ED18D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18000768-2411-43A3-9400-06EEC77ED18D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18000768-2411-43A3-9400-06EEC77ED18D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18000768-2411-43A3-9400-06EEC77ED18D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{7DC4EA4A-EAE2-4FFE-BCE0-26B9C973D145} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{71261D13-74D5-467C-9C85-093BD150F266} = {FAA42A19-6A89-4BF7-A3AB-F8079BA547EF}
+		{55F538CD-1213-4873-B968-928225B9B071} = {4DD60D5C-5B09-48FA-9847-E1A031D95186}
+		{18000768-2411-43A3-9400-06EEC77ED18D} = {63CAE6B1-6374-4EB7-AFBA-2253165D61C3}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E1B76DAB-C664-436E-B666-F6F70BDE8335}
+	EndGlobalSection
+EndGlobal

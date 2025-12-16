@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Koala.Yedpa.WebUI</name>
+    </assembly>
+    <members>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.LogoClCardApiController.ClCardInfoAll(System.Int32,System.Int32)">
+            <summary>
+            Tüm dükkan cari bilgilerini sayfalı getirir
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.LogoClCardApiController.Search(Koala.Yedpa.Core.Models.ViewModels.YourNamespace.ViewModels.ClCardInfoSearchViewModel,System.Int32,System.Int32)">
+            <summary>
+            Gelişmiş arama - tüm alanlarda filtreleme yapar
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.WebUI.Controllers.SettingsApiController">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.SettingsApiController.GetSettings">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+    </members>
+</doc>
