@@ -3,13 +3,9 @@ using Koala.Yedpa.Core.Helpers;
 using Koala.Yedpa.Core.Models;
 using Koala.Yedpa.Core.Models.ViewModels;
 using Koala.Yedpa.Core.Services;
-using Koala.Yedpa.Service.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using System.Threading.Tasks;
-using Koala.Yedpa.WebUI.Extentions;
 
 namespace Koala.Yedpa.WebUI.Controllers
 {

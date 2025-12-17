@@ -1,55 +1,50 @@
-﻿using Koala.Yedpa.Core.Dtos;
+using Koala.Yedpa.Core.Dtos;
 using Koala.Yedpa.Core.Providers;
 using System.Net;
+using System.Net.Http.Json;
 using System.Text;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Koala.Yedpa.Service.Providers;
 
 public class RestServiceProvider(IHttpClientFactory httpClientFactory) : IRestServiceProvider
 {
-    //private readonly HttpClient _client;
-
-    //_client = client;
-
     [Obsolete("Obsolete")]
     public async Task<ResponseDto<string>> HttpPost(string baseUri, string url, string param, string token, string tokenHeaderName = "Token")
     {
         try
         {
-            var _client= httpClientFactory.CreateClient();
-            _client.BaseAddress = new Uri(baseUri);
+            var client = httpClientFactory.CreateClient();
+            client.BaseAddress = new Uri(baseUri);
 
-            if (string.IsNullOrEmpty(token))
+            // Token varsa header'a ekle
+            if (!string.IsNullOrEmpty(token))
             {
-                _client.DefaultRequestHeaders.Add(tokenHeaderName, token);
+                client.DefaultRequestHeaders.Remove(tokenHeaderName);
+                client.DefaultRequestHeaders.Add(tokenHeaderName, token);
             }
-            var bContent = new StringContent(param, Encoding.UTF8, Application.Json);
 
-            var res = await _client.PostAsync(url, bContent);
-            if (res.IsSuccessStatusCode)
+            var content = new StringContent(param, Encoding.UTF8, "application/json");
+            var response = await client.PostAsync(url, content);
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
             {
-                var content = await res.Content.ReadAsStringAsync();
-                return ResponseDto<string>.SuccessData(200, "Get İşlemi Başarıyla Gerçekleştirildi", content);
+                return ResponseDto<string>.SuccessData(200, "Post İşlemi Başarıyla Gerçekleştirildi", responseContent);
             }
             else
             {
-                var content = await res.Content.ReadAsStringAsync();
-                var code = (int)res.StatusCode;
-               
-                return ResponseDto<string>.FailData(code, "Get İşlemi Sonrası Bir Hata Oluştu", content, true);
+                var statusCode = (int)response.StatusCode;
+                return ResponseDto<string>.FailData(statusCode, "Post İşlemi Sonrası Bir Hata Oluştu", responseContent, true);
             }
-
         }
-        catch (WebException webEx)
+        catch (HttpRequestException httpEx)
         {
-            var response = (HttpWebResponse)webEx.Response!;
-            //if (response == null)
-            //{
-            //    return ResponseDto<string>.FailData(503, "Lisans Sunucusuna Ulaşılamadı", webEx.Message, true);
-            //}
-            var content = new StreamReader(response.GetResponseStream());
-            return ResponseDto<string>.FailData(400, content.ReadToEnd(), webEx.Message, true);
+            return ResponseDto<string>.FailData(503, "Sunucuya Ulaşılamadı", httpEx.Message, true);
+        }
+        catch (TaskCanceledException)
+        {
+            return ResponseDto<string>.FailData(408, "İstek Zaman Aşımına Uğradı", "Request timeout", true);
         }
         catch (Exception ex)
         {
@@ -62,42 +57,42 @@ public class RestServiceProvider(IHttpClientFactory httpClientFactory) : IRestSe
     {
         try
         {
-            var _client = httpClientFactory.CreateClient();
-            _client.BaseAddress = new Uri(baseUri);
-            var req = WebRequest.Create(new Uri(url)) as HttpWebRequest;
-            req!.Method = "PUT";
-            req.ContentType = "application/json";
-            req.Accept = "application/json";
+            var client = httpClientFactory.CreateClient();
+            client.BaseAddress = new Uri(baseUri);
 
-
-            if (string.IsNullOrEmpty(token))
+            // Token varsa header'a ekle
+            if (!string.IsNullOrEmpty(token))
             {
-                _client.DefaultRequestHeaders.Add(tokenHeaderName, token);
+                client.DefaultRequestHeaders.Remove(tokenHeaderName);
+                client.DefaultRequestHeaders.Add(tokenHeaderName, token);
             }
 
-            var formData = Encoding.UTF8.GetBytes(param);
-            req.ContentLength = formData.Length;
+            var content = new StringContent(param, Encoding.UTF8, "application/json");
+            var response = await client.PutAsync(url, content);
 
-            await using (var post = req.GetRequestStream())
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
             {
-                post.Write(formData, 0, formData.Length);
+                return ResponseDto<string>.SuccessData(200, "Put İşlemi Başarıyla Gerçekleştirildi", responseContent);
             }
-
-            using (var resp = req.GetResponse() as HttpWebResponse)
+            else
             {
-                var reader = new StreamReader(resp!.GetResponseStream());
-                return ResponseDto<string>.SuccessData(200, "Put işlemi başarıyla gerçekleştirildi", reader.ReadToEnd());
+                var statusCode = (int)response.StatusCode;
+                return ResponseDto<string>.FailData(statusCode, "Put İşlemi Sonrası Bir Hata Oluştu", responseContent, true);
             }
         }
-        catch (WebException webEx)
+        catch (HttpRequestException httpEx)
         {
-            var response = (HttpWebResponse)webEx.Response!;
-            var content = new StreamReader(response.GetResponseStream());
-            return ResponseDto<string>.FailData(400, content.ReadToEnd(), webEx.Message, false);
+            return ResponseDto<string>.FailData(503, "Sunucuya Ulaşılamadı", httpEx.Message, true);
+        }
+        catch (TaskCanceledException)
+        {
+            return ResponseDto<string>.FailData(408, "İstek Zaman Aşımına Uğradı", "Request timeout", true);
         }
         catch (Exception ex)
         {
-            return ResponseDto<string>.FailData(400, "Put İşlemi Gerçekleştirilirken Bir Sorunla Karşılaşıldı", ex.Message, false);
+            return ResponseDto<string>.FailData(400, "Put İşlemi Gerçekleştirilirken Bir Sorunla Karşılaşıldı", ex.Message, true);
         }
     }
 
@@ -106,73 +101,84 @@ public class RestServiceProvider(IHttpClientFactory httpClientFactory) : IRestSe
     {
         try
         {
-            var req = WebRequest.Create(new Uri(url)) as HttpWebRequest;
-            req!.Method = "PATCH";
-            req.ContentType = "application/json";
-            req.Accept = "application/json";
-            var _client = httpClientFactory.CreateClient();
-            if (string.IsNullOrEmpty(token))
+            var client = httpClientFactory.CreateClient();
+            client.BaseAddress = new Uri(baseUri);
+
+            // Token varsa header'a ekle
+            if (!string.IsNullOrEmpty(token))
             {
-                _client.DefaultRequestHeaders.Add(tokenHeaderName, token);
+                client.DefaultRequestHeaders.Remove(tokenHeaderName);
+                client.DefaultRequestHeaders.Add(tokenHeaderName, token);
             }
 
-            var formData = Encoding.UTF8.GetBytes(param);
-            req.ContentLength = formData.Length;
+            var content = new StringContent(param, Encoding.UTF8, "application/json");
+            var response = await client.PatchAsync(url, content);
 
-            await using (var post = req.GetRequestStream())
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
             {
-                await post.WriteAsync(formData, 0, formData.Length);
+                return ResponseDto<string>.SuccessData(200, "Patch İşlemi Başarıyla Gerçekleştirildi", responseContent);
             }
-
-            using (var resp = req.GetResponse() as HttpWebResponse)
+            else
             {
-                var reader = new StreamReader(resp!.GetResponseStream());
-                return ResponseDto<string>.SuccessData(200, "Patch İşlermi Başarıyla Gerçekleşitirildi", await reader.ReadToEndAsync());
+                var statusCode = (int)response.StatusCode;
+                return ResponseDto<string>.FailData(statusCode, "Patch İşlemi Sonrası Bir Hata Oluştu", responseContent, true);
             }
         }
-        catch (WebException webEx)
+        catch (HttpRequestException httpEx)
         {
-            var response = (HttpWebResponse)webEx.Response!;
-            var content = new StreamReader(response.GetResponseStream());
-            return ResponseDto<string>.FailData(400, await content.ReadToEndAsync(), webEx.Message, false);
+            return ResponseDto<string>.FailData(503, "Sunucuya Ulaşılamadı", httpEx.Message, true);
+        }
+        catch (TaskCanceledException)
+        {
+            return ResponseDto<string>.FailData(408, "İstek Zaman Aşımına Uğradı", "Request timeout", true);
         }
         catch (Exception ex)
         {
-            return ResponseDto<string>.FailData(400, "Patch İşlemi Gerçekleştirilirken Bir Sorunla Karşılaşıldı", ex.Message, false);
+            return ResponseDto<string>.FailData(400, "Patch İşlemi Gerçekleştirilirken Bir Sorunla Karşılaşıldı", ex.Message, true);
         }
     }
+
     [Obsolete("Obsolete")]
     public async Task<ResponseDto<string>> HttpGet(string baseUri, string url, string token, string tokenHeaderName = "Token")
     {
         try
         {
-            var _client = httpClientFactory.CreateClient();
-            if (string.IsNullOrEmpty(token))
+            var client = httpClientFactory.CreateClient();
+            client.BaseAddress = new Uri(baseUri);
+
+            // Token varsa header'a ekle
+            if (!string.IsNullOrEmpty(token))
             {
-                _client.DefaultRequestHeaders.Add(tokenHeaderName, token);
+                client.DefaultRequestHeaders.Remove(tokenHeaderName);
+                client.DefaultRequestHeaders.Add(tokenHeaderName, token);
             }
-            var res = await _client.GetAsync(url);
-            if (res.IsSuccessStatusCode)
+
+            var response = await client.GetAsync(url);
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
             {
-                var content = await res.Content.ReadAsStringAsync();
-                return ResponseDto<string>.SuccessData(200, "Get İşlemi Başarıyla Gerçekleştirildi", content);
+                return ResponseDto<string>.SuccessData(200, "Get İşlemi Başarıyla Gerçekleştirildi", responseContent);
             }
             else
             {
-                var content = await res.Content.ReadAsStringAsync();
-                return ResponseDto<string>.SuccessData((int)res.StatusCode, "Get İşlemi Sonrası Bir Hata Oluştu", content);
+                var statusCode = (int)response.StatusCode;
+                return ResponseDto<string>.FailData(statusCode, "Get İşlemi Sonrası Bir Hata Oluştu", responseContent, true);
             }
-
         }
-        catch (WebException webEx)
+        catch (HttpRequestException httpEx)
         {
-            var response = (HttpWebResponse)webEx.Response!;
-            var content = new StreamReader(response.GetResponseStream());
-            return ResponseDto<string>.SuccessData(400, content.ReadToEnd(), webEx.Message);
+            return ResponseDto<string>.FailData(503, "Sunucuya Ulaşılamadı", httpEx.Message, true);
+        }
+        catch (TaskCanceledException)
+        {
+            return ResponseDto<string>.FailData(408, "İstek Zaman Aşımına Uğradı", "Request timeout", true);
         }
         catch (Exception ex)
         {
-            return ResponseDto<string>.SuccessData(400, "Get İşlemi Gerçekleştirilirken Bir Sorunla Karşılaşıldı", ex.Message);
+            return ResponseDto<string>.FailData(400, "Get İşlemi Gerçekleştirilirken Bir Sorunla Karşılaşıldı", ex.Message, true);
         }
     }
 }

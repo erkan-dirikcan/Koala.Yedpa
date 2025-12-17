@@ -1,9 +1,6 @@
-﻿using Koala.Yedpa.Core.Dtos;
-using Koala.Yedpa.Core.Models.ViewModels;
+﻿using Koala.Yedpa.Core.Models.ViewModels;
 using Koala.Yedpa.Core.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Formatters;
-using Microsoft.Extensions.Localization;
 
 namespace Koala.Yedpa.WebUI.Controllers
 {

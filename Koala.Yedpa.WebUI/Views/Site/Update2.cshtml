@@ -1,4 +1,4 @@
-﻿@model Core.Entities.LgXt001211
+﻿@model Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel
 
 @{
     ViewData["Title"] = "Yeni Kayıt";
@@ -87,22 +87,22 @@
         <div class="row mt-4 g-3">
             <div class="col-md-3">
                 <label class="form-label">Giriş/Baş. Tarihi</label>
-                @Html.TextBoxFor(m => m.BegDate, "{0:dd.MM.yyyy}", new { @class = "form-control datepicker" })
+                @Html.TextBoxFor(m => m.BegDate, "{0:dd.MM.yyyy}", new { @class = "form-control datepicker", disabled = "disabled" })
             </div>
 
             <div class="col-md-3">
                 <label class="form-label">Çıkış/Bitiş Tarihi</label>
-                @Html.TextBoxFor(m => m.EndDate, "{0:dd.MM.yyyy}", new { @class = "form-control datepicker" })
+                @Html.TextBoxFor(m => m.EndDate, "{0:dd.MM.yyyy}", new { @class = "form-control datepicker", disabled = "disabled" })
             </div>
 
             <div class="col-md-3">
                 <label class="form-label">Resmi Giriş Tarihi</label>
-                @Html.TextBoxFor(m => m.OfficialBegDate, "{0:dd.MM.yyyy}", new { @class = "form-control datepicker" })
+                @Html.TextBoxFor(m => m.OfficialBegDate, "{0:dd.MM.yyyy}", new { @class = "form-control datepicker", disabled = "disabled" })
             </div>
 
             <div class="col-md-3">
                 <label class="form-label">Resmi Çıkış Tarihi</label>
-                @Html.TextBoxFor(m => m.OfficialEndDate, "{0:dd.MM.yyyy}", new { @class = "form-control datepicker" })
+                @Html.TextBoxFor(m => m.OfficialEndDate, "{0:dd.MM.yyyy}", new { @class = "form-control datepicker", disabled = "disabled" })
             </div>
         </div>
 

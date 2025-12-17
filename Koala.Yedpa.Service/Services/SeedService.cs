@@ -1,5 +1,5 @@
 ﻿// Service/Services/SeedService.cs
-using Core.Entities;
+
 using Koala.Yedpa.Core.Dtos;
 using Koala.Yedpa.Core.Helpers;
 using Koala.Yedpa.Core.Models;

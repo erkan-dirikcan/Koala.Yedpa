@@ -137,6 +137,7 @@ namespace Koala.Yedpa.WebUI.Extentions
         public static void AddApplicationProviders(this IServiceCollection services)
         {
             services.AddScoped<IRestServiceProvider, RestServiceProvider>();
+            services.AddScoped<ILogoRestServiceProvider, LogoRestServiceProvider>();
             services.AddScoped<ISqlProvider, SqlProvider>();
             services.AddScoped<IEmailProvider, EmailProvider>();
             services.AddScoped<IUnitOfWork<AppDbContext>, UnitOfWork<AppDbContext>>();

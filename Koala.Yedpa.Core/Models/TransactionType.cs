@@ -1,4 +1,4 @@
-﻿using Koala.Yedpa.Core.Dtos;
+using Koala.Yedpa.Core.Dtos;
 using Koala.Yedpa.Core.Helpers;
 
 namespace Koala.Yedpa.Core.Models
@@ -17,6 +17,8 @@ namespace Koala.Yedpa.Core.Models
 
 
         public StatusEnum Status { get; set; } = StatusEnum.Active;
+        public DateTime CreateTime { get; set; } = DateTime.UtcNow;
+        public DateTime? UpdateTime { get; set; }
         public virtual ICollection<Transaction> Transactions { get; set; }
 
     }

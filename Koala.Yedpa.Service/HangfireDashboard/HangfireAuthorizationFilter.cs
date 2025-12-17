@@ -1,6 +1,5 @@
 ﻿// Koala.Yedpa.Service/HangfireDashboard/HangfireAuthorizationFilter.cs
 using Hangfire.Dashboard;
-using Microsoft.AspNetCore.Http;
 
 namespace Koala.Yedpa.Service.HangfireDashboard
 {

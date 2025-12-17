@@ -5,13 +5,7 @@ using Koala.Yedpa.Core.Models.ViewModels.YourNamespace.ViewModels;
 using Koala.Yedpa.Core.Providers;
 using Koala.Yedpa.Core.Services;
 using Koala.Yedpa.Repositories;
-using Koala.Yedpa.Service.Providers;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
-using Service.Services;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Koala.Yedpa.Service.Services
 {

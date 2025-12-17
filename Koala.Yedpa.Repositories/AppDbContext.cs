@@ -1,5 +1,4 @@
-﻿using Core.Entities;
-using Koala.Yedpa.Core.Models;
+﻿using Koala.Yedpa.Core.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;

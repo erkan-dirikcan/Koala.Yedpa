@@ -1,4 +1,3 @@
-@model IEnumerable<Koala.Yedpa.Core.Models.ViewModels.LgXt001211ListViewModel>
 @{
     ViewData["Title"] = "Dükkan Listesi";
     ViewData["ActivePage"] = "Site";
@@ -70,43 +69,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (var item in Model)
-                                {
-                                    var customerTypeText = "";
-                                    switch (item.CustomerType)
-                                    {
-                                        case 1:
-                                            customerTypeText = "Mal Sahibi";
-                                            break;
-                                        case 2:
-                                            customerTypeText = "Kiracı";
-                                            break;
-                                        case 4:
-                                            customerTypeText = "Diğer";
-                                            break;
-                                        default:
-                                            customerTypeText = "-";
-                                            break;
-                                    }
-                                    <tr>
-                                        <td>@item.LogRef</td>
-                                        <td>@item.GroupCode</td>
-                                        <td>@item.GroupName</td>
-                                        <td>@item.ClientCode</td>
-                                        <td>@item.ClientName</td>
-                                        <td>@customerTypeText</td>
-                                        <td>@(item.BegDate?.ToString("dd.MM.yyyy") ?? "-")</td>
-                                        <td>@(item.EndDate?.ToString("dd.MM.yyyy") ?? "-")</td>
-                                        <td>@(item.TotalBrutCoefficientMetre?.ToString("N2") ?? "-")</td>
-                                        <td>@(item.TotalNetMetre?.ToString("N2") ?? "-")</td>
-                                        <td>@(item.TotalFuelMetre?.ToString("N2") ?? "-")</td>
-                                        <td>
-                                            <a asp-controller="Site" asp-action="Update" asp-route-id="@item.Id" class="btn btn-icon btn-warning btn-sm" data-toggle="tooltip" title="Güncelle" data-theme="dark">
-                                                <i class="flaticon-edit"></i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                }
+                                <!-- Data will be loaded via AJAX -->
                             </tbody>
                         </table>
                     </div>

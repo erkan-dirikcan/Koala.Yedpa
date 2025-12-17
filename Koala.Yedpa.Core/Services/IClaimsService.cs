@@ -1,5 +1,4 @@
-﻿using Azure;
-using Koala.Yedpa.Core.Dtos;
+﻿using Koala.Yedpa.Core.Dtos;
 using Koala.Yedpa.Core.Models.ViewModels;
 
 namespace Koala.Yedpa.Core.Services;

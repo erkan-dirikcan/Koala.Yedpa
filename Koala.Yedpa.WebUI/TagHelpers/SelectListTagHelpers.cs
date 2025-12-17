@@ -1,7 +1,4 @@
-﻿using System.Text;
-using System.Text.Encodings.Web;
-using Koala.Yedpa.Core.Services;
-using Microsoft.AspNetCore.Mvc.TagHelpers;
+﻿using Koala.Yedpa.Core.Services;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace Koala.Yedpa.WebUI.TagHelpers

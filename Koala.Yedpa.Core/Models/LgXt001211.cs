@@ -1,9 +1,8 @@
 ﻿using Koala.Yedpa.Core.Helpers;
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Core.Entities
+namespace Koala.Yedpa.Core.Models
 {
     [Table("LG_XT001_211")]
     public class LgXt001211

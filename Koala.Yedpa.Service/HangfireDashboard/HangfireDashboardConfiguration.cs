@@ -1,6 +1,5 @@
 ﻿// Koala.Yedpa.Service/HangfireDashboard/HangfireDashboardConfiguration.cs
 using Hangfire;
-using Hangfire.Dashboard;
 using Microsoft.AspNetCore.Builder;
 
 namespace Koala.Yedpa.Service.HangfireDashboard

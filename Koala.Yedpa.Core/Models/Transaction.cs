@@ -1,4 +1,4 @@
-﻿using Koala.Yedpa.Core.Helpers;
+using Koala.Yedpa.Core.Helpers;
 
 namespace Koala.Yedpa.Core.Models
 {
@@ -16,6 +16,7 @@ namespace Koala.Yedpa.Core.Models
         public string? Title { get; set; }
         public string? Description { get; set; }
         public bool IsComplated { get; set; } = false;
+        public DateTime? UpdateTime { get; set; }
 
 
         public virtual TransactionType? TransactionType { get; set; }

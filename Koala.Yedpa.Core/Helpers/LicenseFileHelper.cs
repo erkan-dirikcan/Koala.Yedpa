@@ -1,4 +1,4 @@
-﻿using System.Security.Cryptography;
+using System.Security.Cryptography;
 using System.Text;
 using Newtonsoft.Json;
 
@@ -12,11 +12,11 @@ namespace Koala.Yedpa.Core.Helpers
         private static readonly string PublicPemPath = Path.Combine(
             Directory.GetCurrentDirectory(), "wwwroot", "Licenses", "Koala.Yedpa.Yonetim_public.pem");
 
-        public static (string CustomerCode, string ApplicationId, DateTime? ExpirationDate)? ReadLicensePayload()
+        public static (string CustomerCode, string ApplicationId, DateTime? ExpirationDate, string? LogoClientId, string? LogoClientSecret)? ReadLicensePayload()
         {
             var licensePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Licenses", "license.lic");
-            var privatePemPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Licenses", "Koala.Yedpa.Yonetim_private.pem");
-            var publicPemPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Licenses", "Koala.Yedpa.Yonetim_public.pem");
+            var privatePemPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Licenses", "Koala.Yedpa_private.pem");
+            var publicPemPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Licenses", "Koala.Yedpa_public.pem");
 
             if (!File.Exists(licensePath) || !File.Exists(privatePemPath) || !File.Exists(publicPemPath))
                 return null;
@@ -49,14 +49,23 @@ namespace Koala.Yedpa.Core.Helpers
             {
                 CustomerCode = "",
                 ExpirationDate = "",
-                ApplicationId = ""
+                ApplicationId = "",
+                CustomContent = new
+                {
+                    LogoClientId = "",
+                    LogoClientSecret = ""
+                },
+                Mode = ""
             });
 
             if (payload == null) return null;
 
             DateTime? exp = DateTime.TryParse(payload.ExpirationDate, out var dt) ? dt : null;
 
-            return (payload.CustomerCode, payload.ApplicationId, exp);
+            var logoClientId = payload.CustomContent?.LogoClientId;
+            var logoClientSecret = payload.CustomContent?.LogoClientSecret;
+
+            return (payload.CustomerCode, payload.ApplicationId, exp, logoClientId, logoClientSecret);
         }
     }
 }

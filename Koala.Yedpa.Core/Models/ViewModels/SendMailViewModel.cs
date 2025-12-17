@@ -1,6 +1,4 @@
-﻿using Koala.Yedpa.Core.Dtos;
-
-namespace Koala.Yedpa.Core.Models.ViewModels
+﻿namespace Koala.Yedpa.Core.Models.ViewModels
 {
     public class SendMailViewModel
     {

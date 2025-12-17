@@ -1,4 +1,4 @@
-﻿using Koala.Yedpa.Core.Services;
+using Koala.Yedpa.Core.Services;
 using Newtonsoft.Json;
 using System.Security.Cryptography;
 using System.Text;
@@ -17,7 +17,7 @@ namespace Koala.Yedpa.Core.Helpers
             {
                 var basePath = Directory.GetCurrentDirectory();
                 var licensePath = Path.Combine(basePath, "wwwroot", "Licenses", "license.lic");
-                var privatePemPath = Path.Combine(basePath, "wwwroot", "Licenses", "Koala.Yedpa.Yonetim_private.pem");
+                var privatePemPath = Path.Combine(basePath, "wwwroot", "Licenses", "Koala.Yedpa_private.pem");
 
                 if (!File.Exists(licensePath) || !File.Exists(privatePemPath))
                     return null;
@@ -49,7 +49,13 @@ namespace Koala.Yedpa.Core.Helpers
                 {
                     CustomerCode = "",
                     ExpirationDate = "",
-                    ApplicationId = ""
+                    ApplicationId = "",
+                    CustomContent = new
+                    {
+                        LogoClientId = "",
+                        LogoClientSecret = ""
+                    },
+                    Mode = ""
                 });
 
                 if (payload == null)

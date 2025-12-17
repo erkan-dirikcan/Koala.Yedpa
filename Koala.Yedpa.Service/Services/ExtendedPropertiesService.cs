@@ -5,7 +5,6 @@ using Koala.Yedpa.Core.Models.ViewModels;
 using Koala.Yedpa.Core.Repositories;
 using Koala.Yedpa.Core.Services;
 using Microsoft.Extensions.Logging;
-using System.Security.Cryptography.X509Certificates;
 using Koala.Yedpa.Core.UnitOfWorks;
 using Koala.Yedpa.Repositories;
 

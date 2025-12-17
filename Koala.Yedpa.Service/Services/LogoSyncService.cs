@@ -1,8 +1,8 @@
 // Service/Services/LogoSyncService.cs
-using Core.Entities;
 using Koala.Yedpa.Core.Dtos;
 using Koala.Yedpa.Core.Helpers;
 using Koala.Yedpa.Core.Models;
+using Koala.Yedpa.Core.Models.ViewModels;
 using Koala.Yedpa.Core.Providers;
 using Koala.Yedpa.Core.Services;
 using Koala.Yedpa.Repositories;
@@ -11,7 +11,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Data;
 using System.Security.Claims;
-using EFCore.BulkExtensions;
 
 namespace Service.Services
 {
@@ -20,21 +19,26 @@ namespace Service.Services
         private readonly AppDbContext _context;
         private readonly ISqlProvider _sqlProvider;
         private readonly ILogger<LogoSyncService> _logger;
+        private readonly ITransactionService _transactionService;
+        private readonly ITransactionItemService _transactionItemService;
         private readonly string? _currentUserId;
 
         public LogoSyncService(
             AppDbContext context,
             ISqlProvider sqlProvider,
             ILogger<LogoSyncService> logger,
+            ITransactionService transactionService,
+            ITransactionItemService transactionItemService,
             IHttpContextAccessor? httpContextAccessor = null)
         {
             _context = context;
             _sqlProvider = sqlProvider;
             _logger = logger;
+            _transactionService = transactionService;
+            _transactionItemService = transactionItemService;
             _currentUserId = httpContextAccessor?.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value
                              ?? null;
         }
-
         public async Task<ResponseDto<string>> SyncXt001211Async(string firm, string? userId = null)
         {
             if (string.IsNullOrWhiteSpace(firm))
@@ -42,21 +46,23 @@ namespace Service.Services
 
             var effectiveUserId = userId ?? _currentUserId ?? null;
 
-            var transaction = new Transaction
+            // Transaction oluşturma işlemini service üzerinden yap
+            var createTransactionModel = new CreateTransactionViewModel
             {
-                Id = Tools.CreateGuidStr(),
-                TransactionNumber = $"SYNC-{firm}-{DateTime.Now:yyyyMMddHHmmss}",
                 TransactionTypeId = "c570d72f-d9c8-11f0-9657-e848b8c82000",
                 UserId = effectiveUserId,
                 Title = $"Logo Firma {firm} - XT001_211 Senkronizasyonu",
-                Description = $"Firma: {firm}, LG_XT001_211 + LG_{firm}_CLCARD",
-                IsComplated = false
+                Description = $"Firma: {firm}, LG_XT001_211 + LG_{firm}_CLCARD"
             };
 
-            _context.Transaction.Add(transaction);
-            await _context.SaveChangesAsync();
+            var transactionResponse = await _transactionService.CreateTransactionAsync(createTransactionModel);
+            if (!transactionResponse.IsSuccess || transactionResponse.Data == null)
+            {
+                return ResponseDto<string>.FailData(500, "Transaction oluşturulamadı.", transactionResponse.Message, true);
+            }
 
-            var items = new List<TransactionItem>();
+            var transaction = transactionResponse.Data;
+            var transactionId = transaction.Id;
 
             try
             {
@@ -78,7 +84,7 @@ namespace Service.Services
                     LEFT JOIN {clcardTable} grp ON clc.PARENTCLREF = grp.LOGICALREF";
 
                 var readResponse = _sqlProvider.SqlReader(query);
-                items.Add(await LogStep(transaction.Id, $"Logo Firma {firm}'den veri çekiliyor...", readResponse));
+                await LogStepAsync(transactionId, $"Logo Firma {firm}'den veri çekiliyor...", readResponse);
 
                 if (!readResponse.IsSuccess || readResponse.Data?.Rows.Count == 0)
                     return ResponseDto<string>.FailData(400, "Logo'dan veri alınamadı.", readResponse.Errors?.Errors ?? new List<string> { "Veri yok" }, true);
@@ -90,7 +96,7 @@ namespace Service.Services
                 var newEntities = entities.Where(e => !existingLogRefs.Contains(e.LogRef)).ToList();
                 var existingEntities = entities.Where(e => existingLogRefs.Contains(e.LogRef)).ToList();
 
-                items.Add(await LogStep(transaction.Id, "Veriler kaydediliyor...", async () =>
+                await LogStepAsync(transactionId, "Veriler kaydediliyor...", async () =>
                 {
                     var totalProcessed = 0;
 
@@ -184,29 +190,29 @@ namespace Service.Services
                     }
 
                     return ResponseDto<string>.SuccessData(200, $"{totalProcessed} kayıt işlendi ({newEntities.Count} yeni, {existingEntities.Count} güncellendi).", "OK");
-                }));
+                });
 
-                transaction.IsComplated = true;
-                await _context.SaveChangesAsync();
+                // Transaction'ı tamamla
+                var completeModel = new CompleteTransactionViewModel
+                {
+                    TransactionId = transactionId
+                };
+                await _transactionService.CompleteTransactionAsync(completeModel);
 
-                return ResponseDto<string>.SuccessData(200, $"Firma {firm} senkronizasyonu tamamlandı.", transaction.Id);
+                return ResponseDto<string>.SuccessData(200, $"Firma {firm} senkronizasyonu tamamlandı.", transactionId);
             }
             catch (Exception ex)
             {
-                transaction.IsComplated = false;
-                await LogStep(transaction.Id, "HATA: " + ex.Message, () => Task.FromResult(
+                // Exception'ı detaylı şekilde logla
+                _logger.LogError(ex, "Logo senkronizasyonu sırasında hata oluştu. Firm: {Firm}, TransactionId: {TransactionId}, UserId: {UserId}", 
+                    firm, transactionId, effectiveUserId);
+
+                // Hata durumunda transaction item ekle
+                await LogStepAsync(transactionId, "HATA: " + ex.Message, () => Task.FromResult(
                     ResponseDto<string>.FailData(500, ex.Message, ex.Message, true)
                 ), false);
 
-                _context.Transaction.Update(transaction);
-                await _context.SaveChangesAsync();
-
                 return ResponseDto<string>.FailData(500, $"Firma {firm} senkronizasyonu başarısız.", ex.Message, true);
-            }
-            finally
-            {
-                _context.TransactionItem.AddRange(items);
-                await _context.SaveChangesAsync();
             }
         }
         private List<LgXt001211> MapToEntities(DataTable dt, string userId)
@@ -310,45 +316,43 @@ namespace Service.Services
             }
         }
       
-        private async Task<TransactionItem> LogStep(string transactionId, string description, ResponseDto<DataTable> response)
+        private async Task LogStepAsync(string transactionId, string description, ResponseDto<DataTable> response)
         {
-            var item = new TransactionItem
+            var itemModel = new CreateTransactionItemViewModel
             {
-                Id = Tools.CreateGuidStr(),
                 TransactionId = transactionId,
                 Description = $"{description} → {response.Message} ({response.Data?.Rows.Count ?? 0} kayıt)",
-                IsSuccess = response.IsSuccess,
-                CreateUserId = _currentUserId,
-                CreateTime = DateTime.UtcNow
+                IsSuccess = response.IsSuccess
             };
-            return item;
+
+            await _transactionItemService.AddTransactionItemAsync(itemModel);
         }
 
-        private async Task<TransactionItem> LogStep(string transactionId, string description, Func<Task<ResponseDto<string>>> action, bool success = true)
+        private async Task LogStepAsync(string transactionId, string description, Func<Task<ResponseDto<string>>> action, bool success = true)
         {
-            var item = new TransactionItem
-            {
-                Id = Tools.CreateGuidStr(),
-                TransactionId = transactionId,
-                Description = description,
-                IsSuccess = success,
-                CreateUserId = _currentUserId,
-                CreateTime = DateTime.UtcNow
-            };
+            var initialDescription = description;
+            var isSuccess = success;
 
             try
             {
                 var result = await action();
-                item.Description += $" → {result.Message}";
-                item.IsSuccess = result.IsSuccess;
+                initialDescription += $" → {result.Message}";
+                isSuccess = result.IsSuccess;
             }
             catch (Exception ex)
             {
-                item.Description += $" → HATA: {ex.Message}";
-                item.IsSuccess = false;
+                initialDescription += $" → HATA: {ex.Message}";
+                isSuccess = false;
             }
 
-            return item;
+            var itemModel = new CreateTransactionItemViewModel
+            {
+                TransactionId = transactionId,
+                Description = initialDescription,
+                IsSuccess = isSuccess
+            };
+
+            await _transactionItemService.AddTransactionItemAsync(itemModel);
         }
        
     }

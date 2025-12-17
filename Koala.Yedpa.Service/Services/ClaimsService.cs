@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Azure;
 using Koala.Yedpa.Core.Dtos;
 using Koala.Yedpa.Core.Models;
 using Koala.Yedpa.Core.Models.ViewModels;
@@ -7,7 +6,6 @@ using Koala.Yedpa.Core.Repositories;
 using Koala.Yedpa.Core.Services;
 using Koala.Yedpa.Core.UnitOfWorks;
 using Koala.Yedpa.Repositories;
-using Koala.Yedpa.Repositories.Repositories;
 using Microsoft.Extensions.Logging;
 
 namespace Koala.Yedpa.Service.Services;

@@ -51,5 +51,58 @@ namespace Koala.Yedpa.Repositories.Repositories
             _dbSet.Update(entity);
             return entity;
         }
+
+        public async Task<int> CountAsync()
+        {
+            return await _dbSet.CountAsync();
+        }
+
+        public async Task<int> CountAsync(Expression<Func<LgXt001211, bool>> predicate)
+        {
+            return await _dbSet.Where(predicate).CountAsync();
+        }
+
+        public async Task<IEnumerable<LgXt001211>> GetPagedAsync(int skip, int take, Expression<Func<LgXt001211, bool>>? predicate = null, string? orderBy = null, bool ascending = true)
+        {
+            var query = predicate != null ? _dbSet.Where(predicate) : _dbSet.AsQueryable();
+
+            // Sıralama
+            if (!string.IsNullOrEmpty(orderBy))
+            {
+                switch (orderBy.ToLower())
+                {
+                    case "logref":
+                        query = ascending ? query.OrderBy(x => x.LogRef) : query.OrderByDescending(x => x.LogRef);
+                        break;
+                    case "groupcode":
+                        query = ascending ? query.OrderBy(x => x.GroupCode) : query.OrderByDescending(x => x.GroupCode);
+                        break;
+                    case "groupname":
+                        query = ascending ? query.OrderBy(x => x.GroupName) : query.OrderByDescending(x => x.GroupName);
+                        break;
+                    case "clientcode":
+                        query = ascending ? query.OrderBy(x => x.ClientCode) : query.OrderByDescending(x => x.ClientCode);
+                        break;
+                    case "clientname":
+                        query = ascending ? query.OrderBy(x => x.ClientName) : query.OrderByDescending(x => x.ClientName);
+                        break;
+                    case "begdate":
+                        query = ascending ? query.OrderBy(x => x.BegDate) : query.OrderByDescending(x => x.BegDate);
+                        break;
+                    case "enddate":
+                        query = ascending ? query.OrderBy(x => x.EndDate) : query.OrderByDescending(x => x.EndDate);
+                        break;
+                    default:
+                        query = query.OrderBy(x => x.LogRef);
+                        break;
+                }
+            }
+            else
+            {
+                query = query.OrderBy(x => x.LogRef);
+            }
+
+            return await query.Skip(skip).Take(take).ToListAsync();
+        }
     }
 }

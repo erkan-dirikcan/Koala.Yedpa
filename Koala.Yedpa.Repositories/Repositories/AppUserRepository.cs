@@ -3,7 +3,6 @@ using Koala.Yedpa.Core.Models;
 using Koala.Yedpa.Core.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 
 namespace Koala.Yedpa.Repositories.Repositories
 {

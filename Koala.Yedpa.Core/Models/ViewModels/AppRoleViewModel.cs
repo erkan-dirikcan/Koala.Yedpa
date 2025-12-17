@@ -1,5 +1,4 @@
-﻿using Koala.Yedpa.Core.Dtos;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Koala.Yedpa.Core.Models.ViewModels;
 

@@ -1,6 +1,5 @@
 ﻿using Hangfire;
 using Koala.Yedpa.Core.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 

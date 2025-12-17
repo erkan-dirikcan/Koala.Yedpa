@@ -1,4 +1,4 @@
-﻿@model Core.Entities.LgXt001211
+@model Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel
 
 @{
     var Cl = Model == null ? "" : Model.ClientName;
@@ -13,14 +13,14 @@
                 <span class="text-muted mt-3 font-weight-bold font-size-sm">Cari Hesap Site Bilgilerini Güncelle</span>
             </h3>
         </div>
-        <form name="CreateModuleForm" id="CreateForm" asp-action="UpdateModule" asp-controller="Module" method="post">
+        <form name="UpdateSiteForm" id="UpdateForm" asp-action="Update" asp-controller="Site" method="post">
             <div class="card-body">
                 <input type="hidden" asp-for="Id" />
                 @Html.AntiForgeryToken()
 
                 <!-- ============================
                 1) TİP SEÇİM ALANI
-                ============================= -->
+                ================================= -->
 
                 <div class="card-body">
 
@@ -28,19 +28,19 @@
                         <div class="col-9 col-form-label">
                             <div class="radio-inline">
                                 <label class="radio radio-success">
-                                    <input type="radio" name="CustomerType" checked="checked" value="1" />
+                                    @Html.RadioButtonFor(m => m.CustomerType, 1, new { id = "CustomerType_1" })
                                     <span></span>İşyeri Sahibi
                                 </label>
                                 <label class="radio radio-primery">
-                                    <input type="radio" name="CustomerType"  value="2" />
+                                    @Html.RadioButtonFor(m => m.CustomerType, 2, new { id = "CustomerType_2" })
                                     <span></span>Kiracı
                                 </label>
                                 <label class="radio radio-warning">
-                                    <input type="radio" name="CustomerType" value="4" />
+                                    @Html.RadioButtonFor(m => m.CustomerType, 4, new { id = "CustomerType_4" })
                                     <span></span>Diğer
                                 </label>
                             </div>
-                            <span class="form-text text-muted">Some help text goes here</span>
+                            <span class="form-text text-muted">Müşteri tipini seçiniz</span>
                         </div>
                     </div>
                 </div>
@@ -62,13 +62,13 @@
                                 <label class="font-weight-bold">Muhtarlık Kaydı</label><br />
 
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="ChiefReg" value="1" />
-                                    <label class="form-check-label">Var</label>
+                                    @Html.RadioButtonFor(m => m.ChiefReg, 1, new { @class = "form-check-input", id = "ChiefReg_1" })
+                                    <label class="form-check-label" for="ChiefReg_1">Var</label>
                                 </div>
 
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="ChiefReg" value="0" checked />
-                                    <label class="form-check-label">Yok</label>
+                                    @Html.RadioButtonFor(m => m.ChiefReg, 0, new { @class = "form-check-input", id = "ChiefReg_0" })
+                                    <label class="form-check-label" for="ChiefReg_0">Yok</label>
                                 </div>
                             </div>
 
@@ -82,16 +82,18 @@
 
                             <div class="col-md-3">
                                 @Html.LabelFor(x => x.ProfitingOwner, "İntifa Sahibi", new { @class = "", name = "ProfitingOwner_lb", id = "ProfitingOwner_lb" })
-                                @Html.TextBoxFor(m => m.ProfitingOwner, new { @class = "form-control" })
+                                @Html.TextBoxFor(m => m.ProfitingOwner, new { @class = "form-control", id = "ProfitingOwner" })
                                
                                 @Html.LabelFor(x => x.TaxPayer, "Vergi Mükellefliği", new { @class = "mt-2", name = "TaxPayer_lb", id = "TaxPayer_lb" })
                                 @Html.DropDownListFor(m => m.TaxPayer,
                                 new List<SelectListItem>
                                                                 {
-                                                                new SelectListItem { Text = "Muaf", Value = "0" },
-                                                                new SelectListItem { Text = "Var", Value = "1" }
+                                                                new SelectListItem { Text = "Muaf", Value = "0", Selected = Model?.TaxPayer == 0 },
+                                                                new SelectListItem { Text = "Gelir Vergisi", Value = "1", Selected = Model?.TaxPayer == 1 },
+                                                                new SelectListItem { Text = "Kurumsal", Value = "2", Selected = Model?.TaxPayer == 2 },
+                                                                new SelectListItem { Text = "Diğer", Value = "3", Selected = Model?.TaxPayer == 3 }
                                                                 },
-                                                                "Seçiniz", new { @class = "form-control" })
+                                                                "Seçiniz", new { @class = "form-control", id = "TaxPayer" })
                             </div>
 
                             <div class="col-md-4">
@@ -99,30 +101,30 @@
                                 @Html.DropDownListFor(m => m.DeedInfo,
                                                                 new List<SelectListItem>
                                                                 {
-                                                                new SelectListItem { Text = "Hisseli", Value = "1" },
-                                                                new SelectListItem { Text = "Tam Mülkiyet", Value = "2" }
+                                                                new SelectListItem { Text = "Hisseli", Value = "0", Selected = Model?.DeedInfo == 0 },
+                                                                new SelectListItem { Text = "Müstakil/Tam Mülkiyet", Value = "1", Selected = Model?.DeedInfo == 1 }
                                                                 },
-                                                                "Seçiniz", new { @class = "form-control" })
+                                                                "Seçiniz", new { @class = "form-control", id = "DeedInfo" })
 
                                 <div class="row mt-2">
                                     <div class="col-6">
                                         <label>Giriş / Baş. Tarihi</label>
-                                        @Html.TextBoxFor(m => m.BegDate, new { @class = "form-control", type = "date" })
+                                        @Html.TextBoxFor(m => m.BegDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", @readonly = "readonly" })
                                     </div>
                                     <div class="col-6">
                                         <label>Çıkış / Bitiş Tarihi</label>
-                                        @Html.TextBoxFor(m => m.EndDate, new { @class = "form-control", type = "date" })
+                                        @Html.TextBoxFor(m => m.EndDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", @readonly = "readonly" })
                                     </div>
                                 </div>
 
                                 <div class="row mt-2">
                                     <div class="col-6">
                                         <label>Resmi Giriş Tarihi</label>
-                                        @Html.TextBoxFor(m => m.OfficialBegDate, new { @class = "form-control", type = "date" })
+                                        @Html.TextBoxFor(m => m.OfficialBegDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", @readonly = "readonly" })
                                     </div>
                                     <div class="col-6">
                                         <label>Resmi Çıkış Tarihi</label>
-                                        @Html.TextBoxFor(m => m.OfficialEndDate, new { @class = "form-control", type = "date" })
+                                        @Html.TextBoxFor(m => m.OfficialEndDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", @readonly = "readonly" })
                                     </div>
                                 </div>
 

@@ -1,5 +1,4 @@
-﻿using Core.Entities;
-using Koala.Yedpa.Core.Models;
+﻿using Koala.Yedpa.Core.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

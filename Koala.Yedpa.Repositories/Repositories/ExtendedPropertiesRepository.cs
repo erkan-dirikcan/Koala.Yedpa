@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using System.Linq.Expressions;
-using System.Security.Cryptography.X509Certificates;
+﻿using System.Linq.Expressions;
 using Koala.Yedpa.Core.Models;
 using Koala.Yedpa.Core.Repositories;
 using Microsoft.EntityFrameworkCore;
