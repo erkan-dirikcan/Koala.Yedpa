@@ -1,9 +1,8 @@
-﻿using Koala.Yedpa.Core.Dtos;
-using Koala.Yedpa.Core.Helpers;
+using Koala.Yedpa.Core.Exceptions;
 using Koala.Yedpa.Core.Services;
 using Newtonsoft.Json;
+using System.Net;
 using System.Net.Http.Json;
-using System.Text.Json;
 
 namespace Koala.Yedpa.Service.Services // <-- SENİN NAMESPACE'İN
 {
@@ -42,6 +41,33 @@ namespace Koala.Yedpa.Service.Services // <-- SENİN NAMESPACE'İN
 
                 var response = await _httpClient.PostAsJsonAsync($"api/Crypto/{action}", request);
 
+                // 403 hatası (Lisans hatası) kontrolü
+                if (response.StatusCode == HttpStatusCode.Forbidden)
+                {
+                    var errorResponse = await response.Content.ReadAsStringAsync();
+                    string errorMessage = "Lisans hatası oluştu.";
+                    
+                    try
+                    {
+                        // Sunucudan dönen JSON formatındaki hata mesajını parse et
+                        var errorObj = JsonConvert.DeserializeObject<dynamic>(errorResponse);
+                        if (errorObj?.message != null)
+                        {
+                            errorMessage = errorObj.message.ToString();
+                        }
+                    }
+                    catch
+                    {
+                        // JSON parse edilemezse, ham hata mesajını kullan
+                        if (!string.IsNullOrWhiteSpace(errorResponse))
+                        {
+                            errorMessage = errorResponse;
+                        }
+                    }
+                    
+                    throw new CryptoLicenseException(errorMessage);
+                }
+
                 if (!response.IsSuccessStatusCode)
                     return string.Empty;
 
@@ -54,6 +80,11 @@ namespace Koala.Yedpa.Service.Services // <-- SENİN NAMESPACE'İN
                     return result?.encryptedText?.ToString() ?? string.Empty;
                 else
                     return result?.plainText?.ToString() ?? string.Empty;
+            }
+            catch (CryptoLicenseException)
+            {
+                // Lisans hatasını yukarı fırlat (yakalanmasın)
+                throw;
             }
             catch
             {

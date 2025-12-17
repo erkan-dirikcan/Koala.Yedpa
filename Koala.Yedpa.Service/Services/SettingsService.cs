@@ -1,13 +1,12 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Koala.Yedpa.Core.Dtos;
+using Koala.Yedpa.Core.Exceptions;
 using Koala.Yedpa.Core.Models;
 using Koala.Yedpa.Core.Models.ViewModels;
 using Koala.Yedpa.Core.Repositories;
 using Koala.Yedpa.Core.Services;
 using Koala.Yedpa.Core.UnitOfWorks;
 using Koala.Yedpa.Repositories;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Koala.Yedpa.Service.Services;
 
@@ -182,6 +181,11 @@ public class SettingsService(ISettingsRepository repository, IUnitOfWork<AppDbCo
                 {
                     encryptedValue = await cryptoService.EncryptAsync(propertyValue);
                 }
+                catch (CryptoLicenseException licenseEx)
+                {
+                    // Lisans hatasında hemen durdur ve hata mesajını döndür
+                    return ResponseDto.Fail(403, licenseEx.Message, licenseEx.Message, true);
+                }
                 catch (Exception cryptoEx)
                 {
                     errors.Add($"'{propertyName}' şifrelenirken hata: {cryptoEx.Message}");
@@ -236,10 +240,14 @@ public class SettingsService(ISettingsRepository repository, IUnitOfWork<AppDbCo
                 {
                     encryptedValue = await cryptoService.EncryptAsync(propertyValue);
                 }
+                catch (CryptoLicenseException licenseEx)
+                {
+                    // Lisans hatasında hemen durdur ve hata mesajını döndür
+                    return ResponseDto.Fail(403, licenseEx.Message, licenseEx.Message, true);
+                }
                 catch (Exception cryptoEx)
                 {
                     errors.Add($"'{propertyName}' şifrelenirken hata: {cryptoEx.Message}");
-                    continue;
                     continue;
                 }
 
@@ -287,6 +295,11 @@ public class SettingsService(ISettingsRepository repository, IUnitOfWork<AppDbCo
                 try
                 {
                     encryptedValue = await cryptoService.EncryptAsync(propertyValue);
+                }
+                catch (CryptoLicenseException licenseEx)
+                {
+                    // Lisans hatasında hemen durdur ve hata mesajını döndür
+                    return ResponseDto.Fail(403, licenseEx.Message, licenseEx.Message, true);
                 }
                 catch (Exception cryptoEx)
                 {
@@ -428,6 +441,11 @@ public class SettingsService(ISettingsRepository repository, IUnitOfWork<AppDbCo
                 {
                     decryptedValue = await cryptoService.DecryptAsync(item.Value);
                 }
+                catch (CryptoLicenseException licenseEx)
+                {
+                    // Lisans hatasında hemen durdur ve hata mesajını döndür
+                    return ResponseDto<EmailSettingViewModel>.FailData(403, licenseEx.Message, licenseEx.Message, true);
+                }
                 catch
                 {
                     decryptedValue = "****** (Çözülemedi)"; // hata olursa gizle
@@ -498,6 +516,11 @@ public class SettingsService(ISettingsRepository repository, IUnitOfWork<AppDbCo
                 {
                     decryptedValue = await cryptoService.DecryptAsync(encryptedValue);
                 }
+                catch (CryptoLicenseException licenseEx)
+                {
+                    // Lisans hatasında hemen durdur ve hata mesajını döndür
+                    return ResponseDto<LogoSqlSettingViewModel>.FailData(403, licenseEx.Message, licenseEx.Message, true);
+                }
                 catch (Exception)
                 {
                     // Log atabilirsin: _logger.LogError($"LogoSql {propName} decrypt edilemedi");
@@ -555,6 +578,11 @@ public class SettingsService(ISettingsRepository repository, IUnitOfWork<AppDbCo
                 try
                 {
                     decryptedText = await cryptoService.DecryptAsync(encryptedValue);
+                }
+                catch (CryptoLicenseException licenseEx)
+                {
+                    // Lisans hatasında hemen durdur ve hata mesajını döndür
+                    return ResponseDto<LogoRestServiceSettingViewModel>.FailData(403, licenseEx.Message, licenseEx.Message, true);
                 }
                 catch (Exception)
                 {
@@ -616,6 +644,11 @@ public class SettingsService(ISettingsRepository repository, IUnitOfWork<AppDbCo
                 try
                 {
                     decryptedValue = await cryptoService.DecryptAsync(entity.Value);
+                }
+                catch (CryptoLicenseException licenseEx)
+                {
+                    // Lisans hatasında hemen durdur ve hata mesajını döndür
+                    return ResponseDto<LogoSettingViewModel>.FailData(403, licenseEx.Message, licenseEx.Message, true);
                 }
                 catch (Exception cryptoEx)
                 {
