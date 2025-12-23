@@ -30,3 +30,5 @@ public interface ITransactionService
     Task<ResponseDto> AddTransactionItemAsync(CreateTransactionItemViewModel model);
     Task<ResponseDto<List<TransactionItemViewModel>>> GetTransactionItemsAsync(string transactionId);
 }
+
+

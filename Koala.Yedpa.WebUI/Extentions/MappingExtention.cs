@@ -10,6 +10,7 @@ public static class MappingExtention
         services.AddAutoMapper(cfg =>
         {
             cfg.AddProfile<ClaimsProfile>();
+            cfg.AddProfile<DuesStatisticProfile>();
             cfg.AddProfile<ExtendedPropertiesProfile>();
             cfg.AddProfile<ExtendedPropertyRecordValuesProfile>();
             cfg.AddProfile<ExtendedPropertyValuesProfile>();
@@ -18,7 +19,6 @@ public static class MappingExtention
             cfg.AddProfile<UserProfile>();
             cfg.AddProfile<SettingsProfile>();
             cfg.AddProfile<LgXt001211Profile>();
-            //cfg.AddProfile<>();
             //cfg.AddProfile<>();
             //cfg.AddProfile<>();
             //cfg.AddProfile<>();

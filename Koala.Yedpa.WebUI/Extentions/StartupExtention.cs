@@ -79,6 +79,7 @@ namespace Koala.Yedpa.WebUI.Extentions
             services.AddScoped<IAppRoleRepository, AppRoleRepository>();
             services.AddScoped<IAppUserRepository, AppUserRepository>();
             services.AddScoped<IClaimsRepository, ClaimsRepository>();
+            services.AddScoped<IDuesStatisticRepository,DuesStatisticRepository >();
             services.AddScoped<IEmailTemplateRepository, EmailTemplateRepository>();
             services.AddScoped<IExtendedPropertiesRepository, ExtendedPropertiesRepository>();
             services.AddScoped<IExtendedPropertyRecordValuesRepository, ExtendedPropertyRecordValuesRepository>();
@@ -90,6 +91,7 @@ namespace Koala.Yedpa.WebUI.Extentions
             services.AddScoped<ITransactionRepository, TransactionRepository>();
             services.AddScoped<ITransactionItemRepository, TransactionItemRepository>();
             services.AddScoped<ITransactionTypeRepository, TransactionTypeRepository>();
+            //services.AddScoped<, >();
             //services.AddScoped<, >();
             services.AddHangfireServer();
 
@@ -103,6 +105,7 @@ namespace Koala.Yedpa.WebUI.Extentions
             services.AddScoped<IClaimsService, ClaimsService>();
             services.AddScoped<ICryptoService, CryptoService>();
             services.AddScoped<ICurrentUserService, CurrentUserService>();
+            services.AddScoped<IDuesStatisticService, DuesStatisticService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IEmailTemplateService, EmailTemplateService>();
             services.AddScoped<IExtendedPropertiesService, ExtendedPropertiesService>();
@@ -136,12 +139,12 @@ namespace Koala.Yedpa.WebUI.Extentions
 
         public static void AddApplicationProviders(this IServiceCollection services)
         {
-            services.AddScoped<IRestServiceProvider, RestServiceProvider>();
-            services.AddScoped<ILogoRestServiceProvider, LogoRestServiceProvider>();
-            services.AddScoped<ISqlProvider, SqlProvider>();
+            services.AddScoped<IDapperProvider, DapperProvider>();
             services.AddScoped<IEmailProvider, EmailProvider>();
+            services.AddScoped<ILogoRestServiceProvider, LogoRestServiceProvider>();
+            services.AddScoped<IRestServiceProvider, RestServiceProvider>();
+            services.AddScoped<ISqlProvider, SqlProvider>();
             services.AddScoped<IUnitOfWork<AppDbContext>, UnitOfWork<AppDbContext>>();
-            
 
 
 

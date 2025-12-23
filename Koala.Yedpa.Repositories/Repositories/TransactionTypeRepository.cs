@@ -69,3 +69,5 @@ public class TransactionTypeRepository(AppDbContext context) : ITransactionTypeR
             .ToListAsync();
     }
 }
+
+

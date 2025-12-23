@@ -22,3 +22,5 @@ public interface ITransactionItemRepository
     Task<bool> ExistsAsync(string id);
     Task<List<TransactionItem>> GetItemsByDateRangeAsync(DateTime startDate, DateTime endDate);
 }
+
+

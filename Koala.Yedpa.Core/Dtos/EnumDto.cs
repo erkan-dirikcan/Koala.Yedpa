@@ -87,4 +87,10 @@
         Detail = 0x08, //Detayda Göster
     }
 
+    public enum BuggetTypeEnum
+    {
+        Budget=0x01,
+        ExtraBudget= 0x02
+    }
+
 }

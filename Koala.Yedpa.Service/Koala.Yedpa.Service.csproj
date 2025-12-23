@@ -8,8 +8,6 @@
 
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.66" />
-    <PackageReference Include="EFCore.BulkExtensions" Version="9.0.2" />
-    <PackageReference Include="EFCore.BulkExtensions.SqlServer" Version="9.0.2" />
     <PackageReference Include="Hangfire" Version="1.8.22" />
     <PackageReference Include="Hangfire.AspNetCore" Version="1.8.22" />
     <PackageReference Include="Hangfire.Core" Version="1.8.22" />
@@ -18,6 +16,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.1" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.7" />
     <PackageReference Include="Microsoft.OpenApi" Version="1.6.28" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.6" />
     <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="9.0.6" />
   </ItemGroup>

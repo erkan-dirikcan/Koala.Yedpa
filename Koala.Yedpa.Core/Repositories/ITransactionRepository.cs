@@ -26,3 +26,5 @@ public interface ITransactionRepository
     Task<int> CountAsync();
     Task<List<Transaction>> GetTransactionsByDateRangeAsync(DateTime startDate, DateTime endDate);
 }
+
+

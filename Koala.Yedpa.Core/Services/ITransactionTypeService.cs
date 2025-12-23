@@ -17,3 +17,5 @@ public interface ITransactionTypeService
     Task<ResponseDto<TransactionTypeViewModel>> GetByNameAsync(string name);
     Task<ResponseDto<List<TransactionTypeViewModel>>> GetByStatusAsync(StatusEnum status);
 }
+
+

@@ -56,3 +56,5 @@ public class TransactionDetailViewModel : TransactionListViewModel
 {
     // Additional details can be added here
 }
+
+

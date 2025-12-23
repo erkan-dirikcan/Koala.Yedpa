@@ -9,6 +9,7 @@ namespace Koala.Yedpa.Repositories;
 public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbContext<AppUser, AppRole, string>(options)
 {
     public DbSet<Claims> Claims { get; set; }
+    public DbSet<DuesStatistic> DuesStatistics { get; set; }
     public DbSet<EmailTemplate> EmailTemplate { get; set; }
     public DbSet<ExtendedProperties> ExtendedProperties { get; set; }
     public DbSet<ExtendedPropertyRecordValues> ExtendedPropertyRecordValues { get; set; }
@@ -20,7 +21,6 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
     public DbSet<Transaction> Transaction { get; set; }
     public DbSet<TransactionItem> TransactionItem { get; set; }
     public DbSet<TransactionType> TransactionType { get; set; }
-    //public DbSet<>  { get; set; }
     //public DbSet<>  { get; set; }
     //public DbSet<>  { get; set; }
     //public DbSet<>  { get; set; }

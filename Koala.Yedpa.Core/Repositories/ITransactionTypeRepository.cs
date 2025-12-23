@@ -20,3 +20,5 @@ public interface ITransactionTypeRepository
     Task<TransactionType?> GetByNameAsync(string name);
     Task<List<TransactionType>> GetByStatusAsync(StatusEnum status);
 }
+
+
