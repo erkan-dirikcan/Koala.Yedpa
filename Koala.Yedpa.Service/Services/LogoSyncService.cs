@@ -77,6 +77,9 @@ namespace Service.Services
                         xt.*,
                         clc.CODE AS CLIENTCODE,
                         clc.DEFINITION_ AS CLIENTNAME,
+                        clc.ACTIVE AS ACTIVE,
+						clc.SPECODE AS SPECODE,
+						clc.PARENTCLREF AS PARENTCLREF,
                         grp.CODE AS GROUPCODE,
                         grp.DEFINITION_ AS GROUPNAME
                     FROM LG_XT001_211 xt
@@ -183,6 +186,9 @@ namespace Service.Services
                                 existing.TotalBrutCoefficientMetre = entity.TotalBrutCoefficientMetre;
                                 existing.TotalNetMetre = entity.TotalNetMetre;
                                 existing.TotalFuelMetre = entity.TotalFuelMetre;
+                                existing.Active = entity.Active;
+                                existing.ParentClRef = entity.ParentClRef;
+                                existing.SpeCode = entity.SpeCode;
                             }
                         }
                         await _context.SaveChangesAsync();
@@ -286,7 +292,14 @@ namespace Service.Services
                     FuelPassageCoefficient2 = GetValueOrDefault<double?>(row["FUELPASSAGECOEFFICIENT2"]),
                     TotalBrutCoefficientMetre = GetValueOrDefault<double?>(row["TOTALBRUTCOEFFICIENTMETRE"]),
                     TotalNetMetre = GetValueOrDefault<double?>(row["TOTALNETMETRE"]),
-                    TotalFuelMetre = GetValueOrDefault<double?>(row["TOTALFUELMETRE"])
+                    Active = GetValueOrDefault<int?>(row["ACTIVE"]),
+                    ParentClRef =   GetValueOrDefault<int?>(row["PARENTCLREF"]),
+                    SpeCode =   GetValueOrDefault<string?>(row["SPECODE"]),
+                    TotalFuelMetre = GetValueOrDefault<double?>(row["TOTALFUELMETRE"]
+                    
+                    
+                    
+                    )
                 });
             }
             return list;

@@ -8,6 +8,7 @@ namespace Koala.Yedpa.Repositories;
 
 public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbContext<AppUser, AppRole, string>(options)
 {
+    public DbSet<BudgetRatio> BudgetRatio { get; set; }
     public DbSet<Claims> Claims { get; set; }
     public DbSet<DuesStatistic> DuesStatistics { get; set; }
     public DbSet<EmailTemplate> EmailTemplate { get; set; }

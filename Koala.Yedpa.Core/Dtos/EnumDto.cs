@@ -18,6 +18,24 @@
         Highest = 0x05
     }
 
+    [Flags]
+    public enum BuggetRatioMounthEnum
+    {
+        None=0x0000,
+        January = 0x0001,
+        February = 0x0002,
+        March = 0x0004,
+        April = 0x0008,
+        May = 0x0010,
+        June = 0x0020,
+        July = 0x0040,
+        August = 0x0080,
+        September = 0x0100,
+        October = 0x0200,
+        November = 0x0400,
+        December = 0x0800
+    }
+
     public enum InputTypeEnum
     {
         Text = 0x01,

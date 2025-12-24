@@ -4,6 +4,60 @@
         <name>Koala.Yedpa.WebUI</name>
     </assembly>
     <members>
+        <member name="T:Koala.Yedpa.WebUI.Controllers.BudgetRatioApiController">
+            <summary>
+            BudgetRatio API Controller
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.BudgetRatioApiController.GetById(System.String)">
+            <summary>
+            Get BudgetRatio by ID
+            </summary>
+            <param name="id">BudgetRatio ID</param>
+            <returns>BudgetRatio Detail</returns>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.BudgetRatioApiController.GetAll">
+            <summary>
+            Get all BudgetRatios
+            </summary>
+            <returns>List of BudgetRatios</returns>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.BudgetRatioApiController.GetByYear(System.String)">
+            <summary>
+            Get BudgetRatios by Year
+            </summary>
+            <param name="year">Year</param>
+            <returns>List of BudgetRatios for the year</returns>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.BudgetRatioApiController.Create(Koala.Yedpa.Core.Models.ViewModels.CreateBudgetRatioViewModel)">
+            <summary>
+            Create new BudgetRatio
+            </summary>
+            <param name="model">CreateBudgetRatioViewModel</param>
+            <returns>Created BudgetRatio</returns>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.BudgetRatioApiController.Update(Koala.Yedpa.Core.Models.ViewModels.UpdateBudgetRatioViewModel)">
+            <summary>
+            Update BudgetRatio
+            </summary>
+            <param name="model">UpdateBudgetRatioViewModel</param>
+            <returns>Update result</returns>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.BudgetRatioApiController.Delete(System.String)">
+            <summary>
+            Delete BudgetRatio
+            </summary>
+            <param name="id">BudgetRatio ID</param>
+            <returns>Delete result</returns>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.BudgetRatioApiController.CheckExists(System.String,System.String)">
+            <summary>
+            Check if BudgetRatio exists
+            </summary>
+            <param name="code">Code</param>
+            <param name="year">Year</param>
+            <returns>Exists result</returns>
+        </member>
         <member name="M:Koala.Yedpa.WebUI.Controllers.LogoClCardApiController.ClCardInfoAll(System.Int32,System.Int32)">
             <summary>
             Tüm dükkan cari bilgilerini sayfalı getirir

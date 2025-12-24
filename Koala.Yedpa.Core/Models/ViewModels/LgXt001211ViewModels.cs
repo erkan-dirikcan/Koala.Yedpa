@@ -1,4 +1,4 @@
-﻿using Koala.Yedpa.Core.Helpers;
+using Koala.Yedpa.Core.Helpers;
 
 namespace Koala.Yedpa.Core.Models.ViewModels
 {
@@ -62,6 +62,21 @@ namespace Koala.Yedpa.Core.Models.ViewModels
         /// Yakıt Metre Kare
         /// </summary>
         public double? TotalFuelMetre { get; set; }
+
+        /// <summary>
+        /// Parent Cari Referans
+        /// </summary>
+        public int? ParentClRef { get; set; }
+
+        /// <summary>
+        /// Özel Kod
+        /// </summary>
+        public string? SpeCode { get; set; }
+
+        /// <summary>
+        /// Aktif Durum
+        /// </summary>
+        public int? Active { get; set; }
     }
 
     
@@ -277,5 +292,20 @@ namespace Koala.Yedpa.Core.Models.ViewModels
         /// Yakıt Metrekare
         /// </summary>
         public double? TotalFuelMetre { get; set; }
+
+        /// <summary>
+        /// Parent Cari Referans
+        /// </summary>
+        public int? ParentClRef { get; set; }
+
+        /// <summary>
+        /// Özel Kod
+        /// </summary>
+        public string? SpeCode { get; set; }
+
+        /// <summary>
+        /// Aktif Durum
+        /// </summary>
+        public int? Actibe { get; set; }
     }
 }

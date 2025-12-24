@@ -9,6 +9,7 @@ public static class MappingExtention
     {
         services.AddAutoMapper(cfg =>
         {
+            cfg.AddProfile<BudgetRatioProfile>();
             cfg.AddProfile<ClaimsProfile>();
             cfg.AddProfile<DuesStatisticProfile>();
             cfg.AddProfile<ExtendedPropertiesProfile>();

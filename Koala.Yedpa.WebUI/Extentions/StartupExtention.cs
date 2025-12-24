@@ -76,6 +76,7 @@ namespace Koala.Yedpa.WebUI.Extentions
 
         public static void AddApplicationRepositories(this IServiceCollection services)
         {
+            services.AddScoped<IBudgetRatioRepository, BudgetRatioRepository>();
             services.AddScoped<IAppRoleRepository, AppRoleRepository>();
             services.AddScoped<IAppUserRepository, AppUserRepository>();
             services.AddScoped<IClaimsRepository, ClaimsRepository>();
@@ -99,6 +100,7 @@ namespace Koala.Yedpa.WebUI.Extentions
         }
         public static void AddApplicationServices(this IServiceCollection services)
         {
+            services.AddScoped<IBudgetRatioService, BudgetRatioService>();
             services.AddScoped<IApiLogoSqlDataService, ApiLogoSqlDataService>();
             services.AddScoped<IAppUserService, AppUserService>();
             services.AddScoped<IBackgroundServices, BackgroundServices>();

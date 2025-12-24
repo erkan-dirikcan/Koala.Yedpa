@@ -1,4 +1,4 @@
-﻿using Koala.Yedpa.Core.Helpers;
+using Koala.Yedpa.Core.Helpers;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -209,5 +209,14 @@ namespace Koala.Yedpa.Core.Models
 
         [Column("TOTALFUELMETRE", TypeName = "float")]
         public double? TotalFuelMetre { get; set; }
+
+        [Column("PARENTCLREF")]
+        public int? ParentClRef { get; set; }
+
+        [Column("SPECODE")]
+        public string? SpeCode { get; set; }
+
+        [Column("ACTIVE")]
+        public int? Active { get; set; }
     }
 }

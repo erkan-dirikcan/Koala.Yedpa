@@ -23,6 +23,9 @@ namespace Koala.Yedpa.Service.Mapping
                 .ForMember(dest => dest.TotalBrutCoefficientMetre, opt => opt.MapFrom(src => src.TotalBrutCoefficientMetre))
                 .ForMember(dest => dest.TotalNetMetre, opt => opt.MapFrom(src => src.TotalNetMetre))
                 .ForMember(dest => dest.TotalFuelMetre, opt => opt.MapFrom(src => src.TotalFuelMetre))
+                .ForMember(dest => dest.ParentClRef, opt => opt.MapFrom(src => src.ParentClRef))
+                .ForMember(dest => dest.SpeCode, opt => opt.MapFrom(src => src.SpeCode))
+                .ForMember(dest => dest.Active, opt => opt.MapFrom(src => src.Active))
                 .ReverseMap();
 
             // LgXt001211 -> LgXt001211UpdateViewModel
@@ -78,10 +81,14 @@ namespace Koala.Yedpa.Service.Mapping
                 .ForMember(dest => dest.TotalBrutCoefficientMetre, opt => opt.MapFrom(src => src.TotalBrutCoefficientMetre))
                 .ForMember(dest => dest.TotalNetMetre, opt => opt.MapFrom(src => src.TotalNetMetre))
                 .ForMember(dest => dest.TotalFuelMetre, opt => opt.MapFrom(src => src.TotalFuelMetre))
+                .ForMember(dest => dest.ParentClRef, opt => opt.MapFrom(src => src.ParentClRef))
+                .ForMember(dest => dest.SpeCode, opt => opt.MapFrom(src => src.SpeCode))
+                .ForMember(dest => dest.Actibe, opt => opt.MapFrom(src => src.Active))
                 .ReverseMap();
         }
     }
 }
+
 
 
 
