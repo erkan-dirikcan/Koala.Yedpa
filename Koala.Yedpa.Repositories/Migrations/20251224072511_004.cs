@@ -1,4 +1,3 @@
-﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -11,32 +10,15 @@ namespace Koala.Yedpa.Repositories.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<int>(
-                name: "ACTIVE",
-                table: "LG_XT001_211",
-                type: "int",
-                nullable: true);
-
-            migrationBuilder.AddColumn<int>(
-                name: "PARENTCLREF",
-                table: "LG_XT001_211",
-                type: "int",
-                nullable: true);
-
-            migrationBuilder.AddColumn<string>(
-                name: "SPECODE",
-                table: "LG_XT001_211",
-                type: "nvarchar(max)",
-                nullable: true);
-
+            // Create BudgetRatio table
             migrationBuilder.CreateTable(
                 name: "BudgetRatio",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Code = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
-                    Year = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    Year = table.Column<int>(type: "int", nullable: false),
                     Ratio = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     TotalBugget = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     BuggetRatioMounths = table.Column<int>(type: "int", nullable: false),
@@ -58,27 +40,40 @@ namespace Koala.Yedpa.Repositories.Migrations
                 column: "BuggetType");
 
             migrationBuilder.CreateIndex(
+                name: "IX_BudgetRatio_Year",
+                table: "BudgetRatio",
+                column: "Year");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_BudgetRatio_Code_Year",
                 table: "BudgetRatio",
                 columns: new[] { "Code", "Year" },
                 unique: true);
 
-            migrationBuilder.CreateIndex(
-                name: "IX_BudgetRatio_Year",
-                table: "BudgetRatio",
-                column: "Year");
+            // Add columns to LgXt001211
+            migrationBuilder.AddColumn<int>(
+                name: "PARENTCLREF",
+                table: "LG_XT001_211",
+                type: "int",
+                nullable: true);
+
+            migrationBuilder.AddColumn<string>(
+                name: "SPECODE",
+                table: "LG_XT001_211",
+                type: "nvarchar(max)",
+                nullable: true);
+
+            migrationBuilder.AddColumn<int>(
+                name: "ACTIVE",
+                table: "LG_XT001_211",
+                type: "int",
+                nullable: true);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "BudgetRatio");
-
-            migrationBuilder.DropColumn(
-                name: "ACTIVE",
-                table: "LG_XT001_211");
-
+            // Drop LgXt001211 columns
             migrationBuilder.DropColumn(
                 name: "PARENTCLREF",
                 table: "LG_XT001_211");
@@ -86,6 +81,14 @@ namespace Koala.Yedpa.Repositories.Migrations
             migrationBuilder.DropColumn(
                 name: "SPECODE",
                 table: "LG_XT001_211");
+
+            migrationBuilder.DropColumn(
+                name: "ACTIVE",
+                table: "LG_XT001_211");
+
+            // Drop BudgetRatio table
+            migrationBuilder.DropTable(
+                name: "BudgetRatio");
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using Koala.Yedpa.Core.Dtos;
-using Koala.Yedpa.Core.Models.ViewModels.YourNamespace.ViewModels;
+using Koala.Yedpa.Core.Models.ViewModels;
 using Koala.Yedpa.Core.Services;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -10,6 +10,7 @@ namespace Koala.Yedpa.WebUI.Controllers
     [ApiController]
     [Produces("application/json")]
     [SwaggerTag("Logo Cari & Dükkan Bilgileri API")]
+
     public class LogoClCardApiController : ControllerBase
     {
         private readonly IApiLogoSqlDataService _service;
@@ -19,6 +20,7 @@ namespace Koala.Yedpa.WebUI.Controllers
             _service = service;
         }
         [HttpGet()]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public IActionResult Test1()
         {
             return Ok();
@@ -66,6 +68,7 @@ namespace Koala.Yedpa.WebUI.Controllers
 
 
         [HttpGet("test")]
+        [ApiExplorerSettings(IgnoreApi = true)]
         [SwaggerOperation(Summary = "API erişim testi - token geçerli mi?")]
         public IActionResult Test()
         {

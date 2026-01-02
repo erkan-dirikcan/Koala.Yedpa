@@ -29,7 +29,7 @@ public class BudgetRatioRepository : IBudgetRatioRepository
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<BudgetRatio>> GetByYearAsync(string year)
+    public async Task<IEnumerable<BudgetRatio>> GetByYearAsync(int year)
     {
         return await _dbSet
             .Where(b => b.Year == year)
@@ -89,10 +89,14 @@ public class BudgetRatioRepository : IBudgetRatioRepository
         _dbSet.Remove(budgetRatio);
     }
 
-    public async Task<bool> ExistsAsync(string code, string year)
+    public async Task<bool> ExistsAsync(string code, int year)
     {
         return await _dbSet
             .AnyAsync(b => b.Code == code && b.Year == year);
     }
 }
+
+
+
+
 

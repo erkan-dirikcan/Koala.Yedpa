@@ -109,6 +109,7 @@ namespace Koala.Yedpa.WebUI.Extentions
             services.AddScoped<ICurrentUserService, CurrentUserService>();
             services.AddScoped<IDuesStatisticService, DuesStatisticService>();
             services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<Microsoft.AspNetCore.Identity.UI.Services.IEmailSender, EmailSenderAdapter>();
             services.AddScoped<IEmailTemplateService, EmailTemplateService>();
             services.AddScoped<IExtendedPropertiesService, ExtendedPropertiesService>();
             services.AddScoped<ILicenseReader, LicenseReader>();

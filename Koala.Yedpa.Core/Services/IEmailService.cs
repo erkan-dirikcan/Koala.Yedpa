@@ -6,5 +6,6 @@ namespace Koala.Yedpa.Core.Services
     {
         Task<bool> SendResetPasswordEmailAsync(ResetPasswordEmailDto model);
         Task<bool> SendChangePasswordEmailAsync(CustomEmailDto model);
+        Task<bool> SendCustomMail(CustomEmailDto model);
     }
 }

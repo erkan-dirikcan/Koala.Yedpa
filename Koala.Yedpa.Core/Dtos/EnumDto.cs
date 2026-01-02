@@ -35,7 +35,14 @@
         November = 0x0400,
         December = 0x0800
     }
-
+    public enum TransferStatusEnum
+    {
+        Pending = 0x01,
+        Completed = 0x02,
+        Failed = 0x03,
+        Canceled = 0x04,
+        FromLogo= 0x10,
+    }
     public enum InputTypeEnum
     {
         Text = 0x01,

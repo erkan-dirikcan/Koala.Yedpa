@@ -1,11 +1,11 @@
 ﻿using Koala.Yedpa.Core.Dtos;
 using Koala.Yedpa.Core.Extensions;
 using Koala.Yedpa.Core.Models.ViewModels;
-using Koala.Yedpa.Core.Models.ViewModels.YourNamespace.ViewModels;
 using Koala.Yedpa.Core.Providers;
 using Koala.Yedpa.Core.Services;
 using Koala.Yedpa.Repositories;
 using Microsoft.Extensions.Logging;
+using System.Data;
 
 namespace Koala.Yedpa.Service.Services
 {
@@ -19,7 +19,7 @@ namespace Koala.Yedpa.Service.Services
         public LogoSqlSettingViewModel LogoSqlSetting { get; set; }
 
 
-        public ApiLogoSqlDataService( ILogger<ApiLogoSqlDataService> logger, ISqlProvider sqlProvider, AppDbContext context, ISettingsService settingsService)
+        public ApiLogoSqlDataService(ILogger<ApiLogoSqlDataService> logger, ISqlProvider sqlProvider, AppDbContext context, ISettingsService settingsService)
         {
             _logger = logger;
             _sqlProvider = sqlProvider;
@@ -185,6 +185,262 @@ namespace Koala.Yedpa.Service.Services
                 RecordsFiltered: recordsFiltered,
                 RecordsShow: list.Count
             );
+        }
+
+        public async Task<ResponseDto<List<StatementSummeryViewModel>>> GetClsStatementsSummertAsync()
+        {
+            try
+            {
+                var query = $@"
+                                WITH LastSales AS (
+                                    SELECT 
+                                        CLIENTREF,
+                                        MAX(DATE_) AS LASTSALEDATE
+                                    FROM LG_{LogoSetting.Firm}_{LogoSetting.Period}_STLINE 
+                                    WHERE TRCODE IN (7, 8)
+                                    GROUP BY CLIENTREF
+                                ),
+                                LastPayments AS (
+                                    SELECT 
+                                        CLIENTREF,
+                                        MAX(DATE_) AS LASTPAYMENTDATE
+                                    FROM LG_{LogoSetting.Firm}_{LogoSetting.Period}_CLFLINE 
+                                    WHERE TRCODE IN (1)
+                                    GROUP BY CLIENTREF
+                                )
+                                SELECT 
+                                    CLC.LOGICALREF AS LogicalRef,
+                                    CLC.CODE AS ClCode,
+                                    CLC.DEFINITION_ AS ClDefinition,   
+                                    ls.LASTSALEDATE AS LastInvoiceDate,
+                                    lp.LASTPAYMENTDATE AS LastPayDate,
+                                    CONVERT(DECIMAL(38, 2), SUM(GNCLTOT.DEBIT) - SUM(GNCLTOT.CREDIT)) AS Balance
+                                FROM LV_{LogoSetting.Firm}_{LogoSetting.Period}_GNTOTCL GNCLTOT WITH(NOLOCK)
+                                INNER JOIN dbo.LG_{LogoSetting.Firm}_CLCARD CLC WITH(NOLOCK)
+                                    ON CLC.LOGICALREF = GNCLTOT.CARDREF
+                                LEFT JOIN LastSales ls
+                                    ON ls.CLIENTREF = CLC.LOGICALREF
+                                LEFT JOIN LastPayments lp
+                                    ON lp.CLIENTREF = CLC.LOGICALREF
+                                WHERE GNCLTOT.TOTTYP = 1
+                                  AND CLC.CODE IS NOT NULL
+                                  AND CLC.ACTIVE=0
+                                  AND CLC.CODE LIKE '1.%'
+                                  AND CLC.CODE NOT LIKE '%KD%'
+                                  AND ISNULL(CLC.SPECODE, '') NOT LIKE 'KIRMIZI%'
+                                  AND ISNULL(CLC.SPECODE, '') NOT LIKE 'YEŞİL%'
+                                  AND PARENTCLREF IN (
+                                    SELECT LOGICALREF 
+                                    FROM dbo.LG_{LogoSetting.Firm}_CLCARD 
+                                    WHERE CARDTYPE = 4 
+                                    AND ACTIVE = 0
+                                  )
+                                GROUP BY 
+                                    CLC.LOGICALREF,
+                                    CLC.CODE,
+                                    CLC.DEFINITION_,
+                                    ls.LASTSALEDATE,
+                                    lp.LASTPAYMENTDATE
+                                ORDER BY Balance DESC";
+
+                var result = _sqlProvider.SqlReader(query);
+                if (!result.IsSuccess)
+                {
+                    _logger.LogError("GetClsStatementsSummertAsync - Sorgu hatası: {Message}", result.Message);
+                    return ResponseDto<List<StatementSummeryViewModel>>.FailData(500, "Veri çekilemedi", result.Message, true);
+                }
+
+                var list = result.Data.AsList<StatementSummeryViewModel>();
+
+                return ResponseDto<List<StatementSummeryViewModel>>.SuccessData(
+                    200, "Cari hesap özet bilgileri başarıyla getirildi", list);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GetClsStatementsSummertAsync - Beklenmeyen hata");
+                return ResponseDto<List<StatementSummeryViewModel>>.FailData(500, "Beklenmeyen bir hata oluştu", ex.Message, true);
+            }
+        }
+
+        public async Task<ResponseDto<List<ClCardStatementViewModel>>> GetClCardStatementAsync(string clCode)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(clCode))
+                {
+                    return ResponseDto<List<ClCardStatementViewModel>>.FailData(400, "Cari kodu boş olamaz", "clCode parametresi gereklidir", true);
+                }
+
+                var query = $@"
+                                WITH FilteredTransactions AS (
+                                    SELECT 
+                                        CTRNS.*,
+                                        CLNTC.LOGICALREF AS CL_LOGICALREF,
+                                        CLNTC.CODE AS CODE,
+                                        CLNTC.DEFINITION_ AS DEFINITION_,
+                                        CLFIC.CANCELLED AS CLFIC_CANCELLED,
+                                        INVFC.CANCELLED AS INVFC_CANCELLED,
+                                        RLFIC.CANCELLED AS RLFIC_CANCELLED,
+                                        ORFIC.CANCELLED AS ORFIC_CANCELLED,
+                                        CASE 
+                                            WHEN CTRNS.TRCODE = 14 AND CTRNS.MODULENR = 5 THEN 0 
+                                            ELSE 1 
+                                        END AS SORT_PRIORITY,
+                                        CASE 
+                                            WHEN CTRNS.MODULENR = 5 THEN CLFIC.TIME 
+                                            WHEN CTRNS.MODULENR = 4 THEN INVFC.TIME_ 
+                                            ELSE CTRNS.FTIME 
+                                        END AS SORT_TIME,
+                                        -- Satır bazında bakiye (cari hareket tutarı)
+                                        CASE SIGN 
+                                            WHEN 0 THEN ROUND(AMOUNT, 2) 
+                                            ELSE ROUND(-1 * AMOUNT, 2) 
+                                        END AS ROW_BALANCE
+                                    FROM LG_{LogoSetting.Firm}_{LogoSetting.Period}_CLFLINE CTRNS WITH (NOLOCK)
+                                    LEFT JOIN LG_{LogoSetting.Firm}_CLCARD CLNTC WITH (NOLOCK)
+                                        ON CTRNS.CLIENTREF = CLNTC.LOGICALREF
+                                    LEFT JOIN LG_{LogoSetting.Firm}_{LogoSetting.Period}_CLFICHE CLFIC WITH (NOLOCK)
+                                        ON CTRNS.SOURCEFREF = CLFIC.LOGICALREF
+                                    LEFT JOIN LG_{LogoSetting.Firm}_{LogoSetting.Period}_INVOICE INVFC WITH (NOLOCK)
+                                        ON CTRNS.MODULENR = 4 AND CTRNS.SOURCEFREF = INVFC.LOGICALREF
+                                    LEFT JOIN LG_{LogoSetting.Firm}_{LogoSetting.Period}_CSROLL RLFIC WITH (NOLOCK)
+                                        ON CTRNS.SOURCEFREF = RLFIC.LOGICALREF
+                                    LEFT JOIN LG_{LogoSetting.Firm}_{LogoSetting.Period}_ORFICHE ORFIC WITH (NOLOCK)
+                                        ON CTRNS.SOURCEFREF = ORFIC.LOGICALREF
+                                    WHERE CTRNS.BRANCH IN (0)
+                                        AND CTRNS.DEPARTMENT IN (0)
+                                        AND CTRNS.TRCODE IN (
+                                            31, 32, 33, 34, 36, 37, 38, 39, 43, 44, 56, 
+                                            1, 2, 3, 4, 5, 6, 12, 14, 41, 42, 45, 46, 70, 
+                                            71, 72, 73, 20, 21, 24, 25, 28, 29, 30, 61, 62, 63, 64, 75
+                                        )
+                                        AND (CLFIC.CANCELLED = 0 OR CLFIC.CANCELLED IS NULL)
+                                        AND (INVFC.CANCELLED = 0 OR INVFC.CANCELLED IS NULL)
+                                        AND (RLFIC.CANCELLED = 0 OR RLFIC.CANCELLED IS NULL)
+                                        AND (ORFIC.CANCELLED = 0 OR ORFIC.CANCELLED IS NULL)
+                                        AND CLNTC.CODE = '{clCode.Replace("'", "''")}'
+                                ),
+                                NumberedTransactions AS (
+                                    SELECT 
+                                        *,
+                                        ROW_NUMBER() OVER (
+                                            ORDER BY DATE_, SORT_PRIORITY, SORT_TIME, LOGICALREF, FTIME
+                                        ) AS NR
+                                    FROM FilteredTransactions
+                                )
+                                SELECT 
+                                    NT.NR,
+                                    NT.CL_LOGICALREF AS LogicalRef,
+                                    NT.CODE AS ClCode,
+                                    NT.DEFINITION_ AS ClDefinition,
+                                    NT.DATE_ AS ReceiptDate,
+                                    NT.TRANNO AS ReceiptNo,
+                                    ((NT.MODULENR * 100) + NT.TRCODE) AS ReceiptTypeNo,
+                                    CASE ((NT.MODULENR * 100) + NT.TRCODE)
+                                        WHEN 381 THEN 'Satış Siparişi'
+                                        WHEN 382 THEN 'Satınalma Siparişi'
+                                        WHEN 431 THEN 'Satın Alma Faturası'
+                                        WHEN 432 THEN 'Perakende Satış İade Faturası'
+                                        WHEN 433 THEN 'Toptan Satış İade Faturası'
+                                        WHEN 434 THEN 'Alınan Hizmet Faturası'
+                                        WHEN 435 THEN 'Alınan Proforma Faturası'
+                                        WHEN 436 THEN 'Alım İade Faturası'
+                                        WHEN 437 THEN 'Perakende Satış Faturası'
+                                        WHEN 438 THEN 'Toptan Satış Faturası'
+                                        WHEN 439 THEN 'Verilen Hizmet Faturası'
+                                        WHEN 440 THEN 'Verilen Proforma Faturası'
+                                        WHEN 441 THEN 'Verilen Vade Farkı Faturası'
+                                        WHEN 442 THEN 'Alınan Vade Farkı Faturası'
+                                        WHEN 443 THEN 'Alınan Fiyat Farkı Faturası'
+                                        WHEN 444 THEN 'Verilen Fiyat Farkı Faturası'
+                                        WHEN 456 THEN 'Müstahsil Makbuzu'
+                                        WHEN 501 THEN 'Nakit Tahsilat'
+                                        WHEN 502 THEN 'Nakit Ödeme'
+                                        WHEN 503 THEN 'Borç Dekontu'
+                                        WHEN 504 THEN 'Alacak Dekontu'
+                                        WHEN 505 THEN 'Virman İşlemi'
+                                        WHEN 506 THEN 'Kur Farkı İşlemi'
+                                        WHEN 512 THEN 'Özel İşlem'
+                                        WHEN 514 THEN 'Açılış Fişi'
+                                        WHEN 570 THEN 'Kredi Kartı Fişi'
+                                        WHEN 661 THEN 'Çek Girişi'
+                                        WHEN 662 THEN 'Senet Girişi'
+                                        WHEN 663 THEN 'Çek Çıkış Cari Hesaba'
+                                        WHEN 664 THEN 'Senet Çıkış Cari Hesaba'
+                                        WHEN 720 THEN 'Gelen Havaleler'
+                                        WHEN 721 THEN 'Gönderilen Havaleler'
+                                        WHEN 728 THEN 'Banka Alınan Hizmet'
+                                        WHEN 729 THEN 'Banka Verilen Hizmet'
+                                        WHEN 1001 THEN 'Nakit Tahsilat'
+                                        WHEN 1002 THEN 'Nakit Ödeme'
+                                        WHEN 6103 THEN 'Borç Dekontu (Çek)'
+                                        WHEN 6104 THEN 'Alacak Dekontu (Çek)'
+                                    END AS ReceiptType,
+                                    NT.DOCODE AS DOCODE,
+                                    NT.LINEEXP AS LineExp,
+                                    CASE NT.SIGN WHEN 0 THEN ROUND(NT.AMOUNT, 2) ELSE 0 END AS Debit,
+                                    CASE NT.SIGN WHEN 1 THEN ROUND(-1 * NT.AMOUNT, 2) ELSE 0 END AS Credit,
+                                    -- Satır bazında bakiye
+                                    NT.ROW_BALANCE AS RowBalance,
+                                    -- Kümülatif (toplam) bakiye
+                                    SUM(NT.ROW_BALANCE) OVER (
+                                        ORDER BY NT.DATE_, NT.SORT_PRIORITY, NT.SORT_TIME, NT.LOGICALREF, NT.FTIME
+                                        ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+                                    ) AS CumulativeBalance
+                                FROM NumberedTransactions NT
+                                ORDER BY NT.DATE_, NT.SORT_PRIORITY, NT.SORT_TIME, NT.LOGICALREF, NT.FTIME";
+
+                var result = _sqlProvider.SqlReader(query);
+                if (!result.IsSuccess)
+                {
+                    _logger.LogError("GetClCardStatementAsync - Sorgu hatası: {Message}", result.Message);
+                    return ResponseDto<List<ClCardStatementViewModel>>.FailData(500, "Veri çekilemedi", result.Message, true);
+                }
+
+                // Transform DataTable to grouped structure
+                if (result.Data == null || result.Data.Rows.Count == 0)
+                {
+                    return ResponseDto<List<ClCardStatementViewModel>>.SuccessData(
+                        200, "Cari hesap ekstresi bulunamadı", new List<ClCardStatementViewModel>());
+                }
+
+                // Group by client (should be single client since we filter by clCode)
+                var groupedData = result.Data.Rows.Cast<DataRow>()
+                    .GroupBy(row => new
+                    {
+                        LogicalRef = Convert.ToInt32(row["LogicalRef"]),
+                        ClCode = row["ClCode"]?.ToString() ?? string.Empty,
+                        ClDefinition = row["ClDefinition"]?.ToString() ?? string.Empty
+                    })
+                    .Select(g => new ClCardStatementViewModel
+                    {
+                        Logicalref = g.Key.LogicalRef,
+                        ClCode = g.Key.ClCode,
+                        ClDefinition = g.Key.ClDefinition,
+                        Receipts = g.Select(row => new ClCardStatementReceiptsViewModel
+                        {
+                            ReceiptDate = row["ReceiptDate"] != DBNull.Value ? Convert.ToDateTime(row["ReceiptDate"]) : DateTime.MinValue,
+                            ReceiptNo = row["ReceiptNo"]?.ToString() ?? string.Empty,
+                            ReceiptTypeNo = row["ReceiptTypeNo"] != DBNull.Value ? Convert.ToInt32(row["ReceiptTypeNo"]) : 0,
+                            ReceiptType = row["ReceiptType"]?.ToString() ?? string.Empty,
+                            DOCODE = row["DOCODE"]?.ToString() ?? string.Empty,
+                            LineExp = row["LineExp"]?.ToString() ?? string.Empty,
+                            Debit = row["Debit"] != DBNull.Value ? Convert.ToDecimal(row["Debit"]) : 0,
+                            Credit = row["Credit"] != DBNull.Value ? Convert.ToDecimal(row["Credit"]) : 0,
+                            RowBalance = row["RowBalance"] != DBNull.Value ? Convert.ToDecimal(row["RowBalance"]) : 0,
+                            CumulativeBalance = row["CumulativeBalance"] != DBNull.Value ? Convert.ToDecimal(row["CumulativeBalance"]) : 0
+                        }).ToList()
+                    })
+                    .ToList();
+
+                return ResponseDto<List<ClCardStatementViewModel>>.SuccessData(
+                    200, "Cari hesap ekstresi başarıyla getirildi", groupedData);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GetClCardStatementAsync - Beklenmeyen hata");
+                return ResponseDto<List<ClCardStatementViewModel>>.FailData(500, "Beklenmeyen bir hata oluştu", ex.Message, true);
+            }
         }
 
         private string BuildBaseClCardQuery()

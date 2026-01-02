@@ -4,6 +4,7 @@ using Koala.Yedpa.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Koala.Yedpa.Repositories.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251224072511_004")]
+    partial class _004
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -235,9 +238,6 @@ namespace Koala.Yedpa.Repositories.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("int");
 
-                    b.Property<string>("BuggetRatioId")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("ClientCode")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -311,9 +311,6 @@ namespace Koala.Yedpa.Repositories.Migrations
 
                     b.Property<decimal>("Total")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("TransferStatus")
-                        .HasColumnType("int");
 
                     b.Property<string>("Year")
                         .IsRequired()

@@ -305,7 +305,9 @@ public class DuesStatisticService : IDuesStatisticService
                         November = sourceItem.November,
                         December = sourceItem.December,
                         Total = sourceItem.Total,
-                        CreateTime = DateTime.UtcNow
+                        CreateTime = DateTime.UtcNow,
+                        BuggetRatioId = "",
+                        TransferStatus = TransferStatusEnum.FromLogo
                     });
                 }
             }

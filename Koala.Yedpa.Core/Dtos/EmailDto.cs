@@ -19,7 +19,7 @@
         public string Email { get; set; }
         public string ResetLink { get; set; }
     }
-    public class CustomEmailDto
+    public class CustomEmailDto:EmailDto
     {
         public CustomEmailDto()
         {
@@ -29,9 +29,9 @@
         {
             Name = name;
             Lastname = lastname;
-            Email = email;
+            //Email = email;
         }
-
+        
         public string? Name { get; set; }
         public string? Lastname { get; set; }
         public string Email { get; set; }

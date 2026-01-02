@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(sqlcmd:*)",
+      "Bash(git -C:*)"
+    ]
+  }
+}

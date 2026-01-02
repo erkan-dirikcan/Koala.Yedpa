@@ -9,12 +9,12 @@ using Koala.Yedpa.Core.Helpers;
 namespace Koala.Yedpa.Core.Models
 {
     [Table("DuesStatistics", Schema = "dbo")]
-    public class DuesStatistic:CommonProperties
+    public class DuesStatistic : CommonProperties
     {
         [Key]
-        
         public string Id { get; set; }
 
+        public string? BuggetRatioId { get; set; }
         [Required]
         [StringLength(50)]
         public string Code { get; set; } // KOD1 karşılığı
@@ -82,8 +82,9 @@ namespace Koala.Yedpa.Core.Models
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal Total { get; set; } // TOPLAM
+        public TransferStatusEnum TransferStatus { get; set; } // AKTARIM DURUMU
 
-       
+
 
         // Constructor
         public DuesStatistic()

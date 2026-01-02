@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Koala.Yedpa.Repositories.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251223144219_004")]
-    partial class _004
+    [Migration("20251224093742_005")]
+    partial class _005
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -183,10 +183,8 @@ namespace Koala.Yedpa.Repositories.Migrations
                     b.Property<decimal>("TotalBugget")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("Year")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -239,6 +237,9 @@ namespace Koala.Yedpa.Repositories.Migrations
                     b.Property<int>("BudgetType")
                         .HasMaxLength(20)
                         .HasColumnType("int");
+
+                    b.Property<string>("BuggetRatioId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ClientCode")
                         .IsRequired()
@@ -313,6 +314,9 @@ namespace Koala.Yedpa.Repositories.Migrations
 
                     b.Property<decimal>("Total")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("TransferStatus")
+                        .HasColumnType("int");
 
                     b.Property<string>("Year")
                         .IsRequired()
@@ -523,7 +527,7 @@ namespace Koala.Yedpa.Repositories.Migrations
                         .HasMaxLength(36)
                         .HasColumnType("nvarchar(36)");
 
-                    b.Property<int?>("Actibe")
+                    b.Property<int?>("Active")
                         .HasColumnType("int")
                         .HasColumnName("ACTIVE");
 

@@ -2,11 +2,12 @@ using Koala.Yedpa.Core.Dtos;
 using Koala.Yedpa.Core.Models.ViewModels;
 using Koala.Yedpa.Core.Services;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Koala.Yedpa.WebUI.Controllers;
 
 /// <summary>
-/// BudgetRatio API Controller
+/// Bütçe / Ek Bütçe Oranları
 /// </summary>
 [Route("api/[controller]")]
 [ApiController]
@@ -20,11 +21,16 @@ public class BudgetRatioApiController : ControllerBase
     }
 
     /// <summary>
-    /// Get BudgetRatio by ID
+    /// Id'ye göre Bütçe / Ek Bütçe'yi alın
     /// </summary>
-    /// <param name="id">BudgetRatio ID</param>
-    /// <returns>BudgetRatio Detail</returns>
+    /// <param name="id">Bütçe / Ek Bütçe Id</param>
+    /// <returns>Bütçe / Ek Bütçe Detayı</returns>
     [HttpGet("{id}")]
+    [SwaggerOperation(Summary = "Id'ye göre Bütçe / Ek Bütçe'yi alın")]
+    [SwaggerResponse(200, "Başarılı", typeof(ResponseListDto<List<ClCardInfoViewModel>>))]
+    [SwaggerResponse(400, "Geçersiz istek")]
+    [SwaggerResponse(401, "Yetkisiz erişim")]
+    [SwaggerResponse(500, "Sunucu hatası")]
     public async Task<IActionResult> GetById(string id)
     {
         var result = await _budgetRatioService.GetByIdAsync(id);
@@ -36,10 +42,15 @@ public class BudgetRatioApiController : ControllerBase
     }
 
     /// <summary>
-    /// Get all BudgetRatios
+    /// Tüm Bütçe / Ek Bütçe Kayıtları
     /// </summary>
-    /// <returns>List of BudgetRatios</returns>
+    /// <returns>Bütçe / Ek Bütçe Listesi</returns>
     [HttpGet]
+    [SwaggerOperation(Summary = "Tüm Bütçe / Ek Bütçe Kayıtları")]
+    [SwaggerResponse(200, "Başarılı", typeof(ResponseListDto<List<ClCardInfoViewModel>>))]
+    [SwaggerResponse(400, "Geçersiz istek")]
+    [SwaggerResponse(401, "Yetkisiz erişim")]
+    [SwaggerResponse(500, "Sunucu hatası")]
     public async Task<IActionResult> GetAll()
     {
         var result = await _budgetRatioService.GetAllAsync();
@@ -51,12 +62,17 @@ public class BudgetRatioApiController : ControllerBase
     }
 
     /// <summary>
-    /// Get BudgetRatios by Year
+    /// Yıla Göre Bütçe / Ek Bütçe Kayıtları
     /// </summary>
-    /// <param name="year">Year</param>
-    /// <returns>List of BudgetRatios for the year</returns>
+    /// <param name="year">Yıl</param>
+    /// <returns>Yıla Bütçe / Ek Bütçe Listesi</returns>
     [HttpGet("year/{year}")]
-    public async Task<IActionResult> GetByYear(string year)
+    [SwaggerOperation(Summary = "Yıla Göre Bütçe / Ek Bütçe Kayıtları")]
+    [SwaggerResponse(200, "Başarılı", typeof(ResponseListDto<List<ClCardInfoViewModel>>))]
+    [SwaggerResponse(400, "Geçersiz istek")]
+    [SwaggerResponse(401, "Yetkisiz erişim")]
+    [SwaggerResponse(500, "Sunucu hatası")]
+    public async Task<IActionResult> GetByYear(int year)
     {
         var result = await _budgetRatioService.GetByYearAsync(year);
         if (result.IsSuccess)
@@ -67,11 +83,16 @@ public class BudgetRatioApiController : ControllerBase
     }
 
     /// <summary>
-    /// Create new BudgetRatio
+    /// Yeni Bütçe / Ek Bütçe Ekle
     /// </summary>
     /// <param name="model">CreateBudgetRatioViewModel</param>
-    /// <returns>Created BudgetRatio</returns>
+    /// <returns>Bütçe / Ek Bütçe Oluşturma Sonucu</returns>
     [HttpPost]
+    [SwaggerOperation(Summary = "Yeni Bütçe / Ek Bütçe Ekle")]
+    [SwaggerResponse(200, "Başarılı", typeof(ResponseListDto<List<ClCardInfoViewModel>>))]
+    [SwaggerResponse(400, "Geçersiz istek")]
+    [SwaggerResponse(401, "Yetkisiz erişim")]
+    [SwaggerResponse(500, "Sunucu hatası")]
     public async Task<IActionResult> Create([FromBody] CreateBudgetRatioViewModel model)
     {
         if (!ModelState.IsValid)
@@ -88,11 +109,16 @@ public class BudgetRatioApiController : ControllerBase
     }
 
     /// <summary>
-    /// Update BudgetRatio
+    /// Bütçe / Ek Bütçe Güncelle
     /// </summary>
     /// <param name="model">UpdateBudgetRatioViewModel</param>
-    /// <returns>Update result</returns>
+    /// <returns>Bütçe / Ek Bütçe Güncelleme Sonucu</returns>
     [HttpPut]
+    [SwaggerOperation(Summary = "Bütçe / Ek Bütçe Güncelle")]
+    [SwaggerResponse(200, "Başarılı", typeof(ResponseListDto<List<ClCardInfoViewModel>>))]
+    [SwaggerResponse(400, "Geçersiz istek")]
+    [SwaggerResponse(401, "Yetkisiz erişim")]
+    [SwaggerResponse(500, "Sunucu hatası")]
     public async Task<IActionResult> Update([FromBody] UpdateBudgetRatioViewModel model)
     {
         if (!ModelState.IsValid)
@@ -109,11 +135,16 @@ public class BudgetRatioApiController : ControllerBase
     }
 
     /// <summary>
-    /// Delete BudgetRatio
+    /// Bütçe / Ek Bütçe Sil
     /// </summary>
     /// <param name="id">BudgetRatio ID</param>
-    /// <returns>Delete result</returns>
+    /// <returns>Bütçe / Ek Bütçe Silme Sonucu</returns>
     [HttpDelete("{id}")]
+    [ApiExplorerSettings(IgnoreApi = true)]
+    [SwaggerResponse(200, "Başarılı", typeof(ResponseListDto<List<ClCardInfoViewModel>>))]
+    [SwaggerResponse(400, "Geçersiz istek")]
+    [SwaggerResponse(401, "Yetkisiz erişim")]
+    [SwaggerResponse(500, "Sunucu hatası")]
     public async Task<IActionResult> Delete(string id)
     {
         var result = await _budgetRatioService.DeleteAsync(id);
@@ -125,13 +156,18 @@ public class BudgetRatioApiController : ControllerBase
     }
 
     /// <summary>
-    /// Check if BudgetRatio exists
+    /// Bütçe / Ek Bütçe Kayıt Var mı?
     /// </summary>
     /// <param name="code">Code</param>
     /// <param name="year">Year</param>
-    /// <returns>Exists result</returns>
+    /// <returns>Bütçe / Ek Bütçe Veri Tabanı Kontrol Sonucu</returns>
     [HttpGet("exists")]
-    public async Task<IActionResult> CheckExists([FromQuery] string code, [FromQuery] string year)
+    [SwaggerOperation(Summary = "Bütçe / Ek Bütçe Kayıt Var mı?")]
+    [SwaggerResponse(200, "Başarılı", typeof(ResponseListDto<List<ClCardInfoViewModel>>))]
+    [SwaggerResponse(400, "Geçersiz istek")]
+    [SwaggerResponse(401, "Yetkisiz erişim")]
+    [SwaggerResponse(500, "Sunucu hatası")]
+    public async Task<IActionResult> CheckExists([FromQuery] string code, [FromQuery] int year)
     {
         var result = await _budgetRatioService.CheckExistsAsync(code, year);
         if (result.IsSuccess)
@@ -141,4 +177,3 @@ public class BudgetRatioApiController : ControllerBase
         return StatusCode(result.StatusCode, result);
     }
 }
-

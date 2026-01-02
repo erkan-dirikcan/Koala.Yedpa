@@ -6,7 +6,6 @@ namespace Koala.Yedpa.WebUI
     {
        
         private static string Dashboard => "Dashboard";
-        private static string Site => "Site";
         private static string UserList => "UserList";
         private static string CreateUser => "CreateUser";
         private static string RoleList => "RoleList";
@@ -19,10 +18,16 @@ namespace Koala.Yedpa.WebUI
         private static string LogoRestServiceSettings => "LogoRestServiceSettings";
         private static string LogoSqlSettings => "LogoSqlSettings";
 
+
+
+        private static string BudgetRatioList => "BudgetRatioList";
+        private static string DivisionList => "DivisionList";
+
+
+
         //###############################################################################################################
 
 
-        public static string SiteNavClass(ViewContext viewContext) => PageMainNavClass(viewContext, Site);
         public static string DashboardNavClass(ViewContext viewContext) => PageMainNavClass(viewContext, Dashboard);
         public static string UserListNavClass(ViewContext viewContext) => PageMainNavClass(viewContext, UserList);
         public static string RoleListNavClass(ViewContext viewContext) => PageMainNavClass(viewContext, RoleList);
@@ -36,11 +41,20 @@ namespace Koala.Yedpa.WebUI
         public static string LogoSqlSettingsNavClass(ViewContext viewContext) => PageMainNavClass(viewContext, LogoSqlSettings);
         public static string LogoRestServiceSettingsNavClass(ViewContext viewContext) => PageMainNavClass(viewContext, LogoRestServiceSettings);
 
+
+
+
+        public static string BudgetRatioListNavClass(ViewContext viewContext) => PageMainNavClass(viewContext, BudgetRatioList);
+        public static string DivisionListNavClass(ViewContext viewContext) => PageMainNavClass(viewContext, DivisionList);
+
+
+
         //===============================================================================================================
 
         private static string User => "User";
         private static string Module => "Module";
         private static string Settings => "Settings";
+        private static string Site => "Site";
 
 
 
@@ -49,6 +63,7 @@ namespace Koala.Yedpa.WebUI
         public static string UserNavClass(ViewContext viewContext) => PageMainToogleNavClass(viewContext, User);
         public static string ModuleNavClass(ViewContext viewContext) => PageMainToogleNavClass(viewContext, Module);
         public static string SettingsNavClass(ViewContext viewContext) => PageMainToogleNavClass(viewContext, Settings);
+        public static string SiteNavClass(ViewContext viewContext) => PageMainToogleNavClass(viewContext, Site);
 
 
         private static string PageMainNavClass(ViewContext viewContext, string page)

@@ -60,8 +60,10 @@ namespace Koala.Yedpa.WebUI
 
                 });
                 var filePath = Path.Combine(AppContext.BaseDirectory, "YedpaApi.xml");
+                var filePathCore = Path.Combine(AppContext.BaseDirectory, "YedpaApiCore.xml");
 
                 c.IncludeXmlComments(filePath);
+                c.IncludeXmlComments(filePathCore);
             });
 
 

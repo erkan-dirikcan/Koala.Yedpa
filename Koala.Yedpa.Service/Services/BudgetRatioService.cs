@@ -103,7 +103,7 @@ public class BudgetRatioService : IBudgetRatioService
         }
     }
 
-    public async Task<ResponseDto<List<BudgetRatioListViewModel>>> GetByYearAsync(string year)
+    public async Task<ResponseDto<List<BudgetRatioListViewModel>>> GetByYearAsync(int year)
     {
         try
         {
@@ -335,7 +335,7 @@ public class BudgetRatioService : IBudgetRatioService
         }
     }
 
-    public async Task<ResponseDto<bool>> CheckExistsAsync(string code, string year)
+    public async Task<ResponseDto<bool>> CheckExistsAsync(string code, int year)
     {
         try
         {
@@ -361,4 +361,8 @@ public class BudgetRatioService : IBudgetRatioService
         }
     }
 }
+
+
+
+
 

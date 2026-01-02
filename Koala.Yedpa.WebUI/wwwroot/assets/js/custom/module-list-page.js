@@ -1,8 +1,8 @@
-"use strict";
+﻿"use strict";
 var ModuleList = function () {
 
 	var initPage = function () {
-		var table = $('#ClaimTable');
+		var table = $('#ModuleTable');
 
 		// begin first table
 		table.DataTable({
@@ -12,20 +12,20 @@ var ModuleList = function () {
 			]
 		});
 
-		$(".delete-module-bt").click(function () {
-			var id = $(this).data("id");			
-			var moduleId = $(this).data("moduleId");			
+		$(".change-status-bt").click(function () {
+			var moduleId = $(this).data("moduleid");
+			var status = $(this).data("status");
 			var name = $(this).data("name");
 
-			var title = name + " İsimli Hak Siliniyor";
+			var title = status == "Passive" ? name + " İsimli Modül Pasife Çekiliyor" : name +" İsimli Modül Aktif Ediliyor"
 			
 			Swal.fire({
 				title: title,
 				text: "Bunu Yapmak İstediğinizden Emin misiniz?",
         icon: "warning",
 				showCancelButton: true,
-				confirmButtonText: "Evet, Sil!",
-				cancelButtonText: "Hayır, Vazgeçtim!",
+				confirmButtonText: status == "Passive" ? "Evet, Pasife Çek!" :"Evet, Aktif Et!",
+				cancelButtonText: "Hayır, vazgeçtim!",
 				reverseButtons: true
 			}).then(function (result) {
 				if (result.value) {
@@ -33,9 +33,9 @@ var ModuleList = function () {
 						Id: moduleId,
                         Status: status
 					}
-					$.get("/Claims/DeleteClaim/"+id).done(function (result) {
+					$.post("/Module/ChangeStatus/", {model:model} ).done(function (result) {
 						if (result.isSuccess) {
-							toastr.success("Hak Başarıyla Silindi", result.message);
+							toastr.success(status == "Passive" ? "Modül başarıyla pasife çekildi":"Modül başarıyla aktif edildi", result.message);
 						} else {
 							toastr.error("Bir Hata Oluştu", result.message);
 						}
@@ -46,7 +46,7 @@ var ModuleList = function () {
 				} else if (result.dismiss === "cancel") {
 					Swal.fire(
 						"İptal Edildi",
-						"Silme işlemi kullanıcı tarafından iptal edildi",
+						status == 1 ? "Modülün pasife çekilmesi iptal edildi":"Modülün aktif edilmesi iptaql edildi",
 						"error"
 					)
 				}
@@ -69,9 +69,6 @@ var ModuleList = function () {
 
 }();
 
-
-
 jQuery(document).ready(function () {
 	ModuleList.init();
-	
 });

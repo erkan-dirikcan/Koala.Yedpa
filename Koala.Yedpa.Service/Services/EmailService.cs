@@ -9,13 +9,21 @@ namespace Koala.Yedpa.Service.Services;
 
 public class EmailService: IEmailService
 {
-    private readonly EmailSettingViewModel _emailOptions;
+    private readonly ISettingsService _settingsService;
     private readonly IEmailTemplateService _templateService;
     private readonly ILogger<EmailService> _logger;
+
+    public EmailService(ISettingsService settingsService, IEmailTemplateService templateService, ILogger<EmailService> logger)
+    {
+        _settingsService = settingsService;
+        _templateService = templateService;
+        _logger = logger;
+    }
+
     public async Task<bool> SendResetPasswordEmailAsync(ResetPasswordEmailDto model)
     {
         var mailContent = "";
-        var mailTemplateRes = await _templateService.GetByNameAsyc("DefaultTemplate");
+        var mailTemplateRes = await _templateService.GetByNameAsyc("Default");
         if (!mailTemplateRes.IsSuccess)
         {
             mailContent = $"Şifrenizi sıfırlamak için lütfen <a href=\"{model.ResetLink}\" target=\"_blank\">Buraya</a> tıklayınız";
@@ -35,7 +43,7 @@ public class EmailService: IEmailService
     public async Task<bool> SendChangePasswordEmailAsync(CustomEmailDto model)
     {
         var mailContent = "";
-        var mailTemplateRes = await _templateService.GetByNameAsyc("DefaultTemplate");
+        var mailTemplateRes = await _templateService.GetByNameAsyc("Default");
         if (!mailTemplateRes.IsSuccess)
         {
             mailContent = $"Sistem bilgisayar Koala uygulaması üzerinden şifreniz başarıyla değiştirildi";
@@ -53,20 +61,51 @@ public class EmailService: IEmailService
 
     }
 
+    public async Task<bool> SendCustomMail(CustomEmailDto model)
+    {
+        var mailContent = "";
+        var mailTemplateRes = await _templateService.GetByNameAsyc("Default");
+
+        if (!mailTemplateRes.IsSuccess || string.IsNullOrWhiteSpace(model.Content))
+        {
+            mailContent = $"Sistem bilgisayar Koala uygulaması üzerinden bilgilendirme mesajı";
+        }
+        else
+        {
+            mailContent = mailTemplateRes.Data.Content
+                .Replace("[[Title]]", model.Title ?? "Yedpa Ticaret Merkezi Yönetim Uygulaması")
+                .Replace("[[Date]]", DateTime.Now.ToLongDateString())
+                .Replace("[[Name]]", model.Name + " " + model.Lastname)
+                .Replace("[[Body]]", model.Content);
+        }
+
+        return await SendEmailAsync(new EmailDto { Content = mailContent, Email = model.Email, Title = model.Title ?? "Bilgilendirme" });
+    }
+
     private async Task<bool> SendEmailAsync(EmailDto model)
     {
+        // Email ayarlarını settings'den al
+        var emailSettingsResponse = await _settingsService.GetEmailSettingsAsync();
+        if (!emailSettingsResponse.IsSuccess || emailSettingsResponse.Data == null)
+        {
+            _logger.LogError("E-posta ayarları alınamadı. E-posta gönderimi başarısız.");
+            return false;
+        }
+
+        var emailSettings = emailSettingsResponse.Data;
+
         var smtpClient = new SmtpClient();
-        smtpClient.Host = _emailOptions.SmtpServer;
+        smtpClient.Host = emailSettings.SmtpServer;
         smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
         smtpClient.UseDefaultCredentials = false;
-        smtpClient.Port = 587;
-        smtpClient.Credentials = new NetworkCredential(_emailOptions.UserName, _emailOptions.Password);
-        smtpClient.EnableSsl = false;
+        smtpClient.Port = emailSettings.Port;
+        smtpClient.Credentials = new NetworkCredential(emailSettings.UserName, emailSettings.Password);
+        smtpClient.EnableSsl = emailSettings.EnableSsl;
 
 
 
         var message = new MailMessage();
-        message.From = new MailAddress(_emailOptions.SenderEmail);
+        message.From = new MailAddress(emailSettings.SenderEmail, emailSettings.SenderName ?? "Sistem Koala");
         message.To.Add(model.Email!);
         message.Subject = model.Title;
         message.Body = model.Content;
@@ -80,7 +119,7 @@ public class EmailService: IEmailService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "E-Posta gönderilirken Bir Sorunla Karşılaşıldı", new { Hata = ex });
+            _logger.LogError(ex, "E-Posta gönderilirken Bir Sorunla Karşılaşıldı. Email: {Email}, Hata: {Hata}", model.Email, ex.Message);
             return false;
         }
     }

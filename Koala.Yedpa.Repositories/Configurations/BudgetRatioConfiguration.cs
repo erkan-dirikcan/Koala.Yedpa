@@ -18,8 +18,7 @@ public class BudgetRatioConfiguration : IEntityTypeConfiguration<BudgetRatio>
             .HasMaxLength(500);
 
         builder.Property(x => x.Year)
-            .IsRequired()
-            .HasMaxLength(10);
+            .IsRequired();
 
         builder.Property(x => x.Ratio)
             .HasColumnType("decimal(18,2)");
@@ -35,4 +34,8 @@ public class BudgetRatioConfiguration : IEntityTypeConfiguration<BudgetRatio>
         builder.HasIndex(x => x.BuggetType);
     }
 }
+
+
+
+
 

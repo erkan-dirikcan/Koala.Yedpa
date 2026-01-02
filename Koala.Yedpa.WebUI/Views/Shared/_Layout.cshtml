@@ -123,8 +123,9 @@
 
     <script src="/assets/plugins/custom/fullcalendar/fullcalendar.bundle.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
-    <script src="~/assets/js/custom/chat.bundle.es.js"></script>
-    <script type="module">
+
+    @* <script src="~/assets/js/custom/chat.bundle.es.js"></script> *@
+   @*  <script type="module">
         import { createChat } from "/assets/js/custom/chat.bundle.es.js";
 
         createChat({
@@ -144,6 +145,6 @@
           },
           defaultLanguage: 'tr'
         });
-    </script>
+    </script> *@
 </body>
 </html>

@@ -1,6 +1,8 @@
+using Hangfire;
 using Koala.Yedpa.Core.Models.ViewModels;
 using Koala.Yedpa.Core.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Koala.Yedpa.WebUI.Controllers
 {
@@ -115,6 +117,14 @@ namespace Koala.Yedpa.WebUI.Controllers
 
             TempData["InfoMessage"] = "Site bilgileri başarıyla güncellendi.";
             return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public JsonResult TriggerLogoSync()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            BackgroundJob.Enqueue<ILogoSyncJobService>(x => x.SyncFromLogoAsync(userId));
+            return Json("Logo Senkranizasyon işlemi kuyruğa alındı, işlem tamamlandığında bilgilendirileceksiniz.");
         }
     }
 }

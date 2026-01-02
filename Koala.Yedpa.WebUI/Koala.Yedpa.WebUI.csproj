@@ -4,10 +4,24 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-	        <ProjectGuid>{A28DEB8F-5322-48AB-8F79-648D03D8870B}</ProjectGuid>
-	        <GenerateDocumentationFile>True</GenerateDocumentationFile>
-	        <DocumentationFile>YedpaApi.xml</DocumentationFile>	  
+    <ProjectGuid>{A28DEB8F-5322-48AB-8F79-648D03D8870B}</ProjectGuid>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <DocumentationFile>YedpaApi.xml</DocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+    <DocumentationFileEncoding>UTF-8</DocumentationFileEncoding>
   </PropertyGroup>
+  
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <Target Name="FixXmlEncoding" AfterTargets="GenerateDocumentationFile" Condition="'$(GenerateDocumentationFile)' == 'true' AND Exists('$(MSBuildProjectDirectory)\$(DocumentationFile)')">
+    <PropertyGroup>
+      <_XmlFilePath>$(MSBuildProjectDirectory)\$(DocumentationFile)</_XmlFilePath>
+    </PropertyGroup>
+    <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -Command &quot;$content = [System.IO.File]::ReadAllText('$(_XmlFilePath)', [System.Text.Encoding]::UTF8); $content = $content -replace '&lt;\?xml version=&quot;1.0&quot;\?&gt;', '&lt;\?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;\?&gt;'; [System.IO.File]::WriteAllText('$(_XmlFilePath)', $content, [System.Text.Encoding]::UTF8)&quot;" 
+          ContinueOnError="false" />
+  </Target>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
