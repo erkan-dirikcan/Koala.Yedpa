@@ -11,12 +11,12 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
     public DbSet<BudgetRatio> BudgetRatio { get; set; }
     public DbSet<Claims> Claims { get; set; }
     public DbSet<DuesStatistic> DuesStatistics { get; set; }
+    public DbSet<Workplace> Workplace { get; set; }
     public DbSet<EmailTemplate> EmailTemplate { get; set; }
     public DbSet<ExtendedProperties> ExtendedProperties { get; set; }
     public DbSet<ExtendedPropertyRecordValues> ExtendedPropertyRecordValues { get; set; }
     public DbSet<ExtendedPropertyValues> ExtendedPropertyValues { get; set; }
     public DbSet<GeneratedIds> GeneratedIds { get; set; }
-    public DbSet<LgXt001211> LgXt001211 { get; set; }
     public DbSet<Module> Module { get; set; }
     public DbSet<Settings> Settings { get; set; }
     public DbSet<Transaction> Transaction { get; set; }

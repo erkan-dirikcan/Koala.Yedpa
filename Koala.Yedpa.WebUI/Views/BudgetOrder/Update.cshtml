@@ -1,0 +1,616 @@
+@using Koala.Yedpa.Core.Dtos
+@using Koala.Yedpa.Core.Models
+@model Koala.Yedpa.Core.Models.ViewModels.UpdateBudgetRatioViewModel
+@{
+    ViewData["Title"] = "Bütçe Güncelle";
+    ViewData["ActivePage"] = "UpdateBudgetOrder";
+    ViewData["MenuToggle"] = "Site";
+}
+
+<div class="d-flex flex-column-fluid">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card card-custom">
+                    <form id="updateBudgetForm" class="form">
+                        <div class="card-header flex-wrap border-0 pt-6 pb-0">
+                            <div class="card-title">
+                                <h3 class="card-label">
+                                    Bütçe Güncelle
+                                    <span class="d-block text-muted pt-2 font-size-sm">Bütçe oranını ve seçili ayları güncelleyin</span>
+                                </h3>
+                            </div>
+                            <div class="card-toolbar">
+                                <a asp-action="Index" asp-controller="BudgetOrder" class="btn btn-secondary">
+                                    <i class="ki ki-arrow-back"></i> Geri Dön
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+
+                            <!-- Read-only Fields -->
+                            <div class="form-group row">
+                                <label class="col-form-label col-lg-2">Bütçe Kodu</label>
+                                <div class="col-lg-4">
+                                    <input type="text" class="form-control" value="@Model.Code" readonly />
+                                </div>
+                                <label class="col-form-label col-lg-2">Hedef Yıl</label>
+                                <div class="col-lg-4">
+                                    <input type="number" class="form-control" value="@Model.Year" readonly />
+                                    <span class="form-text text-muted">Hedef yıl değiştirilemez</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label class="col-form-label col-lg-2">Bütçe Türü</label>
+                                <div class="col-lg-4">
+                                    <input type="text" class="form-control"
+                                           value="@(Model.BuggetType == BuggetTypeEnum.Budget ? "Bütçe" : "Ek Bütçe")"
+                                           readonly />
+                                    <span class="form-text text-muted">Bütçe türü değiştirilemez</span>
+                                </div>
+                                <label class="col-form-label col-lg-2">Toplam Bütçe</label>
+                                <div class="col-lg-4">
+                                    <input type="text" class="form-control font-weight-bold"
+                                           value="@Model.TotalBugget.ToString("N2") ₺" readonly />
+                                    <span class="form-text text-muted">Güncelleme sonrası hesaplanacak</span>
+                                </div>
+                            </div>
+
+                            <hr />
+
+                            <!-- Hesaplama Türü Seçimi -->
+                            <div class="form-group row">
+                                <label class="col-form-label col-lg-2">Hesaplama Türü <span class="text-danger">*</span></label>
+                                <div class="col-lg-10">
+                                    <div class="radio-list">
+                                        <label class="radio radio-outline radio-success">
+                                            <input type="radio" name="calculationType" value="ratio" id="ratioRadio" checked />
+                                            <span></span>
+                                            <div class="radio-content">
+                                                <h6 class="font-weight-bold">Bütçe Oranı</h6>
+                                                <p class="mb-0 text-muted">Kaynak yılın belirlediği orana göre hesaplama yapılır</p>
+                                            </div>
+                                        </label>
+                                        <label class="radio radio-outline radio-warning">
+                                            <input type="radio" name="calculationType" value="amount" id="amountRadio" />
+                                            <span></span>
+                                            <div class="radio-content">
+                                                <h6 class="font-weight-bold">Toplam Bütçe</h6>
+                                                <p class="mb-0 text-muted">Girilen toplam bütçeye göre hesaplama yapılır</p>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Editable Fields - Oran -->
+                            <div class="form-group row" id="ratioInputSection">
+                                <label class="col-form-label col-lg-2">Oran <span class="text-danger">*</span></label>
+                                <div class="col-lg-4">
+                                    <div class="input-group">
+                                        <input type="number" name="Ratio" class="form-control"
+                                               step="1" min="0" max="1000" value="@((int)(Model.Ratio * 100))" required id="ratioPercent" />
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">%</span>
+                                        </div>
+                                    </div>
+                                    <span class="form-text text-muted">Kaynak yıla göre artış/azalık oranı (örn: 25 = %25 artış)</span>
+                                </div>
+                            </div>
+
+                            <!-- Editable Fields - Toplam Bütçe -->
+                            <div class="form-group row" id="amountInputSection" style="display:none;">
+                                <label class="col-form-label col-lg-2">Toplam Bütçe <span class="text-danger">*</span></label>
+                                <div class="col-lg-4">
+                                    <div class="input-group">
+                                        <input type="number" name="TotalBudget" class="form-control"
+                                               step="0.01" min="0" value="@Model.TotalBugget" required id="totalBudget" />
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">₺</span>
+                                        </div>
+                                    </div>
+                                    <span class="form-text text-muted">Hedef toplam bütçe (kaynak yıldan hesaplanır)</span>
+                                </div>
+                            </div>
+
+                            <!-- Aylar Seçimi -->
+                            <div class="form-group row">
+                                <label class="col-form-label col-lg-2">Aylar <span class="text-danger">*</span></label>
+                                <div class="col-lg-10">
+                                    <div class="row">
+                                        <div class="col-xl-3">
+                                            <div class="checkbox-list">
+                                                <label class="checkbox">
+                                                    <input type="checkbox" class="month-checkbox" value="1" /><span></span>Ocak
+                                                </label>
+                                                <label class="checkbox">
+                                                    <input type="checkbox" class="month-checkbox" value="2" /><span></span>Şubat
+                                                </label>
+                                                <label class="checkbox">
+                                                    <input type="checkbox" class="month-checkbox" value="4" /><span></span>Mart
+                                                </label>
+                                                <label class="checkbox">
+                                                    <input type="checkbox" class="month-checkbox" value="8" /><span></span>Nisan
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-xl-3">
+                                            <div class="checkbox-list">
+                                                <label class="checkbox">
+                                                    <input type="checkbox" class="month-checkbox" value="16" /><span></span>Mayıs
+                                                </label>
+                                                <label class="checkbox">
+                                                    <input type="checkbox" class="month-checkbox" value="32" /><span></span>Haziran
+                                                </label>
+                                                <label class="checkbox">
+                                                    <input type="checkbox" class="month-checkbox" value="64" /><span></span>Temmuz
+                                                </label>
+                                                <label class="checkbox">
+                                                    <input type="checkbox" class="month-checkbox" value="128" /><span></span>Ağustos
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-xl-3">
+                                            <div class="checkbox-list">
+                                                <label class="checkbox">
+                                                    <input type="checkbox" class="month-checkbox" value="256" /><span></span>Eylül
+                                                </label>
+                                                <label class="checkbox">
+                                                    <input type="checkbox" class="month-checkbox" value="512" /><span></span>Ekim
+                                                </label>
+                                                <label class="checkbox">
+                                                    <input type="checkbox" class="month-checkbox" value="1024" /><span></span>Kasım
+                                                </label>
+                                                <label class="checkbox">
+                                                    <input type="checkbox" class="month-checkbox" value="2048" /><span></span>Aralık
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-xl-3">
+                                            <button type="button" class="btn btn-sm btn-light-primary" id="selectAllMonths">
+                                                <i class="ki ki-check"></i> Tümünü Seç
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-light-secondary ml-2" id="deselectAllMonths">
+                                                <i class="ki ki-close"></i> Seçimi Kaldır
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <span class="form-text text-muted">Seçilen aylara oran uygulanacak</span>
+                                </div>
+                            </div>
+
+                            <!-- Uyarı Mesajı -->
+                            <div class="alert alert-warning" role="alert">
+                                <div class="d-flex align-items-center">
+                                    <div class="alert-icon"><i class="ki ki-warning icon-md"></i></div>
+                                    <div class="alert-text">
+                                        <strong>Dikkat!</strong> Güncelleme yapıldığında seçili aylara ait tüm DuesStatistic kayıtları silinip yeni değerlerle oluşturulacaktır.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Önizleme Tablosu -->
+                            <div class="form-group" id="previewSection" style="display:none;">
+                                <h4 class="mb-4">Değişiklik Önizleme</h4>
+
+                                <!-- Özet Bilgiler -->
+                                <div class="row mb-4">
+                                    <div class="col-lg-6">
+                                        <div class="alert alert-secondary" role="alert">
+                                            <h6 class="alert-heading">Mevcut Durum</h6>
+                                            <hr />
+                                            <p class="mb-1"><strong>Oran:</strong> <span id="currentRatio">@Model.Ratio</span></p>
+                                            <p class="mb-1"><strong>Toplam Bütçe:</strong> <span id="currentTotal">@Model.TotalBugget.ToString("N2")</span> ₺</p>
+                                            <p class="mb-0"><strong>Seçili Aylar:</strong> <span id="currentMonthsText">-</span></p>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="alert alert-success" role="alert">
+                                            <h6 class="alert-heading">Yeni Durum</h6>
+                                            <hr />
+                                            <p class="mb-1"><strong>Oran:</strong> <span id="newRatio">@Model.Ratio</span></p>
+                                            <p class="mb-1"><strong>Toplam Bütçe:</strong> <span id="newTotal">-</span> ₺</p>
+                                            <p class="mb-0"><strong>Fark:</strong> <span id="totalDiff">-</span> ₺</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Tablo -->
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-hover table-striped" id="previewTable">
+                                        <thead class="thead-light">
+                                            <tr>
+                                                <th>Dükkan</th>
+                                                <th>Dükkan Kodu</th>
+                                                <th>Müşteri Kodu</th>
+                                                <th class="text-center">Mevcut Seçili Aylar</th>
+                                                <th class="text-center">Mevcut Toplam</th>
+                                                <th class="text-center">Yeni Seçili Aylar</th>
+                                                <th class="text-center">Yeni Toplam</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="card-footer">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="Id" value="@Model.Id" />
+                            <input type="hidden" name="Code" value="@Model.Code" />
+                            <input type="hidden" name="Description" value="@Model.Description" />
+                            <input type="hidden" name="Year" value="@Model.Year" />
+                            <input type="hidden" name="TotalBugget" value="@Model.TotalBugget" />
+                            <input type="hidden" name="BuggetType" value="@((int)Model.BuggetType)" />
+                            <input type="hidden" name="BuggetRatioMounths" id="buggetRatioMounthsInput" />
+                            <button type="button" class="btn btn-info mr-2" id="previewBtn">
+                                <i class="ki ki-calculator"></i> Hesapla ve Önizle
+                            </button>
+                            <button type="submit" class="btn btn-primary mr-2" id="updateBtn" style="display:none;">
+                                <i class="ki ki-save"></i> Güncelle
+                            </button>
+                            <a asp-action="Index" asp-controller="BudgetOrder" class="btn btn-secondary">
+                                <i class="ki ki-close"></i> İptal
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Get current months flag from model
+            const currentMonthsFlag = @((int)Model.BuggetRatioMounths);
+            const monthCheckboxes = document.querySelectorAll('.month-checkbox');
+            const monthNames = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
+            const monthFlags = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048];
+
+            // DataTable reference
+            let previewDataTable = null;
+            let currentCalculationType = 'ratio'; // ratio or amount
+
+            // Radio button toggle logic
+            const ratioRadio = document.getElementById('ratioRadio');
+            const amountRadio = document.getElementById('amountRadio');
+            const ratioInputSection = document.getElementById('ratioInputSection');
+            const amountInputSection = document.getElementById('amountInputSection');
+            const ratioPercent = document.getElementById('ratioPercent');
+            const totalBudget = document.getElementById('totalBudget');
+
+            // Initial setup: Ratio is selected by default, so remove required from TotalBudget
+            if (totalBudget && ratioRadio && ratioRadio.checked) {
+                totalBudget.removeAttribute('required');
+            }
+
+            if (ratioRadio && amountRadio) {
+                ratioRadio.addEventListener('change', function () {
+                    if (this.checked) {
+                        currentCalculationType = 'ratio';
+                        ratioInputSection.style.display = 'block';
+                        amountInputSection.style.display = 'none';
+                        totalBudget.value = '';
+                        // Remove required from hidden TotalBudget input
+                        totalBudget.removeAttribute('required');
+                        // Add required to visible Ratio input
+                        ratioPercent.setAttribute('required', 'required');
+                    }
+                });
+
+                amountRadio.addEventListener('change', function () {
+                    if (this.checked) {
+                        currentCalculationType = 'amount';
+                        ratioInputSection.style.display = 'none';
+                        amountInputSection.style.display = 'block';
+                        ratioPercent.value = '';
+                        // Remove required from hidden Ratio input
+                        ratioPercent.removeAttribute('required');
+                        // Add required to visible TotalBudget input
+                        totalBudget.setAttribute('required', 'required');
+                    }
+                });
+            }
+
+            // Helper: Convert flag to month names
+            function getMonthNamesFromFlag(flag) {
+                const selectedMonths = [];
+                for (let i = 0; i < 12; i++) {
+                    if ((flag & monthFlags[i]) === monthFlags[i]) {
+                        selectedMonths.push(monthNames[i]);
+                    }
+                }
+                return selectedMonths.join(', ');
+            }
+
+            // Set current months text
+            document.getElementById('currentMonthsText').textContent = getMonthNamesFromFlag(currentMonthsFlag);
+
+            // Set checkboxes based on current flag
+            monthCheckboxes.forEach(function(checkbox) {
+                const flagValue = parseInt(checkbox.value);
+                if ((currentMonthsFlag & flagValue) === flagValue) {
+                    checkbox.checked = true;
+                }
+            });
+
+            // Select all months
+            const selectAllBtn = document.getElementById('selectAllMonths');
+            if (selectAllBtn) {
+                selectAllBtn.addEventListener('click', function () {
+                    monthCheckboxes.forEach(function(checkbox) {
+                        checkbox.checked = true;
+                    });
+                });
+            }
+
+            // Deselect all months
+            const deselectAllBtn = document.getElementById('deselectAllMonths');
+            if (deselectAllBtn) {
+                deselectAllBtn.addEventListener('click', function () {
+                    monthCheckboxes.forEach(function(checkbox) {
+                        checkbox.checked = false;
+                    });
+                });
+            }
+
+            // Preview button click
+            const previewBtn = document.getElementById('previewBtn');
+            if (previewBtn) {
+                previewBtn.addEventListener('click', async function () {
+                    // Calculate months flag from selected checkboxes
+                    let monthsFlag = 0;
+                    let atLeastOneSelected = false;
+
+                    monthCheckboxes.forEach(function(checkbox) {
+                        if (checkbox.checked) {
+                            monthsFlag += parseInt(checkbox.value);
+                            atLeastOneSelected = true;
+                        }
+                    });
+
+                    // Validate at least one month is selected
+                    if (!atLeastOneSelected) {
+                        alert('En az bir ay seçmelisiniz');
+                        return;
+                    }
+
+                    // Get calculation type and value
+                    let newRatio = null;
+                    let targetAmount = null;
+
+                    if (currentCalculationType === 'ratio') {
+                        // Oran girişi - yüzde olarak alıp ondalığa çevir
+                        const ratioPercentValue = parseInt(ratioPercent.value);
+                        if (!ratioPercentValue || ratioPercentValue < 0) {
+                            alert('Geçerli bir oran giriniz');
+                            return;
+                        }
+                        newRatio = ratioPercentValue / 100; // 25 -> 0.25
+                    } else {
+                        // Toplam bütçe girişi
+                        targetAmount = parseFloat(totalBudget.value);
+                        if (!targetAmount || targetAmount <= 0) {
+                            alert('Geçerli bir toplam bütçe giriniz');
+                            return;
+                        }
+                    }
+
+                    // Update hidden input
+                    document.getElementById('buggetRatioMounthsInput').value = monthsFlag;
+
+                    // Show loading
+                    previewBtn.disabled = true;
+                    previewBtn.innerHTML = '<i class="ki ki-spinner spinner"></i> Hesaplanıyor...';
+
+                    // Call API to preview
+                    try {
+                        const requestBody = {
+                            id: '@Model.Id',
+                            selectedMonthsFlag: monthsFlag
+                        };
+
+                        // Add calculation type specific parameter
+                        if (currentCalculationType === 'ratio') {
+                            requestBody.ratio = newRatio;
+                        } else {
+                            requestBody.targetAmount = targetAmount;
+                        }
+
+                        const response = await fetch('/api/BudgetOrderApi/PreviewUpdate', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(requestBody)
+                        });
+
+                        if (!response.ok) {
+                            throw new Error('Preview failed');
+                        }
+
+                        const result = await response.json();
+
+                        if (result.isSuccess && result.data) {
+                            // Update summary - show calculated ratio
+                            const calculatedRatio = result.data.calculatedRatio || (currentCalculationType === 'ratio' ? newRatio : 0);
+                            document.getElementById('newRatio').textContent = (calculatedRatio * 100).toFixed(0) + '%';
+                            document.getElementById('newTotal').textContent = result.data.newTotal.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                            document.getElementById('totalDiff').textContent = result.data.totalDiff.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+                            // Destroy existing DataTable if exists
+                            if (previewDataTable) {
+                                previewDataTable.destroy();
+                                previewDataTable = null;
+                            }
+
+                            // Prepare data for DataTable
+                            const tableData = result.data.rows.map(row => [
+                                row.divName || '-',
+                                row.code,
+                                row.clientCode || '-',
+                                `<span class="text-warning font-weight-bold">${row.currentSelectedMonths.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>`,
+                                `<span class="text-warning">${row.currentTotal.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>`,
+                                `<span class="text-success font-weight-bold">${row.newSelectedMonths.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>`,
+                                `<span class="text-success font-weight-bold">${row.newTotal.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>`
+                            ]);
+
+                            // Initialize DataTable
+                            previewDataTable = $('#previewTable').DataTable({
+                                data: tableData,
+                                pageLength: 10,
+                                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Tümü"]],
+                                searching: true,
+                                ordering: true,
+                                info: true,
+                                autoWidth: false,
+                                language: {
+                                    url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/tr.json'
+                                },
+                                columnDefs: [
+                                    { targets: 0, width: '25%' },  // Dükkan
+                                    { targets: 1, width: '15%' },  // Dükkan Kodu
+                                    { targets: 2, width: '10%' },  // Müşteri Kodu
+                                    { targets: 3, width: '15%', className: 'text-center' },  // Mevcut Seçili Aylar
+                                    { targets: 4, width: '10%', className: 'text-center' },  // Mevcut Toplam
+                                    { targets: 5, width: '15%', className: 'text-center' },  // Yeni Seçili Aylar
+                                    { targets: 6, width: '10%', className: 'text-center' }   // Yeni Toplam
+                                ]
+                            });
+
+                            // Show preview section and update button
+                            document.getElementById('previewSection').style.display = 'block';
+                            document.getElementById('updateBtn').style.display = 'inline-block';
+
+                            // Scroll to preview section
+                            document.getElementById('previewSection').scrollIntoView({ behavior: 'smooth' });
+                        } else {
+                            alert('Önizleme hatası: ' + (result.message || 'Bilinmeyen hata'));
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('Önizleme sırasında bir hata oluştu');
+                    } finally {
+                        // Reset button
+                        previewBtn.disabled = false;
+                        previewBtn.innerHTML = '<i class="ki ki-calculator"></i> Hesapla ve Önizle';
+                    }
+                });
+            }
+
+            // Form submit
+            const form = document.getElementById('updateBudgetForm');
+            const updateBtnElement = document.getElementById('updateBtn');
+
+            console.log('Form element:', form);
+            console.log('Update button element:', updateBtnElement);
+
+            if (updateBtnElement) {
+                updateBtnElement.addEventListener('click', function (e) {
+                    console.log('Update button clicked!');
+                });
+            }
+
+            if (form) {
+                form.addEventListener('submit', function (e) {
+                    console.log('Form submit event triggered!');
+                    e.preventDefault();
+
+                    // Calculate months flag from selected checkboxes
+                    let monthsFlag = 0;
+                    let atLeastOneSelected = false;
+
+                    monthCheckboxes.forEach(function(checkbox) {
+                        if (checkbox.checked) {
+                            monthsFlag += parseInt(checkbox.value);
+                            atLeastOneSelected = true;
+                        }
+                    });
+
+                    // Validate at least one month is selected
+                    if (!atLeastOneSelected) {
+                        alert('En az bir ay seçmelisiniz');
+                        return;
+                    }
+
+                    // Update hidden input
+                    document.getElementById('buggetRatioMounthsInput').value = monthsFlag;
+
+                    // Get calculation type and value
+                    let ratioToSend = 0; // Default value
+
+                    if (currentCalculationType === 'ratio') {
+                        const ratioPercentValue = parseInt(ratioPercent.value);
+                        if (!ratioPercentValue || ratioPercentValue < 0) {
+                            alert('Geçerli bir oran giriniz');
+                            return;
+                        }
+                        ratioToSend = ratioPercentValue / 100; // Convert to decimal (e.g., 25 -> 0.25)
+                    } else {
+                        const targetAmountValue = parseFloat(totalBudget.value);
+                        if (!targetAmountValue || targetAmountValue <= 0) {
+                            alert('Geçerli bir toplam bütçe giriniz');
+                            return;
+                        }
+                        // For amount calculation, send targetAmount separately
+                    }
+
+                    // Submit form - Create clean object with only needed fields
+                    const formDataObj = {
+                        Id: document.querySelector('input[name="Id"]').value,
+                        Code: document.querySelector('input[name="Code"]').value,
+                        Description: document.querySelector('input[name="Description"]').value,
+                        Year: parseFloat(document.querySelector('input[name="Year"]').value),
+                        TotalBugget: parseFloat(document.querySelector('input[name="TotalBugget"]').value),
+                        BuggetType: parseInt(document.querySelector('input[name="BuggetType"]').value),
+                        BuggetRatioMounths: monthsFlag,
+                        Ratio: ratioToSend
+                    };
+
+                    // Debug: Log form data
+                    console.log('Sending formDataObj:', formDataObj);
+                    console.log('ID being sent:', formDataObj.Id);
+
+                    fetch('/BudgetOrder/Update', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                        },
+                        body: JSON.stringify(formDataObj)
+                    })
+                    .then(async response => {
+                        console.log('Response status:', response.status);
+                        console.log('Response ok:', response.ok);
+
+                        const data = await response.json();
+                        console.log('Response data:', data);
+
+                        if (data.success) {
+                            // Başarılı - Index'e yönlendir
+                            if (data.redirectUrl) {
+                                window.location.href = data.redirectUrl;
+                            } else {
+                                window.location.href = '/BudgetOrder/Index';
+                            }
+                        } else {
+                            // Hata var
+                            console.error('Update error:', data.message);
+                            alert('Güncelleme hatası: ' + (data.message || 'Bilinmeyen hata'));
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Fetch error:', error);
+                        alert('Bir hata oluştu: ' + error.message);
+                    });
+                });
+            }
+        });
+    </script>
+}

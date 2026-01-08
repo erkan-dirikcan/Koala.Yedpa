@@ -9,4 +9,5 @@ public interface IApiLogoSqlDataService
     Task<ResponseListDto<List<ClCardInfoViewModel>>> WhereClCardInfoAsync(ClCardInfoSearchViewModel searchModel, int perPage, int pageNo);
     Task<ResponseDto<List<StatementSummeryViewModel>>> GetClsStatementsSummertAsync();
     Task<ResponseDto<List<ClCardStatementViewModel>>> GetClCardStatementAsync(string clCode);
+    Task<ResponseDto<(string ClientCode, long ClientRef)>> GetClientInfoByWorkplaceCodeAsync(string workplaceCode);
 }

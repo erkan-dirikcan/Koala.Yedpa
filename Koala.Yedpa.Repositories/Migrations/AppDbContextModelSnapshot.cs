@@ -518,292 +518,6 @@ namespace Koala.Yedpa.Repositories.Migrations
                     b.ToTable("GeneratedIds");
                 });
 
-            modelBuilder.Entity("Koala.Yedpa.Core.Models.LgXt001211", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasMaxLength(36)
-                        .HasColumnType("nvarchar(36)");
-
-                    b.Property<int?>("Active")
-                        .HasColumnType("int")
-                        .HasColumnName("ACTIVE");
-
-                    b.Property<DateTime?>("ActiveResDate")
-                        .HasColumnType("datetime")
-                        .HasColumnName("ACTIVERESDATE");
-
-                    b.Property<DateTime?>("BegDate")
-                        .HasColumnType("datetime")
-                        .HasColumnName("BEGDATE");
-
-                    b.Property<int?>("BlockRef")
-                        .HasColumnType("int")
-                        .HasColumnName("BLOCKREF");
-
-                    b.Property<double?>("BudgetDepotCoefficient1")
-                        .HasColumnType("float")
-                        .HasColumnName("BUDGETDEPOTCOEFFICIENT1");
-
-                    b.Property<double?>("BudgetDepotCoefficient2")
-                        .HasColumnType("float")
-                        .HasColumnName("BUDGETDEPOTCOEFFICIENT2");
-
-                    b.Property<double?>("BudgetDepotMetre1")
-                        .HasColumnType("float")
-                        .HasColumnName("BUDGETDEPOTMETRE1");
-
-                    b.Property<double?>("BudgetDepotMetre2")
-                        .HasColumnType("float")
-                        .HasColumnName("BUDGETDEPOTMETRE2");
-
-                    b.Property<double?>("BudgetFloorCoefficient")
-                        .HasColumnType("float")
-                        .HasColumnName("BUDGETFLOORCOEFFICIENT");
-
-                    b.Property<double?>("BudgetFloorMetre")
-                        .HasColumnType("float")
-                        .HasColumnName("BUDGETFLOORMETRE");
-
-                    b.Property<double?>("BudgetGroundCoefficient")
-                        .HasColumnType("float")
-                        .HasColumnName("BUDGETGROUNDCOEFFICIENT");
-
-                    b.Property<double?>("BudgetGroundMetre")
-                        .HasColumnType("float")
-                        .HasColumnName("BUDGETGROUNDMETRE");
-
-                    b.Property<double?>("BudgetHungCoefficient")
-                        .HasColumnType("float")
-                        .HasColumnName("BUDGETHUNGCOEFFICIENT");
-
-                    b.Property<double?>("BudgetHungMetre")
-                        .HasColumnType("float")
-                        .HasColumnName("BUDGETHUNGMETRE");
-
-                    b.Property<double?>("BudgetPassageCoefficient1")
-                        .HasColumnType("float")
-                        .HasColumnName("BUDGETPASSAGECOEFFICIENT1");
-
-                    b.Property<double?>("BudgetPassageCoefficient2")
-                        .HasColumnType("float")
-                        .HasColumnName("BUDGETPASSAGECOEFFICIENT2");
-
-                    b.Property<double?>("BudgetPassageMetre1")
-                        .HasColumnType("float")
-                        .HasColumnName("BUDGETPASSAGEMETRE1");
-
-                    b.Property<double?>("BudgetPassageMetre2")
-                        .HasColumnType("float")
-                        .HasColumnName("BUDGETPASSAGEMETRE2");
-
-                    b.Property<string>("CalMeterNo")
-                        .HasMaxLength(21)
-                        .HasColumnType("nvarchar(21)")
-                        .HasColumnName("CALMETERNO");
-
-                    b.Property<int?>("CauldronRef")
-                        .HasColumnType("int")
-                        .HasColumnName("CAULDRONREF");
-
-                    b.Property<short?>("ChiefReg")
-                        .HasColumnType("smallint")
-                        .HasColumnName("CHIEFREG");
-
-                    b.Property<string>("ClientCode")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("CLIENTCODE");
-
-                    b.Property<string>("ClientName")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("CLIENTNAME");
-
-                    b.Property<short?>("CustomerType")
-                        .HasColumnType("smallint")
-                        .HasColumnName("CUSTOMER_TYPE");
-
-                    b.Property<short?>("DeedInfo")
-                        .HasColumnType("smallint")
-                        .HasColumnName("DEEDINFO");
-
-                    b.Property<double?>("DimField")
-                        .HasColumnType("float")
-                        .HasColumnName("DIMFIELD");
-
-                    b.Property<double?>("DimGross")
-                        .HasColumnType("float")
-                        .HasColumnName("DIMGROSS");
-
-                    b.Property<DateTime?>("EndDate")
-                        .HasColumnType("datetime")
-                        .HasColumnName("ENDDATE");
-
-                    b.Property<double?>("FuelDepotCoefficient1")
-                        .HasColumnType("float")
-                        .HasColumnName("FUELDEPOTCOEFFICIENT1");
-
-                    b.Property<double?>("FuelDepotCoefficient2")
-                        .HasColumnType("float")
-                        .HasColumnName("FUELDEPOTCOEFFICIENT2");
-
-                    b.Property<double?>("FuelDepotMetre1")
-                        .HasColumnType("float")
-                        .HasColumnName("FUELDEPOTMETRE1");
-
-                    b.Property<double?>("FuelDepotMetre2")
-                        .HasColumnType("float")
-                        .HasColumnName("FUELDEPOTMETRE2");
-
-                    b.Property<double?>("FuelFloorCoefficient")
-                        .HasColumnType("float")
-                        .HasColumnName("FUELFLOORCOEFFICIENT");
-
-                    b.Property<double?>("FuelFloorMetre")
-                        .HasColumnType("float")
-                        .HasColumnName("FUELFLOORMETRE");
-
-                    b.Property<double?>("FuelGroundCoefficient")
-                        .HasColumnType("float")
-                        .HasColumnName("FUELGROUNDCOEFFICIENT");
-
-                    b.Property<double?>("FuelGroundMetre")
-                        .HasColumnType("float")
-                        .HasColumnName("FUELGROUNDMETRE");
-
-                    b.Property<double?>("FuelHungCoefficient")
-                        .HasColumnType("float")
-                        .HasColumnName("FUELHUNGCOEFFICIENT");
-
-                    b.Property<double?>("FuelHungMetre")
-                        .HasColumnType("float")
-                        .HasColumnName("FUELHUNGMETRE");
-
-                    b.Property<double?>("FuelPassageCoefficient1")
-                        .HasColumnType("float")
-                        .HasColumnName("FUELPASSAGECOEFFICIENT1");
-
-                    b.Property<double?>("FuelPassageCoefficient2")
-                        .HasColumnType("float")
-                        .HasColumnName("FUELPASSAGECOEFFICIENT2");
-
-                    b.Property<double?>("FuelPassageMetre1")
-                        .HasColumnType("float")
-                        .HasColumnName("FUELPASSAGEMETRE1");
-
-                    b.Property<double?>("FuelPassageMetre2")
-                        .HasColumnType("float")
-                        .HasColumnName("FUELPASSAGEMETRE2");
-
-                    b.Property<double?>("GasCoefficient")
-                        .HasColumnType("float")
-                        .HasColumnName("GASCOEFFICIENT");
-
-                    b.Property<string>("GroupCode")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("GROUPCODE");
-
-                    b.Property<string>("GroupName")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("GROUPNAME");
-
-                    b.Property<string>("HotWaterMeterNo")
-                        .HasMaxLength(21)
-                        .HasColumnType("nvarchar(21)")
-                        .HasColumnName("HOTWATERMETERNO");
-
-                    b.Property<string>("IdentityNr")
-                        .HasMaxLength(21)
-                        .HasColumnType("nvarchar(21)")
-                        .HasColumnName("IDENTITYNR");
-
-                    b.Property<string>("IndDivNo")
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)")
-                        .HasColumnName("INDDIVNO");
-
-                    b.Property<int>("LogRef")
-                        .HasColumnType("int")
-                        .HasColumnName("LOGREF");
-
-                    b.Property<DateTime?>("OfficialBegDate")
-                        .HasColumnType("datetime")
-                        .HasColumnName("OFFICIALBEGDATE");
-
-                    b.Property<DateTime?>("OfficialEndDate")
-                        .HasColumnType("datetime")
-                        .HasColumnName("OFFICIALENDDATE");
-
-                    b.Property<int?>("ParLogRef")
-                        .HasColumnType("int")
-                        .HasColumnName("PARLOGREF");
-
-                    b.Property<int?>("ParcelRef")
-                        .HasColumnType("int")
-                        .HasColumnName("PARCELREF");
-
-                    b.Property<int?>("ParentClRef")
-                        .HasColumnType("int")
-                        .HasColumnName("PARENTCLREF");
-
-                    b.Property<short?>("PersonCount")
-                        .HasColumnType("smallint")
-                        .HasColumnName("PERSONCOUNT");
-
-                    b.Property<int?>("PhaseRef")
-                        .HasColumnType("int")
-                        .HasColumnName("PHASEREF");
-
-                    b.Property<string>("ProfitingOwner")
-                        .HasMaxLength(31)
-                        .HasColumnType("nvarchar(31)")
-                        .HasColumnName("PROFITINGOWNER");
-
-                    b.Property<int?>("ResidenceGroupRef")
-                        .HasColumnType("int")
-                        .HasColumnName("RESIDENCEGROUPREF");
-
-                    b.Property<string>("ResidenceNo")
-                        .HasMaxLength(5)
-                        .HasColumnType("nvarchar(5)")
-                        .HasColumnName("RESIDENCENO");
-
-                    b.Property<int?>("ResidenceTypeRef")
-                        .HasColumnType("int")
-                        .HasColumnName("RESIDENCETYPEREF");
-
-                    b.Property<int?>("ShareNo")
-                        .HasColumnType("int")
-                        .HasColumnName("SHARENO");
-
-                    b.Property<string>("SpeCode")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("SPECODE");
-
-                    b.Property<short?>("TaxPayer")
-                        .HasColumnType("smallint")
-                        .HasColumnName("TAXPAYER");
-
-                    b.Property<double?>("TotalBrutCoefficientMetre")
-                        .HasColumnType("float")
-                        .HasColumnName("TOTALBRUTCOEFFICIENTMETRE");
-
-                    b.Property<double?>("TotalFuelMetre")
-                        .HasColumnType("float")
-                        .HasColumnName("TOTALFUELMETRE");
-
-                    b.Property<double?>("TotalNetMetre")
-                        .HasColumnType("float")
-                        .HasColumnName("TOTALNETMETRE");
-
-                    b.Property<string>("WaterMeterNo")
-                        .HasMaxLength(21)
-                        .HasColumnType("nvarchar(21)")
-                        .HasColumnName("WATERMETERNO");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("LG_XT001_211");
-                });
-
             modelBuilder.Entity("Koala.Yedpa.Core.Models.Module", b =>
                 {
                     b.Property<string>("Id")
@@ -991,6 +705,221 @@ namespace Koala.Yedpa.Repositories.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("TransactionType");
+                });
+
+            modelBuilder.Entity("Koala.Yedpa.Core.Models.Workplace", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)")
+                        .HasDefaultValueSql("(NEWID())");
+
+                    b.Property<DateTime?>("ActiveResDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("BegDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("BlockRef")
+                        .HasColumnType("int");
+
+                    b.Property<double?>("BudgetDepotCoefficient1")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("BudgetDepotCoefficient2")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("BudgetDepotMetre1")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("BudgetDepotMetre2")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("BudgetFloorCoefficient")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("BudgetFloorMetre")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("BudgetGroundCoefficient")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("BudgetGroundMetre")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("BudgetHungCoefficient")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("BudgetHungMetre")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("BudgetPassageCoefficient1")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("BudgetPassageCoefficient2")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("BudgetPassageMetre1")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("BudgetPassageMetre2")
+                        .HasColumnType("float");
+
+                    b.Property<string>("CalMeterNo")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int?>("CauldronRef")
+                        .HasColumnType("int");
+
+                    b.Property<short?>("ChiefReg")
+                        .HasColumnType("smallint");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<short?>("CustomerType")
+                        .HasColumnType("smallint");
+
+                    b.Property<short?>("DeedInfo")
+                        .HasColumnType("smallint");
+
+                    b.Property<string>("Definition")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<double?>("DimField")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("DimGross")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<double?>("FuelDepotCoefficient1")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("FuelDepotCoefficient2")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("FuelDepotMetre1")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("FuelDepotMetre2")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("FuelFloorCoefficient")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("FuelFloorMetre")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("FuelGroundCoefficient")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("FuelGroundMetre")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("FuelHungCoefficient")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("FuelHungMetre")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("FuelPassageCoefficient1")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("FuelPassageCoefficient2")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("FuelPassageMetre1")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("FuelPassageMetre2")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("GasCoefficient")
+                        .HasColumnType("float");
+
+                    b.Property<string>("HotWaterMeterNo")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("IdentityNr")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("IndDivNo")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("LogRef")
+                        .HasColumnType("int");
+
+                    b.Property<int>("LogicalRef")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ParcelRef")
+                        .HasColumnType("int");
+
+                    b.Property<short?>("PersonCount")
+                        .HasColumnType("smallint");
+
+                    b.Property<int?>("PhaseRef")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ProfitingOwner")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int?>("ResidenceGroupRef")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ResidenceNo")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int?>("ResidenceTypeRef")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ShareNo")
+                        .HasColumnType("int");
+
+                    b.Property<short?>("TaxPayer")
+                        .HasColumnType("smallint");
+
+                    b.Property<double?>("TotalBrutCoefficientMetre")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("TotalFuelMetre")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("TotalNetMetre")
+                        .HasColumnType("float");
+
+                    b.Property<string>("WaterMeterNo")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .HasDatabaseName("IX_Workplace_Code");
+
+                    b.HasIndex("LogRef")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Workplace_LogRef");
+
+                    b.HasIndex("LogicalRef")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Workplace_LogicalRef");
+
+                    b.ToTable("Workplace", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

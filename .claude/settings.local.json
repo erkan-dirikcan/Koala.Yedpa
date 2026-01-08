@@ -2,7 +2,19 @@
   "permissions": {
     "allow": [
       "Bash(sqlcmd:*)",
-      "Bash(git -C:*)"
+      "Bash(git -C:*)",
+      "Bash(dotnet build:*)",
+      "Bash(dotnet ef migrations add:*)",
+      "Bash(dotnet ef migrations remove:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(powershell:*)",
+      "Bash(Select-String:*)",
+      "Bash(Select-Object:*)",
+      "Bash(dotnet clean:*)",
+      "Bash(dotnet run:*)",
+      "Bash(timeout:*)",
+      "Bash(dotnet ef database update:*)"
     ]
   }
 }

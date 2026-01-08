@@ -6,34 +6,33 @@ document.addEventListener('DOMContentLoaded', function () {
         // DataTable başlat
         const dataTable = $(table).DataTable({
             ajax: {
-                url: '/api/DuesStatisticApi/GetPagedList',
-                type: 'POST',
-                contentType: 'application/json',
-                data: function (d) {
-                    return JSON.stringify(d);
-                },
+                url: '/api/BudgetRatioApi',
+                type: 'GET',
                 dataSrc: function (json) {
                     // API'den gelen veriyi DataTable formatına çevir
+                    console.log('API Response:', json);
                     if (json.isSuccess && json.data) {
                         return json.data.map(item => ({
                             year: item.year,
-                            budgetType: item.budgetType === 1 ? 'Bütçe' : 'Ek Bütçe',
-                            total: item.total.toLocaleString('tr-TR', { minimumFractionDigits: 2 }) + ' TL',
-                            createdDate: new Date().toLocaleDateString('tr-TR'),
-                            status: item.transferStatus === 0 ? 'Beklemede' : item.transferStatus === 1 ? 'Başarılı' : 'Başarısız',
-                            statusClass: item.transferStatus === 0 ? 'badge-warning' : item.transferStatus === 1 ? 'badge-success' : 'badge-danger',
+                            budgetType: item.buggetType === 1 ? 'Bütçe' : 'Ek Bütçe',
+                            ratio: (item.ratio * 100).toFixed(2) + '%',
+                            totalBudget: item.totalBugget.toLocaleString('tr-TR', { minimumFractionDigits: 2 }) + ' TL',
+                            status: item.status === 6 ? 'Aktarım Bekleniyor' : 'Kilitli',
+                            statusClass: item.status === 6 ? 'badge-warning' : 'badge-success',
+                            statusCode: item.status,
                             id: item.id,
-                            clientCode: item.clientCode
+                            code: item.code
                         }));
                     }
+                    console.log('No data found');
                     return [];
                 }
             },
             columns: [
                 { data: 'year' },
                 { data: 'budgetType' },
-                { data: 'total' },
-                { data: 'createdDate' },
+                { data: 'ratio' },
+                { data: 'totalBudget' },
                 {
                     data: 'status',
                     render: function (data, type, row) {
@@ -43,11 +42,25 @@ document.addEventListener('DOMContentLoaded', function () {
                 {
                     data: null,
                     render: function (data, type, row) {
-                        return `
-                            <a href="/DuesStatistic/Details/${row.id}" class="btn btn-sm btn-light-primary" title="Detay">
-                                <i class="ki ki-eye"></i>
-                            </a>
-                        `;
+                        // Pending (6) durumu: Güncelle ve Aktar butonları
+                        if (row.statusCode === 6) {
+                            return `
+                                <a href="/BudgetOrder/Update/${row.id}" class="btn btn-sm btn-light-primary" title="Güncelle">
+                                    <i class="ki ki-pencil"></i> Güncelle
+                                </a>
+                                <a href="/BudgetOrder/Transfer/${row.id}" class="btn btn-sm btn-light-success" title="Aktar">
+                                    <i class="ki ki-arrow-next"></i> Aktar
+                                </a>
+                            `;
+                        }
+                        // Aktarılmış (1 veya diğer): Sadece Görüntüle
+                        else {
+                            return `
+                                <a href="/BudgetOrder/Details/${row.id}" class="btn btn-sm btn-light-info" title="Görüntüle">
+                                    <i class="ki ki-eye"></i> Görüntüle
+                                </a>
+                            `;
+                        }
                     }
                 }
             ],

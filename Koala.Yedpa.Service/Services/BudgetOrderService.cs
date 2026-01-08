@@ -8,6 +8,8 @@ using Koala.Yedpa.Core.Repositories;
 using Koala.Yedpa.Core.Services;
 using Koala.Yedpa.Core.UnitOfWorks;
 using Koala.Yedpa.Repositories;
+using Koala.Yedpa.Repositories.Repositories;
+using Koala.Yedpa.Repositories.UnitOfWork;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Text;
@@ -19,36 +21,39 @@ namespace Koala.Yedpa.Service.Services
         private readonly IDuesStatisticService _duesStatisticService;
         private readonly IBudgetRatioService _budgetRatioService;
         private readonly IUnitOfWork<AppDbContext> _unitOfWork;
-        private readonly ISiteService _siteService;
         private readonly ILogoRestServiceProvider _logoRestService;
         private readonly ITransactionService _transactionService;
         private readonly ITransactionItemService _transactionItemService;
         private readonly IEmailService _emailService;
         private readonly IEmailTemplateService _emailTemplateService;
         private readonly ILogger<BudgetOrderService> _logger;
+        private readonly ILoggerFactory _loggerFactory;
+        private readonly IApiLogoSqlDataService _apiLogoSqlDataService;
 
         public BudgetOrderService(
             IDuesStatisticService duesStatisticService,
             IBudgetRatioService budgetRatioService,
             IUnitOfWork<AppDbContext> unitOfWork,
-            ISiteService siteService,
             ILogoRestServiceProvider logoRestService,
             ITransactionService transactionService,
             ITransactionItemService transactionItemService,
             IEmailService emailService,
             IEmailTemplateService emailTemplateService,
-            ILogger<BudgetOrderService> logger)
+            ILogger<BudgetOrderService> logger,
+            ILoggerFactory loggerFactory,
+            IApiLogoSqlDataService apiLogoSqlDataService)
         {
             _duesStatisticService = duesStatisticService;
             _budgetRatioService = budgetRatioService;
             _unitOfWork = unitOfWork;
-            _siteService = siteService;
             _logoRestService = logoRestService;
             _transactionService = transactionService;
             _transactionItemService = transactionItemService;
             _emailService = emailService;
             _emailTemplateService = emailTemplateService;
             _logger = logger;
+            _loggerFactory = loggerFactory;
+            _apiLogoSqlDataService = apiLogoSqlDataService;
         }
 
         public async Task<ResponseDto<BudgetOrderResultViewModel>> CreateBudgetAndOrdersAsync(CreateBudgetOrderViewModel model)
@@ -767,6 +772,32 @@ namespace Koala.Yedpa.Service.Services
                 var calculatedDuesStatistics = new List<DuesStatisticListViewModel>();
                 foreach (var sourceDues in sourceDuesStatistics)
                 {
+                    // Yeni cari bilgilerini Logo'dan çek
+                    string newClientCode = sourceDues.ClientCode; // Varsayılan olarak mevcut kodu kullan
+                    long newClientRef = sourceDues.ClientRef;     // Varsayılan olarak mevcut ref'i kullan
+
+                    try
+                    {
+                        // DivCode (işyeri kodu) ile Logo'dan yeni cari bilgilerini çek
+                        var clientInfoResult = await _apiLogoSqlDataService.GetClientInfoByWorkplaceCodeAsync(sourceDues.DivCode);
+                        if (clientInfoResult.IsSuccess && !string.IsNullOrWhiteSpace(clientInfoResult.Data.ClientCode))
+                        {
+                            newClientCode = clientInfoResult.Data.ClientCode;
+                            newClientRef = clientInfoResult.Data.ClientRef;
+                            _logger.LogInformation("Yeni cari bilgisi çekildi: {DivCode} -> {NewClientCode} (Ref: {NewClientRef})",
+                                sourceDues.DivCode, newClientCode, newClientRef);
+                        }
+                        else
+                        {
+                            _logger.LogWarning("Yeni cari bilgisi bulunamadı: {DivCode}, mevcut bilgiler kullanılacak: {OldClientCode} (Ref: {OldClientRef})",
+                                sourceDues.DivCode, sourceDues.ClientCode, sourceDues.ClientRef);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Yeni cari bilgisi çekilirken hata oluştu: {DivCode}", sourceDues.DivCode);
+                    }
+
                     var calculatedDues = new DuesStatisticListViewModel
                     {
                         Id = sourceDues.Id,
@@ -775,8 +806,8 @@ namespace Koala.Yedpa.Service.Services
                         DivCode = sourceDues.DivCode,
                         DivName = sourceDues.DivName,
                         DocTrackingNr = sourceDues.DocTrackingNr,
-                        ClientCode = sourceDues.ClientCode,
-                        ClientRef = sourceDues.ClientRef
+                        ClientCode = newClientCode, // Yeni cari kodu
+                        ClientRef = newClientRef      // Yeni cari referansı
                     };
 
                     // Apply ratio to selected months only
@@ -861,6 +892,323 @@ namespace Koala.Yedpa.Service.Services
                 12 => dues.December,
                 _ => 0
             };
+        }
+
+        public async Task<ResponseDto<bool>> CreateBudgetRatioAsync(BudgetRatio budgetRatio)
+        {
+            try
+            {
+                // UnitOfWork üzerinden repository al (aynı DbContext)
+                await _unitOfWork.BudgetRatioRepository.AddAsync(budgetRatio);
+                await _unitOfWork.CommitAsync();
+
+                _logger.LogInformation("BudgetRatio başarıyla oluşturuldu: {Id}", budgetRatio.Id);
+                return ResponseDto<bool>.SuccessData(200, "BudgetRatio başarıyla oluşturuldu", true);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "BudgetRatio oluşturma hatası");
+                return ResponseDto<bool>.FailData(500, "BudgetRatio oluşturulurken hata oluştu", ex.Message, true);
+            }
+        }
+
+        public async Task<ResponseDto<bool>> CreateDuesStatisticAsync(DuesStatistic duesStatistic)
+        {
+            try
+            {
+                // UnitOfWork üzerinden repository al (aynı DbContext)
+                await _unitOfWork.DuesStatisticRepository.AddAsync(duesStatistic);
+                await _unitOfWork.CommitAsync();
+
+                _logger.LogInformation("DuesStatistic başarıyla oluşturuldu: {Code}", duesStatistic.Code);
+                return ResponseDto<bool>.SuccessData(200, "DuesStatistic başarıyla oluşturuldu", true);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "DuesStatistic oluşturma hatası: {Code}", duesStatistic.Code);
+                return ResponseDto<bool>.FailData(500, "DuesStatistic oluşturulurken hata oluştu", ex.Message, true);
+            }
+        }
+
+        public async Task<ResponseDto<bool>> UpdateBudgetRatioAsync(BudgetRatio budgetRatio)
+        {
+            try
+            {
+                // UnitOfWork üzerinden repository al (aynı DbContext)
+                await _unitOfWork.BudgetRatioRepository.UpdateAsync(budgetRatio);
+                await _unitOfWork.CommitAsync();
+
+                _logger.LogInformation("BudgetRatio başarıyla güncellendi: {Id}", budgetRatio.Id);
+                return ResponseDto<bool>.SuccessData(200, "BudgetRatio başarıyla güncellendi", true);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "BudgetRatio güncelleme hatası: {Id}", budgetRatio.Id);
+                return ResponseDto<bool>.FailData(500, "BudgetRatio güncellenirken hata oluştu", ex.Message, true);
+            }
+        }
+
+        public async Task<ResponseDto<BudgetRatio>> GetBudgetRatioByIdAsync(string id)
+        {
+            try
+            {
+                var budgetRatio = await _unitOfWork.BudgetRatioRepository.GetByIdAsync(id);
+                if (budgetRatio == null)
+                {
+                    return ResponseDto<BudgetRatio>.FailData(404, "BudgetRatio bulunamadı", "", true);
+                }
+
+                return ResponseDto<BudgetRatio>.SuccessData(200, "BudgetRatio getirildi", budgetRatio);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "BudgetRatio getirme hatası: {Id}", id);
+                return ResponseDto<BudgetRatio>.FailData(500, "BudgetRatio getirilirken hata oluştu", ex.Message, true);
+            }
+        }
+
+        public async Task<ResponseDto<(BudgetRatio budgetRatio, List<DuesStatistic> duesStatistics)>> GetBudgetRatioWithDuesAsync(string id)
+        {
+            try
+            {
+                var budgetRatio = await _unitOfWork.BudgetRatioRepository.GetByIdAsync(id);
+                if (budgetRatio == null)
+                {
+                    return ResponseDto<(BudgetRatio budgetRatio, List<DuesStatistic> duesStatistics)>.FailData(404, "BudgetRatio bulunamadı", "", true);
+                }
+
+                var allDues = await _unitOfWork.DuesStatisticRepository.GetAllAsync();
+                var duesStatistics = allDues.Where(d => d.BuggetRatioId == id).ToList();
+
+                return ResponseDto<(BudgetRatio budgetRatio, List<DuesStatistic> duesStatistics)>.SuccessData(200, "Veriler getirildi", (budgetRatio, duesStatistics));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "BudgetRatio ve DuesStatistic getirme hatası: {Id}", id);
+                return ResponseDto<(BudgetRatio budgetRatio, List<DuesStatistic> duesStatistics)>.FailData(500, "Veriler getirilirken hata oluştu", ex.Message, true);
+            }
+        }
+
+        public async Task<ResponseDto<bool>> UpdateBudgetRatioWithDuesAsync(BudgetRatio budgetRatio, BuggetRatioMounthEnum selectedMonthsFlag)
+        {
+            try
+            {
+                // BudgetRatio'yu güncelle
+                budgetRatio.BuggetRatioMounths = selectedMonthsFlag;
+                budgetRatio.LastUpdateTime = DateTime.Now;
+                await _unitOfWork.BudgetRatioRepository.UpdateAsync(budgetRatio);
+
+                // Eski DuesStatistic kayıtlarını sil
+                var allDues = await _unitOfWork.DuesStatisticRepository.GetAllAsync();
+                var existingDues = allDues.Where(d => d.BuggetRatioId == budgetRatio.Id).ToList();
+
+                if (existingDues.Any())
+                {
+                    foreach (var dues in existingDues)
+                    {
+                        await _unitOfWork.DuesStatisticRepository.DeleteAsync(dues.Id);
+                    }
+                }
+
+                // Toplam bütçeyi hesapla
+                var totalBudget = 0m;
+
+                // Yeni DuesStatistic kayıtlarını oluştur (kaynak yıldan yeniden hesapla)
+                var sourceYear = budgetRatio.BuggetType == BuggetTypeEnum.Budget ? budgetRatio.Year - 1 : budgetRatio.Year;
+                var allSourceDues = await _unitOfWork.DuesStatisticRepository.GetAllAsync();
+                var sourceDuesStatistics = allSourceDues
+                    .Where(d => d.Year == sourceYear.ToString() && d.BudgetType == BuggetTypeEnum.Budget)
+                    .ToList();
+
+                foreach (var sourceDues in sourceDuesStatistics)
+                {
+                    // Seçilen aylara göre yeni değerleri hesapla
+                    var newDues = CalculateDuesForUpdate(sourceDues, budgetRatio.Ratio, selectedMonthsFlag, budgetRatio.Id);
+
+                    await _unitOfWork.DuesStatisticRepository.AddAsync(newDues);
+                    totalBudget += newDues.Total;
+                }
+
+                // TotalBugget'i güncelle
+                budgetRatio.TotalBugget = totalBudget;
+                await _unitOfWork.BudgetRatioRepository.UpdateAsync(budgetRatio);
+
+                await _unitOfWork.CommitAsync();
+
+                _logger.LogInformation("BudgetRatio ve DuesStatistic kayıtları başarıyla güncellendi: {Id}", budgetRatio.Id);
+                return ResponseDto<bool>.SuccessData(200, "Güncelleme başarılı", true);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "BudgetRatio güncelleme hatası: {Id}", budgetRatio.Id);
+                return ResponseDto<bool>.FailData(500, "Güncellenirken hata oluştu", ex.Message, true);
+            }
+        }
+
+        public async Task<ResponseDto<PreviewUpdateResultViewModel>> PreviewUpdateAsync(string budgetRatioId, decimal? newRatio, decimal? targetAmount, BuggetRatioMounthEnum newMonthsFlag)
+        {
+            try
+            {
+                // Mevcut BudgetRatio'ı getir
+                var budgetRatio = await _unitOfWork.BudgetRatioRepository.GetByIdAsync(budgetRatioId);
+                if (budgetRatio == null)
+                {
+                    return ResponseDto<PreviewUpdateResultViewModel>.FailData(404, "BudgetRatio bulunamadı", "", true);
+                }
+
+                // Kaynak yılı belirle
+                var sourceYear = budgetRatio.BuggetType == BuggetTypeEnum.Budget ? budgetRatio.Year - 1 : budgetRatio.Year;
+
+                // Kaynak yıldan DuesStatistic kayıtlarını getir
+                var allDues = await _unitOfWork.DuesStatisticRepository.GetAllAsync();
+                var sourceDuesStatistics = allDues
+                    .Where(d => d.Year == sourceYear.ToString() && d.BudgetType == BuggetTypeEnum.Budget)
+                    .ToList();
+
+                if (!sourceDuesStatistics.Any())
+                {
+                    return ResponseDto<PreviewUpdateResultViewModel>.FailData(404, $"Kaynak yıl ({sourceYear}) için veri bulunamadı", "", true);
+                }
+
+                // Kaynak yılın seçili aylardaki toplamını hesapla
+                var sourceSelectedMonthsTotal = sourceDuesStatistics
+                    .Sum(d => GetSelectedMonthsTotal(d, newMonthsFlag));
+
+                // Oran hesapla
+                decimal calculatedRatio = 0;
+                if (newRatio.HasValue)
+                {
+                    // Oran verildi - direkt kullan
+                    calculatedRatio = newRatio.Value;
+                }
+                else if (targetAmount.HasValue)
+                {
+                    // Toplam bütçe verildi - oranı hesapla
+                    if (sourceSelectedMonthsTotal == 0)
+                    {
+                        return ResponseDto<PreviewUpdateResultViewModel>.FailData(400, "Seçili aylar için kaynak verisi yok", "", true);
+                    }
+                    calculatedRatio = (targetAmount.Value - sourceSelectedMonthsTotal) / sourceSelectedMonthsTotal;
+                }
+                else
+                {
+                    return ResponseDto<PreviewUpdateResultViewModel>.FailData(400, "Oran veya toplam bütçe verilmelidir", "", true);
+                }
+
+                // Önizleme sonucunu hazırla
+                var result = new PreviewUpdateResultViewModel();
+                var newTotal = 0m;
+
+                foreach (var sourceDues in sourceDuesStatistics)
+                {
+                    // Kaynak yıldan yeni değerleri hesapla
+                    var newDues = CalculateDuesForUpdate(sourceDues, calculatedRatio, newMonthsFlag, budgetRatioId);
+
+                    // Kaynak yıldan mevcut seçili aylar toplamı
+                    var sourceSelectedMonthsTotalForRow = GetSelectedMonthsTotal(sourceDues, newMonthsFlag);
+
+                    newTotal += newDues.Total;
+
+                    result.Rows.Add(new PreviewUpdateRowViewModel
+                    {
+                        DivName = sourceDues.DivName,
+                        Code = sourceDues.Code,
+                        ClientCode = sourceDues.ClientCode,
+                        CurrentSelectedMonths = sourceSelectedMonthsTotalForRow,  // Kaynak yıldan
+                        CurrentTotal = sourceDues.Total,  // Kaynak yıldan toplam
+                        NewSelectedMonths = GetSelectedMonthsTotal(newDues, newMonthsFlag),
+                        NewTotal = newDues.Total
+                    });
+                }
+
+                result.NewTotal = newTotal;
+                result.TotalDiff = newTotal - budgetRatio.TotalBugget;
+                result.CalculatedRatio = calculatedRatio;
+
+                return ResponseDto<PreviewUpdateResultViewModel>.SuccessData(200, "Önizleme hazır", result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Bütçe güncelleme önizleme hatası: {Id}", budgetRatioId);
+                return ResponseDto<PreviewUpdateResultViewModel>.FailData(500, "Önizleme sırasında hata oluştu", ex.Message, true);
+            }
+        }
+
+        private decimal GetSelectedMonthsTotal(DuesStatistic dues, BuggetRatioMounthEnum selectedMonths)
+        {
+            var total = 0m;
+            if (selectedMonths.HasFlag(BuggetRatioMounthEnum.January)) total += dues.January;
+            if (selectedMonths.HasFlag(BuggetRatioMounthEnum.February)) total += dues.February;
+            if (selectedMonths.HasFlag(BuggetRatioMounthEnum.March)) total += dues.March;
+            if (selectedMonths.HasFlag(BuggetRatioMounthEnum.April)) total += dues.April;
+            if (selectedMonths.HasFlag(BuggetRatioMounthEnum.May)) total += dues.May;
+            if (selectedMonths.HasFlag(BuggetRatioMounthEnum.June)) total += dues.June;
+            if (selectedMonths.HasFlag(BuggetRatioMounthEnum.July)) total += dues.July;
+            if (selectedMonths.HasFlag(BuggetRatioMounthEnum.August)) total += dues.August;
+            if (selectedMonths.HasFlag(BuggetRatioMounthEnum.September)) total += dues.September;
+            if (selectedMonths.HasFlag(BuggetRatioMounthEnum.October)) total += dues.October;
+            if (selectedMonths.HasFlag(BuggetRatioMounthEnum.November)) total += dues.November;
+            if (selectedMonths.HasFlag(BuggetRatioMounthEnum.December)) total += dues.December;
+            return total;
+        }
+
+        private DuesStatistic CalculateDuesForUpdate(DuesStatistic source, decimal ratio, BuggetRatioMounthEnum selectedMonths, string budgetRatioId)
+        {
+            var newDues = new DuesStatistic
+            {
+                Id = Guid.NewGuid().ToString(),
+                Year = source.Year,
+                Code = source.Code,
+                DivCode = source.DivCode,
+                DivName = source.DivName,
+                DocTrackingNr = source.DocTrackingNr,
+                ClientCode = source.ClientCode,
+                ClientRef = source.ClientRef,
+                BudgetType = BuggetTypeEnum.Budget, // Güncellenmiş bütçe
+                BuggetRatioId = budgetRatioId,
+                TransferStatus = TransferStatusEnum.Pending,
+                CreateTime = DateTime.Now,
+                LastUpdateTime = DateTime.Now,
+                // Aylık değerleri hesapla
+                January = selectedMonths.HasFlag(BuggetRatioMounthEnum.January) ? source.January * (1 + ratio) : 0,
+                February = selectedMonths.HasFlag(BuggetRatioMounthEnum.February) ? source.February * (1 + ratio) : 0,
+                March = selectedMonths.HasFlag(BuggetRatioMounthEnum.March) ? source.March * (1 + ratio) : 0,
+                April = selectedMonths.HasFlag(BuggetRatioMounthEnum.April) ? source.April * (1 + ratio) : 0,
+                May = selectedMonths.HasFlag(BuggetRatioMounthEnum.May) ? source.May * (1 + ratio) : 0,
+                June = selectedMonths.HasFlag(BuggetRatioMounthEnum.June) ? source.June * (1 + ratio) : 0,
+                July = selectedMonths.HasFlag(BuggetRatioMounthEnum.July) ? source.July * (1 + ratio) : 0,
+                August = selectedMonths.HasFlag(BuggetRatioMounthEnum.August) ? source.August * (1 + ratio) : 0,
+                September = selectedMonths.HasFlag(BuggetRatioMounthEnum.September) ? source.September * (1 + ratio) : 0,
+                October = selectedMonths.HasFlag(BuggetRatioMounthEnum.October) ? source.October * (1 + ratio) : 0,
+                November = selectedMonths.HasFlag(BuggetRatioMounthEnum.November) ? source.November * (1 + ratio) : 0,
+                December = selectedMonths.HasFlag(BuggetRatioMounthEnum.December) ? source.December * (1 + ratio) : 0,
+                Total = 0 // Hesaplanacak
+            };
+
+            // Toplamı hesapla
+            newDues.Total = newDues.January + newDues.February + newDues.March + newDues.April +
+                            newDues.May + newDues.June + newDues.July + newDues.August +
+                            newDues.September + newDues.October + newDues.November + newDues.December;
+
+            return newDues;
+        }
+
+        public async Task<ResponseDto<List<OrderResultViewModel>>> TransferDuesStatisticsToLogoAsync(
+            List<string> duesStatisticIds,
+            string? userId = null,
+            bool isDebugMode = false)
+        {
+            // TransferService için logger oluştur
+            var transferLogger = _loggerFactory.CreateLogger<BudgetOrderTransferService>();
+
+            // TransferService'i kullanarak aktarım yap
+            var transferService = new BudgetOrderTransferService(
+                _unitOfWork,
+                _logoRestService,
+                transferLogger,
+                _emailService);
+
+            return await transferService.TransferDuesStatisticsToLogoAsync(duesStatisticIds, userId, isDebugMode);
         }
     }
 }

@@ -5,11 +5,23 @@
     ViewData["MenuToggle"] = "Site";
 }
 
+<!-- DataTables Buttons CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css" />
+<style>
+    .dt-buttons {
+        margin-bottom: 10px;
+    }
+    .dt-buttons .btn {
+        margin-right: 5px;
+    }
+</style>
+
 <div class="d-flex flex-column-fluid">
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-12">
-                <div class="card card-custom">
+            <div class="card card-custom">
+                    <form id="createBudgetForm" class="form">
                     <div class="card-header flex-wrap border-0 pt-6 pb-0">
                         <div class="card-title">
                             <h3 class="card-label">
@@ -24,317 +36,246 @@
                         </div>
                     </div>
 
-                    <div class="card-body">
-                        <form id="createBudgetForm" class="form">
-                            <!-- Bütçe Türü Seçimi -->
-                            <div class="form-group row">
-                                <label class="col-form-label col-lg-2">Bütçe Türü <span class="text-danger">*</span></label>
-                                <div class="col-lg-10">
-                                    <div class="radio-list">
-                                        <label class="radio radio-outline radio-success">
-                                            <input type="radio" name="budgetType" value="1" checked />
-                                            <span></span>
-                                            <div class="radio-content">
-                                                <h6 class="font-weight-bold">Bütçe</h6>
-                                                <p class="mb-0 text-muted">Hedef yıl girebilirsiniz</p>
-                                            </div>
-                                        </label>
-                                        <label class="radio radio-outline radio-warning">
-                                            <input type="radio" name="budgetType" value="2" />
-                                            <span></span>
-                                            <div class="radio-content">
-                                                <h6 class="font-weight-bold">Ek Bütçe</h6>
-                                                <p class="mb-0 text-muted">Hedef yıl pasif, kaynak yıl üzerine eklenir</p>
-                                            </div>
-                                        </label>
-                                    </div>
+                <div class="card-body">
+                
+                <!-- Bütçe Türü Seçimi -->
+                <div class="form-group row">
+                    <label class="col-form-label col-lg-2">Bütçe Türü <span class="text-danger">*</span></label>
+                    <div class="col-lg-4">
+                        <div class="radio-list">
+                            <label class="radio radio-outline radio-success">
+                                <input type="radio" name="budgetType" value="1" checked />
+                                <span></span>
+                                <div class="radio-content">
+                                    <h6 class="font-weight-bold">Bütçe</h6>
+                                    <p class="mb-0 text-muted">Hedef yıl girebilirsiniz</p>
                                 </div>
-                            </div>
-
-                            <!-- Hedef Yıl -->
-                            <div class="form-group row">
-                                <label class="col-form-label col-lg-2">Hedef Yıl <span class="text-danger">*</span></label>
-                                <div class="col-lg-10">
-                                    <div class="row">
-                                        <div class="col-xl-6">
-                                            <div class="form-group">
-                                                <label>Hedef Yıl</label>
-                                                <input type="number" name="targetYear" id="targetYear" class="form-control" placeholder="2026" min="2024" max="2100" required />
-                                                <span class="form-text text-muted" id="targetYearHelp">Bütçe oluşturulacak yıl</span>
-                                            </div>
-                                        </div>
-                                    </div>
+                            </label>
+                            <label class="radio radio-outline radio-warning">
+                                <input type="radio" name="budgetType" value="2" />
+                                <span></span>
+                                <div class="radio-content">
+                                    <h6 class="font-weight-bold">Ek Bütçe</h6>
+                                    <p class="mb-0 text-muted">Hedef yıl pasif, kaynak yıl üzerine eklenir</p>
                                 </div>
-                            </div>
-
-                            <!-- Oran veya Bütçe Girişi -->
-                            <div class="form-group row">
-                                <label class="col-form-label col-lg-2">Hesaplama Yöntemi <span class="text-danger">*</span></label>
-                                <div class="col-lg-10">
-                                    <div class="row">
-                                        <div class="col-xl-6">
-                                            <div class="form-group">
-                                                <label>Oran (%)</label>
-                                                <div class="input-group">
-                                                    <input type="number" class="form-control" id="newRatioPercent" step="1" min="-100" max="1000" placeholder="25" />
-                                                    <div class="input-group-append">
-                                                        <span class="input-group-text">%</span>
-                                                    </div>
-                                                </div>
-                                                <span class="form-text text-muted">Örn: 25 = %25 artış, -20 = %20 azalış, 0 = değişim yok</span>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-xl-6">
-                                            <div class="form-group">
-                                                <label>VEYA Toplam Bütçe</label>
-                                                <div class="input-group">
-                                                    <input type="number" class="form-control" id="newBudget" step="0.01" min="0" placeholder="135770811" />
-                                                    <div class="input-group-append">
-                                                        <span class="input-group-text">TL</span>
-                                                    </div>
-                                                </div>
-                                                <span class="form-text text-muted">Toplam hedef bütçe tutarı girin, oran otomatik hesaplanır</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Kaynak Yıl (En Sona Taşındı) -->
-                            <div class="form-group row">
-                                <label class="col-form-label col-lg-2">Kaynak Yıl <span class="text-danger">*</span></label>
-                                <div class="col-lg-10">
-                                    <div class="row">
-                                        <div class="col-xl-6">
-                                            <div class="form-group">
-                                                <label>Kaynak Yıl</label>
-                                                <select name="sourceYear" id="sourceYear" class="form-control" required>
-                                                    <option value="">Seçiniz...</option>
-                                                    <!-- JavaScript ile doldurulacak -->
-                                                </select>
-                                                <span class="form-text text-muted">Bütçe hesaplanacak kaynak yıl (son seçiniz)</span>
-                                                <div id="sourceYearLoading" style="display: none;" class="mt-2">
-                                                    <div class="spinner-border spinner-border-sm text-primary" role="status">
-                                                        <span class="sr-only">Yükleniyor...</span>
-                                                    </div>
-                                                    <span class="ml-2 text-muted">Veriler yükleniyor, lütfen bekleyiniz...</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Aylar Seçimi -->
-                            <div class="form-group row" id="monthsSelectionSection" style="display:none;">
-                                <label class="col-form-label col-lg-2">Aylar <span class="text-danger">*</span></label>
-                                <div class="col-lg-10">
-                                    <div class="row">
-                                        <div class="col-xl-3">
-                                            <div class="checkbox-list">
-                                                <label class="checkbox">
-                                                    <input type="checkbox" class="month-checkbox" value="1" checked="checked" />
-                                                    <span></span>Ocak
-                                                </label>
-                                                <label class="checkbox">
-                                                    <input type="checkbox" class="month-checkbox" value="2" checked="checked" />
-                                                    <span></span>Şubat
-                                                </label>
-                                                <label class="checkbox">
-                                                    <input type="checkbox" class="month-checkbox" value="4" checked="checked" />
-                                                    <span></span>Mart
-                                                </label>
-                                                <label class="checkbox">
-                                                    <input type="checkbox" class="month-checkbox" value="8" checked="checked" />
-                                                    <span></span>Nisan
-                                                </label>
-                                            </div>
-                                        </div>
-
-
-                                        <div class="col-xl-3">
-                                            <div class="checkbox-list">
-                                                <label class="checkbox">
-                                                    <input type="checkbox" class="month-checkbox" value="16" checked="checked" />
-                                                    <span></span>Mayıs
-                                                </label>
-                                                <label class="checkbox">
-                                                    <input type="checkbox" class="month-checkbox" value="32" checked="checked" />
-                                                    <span></span>Haziran
-                                                </label>
-                                                <label class="checkbox">
-                                                    <input type="checkbox" class="month-checkbox" value="64" checked="checked" />
-                                                    <span></span>Temmuz
-                                                </label>
-                                                <label class="checkbox">
-                                                    <input type="checkbox" class="month-checkbox" value="128" checked="checked" />
-                                                    <span></span>Ağustos
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <div class="col-xl-3">
-                                            <div class="checkbox-list">
-                                                <label class="checkbox">
-                                                    <input type="checkbox" class="month-checkbox" value="256" checked="checked" />
-                                                    <span></span>Eylül
-                                                </label>
-                                                <label class="checkbox">
-                                                    <input type="checkbox" class="month-checkbox" value="512" checked="checked" />
-                                                    <span></span>Ekim
-                                                </label>
-                                                <label class="checkbox">
-                                                    <input type="checkbox" class="month-checkbox" value="1024" checked="checked" />
-                                                    <span></span>Kasım
-                                                </label>
-                                                <label class="checkbox">
-                                                    <input type="checkbox" class="month-checkbox" value="2048" checked="checked" />
-                                                    <span></span>Aralık
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <div class="col-xl-3">
-                                            <button type="button" class="btn btn-sm btn-light-primary" id="selectAllMonths">
-                                                <i class="ki ki-check"></i> Tümünü Seç
-                                            </button>
-                                            <button type="button" class="btn btn-sm btn-light-secondary ml-2" id="deselectAllMonths">
-                                                <i class="ki ki-close"></i> Seçimi Kaldır
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <span class="form-text text-muted">Seçilen aylara oran uygulanacak</span>
-                                </div>
-                            </div>
-
-                            <!-- Hesapla ve Dağıt Butonu -->
-                            <div class="form-group row" id="calculateSection" style="display:none;">
-                                <div class="col-lg-10 offset-lg-2">
-                                    <button type="button" class="btn btn-info mr-2" id="calculateBtn">
-                                        <i class="ki ki-calculator"></i> Hesapla ve Dağıt
-                                    </button>
-                                    <span class="form-text text-muted ml-2">Seçilen yıla göre oran uygulanır ve tablo güncellenir</span>
-                                </div>
-                            </div>
-
-                            <!-- Eski Bütçe Toplamı (Seçili Aylar) -->
-                            <div class="alert alert-primary" role="alert" id="oldBudgetSummary" style="display:none;">
-                                <div class="d-flex align-items-center">
-                                    <div class="alert-icon"><i class="ki ki-information icon-md"></i></div>
-                                    <div class="alert-text">
-                                        <strong>Seçili Ayların Kaynak Yıl Toplamı: </strong>
-                                        <span id="oldBudgetTotal">0</span> TL
-                                        <span class="mx-2">|</span>
-                                        <span class="text-muted">Sadece seçili ayların toplamı</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Yeni Bütçe Toplamı (Hesapla sonrası) -->
-                            <div class="alert alert-success" role="alert" id="newBudgetSummary" style="display:none;">
-                                <div class="d-flex align-items-center">
-                                    <div class="alert-icon"><i class="ki ki-check icon-md"></i></div>
-                                    <div class="alert-text">
-                                        <strong>Hesaplanan Yeni Toplam: </strong>
-                                        <span id="newBudgetTotal">0</span> TL
-                                        <span class="mx-2">|</span>
-                                        <strong>Uygulanan Oran: </strong>
-                                        <span id="appliedRatio">0</span>%
-                                        <span class="mx-2">|</span>
-                                        <span class="text-muted">Seçili aylara oran uygulandı</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- DuesStatistics Tablosu -->
-                            <div class="form-group" id="duesStatisticSection" style="display:none;">
-                                <label>İş Yeri / Cari Bütçe Dağılımı</label>
-                                <div class="table-responsive">
-                                    <table class="table table-bordered table-hover" id="duesStatisticTable">
-                                        <thead class="thead-light">
-                                            <tr>
-                                                <th>İş Yeri</th>
-                                                <th>İşyeri Kodu</th>
-                                                <th>Cari Hesap</th>
-                                                <th>Ocak</th>
-                                                <th>Şubat</th>
-                                                <th>Mart</th>
-                                                <th>Nisan</th>
-                                                <th>Mayıs</th>
-                                                <th>Haziran</th>
-                                                <th>Temmuz</th>
-                                                <th>Ağustos</th>
-                                                <th>Eylül</th>
-                                                <th>Ekim</th>
-                                                <th>Kasım</th>
-                                                <th>Aralık</th>
-                                                <th>Toplam</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <!-- DataTable ile doldurulacak -->
-                                        </tbody>
-                                        <tfoot class="thead-light">
-                                            <tr>
-                                                <th colspan="3" class="text-right">TOPLAM:</th>
-                                                <th id="sumJanuary">0</th>
-                                                <th id="sumFebruary">0</th>
-                                                <th id="sumMarch">0</th>
-                                                <th id="sumApril">0</th>
-                                                <th id="sumMay">0</th>
-                                                <th id="sumJune">0</th>
-                                                <th id="sumJuly">0</th>
-                                                <th id="sumAugust">0</th>
-                                                <th id="sumSeptember">0</th>
-                                                <th id="sumOctober">0</th>
-                                                <th id="sumNovember">0</th>
-                                                <th id="sumDecember">0</th>
-                                                <th id="sumGrandTotal">0</th>
-                                            </tr>
-                                        </tfoot>
-                                    </table>
-                                </div>
-                            </div>
-
-                            <!-- Bilgilendirme -->
-                            <div class="alert alert-info" role="alert">
-                                <h4 class="alert-heading"><i class="ki ki-information icon-md"></i> Bilgilendirme</h4>
-                                <hr>
-                                <ul class="mb-0">
-                                    <li><strong>Hedef Yıl</strong> girin</li>
-                                    <li><strong>Oran</strong> (örn: 1.25) veya <strong>Toplam Bütçe</strong> (örn: 135770811) girin (ikisinden biri yeterli)</li>
-                                    <li><strong>Kaynak yıl</strong> seçin, tablo görüntülenir (veri yüklenirken spinner çalışır)</li>
-                                    <li><strong>Ayları seçin</strong>, hangi aylara uygulanacağını belirleyin</li>
-                                    <li><strong>Hesapla ve Dağıt</strong> butonuna basın, seçili aylara oran uygulanır</li>
-                                    <li><strong>Önceki Yıl Toplamı</strong> sadece seçili ayların toplamını gösterir</li>
-                                    <li><strong>Kaydet</strong> butonu ile yeni bütçeler oluşturulur</li>
-                                    <li>Tablo 10'ar kayıtlı sayfalama ile çalışır</li>
-                                </ul>
-                            </div>
-
-                            <!-- Butonlar -->
-                            <div class="d-flex justify-content-between border-top pt-10">
-                                <div>
-                                    <button type="button" class="btn btn-secondary" onclick="history.back()">
-                                        <i class="ki ki-close"></i> İptal
-                                    </button>
-                                </div>
-                                <div>
-                                    <button type="submit" class="btn btn-primary font-weight-bolder" id="submitBtn" disabled>
-                                        <span class="svg-icon svg-icon-md">
-                                            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
-                                                <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                                    <rect x="0" y="0" width="24" height="24" />
-                                                    <circle fill="#000000" cx="9" cy="15" r="6" />
-                                                    <path d="M8.8012943,7.00241953 C9.83837775,5.20768121 11.7781543,4 14,4 C17.3137085,4 20,6.6862915 20,10 C20,12.2218457 18.7923188,14.1616223 16.9975805,15.1987057 C16.9991904,15.1326658 17,15.0664274 17,15 C17,10.581722 13.418278,7 9,7 C8.93357256,7 8.86733422,7.00080962 8.8012943,7.00241953 Z" fill="#000000" opacity="0.3" />
-                                                </g>
-                                            </svg>
-                                        </span>
-                                        Kaydet
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
+                            </label>
+                        </div>
                     </div>
+                    <!-- Oran veya Toplam Bütçe -->
+                    <label class="col-form-label col-lg-2">Hesaplama Türü <span class="text-danger">*</span></label>
+                    <div class="col-lg-4">
+                        <div class="radio-list">
+                            <label class="radio radio-outline radio-success">
+                                <input type="radio" name="calculationType" value="ratio" id="ratioRadio"  checked />
+                                <span></span>
+                                <div class="radio-content">
+                                    <h6 class="font-weight-bold">Bütçe Oranı</h6>
+                                    <p class="mb-0 text-muted">Girilen Orana Göre Hesaplama Yapılır</p>
+                                </div>
+                            </label>
+                            <label class="radio radio-outline radio-warning">
+                                <input type="radio" name="calculationType" value="amount" id="amountRadio" />
+                                <span></span>
+                                <div class="radio-content">
+                                    <h6 class="font-weight-bold">Toplam Bütçe</h6>
+                                    <p class="mb-0 text-muted">Gerilan Toplam Bütçeye Göre Hesaplama Yapılır.</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                               
+
+                </div>
+
+                <!-- 3 Kolon: Hedef Yıl | Kaynak Yıl | Oran/Toplam Bütçe -->
+                <div class="form-group row">
+                    <!--Oran/Toplam Bütçe-->
+                    <div class="col-lg-12">
+                        <div class="row">
+                            <!-- Hedef Yıl -->
+                            <div class="col-lg-4">
+                                <div class="form-group">
+                                    <label>Hedef Yıl</label>
+                                    <input type="number" name="targetYear" id="targetYear" class="form-control" placeholder="2026" min="2024" max="2100" required />
+                                    <span class="form-text text-muted">Bütçe oluşturulacak yıl</span>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4">
+                                <!-- Oran Input -->
+                                <div  id="ratioInputSection">
+                                    <div class="form-group">
+                                        <label>Oran (%)</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" id="newRatioPercent" step="1" min="-100" max="1000" placeholder="25"/>
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">%</span>
+                                            </div>
+                                        </div>
+                                        <span class="form-text text-muted">Örn: 25 = %25 artış</span>
+                                    </div>
+                                </div>
+                                <!-- Toplam Bütçe Input -->
+                                <div id="amountInputSection" style="display:none;">
+                                    <div class="form-group">
+                                        <label>Toplam Bütçe (TL)</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" id="newBudget" step="0.01" min="0" placeholder="135770811" />
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">₺</span>
+                                            </div>
+                                        </div>
+                                        <span class="form-text text-muted">Toplam hedef bütçe</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Kaynak Yıl -->
+                            <div class="col-lg-4">
+                                <div class="form-group">
+                                    <label>Kaynak Yıl</label>
+                                    <select name="sourceYear" id="sourceYear" class="form-control" required>
+                                        <option value="">Seçiniz...</option>
+                                    </select>
+                                    <span class="form-text text-muted">Bütçe hesaplanacak kaynak yıl</span>
+                                    <div id="sourceYearLoading" style="display: none;" class="mt-2">
+                                        <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                            <span class="sr-only">Yükleniyor...</span>
+                                        </div>
+                                        <span class="ml-2 text-muted">Yükleniyor...</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                                       
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <!-- Aylar Seçimi -->
+                <div class="form-group row" id="monthsSelectionSection" style="display:none;">
+                    <label class="col-form-label col-lg-2">Aylar <span class="text-danger">*</span></label>
+                    <div class="col-lg-10">
+                        <div class="row">
+                            <div class="col-xl-3">
+                                <div class="checkbox-list">
+                                    <label class="checkbox"><input type="checkbox" class="month-checkbox" value="1" checked="checked" /><span></span>Ocak</label>
+                                    <label class="checkbox"><input type="checkbox" class="month-checkbox" value="2" checked="checked" /><span></span>Şubat</label>
+                                    <label class="checkbox"><input type="checkbox" class="month-checkbox" value="4" checked="checked" /><span></span>Mart</label>
+                                    <label class="checkbox"><input type="checkbox" class="month-checkbox" value="8" checked="checked" /><span></span>Nisan</label>
+                                </div>
+                            </div>
+                            <div class="col-xl-3">
+                                <div class="checkbox-list">
+                                    <label class="checkbox"><input type="checkbox" class="month-checkbox" value="16" checked="checked" /><span></span>Mayıs</label>
+                                    <label class="checkbox"><input type="checkbox" class="month-checkbox" value="32" checked="checked" /><span></span>Haziran</label>
+                                    <label class="checkbox"><input type="checkbox" class="month-checkbox" value="64" checked="checked" /><span></span>Temmuz</label>
+                                    <label class="checkbox"><input type="checkbox" class="month-checkbox" value="128" checked="checked" /><span></span>Ağustos</label>
+                                </div>
+                            </div>
+                            <div class="col-xl-3">
+                                <div class="checkbox-list">
+                                    <label class="checkbox"><input type="checkbox" class="month-checkbox" value="256" checked="checked" /><span></span>Eylül</label>
+                                    <label class="checkbox"><input type="checkbox" class="month-checkbox" value="512" checked="checked" /><span></span>Ekim</label>
+                                    <label class="checkbox"><input type="checkbox" class="month-checkbox" value="1024" checked="checked" /><span></span>Kasım</label>
+                                    <label class="checkbox"><input type="checkbox" class="month-checkbox" value="2048" checked="checked" /><span></span>Aralık</label>
+                                </div>
+                            </div>
+                            <div class="col-xl-3">
+                                <button type="button" class="btn btn-sm btn-light-primary" id="selectAllMonths">
+                                    <i class="ki ki-check"></i> Tümünü Seç
+                                </button>
+                                <button type="button" class="btn btn-sm btn-light-secondary ml-2" id="deselectAllMonths">
+                                    <i class="ki ki-close"></i> Seçimi Kaldır
+                                </button>
+                            </div>
+                        </div>
+                        <span class="form-text text-muted">Seçilen aylara oran uygulanacak</span>
+                    </div>
+                </div>
+
+                <!-- Hesapla Butonu -->
+                <div class="form-group row" id="calculateSection" style="display:none;">
+                    <div class="col-lg-2 offset-lg-10">
+                        <button type="button" class="btn btn-info mr-2" id="calculateBtn">
+                            <i class="ki ki-calculator"></i> Hesapla ve Dağıt
+                        </button>
+                        <span class="form-text text-muted ml-2">Seçilen yıla göre oran uygulanır</span>
+                    </div>
+                </div>
+
+                <!-- Özet Bilgiler -->
+                <div class="alert alert-primary" role="alert" id="oldBudgetSummary" style="display:none;">
+                    <div class="d-flex align-items-center">
+                        <div class="alert-icon"><i class="ki ki-information icon-md"></i></div>
+                        <div class="alert-text">
+                            <strong>Seçili Ayların Kaynak Yıl Toplamı: </strong>
+                            <span id="oldBudgetTotal">0</span> TL
+                        </div>
+                    </div>
+                </div>
+
+                <div class="alert alert-success" role="alert" id="newBudgetSummary" style="display:none;">
+                    <div class="d-flex align-items-center">
+                        <div class="alert-icon"><i class="ki ki-check icon-md"></i></div>
+                        <div class="alert-text">
+                            <strong>Hesaplanan Yeni Toplam: </strong>
+                            <span id="newBudgetTotal">0</span> TL
+                            <span class="mx-2">|</span>
+                            <strong>Uygulanan Oran: </strong>
+                            <span id="appliedRatio">0</span>%
+                        </div>
+                    </div>
+                </div>
+
+                          
+
+                <!-- DuesStatistics Tablosu -->
+                <div class="form-group" id="duesStatisticSection" style="display:none;">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover" id="duesStatisticTable">
+                            <thead>
+                            <tr>
+                                <th>Dükkan</th>
+                                <th>Dükkan Kodu</th>
+                                <th>Müşteri Kodu</th>
+                                <th>Ocak</th>
+                                <th>Şubat</th>
+                                <th>Mart</th>
+                                <th>Nisan</th>
+                                <th>Mayıs</th>
+                                <th>Haziran</th>
+                                <th>Temmuz</th>
+                                <th>Ağustos</th>
+                                <th>Eylül</th>
+                                <th>Ekim</th>
+                                <th>Kasım</th>
+                                <th>Aralık</th>
+                                <th>Toplam</th>
+                            </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <!-- Kaydet Butonu 
+                    <div class="form-group row" id="saveSection" style="display:none;">
+                        <div class="col-lg-2 offset-lg-10">
+                           
+                        </div>
+                                </div>-->
+                </div>
+                
+                </div>
+                <div class="card-footer">
+                    <button type="button" class="btn btn-primary mr-2" id="saveBtn">
+                        <i class="ki ki-save"></i> Kaydet
+                    </button>
+                    <a asp-action="Index" asp-controller="BudgetOrder" class="btn btn-secondary">
+                        <i class="ki ki-close"></i> İptal
+                    </a>
+                </div>
+                </form>
                 </div>
             </div>
         </div>
@@ -343,5 +284,14 @@
 
 @section Scripts
 {
-    <script src="~/assets/js/custom/budget-order-create-page.js"></script>
+    <!-- JSZip for Excel export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <!-- DataTables Buttons -->
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+
+    <script src="~/assets/js/custom/budget-order-create-page.js?v=11"></script>
 }

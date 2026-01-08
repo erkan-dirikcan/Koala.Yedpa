@@ -1,0 +1,73 @@
+/**
+ * Koala Yedpa Custom Theme Colors
+ */
+
+/* Info Button - Light Blue */
+.btn-info {
+    background-color: #85d8ff !important;
+    border-color: #85d8ff !important;
+    color: #000 !important;
+}
+
+.btn-info:hover, .btn-info:focus, .btn-info:active, .btn-info.active {
+    background-color: #6bc9e8 !important;
+    border-color: #6bc9e8 !important;
+    color: #000 !important;
+}
+
+.btn-info.show {
+    background-color: #6bc9e8 !important;
+    border-color: #6bc9e8 !important;
+    color: #000 !important;
+}
+
+/* Primary Button - Dark Blue */
+.btn-primary {
+    background-color: #00325c !important;
+    border-color: #00325c !important;
+    color: #fff !important;
+}
+
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active {
+    background-color: #004480 !important;
+    border-color: #004480 !important;
+    color: #fff !important;
+}
+
+.btn-primary.show {
+    background-color: #004480 !important;
+    border-color: #004480 !important;
+    color: #fff !important;
+}
+
+/* Info Background Utilities */
+.bg-info {
+    background-color: #85d8ff !important;
+}
+
+.bg-info:hover {
+    background-color: #6bc9e8 !important;
+}
+
+/* Info Text Utilities */
+.text-info {
+    color: #85d8ff !important;
+}
+
+/* Info Alert */
+.alert-info {
+    background-color: #e7f6ff !important;
+    border-color: #85d8ff !important;
+    color: #00325c !important;
+}
+
+/* Info Badge */
+.badge-info {
+    background-color: #85d8ff !important;
+    color: #000 !important;
+}
+
+/* Progress Bar Info */
+.progress-bar-info {
+    background-color: #85d8ff !important;
+}

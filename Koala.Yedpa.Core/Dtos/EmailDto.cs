@@ -52,5 +52,15 @@
         public string Email { get; set; }
         public string Content { get; set; }
         public string Title { get; set; }
+
+        // Email attachment support
+        public List<EmailAttachmentDto>? Attachments { get; set; }
+    }
+
+    public class EmailAttachmentDto
+    {
+        public string FileName { get; set; } = string.Empty;
+        public byte[] Content { get; set; } = Array.Empty<byte>();
+        public string ContentType { get; set; } = "application/octet-stream";
     }
 }

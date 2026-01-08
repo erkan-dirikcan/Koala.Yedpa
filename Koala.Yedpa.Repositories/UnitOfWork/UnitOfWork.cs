@@ -8,10 +8,15 @@ namespace Koala.Yedpa.Repositories.UnitOfWork;
 public class UnitOfWork<TContext>(TContext context) : IUnitOfWork<TContext>
     where TContext : DbContext
 {
+    // Context
+    public TContext Context => context;
+
     // Lazy-loaded repositories
     private ITransactionRepository? _transactionRepository;
     private ITransactionItemRepository? _transactionItemRepository;
     private ITransactionTypeRepository? _transactionTypeRepository;
+    private IBudgetRatioRepository? _budgetRatioRepository;
+    private IDuesStatisticRepository? _duesStatisticRepository;
 
     // Transaction Repositories
     public ITransactionRepository TransactionRepository =>
@@ -22,6 +27,13 @@ public class UnitOfWork<TContext>(TContext context) : IUnitOfWork<TContext>
 
     public ITransactionTypeRepository TransactionTypeRepository =>
         _transactionTypeRepository ??= new TransactionTypeRepository(context as AppDbContext ?? throw new ArgumentException("Context must be AppDbContext"));
+
+    // Additional Repositories
+    public IBudgetRatioRepository BudgetRatioRepository =>
+        _budgetRatioRepository ??= new BudgetRatioRepository(context as AppDbContext ?? throw new ArgumentException("Context must be AppDbContext"));
+
+    public IDuesStatisticRepository DuesStatisticRepository =>
+        _duesStatisticRepository ??= new DuesStatisticRepository(context as AppDbContext ?? throw new ArgumentException("Context must be AppDbContext"));
 
     public void Commit()
     {

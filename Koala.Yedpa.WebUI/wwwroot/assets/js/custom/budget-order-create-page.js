@@ -12,16 +12,49 @@ document.addEventListener('DOMContentLoaded', function () {
     const oldBudgetSummary = document.getElementById('oldBudgetSummary');
     const newBudgetSummary = document.getElementById('newBudgetSummary');
     const calculateBtn = document.getElementById('calculateBtn');
-    const submitBtn = document.getElementById('submitBtn');
+    const saveBtn = document.getElementById('saveBtn');
     const form = document.getElementById('createBudgetForm');
+
+    // Radio buttons for calculation type
+    const ratioRadio = document.getElementById('ratioRadio');
+    const amountRadio = document.getElementById('amountRadio');
+    const ratioInputSection = document.getElementById('ratioInputSection');
+    const amountInputSection = document.getElementById('amountInputSection');
 
     let dataTable = null;
     let currentBudgetType = 1; // Default: Bütçe
+    let currentCalculationType = 'ratio'; // Default: Oran
     let sourceYearData = [];
     let hasCalculated = false;
 
     // Sayfa yüklendiğinde kaynak yılları getir
     loadSourceYears();
+
+    // Kaydet butonunu başlangıçta pasif yap
+    if (saveBtn) {
+        saveBtn.disabled = true;
+    }
+
+    // Hesaplama türü değiştiğinde (Oran / Toplam Bütçe)
+    if (ratioRadio && amountRadio) {
+        ratioRadio.addEventListener('change', function () {
+            if (this.checked) {
+                currentCalculationType = 'ratio';
+                ratioInputSection.style.display = 'block';
+                amountInputSection.style.display = 'none';
+                newBudgetInput.value = ''; // Toplam bütçe inputunu temizle
+            }
+        });
+
+        amountRadio.addEventListener('change', function () {
+            if (this.checked) {
+                currentCalculationType = 'amount';
+                ratioInputSection.style.display = 'none';
+                amountInputSection.style.display = 'block';
+                newRatioPercentInput.value = ''; // Oran inputunu temizle
+            }
+        });
+    }
 
     // Bütçe türü değiştiğinde
     budgetTypeRadios.forEach(radio => {
@@ -33,16 +66,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 targetYearInput.disabled = true;
                 targetYearInput.value = '';
                 targetYearInput.removeAttribute('required');
-                document.getElementById('targetYearHelp').textContent = 'Ek bütçe kaynak yıl üzerine eklenir, hedef yıl girilmez';
             } else {
                 // Bütçe seçildi
                 targetYearInput.disabled = false;
                 targetYearInput.setAttribute('required', 'required');
-                document.getElementById('targetYearHelp').textContent = 'Bütçe oluşturulacak yıl';
             }
-
-            // Not: Tabloyu yeniden yükleme - mevcut verileri koru
-            // Sadece "Hesapla ve Dağıt" butonuna basıldığında hesaplama yapılacak
         });
     });
 
@@ -62,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function () {
             calculateSection.style.display = 'none';
             oldBudgetSummary.style.display = 'none';
             newBudgetSummary.style.display = 'none';
-            submitBtn.disabled = true;
+            saveBtn.disabled = true;
 
             if (dataTable) {
                 dataTable.clear().draw();
@@ -140,13 +168,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 oldBudgetSummary.style.display = 'block';
 
-                // Update table with calculated data
-                populateTable(sourceYearData);
-                if (dataTable) {
-                    dataTable.clear();
-                    dataTable.rows.add(sourceYearData);
-                    dataTable.draw();
+                // Tabloyu göster
+                duesStatisticSection.style.display = 'block';
+
+                // DataTable başlat veya güncelle
+                if (!dataTable) {
+                    initDataTable();
                 }
+
+                // Tabloyu doldur
+                populateTable(sourceYearData);
 
                 // Update footer totals
                 updateTotals();
@@ -165,8 +196,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Update ratio input (convert back to percent)
                 newRatioPercentInput.value = ((data.appliedRatio - 1) * 100).toFixed(0);
 
-                // Enable submit button
-                submitBtn.disabled = false;
+                // Kaydet butonunu göster ve aktif et
+                const saveSection = document.getElementById('saveSection');
+                if (saveSection) {
+                    saveSection.style.display = 'block';
+                }
+                saveBtn.disabled = false;
                 hasCalculated = true;
 
                 const method = newRatio ? 'Oran ile hesaplama' : 'Bütçe ile hesaplama (oran otomatik)';
@@ -183,7 +218,114 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Form submit
+    // Kaydet butonu
+    if (saveBtn) {
+        saveBtn.addEventListener('click', async function (e) {
+            e.preventDefault();
+
+            const targetYear = parseInt(targetYearInput.value);
+            // Hesaplanan oranı kullan (bütçe girilse bile oran hesaplanmıştı)
+            const ratioPercentValue = newRatioPercentInput.value.trim();
+            const ratioPercent = ratioPercentValue !== '' ? parseFloat(ratioPercentValue) : NaN;
+            const finalRatio = !isNaN(ratioPercent) ? 1 + (ratioPercent / 100) : NaN;
+            const selectedMonthsFlag = Array.from(document.querySelectorAll('.month-checkbox:checked'))
+                .reduce((sum, cb) => sum + parseInt(cb.value), 0);
+
+            if (!sourceYearSelect.value) {
+                showToast('error', 'Hata', 'Kaynak yıl seçiniz!');
+                return;
+            }
+
+            if (selectedMonthsFlag === 0) {
+                showToast('error', 'Hata', 'En az bir ay seçmelisiniz!');
+                return;
+            }
+
+            if (!hasCalculated) {
+                showToast('error', 'Hata', 'Önce hesaplama yapınız!');
+                return;
+            }
+
+            if (isNaN(finalRatio) || finalRatio <= 0) {
+                showToast('error', 'Hata', 'Geçerli bir oran hesaplanmalı!');
+                return;
+            }
+
+            if (currentBudgetType === 1 && !targetYear) {
+                showToast('error', 'Hata', 'Hedef yıl giriniz!');
+                return;
+            }
+
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Kaydediliyor...';
+
+            try {
+                // Flag değerini ay numaralarına çevir
+                const selectedMonths = ParseMonthsFlag(selectedMonthsFlag);
+
+                // Kaydetme işlemi
+                const saveData = {
+                    sourceYear: parseInt(sourceYearSelect.value),
+                    targetYear: currentBudgetType === 1 ? targetYear : null,
+                    budgetType: currentBudgetType,
+                    ratio: finalRatio,
+                    selectedMonths: selectedMonths,
+                    duesData: sourceYearData.map(item => ({
+                        id: item.id,
+                        code: item.code,
+                        divCode: item.divCode,
+                        divName: item.divName,
+                        docTrackingNr: item.docTrackingNr,
+                        clientCode: item.clientCode,
+                        clientRef: item.clientRef,
+                        budgetType: currentBudgetType,
+                        january: item.january,
+                        february: item.february,
+                        march: item.march,
+                        april: item.april,
+                        may: item.may,
+                        june: item.june,
+                        july: item.july,
+                        august: item.august,
+                        september: item.september,
+                        october: item.october,
+                        november: item.november,
+                        december: item.december,
+                        total: item.total
+                    }))
+                };
+
+                const response = await fetch('/api/BudgetOrderApi/SaveNewBudget', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(saveData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.isSuccess) {
+                    showToast('success', 'Başarılı', result.message || 'Bütçe başarıyla kaydedildi!');
+
+                    // Index sayfasına yönlendir
+                    setTimeout(() => {
+                        window.location.href = '/BudgetOrder/Index';
+                    }, 2000);
+                } else {
+                    showToast('error', 'Hata', result.message || 'Kayıt başarısız!');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('error', 'Hata', 'Bir hata oluştu: ' + error.message);
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = '<span class="svg-icon svg-icon-md"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><rect x="0" y="0" width="24" height="24" /><circle fill="#000000" cx="9" cy="15" r="6" /><path d="M8.8012943,7.00241953 C9.83837775,5.20768121 11.7781543,4 14,4 C17.3137085,4 20,6.6862915 20,10 C20,12.2218457 18.7923188,14.1616223 16.9975805,15.1987057 C16.9991904,15.1326658 17,15.0664274 17,15 C17,10.581722 13.418278,7 9,7 C8.93357256,7 8.86733422,7.00080962 8.8012943,7.00241953 Z" fill="#000000" opacity="0.3" /></g></svg></span>Kaydet';
+            }
+        });
+    }
+
+    // Form submit (backup)
     form.addEventListener('submit', async function (e) {
         e.preventDefault();
 
@@ -220,10 +362,13 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Kaydediliyor...';
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Kaydediliyor...';
 
         try {
+            // Flag değerini ay numaralarına çevir
+            const selectedMonths = ParseMonthsFlag(selectedMonthsFlag);
+
             // Kaydetme işlemi
             const saveData = {
                 sourceYear: parseInt(sourceYearSelect.value),
@@ -256,7 +401,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }))
             };
 
-            const response = await fetch('/api/BudgetOrder/SaveNewBudget', {
+            const response = await fetch('/api/BudgetOrderApi/SaveNewBudget', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -279,8 +424,8 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error('Error:', error);
             showToast('error', 'Hata', 'Bir hata oluştu: ' + error.message);
         } finally {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = '<span class="svg-icon svg-icon-md"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><rect x="0" y="0" width="24" height="24" /><circle fill="#000000" cx="9" cy="15" r="6" /><path d="M8.8012943,7.00241953 C9.83837775,5.20768121 11.7781543,4 14,4 C17.3137085,4 20,6.6862915 20,10 C20,12.2218457 18.7923188,14.1616223 16.9975805,15.1987057 C16.9991904,15.1326658 17,15.0664274 17,15 C17,10.581722 13.418278,7 9,7 C8.93357256,7 8.86733422,7.00080962 8.8012943,7.00241953 Z" fill="#000000" opacity="0.3" /></g></svg></span>Kaydet';
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = '<span class="svg-icon svg-icon-md"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><rect x="0" y="0" width="24" height="24" /><circle fill="#000000" cx="9" cy="15" r="6" /><path d="M8.8012943,7.00241953 C9.83837775,5.20768121 11.7781543,4 14,4 C17.3137085,4 20,6.6862915 20,10 C20,12.2218457 18.7923188,14.1616223 16.9975805,15.1987057 C16.9991904,15.1326658 17,15.0664274 17,15 C17,10.581722 13.418278,7 9,7 C8.93357256,7 8.86733422,7.00080962 8.8012943,7.00241953 Z" fill="#000000" opacity="0.3" /></g></svg></span>Kaydet';
         }
     });
 
@@ -313,14 +458,14 @@ document.addEventListener('DOMContentLoaded', function () {
             if (response.ok && result.isSuccess && result.data) {
                 sourceYearData = result.data;
 
-                // Tabloyu doldur
-                populateTable(sourceYearData);
-
                 // Tabloyu göster
                 duesStatisticSection.style.display = 'block';
 
-                // DataTable başlat veya güncelle
+                // DataTable başlat (önce)
                 initDataTable();
+
+                // Tabloyu doldur (sonra)
+                populateTable(sourceYearData);
 
                 // Ay sütunlarının görünürlüğünü güncelle
                 setTimeout(() => updateMonthColumnsVisibility(), 100);
@@ -350,12 +495,108 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // DataTable başlat
     function initDataTable() {
+        const tableElement = document.getElementById('duesStatisticTable');
+        if (!tableElement) {
+            console.error('Table element not found');
+            return;
+        }
+
         if (dataTable) {
             dataTable.destroy();
+            dataTable = null;
         }
 
         dataTable = $('#duesStatisticTable').DataTable({
+            autoWidth: false,
             data: sourceYearData,
+            dom: '<"top"Bf>rt<"bottom"lip><"clear">',
+            buttons: [
+                {
+                    extend: 'excel',
+                    text: '<i class="fas fa-file-excel"></i> Excel\'e Aktar',
+                    className: 'btn btn-success btn-sm mr-2',
+                    filename: function () {
+                        const date = new Date().toISOString().slice(0, 10);
+                        const targetYear = document.getElementById('targetYear')?.value || sourceYearSelect.value;
+                        return `Butce_Hesaplamasi_${ targetYear }_${ date }`;
+                    },
+                    title: function () {
+                        const targetYear = document.getElementById('targetYear')?.value || sourceYearSelect.value;
+                        const sourceYear = sourceYearSelect.value;
+                        return `Bütçe Hesaplaması - Kaynak Yıl: ${ sourceYear }, Hedef Yıl: ${ targetYear }`;
+                    },
+                    sheetName: 'Bütçe Hesaplaması',
+                    exportOptions: {
+                        columns: ':visible',
+                        format: {
+                            body: function (data, row, column, node) {
+                                // Para birimi sütunları için
+                                if (column >= 3 && column <= 15) {
+                                    var parsedValue = 0;
+
+                                    if (typeof data === 'string') {
+                                        // "1.234,56 TL" veya "1.234,56" formatını temizle
+                                        var cleanData = data.replace(/\s*TL\s*/g, '').trim();
+                                        if (cleanData && cleanData !== '-') {
+                                            parsedValue = parseFloat(cleanData.replace(/\./g, '').replace(',', '.'));
+                                        }
+                                    } else if (typeof data === 'number') {
+                                        parsedValue = data;
+                                    }
+
+                                    // Sayısal değer döndür
+                                    return !isNaN(parsedValue) ? parsedValue : 0;
+                                }
+                                return data;
+                            }
+                        }
+                    },
+                    customize: function (xlsx) {
+                        var sheet = xlsx.xl.worksheets[ 'sheet1.xml' ];
+                        var styles = xlsx.xl[ 'styles.xml' ];
+
+                        // numFmts kontrolü ve oluşturma
+                        var numFmts = $('numFmts', styles);
+                        if (numFmts.length === 0) {
+                            var styleSheet = $('styleSheet', styles);
+                            styleSheet.prepend('<numFmts count="1"><numFmt numFmtId="164" formatCode="#,##0.00"/></numFmts>');
+                        } else {
+                            var count = parseInt(numFmts.attr('count')) || 0;
+                            numFmts.attr('count', count + 1);
+                            numFmts.append('<numFmt numFmtId="164" formatCode="#,##0.00"/>');
+                        }
+
+                        // cellXfs'e yeni stil ekle
+                        var cellXfs = $('cellXfs', styles);
+                        var xfCount = parseInt(cellXfs.attr('count')) || 0;
+                        var newStyleId = xfCount;
+                        cellXfs.attr('count', xfCount + 1);
+                        cellXfs.append('<xf numFmtId="164" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/>');
+
+                        // Başlık satırı
+                        $('row:first c', sheet).attr('s', '2');
+
+                        // Para birimi sütunları (D-P: 4-16. sütunlar)
+                        var colLetters = [ 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P' ];
+
+                        colLetters.forEach(function (col) {
+                            $('row c[r^="' + col + '"]', sheet).each(function (index) {
+                                // Başlık satırını atla (index 0)
+                                if (index > 0) {
+                                    var cell = $(this);
+                                    var value = cell.find('v').text();
+
+                                    // Eğer değer varsa
+                                    if (value && value !== '') {
+                                        cell.attr('t', 'n'); // Sayı tipi
+                                        cell.attr('s', newStyleId.toString()); // Yeni stil uygula
+                                    }
+                                }
+                            });
+                        });
+                    }
+                }
+            ],
             columns: [
                 {
                     data: 'divName',
@@ -469,7 +710,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Tabloyu doldur (helper)
     function populateTable(data) {
-        // DataTable column definitions handle rendering
+        if (!dataTable) {
+            // DataTable henüz init edilmedi, init edilecek
+            return;
+        }
+
+        // DataTable'ı verilerle güncelle
+        dataTable.clear();
+        dataTable.rows.add(data);
+        dataTable.draw();
+
         updateTotals();
     }
 

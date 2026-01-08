@@ -107,15 +107,137 @@ namespace Koala.Yedpa.WebUI.Controllers
                     });
                 }
 
-                // TODO: Implement the actual save logic here
-                // For now, return success
+                if (model.DuesData == null || !model.DuesData.Any())
+                {
+                    return BadRequest(new
+                    {
+                        isSuccess = false,
+                        statusCode = 400,
+                        message = "Kaydedilecek veri bulunamadı"
+                    });
+                }
+
+                // Hedef yıl belirle
+                var targetYear = model.TargetYear ?? model.SourceYear;
+
+                // Seçilen ayları flag'e çevir
+                var selectedMonthsFlag = CalculateMonthsFlag(model.SelectedMonths);
+
+                // Yeni bir BudgetRatio oluştur
+                var budgetRatio = new Core.Models.BudgetRatio
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Year = targetYear,
+                    Ratio = model.Ratio - 1, // ViewModel'de oran 1.25 şeklinde, BudgetRatio'da 0.25 olarak saklanır
+                    BuggetType = model.BudgetType,
+                    BuggetRatioMounths = selectedMonthsFlag, // Seçilen ayları kaydet
+                    Status = StatusEnum.Pending, // Yeni bütçe Pending durumunda başlar
+                    CreateTime = DateTime.Now,
+                    LastUpdateTime = DateTime.Now,
+                    Code = $"BR{targetYear}{DateTime.Now:yyyyMMddHHmmss}",
+                    Description = $"{model.SourceYear} yılından {targetYear} yılına oluşturulan bütçe"
+                };
+
+                var budgetRatioResult = await _budgetOrderService.CreateBudgetRatioAsync(budgetRatio);
+                if (!budgetRatioResult.IsSuccess)
+                {
+                    return StatusCode(500, new
+                    {
+                        isSuccess = false,
+                        statusCode = 500,
+                        message = "BudgetRatio oluşturulamadı",
+                        error = budgetRatioResult.Message
+                    });
+                }
+
+                // Her bir DuesData için DuesStatistic kaydı oluştur
+                var createdCount = 0;
+                var failedCount = 0;
+
+                foreach (var duesItem in model.DuesData)
+                {
+                    try
+                    {
+                        var duesStatistic = new Core.Models.DuesStatistic
+                        {
+                            Id = Guid.NewGuid().ToString(),
+                            Year = targetYear.ToString(),
+                            Code = duesItem.Code,
+                            DivCode = duesItem.DivCode,
+                            DivName = duesItem.DivName,
+                            DocTrackingNr = duesItem.DocTrackingNr ?? 0,
+                            ClientCode = duesItem.ClientCode ?? string.Empty,
+                            ClientRef = duesItem.ClientRef ?? 0,
+                            BudgetType = model.BudgetType,
+                            BuggetRatioId = budgetRatio.Id,
+                            TransferStatus = TransferStatusEnum.Pending,
+                            // Hesaplanmış aylık değerler
+                            January = duesItem.January,
+                            February = duesItem.February,
+                            March = duesItem.March,
+                            April = duesItem.April,
+                            May = duesItem.May,
+                            June = duesItem.June,
+                            July = duesItem.July,
+                            August = duesItem.August,
+                            September = duesItem.September,
+                            October = duesItem.October,
+                            November = duesItem.November,
+                            December = duesItem.December,
+                            Total = duesItem.Total
+                        };
+
+                        var createResult = await _budgetOrderService.CreateDuesStatisticAsync(duesStatistic);
+                        if (createResult.IsSuccess)
+                        {
+                            createdCount++;
+                        }
+                        else
+                        {
+                            _logger.LogError("DuesStatistic kaydedilemedi: {Code}, Error: {Error}",
+                                duesItem.Code, createResult.Message);
+                            failedCount++;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "DuesStatistic kaydedilirken hata: {Code}", duesItem.Code);
+                        failedCount++;
+                    }
+                }
+
+                // Toplam bütçeyi hesapla ve BudgetRatio'yu güncelle
+                if (createdCount > 0)
+                {
+                    var totalBudget = model.DuesData.Sum(d => d.Total);
+
+                    // BudgetRatio'yu güncelle
+                    budgetRatio.TotalBugget = totalBudget;
+                    budgetRatio.LastUpdateTime = DateTime.Now;
+
+                    var updateResult = await _budgetOrderService.UpdateBudgetRatioAsync(budgetRatio);
+                    if (!updateResult.IsSuccess)
+                    {
+                        _logger.LogWarning("BudgetRatio TotalBugget güncellenemedi: {Id}", budgetRatio.Id);
+                    }
+                }
+
                 var result = new
                 {
                     isSuccess = true,
                     statusCode = 200,
-                    message = $"{model.SourceYear} yılı için yeni bütçe başarıyla kaydedildi. " +
-                             $"Hedef yıl: {(model.TargetYear ?? model.SourceYear)}, " +
-                             $"Oran: %{(model.Ratio - 1) * 100:F2}"
+                    message = $"{model.SourceYear} yılından {targetYear} yılına {createdCount} adet bütçe kaydı başarıyla oluşturuldu." +
+                             (failedCount > 0 ? $" {failedCount} adet kayıt başarısız oldu." : ""),
+                    data = new
+                    {
+                        targetYear = targetYear,
+                        sourceYear = model.SourceYear,
+                        budgetType = model.BudgetType,
+                        ratio = model.Ratio,
+                        createdCount = createdCount,
+                        failedCount = failedCount,
+                        budgetRatioId = budgetRatio.Id
+                    }
                 };
 
                 return Ok(result);
@@ -142,6 +264,31 @@ namespace Koala.Yedpa.WebUI.Controllers
         public async Task<IActionResult> CalculateBudget([FromBody] BudgetCalculationRequestViewModel request)
         {
             var result = await _budgetOrderService.CalculateBudgetAsync(request);
+
+            if (result.IsSuccess)
+            {
+                return Ok(result);
+            }
+            else
+            {
+                return StatusCode(result.StatusCode, result);
+            }
+        }
+
+        /// <summary>
+        /// Bütçe güncelleme önizleme
+        /// </summary>
+        /// <param name="request">Önizleme isteği</param>
+        /// <returns>Önizleme sonucu</returns>
+        [HttpPost("PreviewUpdate")]
+        public async Task<IActionResult> PreviewUpdate([FromBody] PreviewUpdateRequestViewModel request)
+        {
+            var result = await _budgetOrderService.PreviewUpdateAsync(
+                request.Id,
+                request.Ratio,
+                request.TargetAmount,
+                (BuggetRatioMounthEnum)request.SelectedMonthsFlag
+            );
 
             if (result.IsSuccess)
             {
@@ -192,6 +339,98 @@ namespace Koala.Yedpa.WebUI.Controllers
                     statusCode = result.StatusCode
                 });
             }
+        }
+
+        /// <summary>
+        /// BudgetRatio ID'sine göre DuesStatistic ID'lerini getir
+        /// </summary>
+        /// <param name="budgetRatioId">BudgetRatio ID</param>
+        /// <returns>DuesStatistic ID'leri</returns>
+        [HttpGet("GetDuesStatisticIds")]
+        public async Task<IActionResult> GetDuesStatisticIds([FromQuery] string budgetRatioId)
+        {
+            _logger.LogInformation("GetDuesStatisticIds çağrıldı. BudgetRatioId: {BudgetRatioId}", budgetRatioId);
+
+            if (string.IsNullOrEmpty(budgetRatioId))
+            {
+                return BadRequest(new
+                {
+                    isSuccess = false,
+                    message = "BudgetRatio ID gereklidir"
+                });
+            }
+
+            var result = await _budgetOrderService.GetBudgetRatioWithDuesAsync(budgetRatioId);
+
+            if (!result.IsSuccess)
+            {
+                return NotFound(new
+                {
+                    isSuccess = false,
+                    message = result.Message
+                });
+            }
+
+            var (budgetRatio, duesStatistics) = result.Data;
+
+            // DuesStatistic ID'lerini dön
+            var ids = duesStatistics?.Select(d => d.Id).ToList() ?? new List<string>();
+
+            return Ok(new
+            {
+                isSuccess = true,
+                message = "Kayıtlar başarıyla getirildi",
+                data = ids
+            });
+        }
+
+        /// <summary>
+        /// DuesStatistic kayıtlarını Logo'ya aktar
+        /// </summary>
+        /// <param name="model">Aktarım modeli</param>
+        /// <returns>Aktarım sonuçları</returns>
+        [HttpPost("Transfer")]
+        public async Task<IActionResult> TransferDuesStatistics([FromBody] TransferDuesStatisticsViewModel model)
+        {
+            _logger.LogInformation("Transfer başladı. Kayıt sayısı: {Count}, Debug Mod: {IsDebugMode}",
+                model.DuesStatisticIds.Count, model.IsDebugMode);
+
+            var result = await _budgetOrderService.TransferDuesStatisticsToLogoAsync(
+                model.DuesStatisticIds,
+                model.UserId,
+                model.IsDebugMode);
+
+            if (result.IsSuccess)
+            {
+                return Ok(result);
+            }
+            else
+            {
+                return StatusCode(result.StatusCode, result);
+            }
+        }
+
+        /// <summary>
+        /// Seçilen ayları flag değerine çevir
+        /// </summary>
+        /// <param name="selectedMonths">Seçilen ay numaraları (1-12)</param>
+        /// <returns>Flag değeri</returns>
+        private BuggetRatioMounthEnum CalculateMonthsFlag(List<int> selectedMonths)
+        {
+            if (selectedMonths == null || !selectedMonths.Any())
+            {
+                return 0;
+            }
+
+            var monthFlags = new[] { 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048 };
+            var flag = 0;
+
+            foreach (var month in selectedMonths.Where(m => m >= 1 && m <= 12))
+            {
+                flag |= monthFlags[month - 1];
+            }
+
+            return (BuggetRatioMounthEnum)flag;
         }
     }
 }

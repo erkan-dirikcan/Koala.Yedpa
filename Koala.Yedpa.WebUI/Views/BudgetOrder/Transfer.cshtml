@@ -1,0 +1,193 @@
+@using Koala.Yedpa.Core.Dtos
+@model Koala.Yedpa.Core.Models.ViewModels.BudgetOrderTransferViewModel
+@{
+    ViewData["Title"] = "Bütçe Aktarımı";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="d-flex flex-column-fluid">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card card-custom">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <h3 class="card-label">Bütçe Aktarımı</h3>
+                        </div>
+                        <div class="card-toolbar">
+                            <a href="/BudgetOrder/Index" class="btn btn-secondary">
+                                <i class="ki ki-arrow-back"></i> Listeye Dön
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+
+                        <!-- Bütçe Bilgileri -->
+                        <div class="alert alert-info" role="alert">
+                            <h4 class="alert-heading"><i class="fas fa-info-circle"></i> Bütçe Bilgileri</h4>
+                            <hr>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Kod:</strong> @Model.Code</p>
+                                    <p><strong>Açıklama:</strong> @Model.Description</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Yıl:</strong> @Model.Year</p>
+                                    <p><strong>Bütçe Türü:</strong> @(Model.BuggetType == BuggetTypeEnum.Budget ? "Bütçe" : "Ek Bütçe")</p>
+                                </div>
+                            </div>
+                            <hr>
+                            <p class="mb-0">
+                                <strong>Aktarılacak Kayıt Sayısı:</strong> @Model.DuesStatisticCount adet
+                            </p>
+                        </div>
+
+                        <!-- Aktarım Formu -->
+                        <div id="transferFormContainer">
+                            <div class="text-center py-10">
+                                <div class="mb-5">
+                                    <i class="fas fa-cloud-upload-alt fa-5x text-primary"></i>
+                                </div>
+                                <h3 class="mb-5">Logo Tiger'a Aktarım</h3>
+                                <p class="text-muted mb-10">
+                                    Bu işlem <strong>@Model.DuesStatisticCount</strong> adet kaydın Logo Tiger'a aktarılmasını gerçekleştirecektir.
+                                    Aktarım işlemi arka planda çalışacak ve tamamlandığında size e-posta ile bilgilendirme yapılacaktır.
+                                </p>
+
+                                <div class="alert alert-warning d-inline-block" role="alert">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <strong>Dikkat:</strong> Aktarım işlemi başladıktan sonra iptal edilemez!
+                                </div>
+
+                                <div class="mt-10">
+                                    <button id="startTransferBtn" class="btn btn-primary btn-lg font-weight-bolder px-10">
+                                        <i class="fas fa-play"></i> Aktarımı Başlat
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Yükleniyor Göstergesi (Başlangıçta gizli) -->
+                        <div id="loadingContainer" style="display: none;">
+                            <div class="text-center py-10">
+                                <div class="spinner spinner-primary spinner-lg mb-5"></div>
+                                <h3 class="mb-5">Aktarım Devam Ediyor...</h3>
+                                <p class="text-muted">
+                                    <strong>@Model.Description (@Model.Year)</strong> aktarım talebiniz başlamıştır.
+                                    Aktarım tamamlandığında e-posta ile bilgilendirileceksiniz.
+                                </p>
+                                <div class="alert alert-info d-inline-block mt-5" role="alert">
+                                    <i class="fas fa-clock"></i>
+                                    Bu işlem birkaç dakika sürebilir. Lütfen bekleyiniz...
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tamamlandı Mesajı (Başlangıçta gizli) -->
+                        <div id="successContainer" style="display: none;">
+                            <div class="text-center py-10">
+                                <div class="mb-5">
+                                    <i class="fas fa-check-circle fa-5x text-success"></i>
+                                </div>
+                                <h3 class="mb-5 text-success">Aktarım Talebi Başarıyla Oluşturuldu!</h3>
+                                <p class="text-muted mb-10">
+                                    <strong>@Model.Description (@Model.Year)</strong> aktarım talebiniz başarıyla oluşturuldu.
+                                    Aktarım arka planda gerçekleştirilecek ve tamamlandığında size e-posta ile bilgilendirme yapılacaktır.
+                                </p>
+
+                                <div class="alert alert-success d-inline-block" role="alert">
+                                    <i class="fas fa-envelope"></i>
+                                    Aktarım tamamlandığında <strong>e-posta</strong> adresinize bilgilendirme gönderilecektir.
+                                </div>
+
+                                <div class="mt-10">
+                                    <a href="/BudgetOrder/Index" class="btn btn-success btn-lg font-weight-bolder px-10">
+                                        <i class="ki ki-arrow-back"></i> Listeye Dön
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const startTransferBtn = document.getElementById('startTransferBtn');
+            const transferFormContainer = document.getElementById('transferFormContainer');
+            const loadingContainer = document.getElementById('loadingContainer');
+            const successContainer = document.getElementById('successContainer');
+
+            startTransferBtn.addEventListener('click', async function () {
+                const budgetDescription = @Html.Raw(Json.Serialize(Model.Description));
+                const budgetYear = @Model.Year;
+                const confirmMessage = `${budgetDescription} (${budgetYear}) için aktarımı başlatmak istediğinize emin misiniz?`;
+
+                if (!confirm(confirmMessage)) {
+                    return;
+                }
+
+                // Butonu disable et
+                startTransferBtn.disabled = true;
+                startTransferBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> İşleniyor...';
+
+                try {
+                    // DuesStatistic ID'lerini al
+                    const response = await fetch(`/api/BudgetOrderApi/GetDuesStatisticIds?budgetRatioId=@Model.BudgetRatioId`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (!data.isSuccess || !data.data || data.data.length === 0) {
+                        alert('Aktarılacak kayıt bulunamadı!');
+                        startTransferBtn.disabled = false;
+                        startTransferBtn.innerHTML = '<i class="fas fa-play"></i> Aktarımı Başlat';
+                        return;
+                    }
+
+                    // Aktarımı başlat
+                    const currentUserId = '@ViewData["CurrentUserId"]';
+
+                    const transferResponse = await fetch('/api/BudgetOrderApi/Transfer', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            duesStatisticIds: data.data,
+                            userId: currentUserId || null,
+                            isDebugMode: true // Debug mod: Sadece 3 kayıt aktarır ve mail gönderir
+                        })
+                    });
+
+                    const transferData = await transferResponse.json();
+
+                    // Yükleniyor göster
+                    transferFormContainer.style.display = 'none';
+                    loadingContainer.style.display = 'block';
+
+                    // 2 saniye sonra başarı mesajına geç
+                    setTimeout(function () {
+                        loadingContainer.style.display = 'none';
+                        successContainer.style.display = 'block';
+                    }, 2000);
+
+                } catch (error) {
+                    console.error('Aktarım hatası:', error);
+                    alert('Aktarım başlatılırken bir hata oluştu: ' + error.message);
+                    startTransferBtn.disabled = false;
+                    startTransferBtn.innerHTML = '<i class="fas fa-play"></i> Aktarımı Başlat';
+                }
+            });
+        });
+    </script>
+}

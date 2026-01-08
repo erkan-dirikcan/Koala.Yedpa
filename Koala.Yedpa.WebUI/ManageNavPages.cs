@@ -21,7 +21,9 @@ namespace Koala.Yedpa.WebUI
 
 
         private static string BudgetRatioList => "BudgetRatioList";
+        private static string BudgetOrderList => "BudgetOrderList";
         private static string DivisionList => "DivisionList";
+        private static string WorkplaceList => "WorkplaceList";
 
 
 
@@ -45,7 +47,9 @@ namespace Koala.Yedpa.WebUI
 
 
         public static string BudgetRatioListNavClass(ViewContext viewContext) => PageMainNavClass(viewContext, BudgetRatioList);
+        public static string BudgetOrderNavClass(ViewContext viewContext) => PageMainNavClass(viewContext, BudgetOrderList);
         public static string DivisionListNavClass(ViewContext viewContext) => PageMainNavClass(viewContext, DivisionList);
+        public static string WorkplaceNavClass(ViewContext viewContext) => PageMainNavClass(viewContext, WorkplaceList);
 
 
 

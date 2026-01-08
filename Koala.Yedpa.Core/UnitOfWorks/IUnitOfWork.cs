@@ -5,10 +5,17 @@ namespace Koala.Yedpa.Core.UnitOfWorks;
 
 public interface IUnitOfWork<TContext> : IDisposable where TContext : DbContext
 {
+    // Context
+    TContext Context { get; }
+
     // Transaction Repositories
     ITransactionRepository TransactionRepository { get; }
     ITransactionItemRepository TransactionItemRepository { get; }
     ITransactionTypeRepository TransactionTypeRepository { get; }
+
+    // Budget Repositories
+    IBudgetRatioRepository BudgetRatioRepository { get; }
+    IDuesStatisticRepository DuesStatisticRepository { get; }
 
     // Commit Operations
     Task CommitAsync();

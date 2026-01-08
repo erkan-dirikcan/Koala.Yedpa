@@ -111,6 +111,15 @@ public class EmailService: IEmailService
         message.Body = model.Content;
         message.IsBodyHtml = true;
 
+        // Attachment desteği
+        if (model.Attachments != null && model.Attachments.Any())
+        {
+            foreach (var attachment in model.Attachments)
+            {
+                var attachmentStream = new MemoryStream(attachment.Content);
+                message.Attachments.Add(new Attachment(attachmentStream, attachment.FileName, attachment.ContentType));
+            }
+        }
 
         try
         {

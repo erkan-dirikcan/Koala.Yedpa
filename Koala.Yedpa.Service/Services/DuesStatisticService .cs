@@ -318,6 +318,7 @@ public class DuesStatisticService : IDuesStatisticService
                 await _duesStatisticRepository.UpdateAsync(update);
             }
 
+
             // Apply additions
             if (additions.Any())
             {
@@ -624,5 +625,89 @@ public class DuesStatisticService : IDuesStatisticService
     //    return ResponseDto<List<SourceDuesDataViewModel>>.SuccessData(200, "Veri Başarıyla Alındı", retVal);
     //}
 
+
+    public async Task<ResponseDto<List<int>>> GetDistinctYearsAsync()
+    {
+        try
+        {
+            var allData = (await _duesStatisticRepository.GetAllAsync()).ToList();
+
+            var distinctYears = allData
+                .Select(d => int.TryParse(d.Year, out int year) ? year : 0)
+                .Where(y => y > 0)
+                .Distinct()
+                .OrderByDescending(y => y)
+                .ToList();
+
+            return ResponseDto<List<int>>.SuccessData(200, "Yıllar Başarıyla Alındı", distinctYears);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting distinct years");
+            return ResponseDto<List<int>>.FailData(400,
+                "Yıllar Alınırken Bir Sorunla Karşılaşıldı", ex.Message, true);
+        }
+    }
+
+    public async Task<ResponseDto<MonthlyBudgetSummaryViewModel>> GetMonthlyBudgetSummaryAsync(int year, BuggetTypeEnum budgetType)
+    {
+        try
+        {
+            var yearString = year.ToString();
+            var data = (await _duesStatisticRepository.GetByYearAsync(yearString)).ToList();
+
+            if (!data.Any())
+                return ResponseDto<MonthlyBudgetSummaryViewModel>.FailData(404,
+                    "Kayıt Bilgisi Alınırken Bir Sorunla Karşılaşıldı",
+                    $"Bu yıl bilgisine ait kayıt bulunamadı: {year}", true);
+
+            // Filter by budget type
+            var filteredData = data.Where(d => d.BudgetType == budgetType).ToList();
+
+            if (!filteredData.Any())
+                return ResponseDto<MonthlyBudgetSummaryViewModel>.FailData(404,
+                    "Kayıt Bilgisi Alınırken Bir Sorunla Karşılaşıldı",
+                    $"Bu yıl ve bütçe türüne ait kayıt bulunamadı: {year} - {budgetType}", true);
+
+            // Get transfer status (use first record's status, they should all be the same for a year/type)
+            var transferStatus = filteredData.First().TransferStatus;
+
+            // Calculate monthly totals
+            var monthlyData = new List<MonthlyBudgetDataViewModel>
+            {
+                new() { Budget = filteredData.Sum(d => d.January), ExtraBudget = 0 },
+                new() { Budget = filteredData.Sum(d => d.February), ExtraBudget = 0 },
+                new() { Budget = filteredData.Sum(d => d.March), ExtraBudget = 0 },
+                new() { Budget = filteredData.Sum(d => d.April), ExtraBudget = 0 },
+                new() { Budget = filteredData.Sum(d => d.May), ExtraBudget = 0 },
+                new() { Budget = filteredData.Sum(d => d.June), ExtraBudget = 0 },
+                new() { Budget = filteredData.Sum(d => d.July), ExtraBudget = 0 },
+                new() { Budget = filteredData.Sum(d => d.August), ExtraBudget = 0 },
+                new() { Budget = filteredData.Sum(d => d.September), ExtraBudget = 0 },
+                new() { Budget = filteredData.Sum(d => d.October), ExtraBudget = 0 },
+                new() { Budget = filteredData.Sum(d => d.November), ExtraBudget = 0 },
+                new() { Budget = filteredData.Sum(d => d.December), ExtraBudget = 0 }
+            };
+
+            var totalBudget = filteredData.Sum(d => d.Total);
+
+            var summary = new MonthlyBudgetSummaryViewModel
+            {
+                Year = year,
+                BudgetType = budgetType,
+                TotalBudget = totalBudget,
+                TransferStatus = transferStatus,
+                MonthlyData = monthlyData
+            };
+
+            return ResponseDto<MonthlyBudgetSummaryViewModel>.SuccessData(200, "Aylık Bütçe Özeti Başarıyla Alındı", summary);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting monthly budget summary for year: {Year}, budgetType: {BudgetType}", year, budgetType);
+            return ResponseDto<MonthlyBudgetSummaryViewModel>.FailData(400,
+                "Aylık Bütçe Özeti Alınırken Bir Sorunla Karşılaşıldı", ex.Message, true);
+        }
+    }
 
 }

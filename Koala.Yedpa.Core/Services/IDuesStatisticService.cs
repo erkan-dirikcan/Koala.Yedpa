@@ -19,4 +19,6 @@ public interface IDuesStatisticService
     Task<ResponseDto<IEnumerable<MonthlySummaryViewModel>>> GetMonthlySummaryAsync(string year);
     Task<ResponseDto<DuesStatistic>> GetByWorkplaceCodeAsync(string workplaceCode, string year);
     Task<ResponseDto<bool>> CheckExistsAsync(string code, string year);
+    Task<ResponseDto<List<int>>> GetDistinctYearsAsync();
+    Task<ResponseDto<MonthlyBudgetSummaryViewModel>> GetMonthlyBudgetSummaryAsync(int year, BuggetTypeEnum budgetType);
 }

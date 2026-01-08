@@ -19,7 +19,7 @@ public static class MappingExtention
             cfg.AddProfile<ModuleProfile>();
             cfg.AddProfile<UserProfile>();
             cfg.AddProfile<SettingsProfile>();
-            cfg.AddProfile<LgXt001211Profile>();
+            cfg.AddProfile<WorkplaceProfile>();
             //cfg.AddProfile<>();
             //cfg.AddProfile<>();
             //cfg.AddProfile<>();

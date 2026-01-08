@@ -7,7 +7,6 @@ using Koala.Yedpa.Core.UnitOfWorks;
 using Koala.Yedpa.Repositories;
 using Koala.Yedpa.Repositories.Repositories;
 using Koala.Yedpa.Repositories.UnitOfWork;
-using Koala.Yedpa.Service.Jobs;
 using Koala.Yedpa.Service.Providers;
 using Koala.Yedpa.Service.Services;
 using Koala.Yedpa.Service.Services.Jobs;
@@ -88,10 +87,10 @@ namespace Koala.Yedpa.WebUI.Extentions
             services.AddScoped<IGeneratedIdsRepository, GeneratedIdsRepository>();
             services.AddScoped<IModuleRepository, ModuleRepository>();
             services.AddScoped<ISettingsRepository, SettingsRepository>();
-            services.AddScoped<ISiteRepository, SiteRepository>();
             services.AddScoped<ITransactionRepository, TransactionRepository>();
             services.AddScoped<ITransactionItemRepository, TransactionItemRepository>();
             services.AddScoped<ITransactionTypeRepository, TransactionTypeRepository>();
+            services.AddScoped<IWorkplaceRepository, WorkplaceRepository>();
             //services.AddScoped<, >();
             //services.AddScoped<, >();
             services.AddHangfireServer();
@@ -101,6 +100,7 @@ namespace Koala.Yedpa.WebUI.Extentions
         public static void AddApplicationServices(this IServiceCollection services)
         {
             services.AddScoped<IBudgetRatioService, BudgetRatioService>();
+            services.AddScoped<IBudgetOrderService, BudgetOrderService>();
             services.AddScoped<IApiLogoSqlDataService, ApiLogoSqlDataService>();
             services.AddScoped<IAppUserService, AppUserService>();
             services.AddScoped<IBackgroundServices, BackgroundServices>();
@@ -114,21 +114,18 @@ namespace Koala.Yedpa.WebUI.Extentions
             services.AddScoped<IExtendedPropertiesService, ExtendedPropertiesService>();
             services.AddScoped<ILicenseReader, LicenseReader>();
             services.AddScoped<ILicenseValidator, LicenseValidator>();
-            services.AddScoped<ILogoSyncJobService, LogoSyncJobService>();
-            services.AddScoped<ILogoSyncService, LogoSyncService>();
             services.AddScoped<IModuleService, ModuleService>();
             services.AddScoped<ISeedService, SeedService>();
             services.AddScoped<ISettingsService, SettingsService>();
-            services.AddScoped<ISiteService, SiteService>();
             services.AddScoped<ITransactionService, TransactionService>();
             services.AddScoped<ITransactionItemService, TransactionItemService>();
             services.AddScoped<ITransactionTypeService, TransactionTypeService>();
+            services.AddScoped<IWorkplaceService, WorkplaceService>();
 
 
             services.AddHostedService<SeedHostedService>();
-            services.AddHostedService<LogoSyncJobConfiguration>();
-            
-            
+
+
             //services.AddScoped<, >();
             //services.AddScoped<, >();
             //services.AddScoped<, >();

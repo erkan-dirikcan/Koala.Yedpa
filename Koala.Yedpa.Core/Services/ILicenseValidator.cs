@@ -5,5 +5,7 @@
         bool IsLicenseValid();
         string? GetXKey();
         string? GetApplicationId();
+        string? GetLogoClientId();
+        string? GetLogoClientSecret();
     }
 }

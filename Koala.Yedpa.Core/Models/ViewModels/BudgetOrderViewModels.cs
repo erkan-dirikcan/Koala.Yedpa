@@ -150,4 +150,69 @@ namespace Koala.Yedpa.Core.Models.ViewModels
         public decimal December { get; set; }
         public decimal Total { get; set; }
     }
+
+    /// <summary>
+    /// Bütçe güncelleme önizleme isteği
+    /// </summary>
+    public class PreviewUpdateRequestViewModel
+    {
+        public string Id { get; set; } = string.Empty;
+        public decimal? Ratio { get; set; }           // Oran ile hesaplama (örn: 0.25)
+        public decimal? TargetAmount { get; set; }    // Toplam bütçe ile hesaplama
+        public int SelectedMonthsFlag { get; set; }
+    }
+
+    /// <summary>
+    /// Bütçe güncelleme önizleme sonucu
+    /// </summary>
+    public class PreviewUpdateResultViewModel
+    {
+        public decimal NewTotal { get; set; }
+        public decimal TotalDiff { get; set; }
+        public decimal CalculatedRatio { get; set; }  // Hesaplanan oran
+        public List<PreviewUpdateRowViewModel> Rows { get; set; } = new List<PreviewUpdateRowViewModel>();
+    }
+
+    /// <summary>
+    /// Bütçe güncelleme önizleme satırı
+    /// </summary>
+    public class PreviewUpdateRowViewModel
+    {
+        public string? DivName { get; set; }
+        public string Code { get; set; } = string.Empty;
+        public string? ClientCode { get; set; }
+        public decimal CurrentSelectedMonths { get; set; }
+        public decimal CurrentTotal { get; set; }
+        public decimal NewSelectedMonths { get; set; }
+        public decimal NewTotal { get; set; }
+    }
+
+    /// <summary>
+    /// DuesStatistic aktarım modeli
+    /// </summary>
+    public class TransferDuesStatisticsViewModel
+    {
+        [Required(ErrorMessage = "Kayıt ID'leri gereklidir")]
+        public List<string> DuesStatisticIds { get; set; } = new List<string>();
+
+        public string? UserId { get; set; }
+
+        /// <summary>
+        /// Debug modu: Sadece 3 kayıt aktarır ve mail gönderir
+        /// </summary>
+        public bool IsDebugMode { get; set; } = false;
+    }
+
+    /// <summary>
+    /// BudgetOrder Transfer sayfası ViewModel
+    /// </summary>
+    public class BudgetOrderTransferViewModel
+    {
+        public string BudgetRatioId { get; set; } = string.Empty;
+        public string Code { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public int Year { get; set; }
+        public BuggetTypeEnum BuggetType { get; set; }
+        public int DuesStatisticCount { get; set; }
+    }
 }

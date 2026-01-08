@@ -1,0 +1,245 @@
+@model Koala.Yedpa.Core.Models.ViewModels.WorkplaceDetailViewModel
+
+@{
+    ViewData["Title"] = "İşyeri Detayı";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">İşyeri Detayı</h3>
+                    <div class="card-tools">
+                        <a href="/Workplace/Index" class="btn btn-tool btn-sm">
+                            <i class="fas fa-arrow-left"></i> Listeye Dön
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>İşyeri Kodu</label>
+                                <input type="text" class="form-control" value="@Model.Code" readonly />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>İşyeri Adı</label>
+                                <input type="text" class="form-control" value="@Model.Definition" readonly />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Cari Kodu</label>
+                                <input type="text" class="form-control" value="@Model.ClCode" readonly />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Cari Adı</label>
+                                <input type="text" class="form-control" value="@Model.ClDefinition" readonly />
+                            </div>
+                        </div>
+                    </div>
+
+                    <h5 class="mt-4 mb-3">Müşteri Tipi Bilgileri</h5>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Müşteri Tipi</label>
+                                <input type="text" class="form-control" value="@(Model.CustomerType.HasValue ? Model.CustomerType.Value.ToString() : "")" readonly />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Konut Tipi Referans</label>
+                                <input type="text" class="form-control" value="@(Model.ResidenceTypeRef?.ToString() ?? "")" readonly />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Konut Grup Referans</label>
+                                <input type="text" class="form-control" value="@(Model.ResidenceGroupRef?.ToString() ?? "")" readonly />
+                            </div>
+                        </div>
+                    </div>
+
+                    <h5 class="mt-4 mb-3">Konum Bilgileri</h5>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Parsel Referans</label>
+                                <input type="text" class="form-control" value="@(Model.ParcelRef?.ToString() ?? "")" readonly />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Faş Referans</label>
+                                <input type="text" class="form-control" value="@(Model.PhaseRef?.ToString() ?? "")" readonly />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Kazán Referans</label>
+                                <input type="text" class="form-control" value="@(Model.CauldronRef?.ToString() ?? "")" readonly />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Hisse No</label>
+                                <input type="text" class="form-control" value="@(Model.ShareNo?.ToString() ?? "")" readonly />
+                            </div>
+                        </div>
+                    </div>
+
+                    <h5 class="mt-4 mb-3">Tarih Bilgileri</h5>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Başlangıç Tarihi</label>
+                                <input type="text" class="form-control" value="@(Model.BegDate?.ToString("dd.MM.yyyy") ?? "")" readonly />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Bitiş Tarihi</label>
+                                <input type="text" class="form-control" value="@(Model.EndDate?.ToString("dd.MM.yyyy") ?? "")" readonly />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Aktif Konut Tarihi</label>
+                                <input type="text" class="form-control" value="@(Model.ActiveResDate?.ToString("dd.MM.yyyy") ?? "")" readonly />
+                            </div>
+                        </div>
+                    </div>
+
+                    <h5 class="mt-4 mb-3">Ölçüm Bilgileri</h5>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Brüt m²</label>
+                                <input type="text" class="form-control" value="@(Model.DimGross?.ToString("F2") ?? "")" readonly />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Net m²</label>
+                                <input type="text" class="form-control" value="@(Model.DimField?.ToString("F2") ?? "")" readonly />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Kişi Sayısı</label>
+                                <input type="text" class="form-control" value="@(Model.PersonCount?.ToString() ?? "")" readonly />
+                            </div>
+                        </div>
+                    </div>
+
+                    <h5 class="mt-4 mb-3">Sayaç Bilgileri</h5>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Su Sayaç No</label>
+                                <input type="text" class="form-control" value="@(Model.WaterMeterNo ?? "")" readonly />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Kalorimetre No</label>
+                                <input type="text" class="form-control" value="@(Model.CalMeterNo ?? "")" readonly />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Sıcak Su Sayaç No</label>
+                                <input type="text" class="form-control" value="@(Model.HotWaterMeterNo ?? "")" readonly />
+                            </div>
+                        </div>
+                    </div>
+
+                    <h5 class="mt-4 mb-3">Bölütle İlgili Metreler</h5>
+                    <div class="row">
+                        <div class="col-md-3"><label>Depot 1:</label> @(Model.BudgetDepotMetre1?.ToString("F2") ?? "")</div>
+                        <div class="col-md-3"><label>Depot 2:</label> @(Model.BudgetDepotMetre2?.ToString("F2") ?? "")</div>
+                        <div class="col-md-3"><label>Zemin:</label> @(Model.BudgetGroundMetre?.ToString("F2") ?? "")</div>
+                        <div class="col-md-3"><label>Kat:</label> @(Model.BudgetFloorMetre?.ToString("F2") ?? "")</div>
+                        <div class="col-md-3"><label>Koridor 1:</label> @(Model.BudgetPassageMetre1?.ToString("F2") ?? "")</div>
+                        <div class="col-md-3"><label>Koridor 2:</label> @(Model.BudgetPassageMetre2?.ToString("F2") ?? "")</div>
+                    </div>
+
+                    <h5 class="mt-4 mb-3">Bölütle İlgili Katsayılar</h5>
+                    <div class="row">
+                        <div class="col-md-3"><label>Depot 1:</label> @(Model.BudgetDepotCoefficient1?.ToString("F4") ?? "")</div>
+                        <div class="col-md-3"><label>Depot 2:</label> @(Model.BudgetDepotCoefficient2?.ToString("F4") ?? "")</div>
+                        <div class="col-md-3"><label>Zemin:</label> @(Model.BudgetGroundCoefficient?.ToString("F4") ?? "")</div>
+                        <div class="col-md-3"><label>Kat:</label> @(Model.BudgetFloorCoefficient?.ToString("F4") ?? "")</div>
+                    </div>
+
+                    <h5 class="mt-4 mb-3">Yakıt İlgili Metreler</h5>
+                    <div class="row">
+                        <div class="col-md-3"><label>Depot 1:</label> @(Model.FuelDepotMetre1?.ToString("F2") ?? "")</div>
+                        <div class="col-md-3"><label>Depot 2:</label> @(Model.FuelDepotMetre2?.ToString("F2") ?? "")</div>
+                        <div class="col-md-3"><label>Zemin:</label> @(Model.FuelGroundMetre?.ToString("F2") ?? "")</div>
+                        <div class="col-md-3"><label>Kat:</label> @(Model.FuelFloorMetre?.ToString("F2") ?? "")</div>
+                    </div>
+
+                    <h5 class="mt-4 mb-3">Yakıt İlgili Katsayılar</h5>
+                    <div class="row">
+                        <div class="col-md-3"><label>Depot 1:</label> @(Model.FuelDepotCoefficient1?.ToString("F4") ?? "")</div>
+                        <div class="col-md-3"><label>Depot 2:</label> @(Model.FuelDepotCoefficient2?.ToString("F4") ?? "")</div>
+                        <div class="col-md-3"><label>Zemin:</label> @(Model.FuelGroundCoefficient?.ToString("F4") ?? "")</div>
+                        <div class="col-md-3"><label>Kat:</label> @(Model.FuelFloorCoefficient?.ToString("F4") ?? "")</div>
+                    </div>
+
+                    <h5 class="mt-4 mb-3">Toplam Değerler</h5>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Toplam Brüt Katsayı m²</label>
+                                <input type="text" class="form-control" value="@(Model.TotalBrutCoefficientMetre?.ToString("F2") ?? "")" readonly />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Toplam Net m²</label>
+                                <input type="text" class="form-control" value="@(Model.TotalNetMetre?.ToString("F2") ?? "")" readonly />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Toplam Yakıt m²</label>
+                                <input type="text" class="form-control" value="@(Model.TotalFuelMetre?.ToString("F2") ?? "")" readonly />
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.CariCode) || !string.IsNullOrEmpty(Model.CariDefinition))
+                    {
+                        <h5 class="mt-4 mb-3">Cari Bilgileri</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Cari Kodu</label>
+                                    <input type="text" class="form-control" value="@(Model.CariCode ?? "")" readonly />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Cari Adı</label>
+                                    <input type="text" class="form-control" value="@(Model.CariDefinition ?? "")" readonly />
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,4 +1,4 @@
-﻿namespace Koala.Yedpa.Core.Models.LogoJsonModels
+namespace Koala.Yedpa.Core.Models.LogoJsonModels
 {
     public class Item
     {
@@ -24,7 +24,7 @@
         public IList<Item> items { get; set; }
     }
 
-    public class SalesOrdersJsomViewModel
+    public class SalesOrdersJsonViewModel
     {
         public string NUMBER { get; set; } = "~";
         public string DOC_TRACK_NR { get; set; }

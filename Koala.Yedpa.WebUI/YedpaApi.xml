@@ -4,6 +4,75 @@
         <name>Koala.Yedpa.WebUI</name>
     </assembly>
     <members>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.BudgetOrderApiController.CreateBudgetAndOrders(Koala.Yedpa.Core.Models.ViewModels.CreateBudgetOrderViewModel)">
+            <summary>
+            Bütçe ve sipariş oluştur
+            </summary>
+            <param name="model">Bütçe ve sipariş oluşturma modeli</param>
+            <returns>Bütçe ve sipariş oluşturma sonucu</returns>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.BudgetOrderApiController.CreateBudget(Koala.Yedpa.Core.Models.ViewModels.CreateBudgetOrderViewModel)">
+            <summary>
+            Sadece bütçe oluştur (sipariş gönderme)
+            </summary>
+            <param name="model">Bütçe oluşturma modeli</param>
+            <returns>Oluşturulan bütçe kayıtları</returns>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.BudgetOrderApiController.CreateOrdersForExistingBudget(Koala.Yedpa.Core.Models.ViewModels.CreateOrdersForExistingBudgetViewModel)">
+            <summary>
+            Mevcut bütçe kayıtları için sipariş oluştur
+            </summary>
+            <param name="model">Sipariş oluşturma modeli</param>
+            <returns>Sipariş sonuçları</returns>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.BudgetOrderApiController.SaveNewBudget(Koala.Yedpa.Core.Models.ViewModels.SaveNewBudgetViewModel)">
+            <summary>
+            Yeni bütçe kaydet (Create page'den)
+            </summary>
+            <param name="model">Yeni bütçe kaydetme modeli</param>
+            <returns>Kaydetme sonucu</returns>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.BudgetOrderApiController.CalculateBudget(Koala.Yedpa.Core.Models.ViewModels.BudgetCalculationRequestViewModel)">
+            <summary>
+            Bütçe hesapla (preview endpoint)
+            </summary>
+            <param name="request">Hesaplama isteği</param>
+            <returns>Hesaplanan bütçe verileri</returns>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.BudgetOrderApiController.PreviewUpdate(Koala.Yedpa.Core.Models.ViewModels.PreviewUpdateRequestViewModel)">
+            <summary>
+            Bütçe güncelleme önizleme
+            </summary>
+            <param name="request">Önizleme isteği</param>
+            <returns>Önizleme sonucu</returns>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.BudgetOrderApiController.TestCreateBudget">
+            <summary>
+            Test için basit bütçe oluşturma endpoint'i
+            </summary>
+            <returns>Bütçe oluşturma sonucu</returns>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.BudgetOrderApiController.GetDuesStatisticIds(System.String)">
+            <summary>
+            BudgetRatio ID'sine göre DuesStatistic ID'lerini getir
+            </summary>
+            <param name="budgetRatioId">BudgetRatio ID</param>
+            <returns>DuesStatistic ID'leri</returns>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.BudgetOrderApiController.TransferDuesStatistics(Koala.Yedpa.Core.Models.ViewModels.TransferDuesStatisticsViewModel)">
+            <summary>
+            DuesStatistic kayıtlarını Logo'ya aktar
+            </summary>
+            <param name="model">Aktarım modeli</param>
+            <returns>Aktarım sonuçları</returns>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.BudgetOrderApiController.CalculateMonthsFlag(System.Collections.Generic.List{System.Int32})">
+            <summary>
+            Seçilen ayları flag değerine çevir
+            </summary>
+            <param name="selectedMonths">Seçilen ay numaraları (1-12)</param>
+            <returns>Flag değeri</returns>
+        </member>
         <member name="T:Koala.Yedpa.WebUI.Controllers.BudgetRatioApiController">
             <summary>
             Bütçe / Ek Bütçe Oranları
@@ -57,6 +126,40 @@
             <param name="code">Code</param>
             <param name="year">Year</param>
             <returns>Bütçe / Ek Bütçe Veri Tabanı Kontrol Sonucu</returns>
+        </member>
+        <member name="T:Koala.Yedpa.WebUI.Controllers.DuesStatisticApiController">
+            <summary>
+            Dues Statistics API Controller
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.DuesStatisticApiController.GetDistinctYears">
+            <summary>
+            Get distinct years from DuesStatistics
+            </summary>
+            <returns>List of distinct years</returns>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.DuesStatisticApiController.GetMonthlyBudgetSummary(System.Int32,Koala.Yedpa.Core.Dtos.BuggetTypeEnum)">
+            <summary>
+            Get monthly budget summary for a specific year and budget type
+            </summary>
+            <param name="year">Year</param>
+            <param name="budgetType">Budget type (1=Budget, 2=ExtraBudget)</param>
+            <returns>Monthly budget summary</returns>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.DuesStatisticApiController.GetByYearAndType(System.Int32,Koala.Yedpa.Core.Dtos.BuggetTypeEnum)">
+            <summary>
+            Get DuesStatistics by year and budget type
+            </summary>
+            <param name="year">Year</param>
+            <param name="budgetType">Budget type (1=Budget, 2=ExtraBudget)</param>
+            <returns>List of DuesStatistics</returns>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.DuesStatisticApiController.GetPagedList(Koala.Yedpa.Core.Models.ViewModels.DataTableRequest)">
+            <summary>
+            Get paginated list of DuesStatistics (for DataTable)
+            </summary>
+            <param name="request">DataTable request</param>
+            <returns>Paginated DuesStatistics list</returns>
         </member>
         <member name="M:Koala.Yedpa.WebUI.Controllers.FinancialStatementController.GetClsStatementsSummert">
             <summary>

@@ -10,6 +10,22 @@
             </summary>
         </member>
         <!-- Badly formed XML comment ignored for member "M:Koala.Yedpa.Core.Extensions.DataTableExtensions.AsList``1(System.Data.DataTable)" -->
+        <member name="T:Koala.Yedpa.Core.Models.LogoJsonModels.SalesOrderTransactionItem">
+            <summary>
+            Logo SalesOrder Transaction Item
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Models.LogoJsonModels.SalesOrderTransactions">
+            <summary>
+            Logo SalesOrder Transactions
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Models.LogoJsonModels.SalesOrderJsonViewModel">
+            <summary>
+            Logo SalesOrder JSON Model
+            POST /api/v1/salesOrders
+            </summary>
+        </member>
         <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoViewModel.CARI_KODU">
             <summary>
             Ana cari kart kodu
@@ -320,6 +336,76 @@
             Bakiye
             </summary>
         </member>
+        <member name="T:Koala.Yedpa.Core.Models.ViewModels.CreateBudgetOrderViewModel">
+            <summary>
+            Bütçe ve sipariş oluşturma istek modeli
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Models.ViewModels.BudgetCalculationRequestViewModel">
+            <summary>
+            Bütçe hesaplama isteği modeli
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Models.ViewModels.BudgetCalculationResultViewModel">
+            <summary>
+            Bütçe hesaplama sonucu modeli
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Models.ViewModels.BudgetOrderResultViewModel">
+            <summary>
+            Bütçe ve sipariş oluşturma sonuç modeli
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Models.ViewModels.OrderResultViewModel">
+            <summary>
+            Sipariş sonucu modeli
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Models.ViewModels.CreateOrdersForExistingBudgetViewModel">
+            <summary>
+            Mevcut bütçe için sipariş oluşturma modeli
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Models.ViewModels.SaveNewBudgetViewModel">
+            <summary>
+            Yeni bütçe kaydetme modeli (Create page'den gelen)
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Models.ViewModels.DuesStatisticSaveItemViewModel">
+            <summary>
+            DuesStatistic kaydetme öğesi
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Models.ViewModels.PreviewUpdateRequestViewModel">
+            <summary>
+            Bütçe güncelleme önizleme isteği
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Models.ViewModels.PreviewUpdateResultViewModel">
+            <summary>
+            Bütçe güncelleme önizleme sonucu
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Models.ViewModels.PreviewUpdateRowViewModel">
+            <summary>
+            Bütçe güncelleme önizleme satırı
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Models.ViewModels.TransferDuesStatisticsViewModel">
+            <summary>
+            DuesStatistic aktarım modeli
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.TransferDuesStatisticsViewModel.IsDebugMode">
+            <summary>
+            Debug modu: Sadece 3 kayıt aktarır ve mail gönderir
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Models.ViewModels.BudgetOrderTransferViewModel">
+            <summary>
+            BudgetOrder Transfer sayfası ViewModel
+            </summary>
+        </member>
         <member name="P:Koala.Yedpa.Core.Models.ViewModels.CreateBudgetRatioViewModel.Code">
             <summary>
             Bütçe / Ek Bütçe Kodu
@@ -485,355 +571,107 @@
             Bulunacak Sayfa Başına Kayıt Sayısı
             </summary>
         </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211ListViewModel.Id">
+        <member name="M:Koala.Yedpa.Core.Providers.ILogoRestServiceProvider.PostSalesOrderAsync(Koala.Yedpa.Core.Models.LogoJsonModels.SalesOrderJsonViewModel)">
             <summary>
-            Satır ID Bilgisi
+            Logo'ya SalesOrder gönder
             </summary>
         </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211ListViewModel.LogRef">
+        <member name="T:Koala.Yedpa.Core.Services.IBudgetOrderService">
             <summary>
-            Logo Referans Bilgisi
+            Bütçe ve sipariş oluşturma servisi interface'i
             </summary>
         </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211ListViewModel.ParLogRef">
+        <member name="M:Koala.Yedpa.Core.Services.IBudgetOrderService.CreateBudgetAndOrdersAsync(Koala.Yedpa.Core.Models.ViewModels.CreateBudgetOrderViewModel)">
             <summary>
-            Logo Üst Referans Bilgisi
+            Bütçe oluştur VE sipariş gönder
             </summary>
+            <param name="model">Bütçe ve sipariş oluşturma modeli</param>
+            <returns>Bütçe ve sipariş oluşturma sonucu</returns>
         </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211ListViewModel.GroupCode">
+        <member name="M:Koala.Yedpa.Core.Services.IBudgetOrderService.CreateBudgetAsync(Koala.Yedpa.Core.Models.ViewModels.CreateBudgetOrderViewModel)">
             <summary>
-            Dükkan/Depo Kodu
+            Sadece bütçe oluştur (sipariş gönderme)
             </summary>
+            <param name="model">Bütçe oluşturma modeli</param>
+            <returns>Oluşturulan bütçe kayıtları</returns>
         </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211ListViewModel.GroupName">
+        <member name="M:Koala.Yedpa.Core.Services.IBudgetOrderService.CreateOrdersForExistingBudgetAsync(System.String,System.Collections.Generic.List{System.Int32},System.String)">
             <summary>
-            Dükkan/Depo Tam Adresi
+            Mevcut bütçe kayıtları için sipariş oluştur
             </summary>
+            <param name="budgetRatioId">Bütçe oranı ID</param>
+            <param name="selectedMonths">Seçilen aylar</param>
+            <param name="userId">Kullanıcı ID</param>
+            <returns>Sipariş sonuçları</returns>
         </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211ListViewModel.ClientCode">
+        <member name="M:Koala.Yedpa.Core.Services.IBudgetOrderService.CalculateBudgetAsync(Koala.Yedpa.Core.Models.ViewModels.BudgetCalculationRequestViewModel)">
             <summary>
-            Cari Kodu
+            Bütçe hesapla (preview)
             </summary>
+            <param name="request">Hesaplama isteği</param>
+            <returns>Hesaplanan bütçe verileri</returns>
         </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211ListViewModel.ClientName">
+        <member name="M:Koala.Yedpa.Core.Services.IBudgetOrderService.CreateBudgetRatioAsync(Koala.Yedpa.Core.Models.BudgetRatio)">
             <summary>
-            Cari Ünvanı
+            Yeni BudgetRatio oluştur (SaveNewBudget için)
             </summary>
+            <param name="budgetRatio">BudgetRatio nesnesi</param>
+            <returns>Oluşturma sonucu</returns>
         </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211ListViewModel.CustomerType">
+        <member name="M:Koala.Yedpa.Core.Services.IBudgetOrderService.CreateDuesStatisticAsync(Koala.Yedpa.Core.Models.DuesStatistic)">
             <summary>
-            Müşteri Tipi 1:Mal Sahibi 2:Kiracı,4:Diğer
+            Yeni DuesStatistic oluştur (SaveNewBudget için)
             </summary>
+            <param name="duesStatistic">DuesStatistic nesnesi</param>
+            <returns>Oluşturma sonucu</returns>
         </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211ListViewModel.BegDate">
+        <member name="M:Koala.Yedpa.Core.Services.IBudgetOrderService.UpdateBudgetRatioAsync(Koala.Yedpa.Core.Models.BudgetRatio)">
             <summary>
-            Başlangıç Tarihi
+            BudgetRatio güncelle (TotalBugget güncellemesi için)
             </summary>
+            <param name="budgetRatio">BudgetRatio nesnesi</param>
+            <returns>Güncelleme sonucu</returns>
         </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211ListViewModel.EndDate">
+        <member name="M:Koala.Yedpa.Core.Services.IBudgetOrderService.GetBudgetRatioByIdAsync(System.String)">
             <summary>
-            Bitiş Tarihi
+            BudgetRatio getir (ID ile)
             </summary>
+            <param name="id">BudgetRatio ID</param>
+            <returns>BudgetRatio detayları</returns>
         </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211ListViewModel.TotalBrutCoefficientMetre">
+        <member name="M:Koala.Yedpa.Core.Services.IBudgetOrderService.GetBudgetRatioWithDuesAsync(System.String)">
             <summary>
-            Katsalı Bürüt Metre Kare
+            BudgetRatio ve bağlı DuesStatistic kayıtlarını getir
             </summary>
+            <param name="id">BudgetRatio ID</param>
+            <returns>BudgetRatio ve DuesStatistic kayıtları</returns>
         </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211ListViewModel.TotalNetMetre">
+        <member name="M:Koala.Yedpa.Core.Services.IBudgetOrderService.UpdateBudgetRatioWithDuesAsync(Koala.Yedpa.Core.Models.BudgetRatio,Koala.Yedpa.Core.Dtos.BuggetRatioMounthEnum)">
             <summary>
-            Net Metre Kare
+            BudgetRatio ve bağlı tüm DuesStatistic kayıtlarını güncelle
             </summary>
+            <param name="budgetRatio">BudgetRatio nesnesi</param>
+            <param name="selectedMonthsFlag">Seçilen aylar flag değeri</param>
+            <returns>Güncelleme sonucu</returns>
         </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211ListViewModel.TotalFuelMetre">
+        <member name="M:Koala.Yedpa.Core.Services.IBudgetOrderService.PreviewUpdateAsync(System.String,System.Nullable{System.Decimal},System.Nullable{System.Decimal},Koala.Yedpa.Core.Dtos.BuggetRatioMounthEnum)">
             <summary>
-            Yakıt Metre Kare
+            Bütçe güncelleme önizleme (yeni değerleri hesapla ama kaydetme)
             </summary>
+            <param name="budgetRatioId">BudgetRatio ID</param>
+            <param name="newRatio">Yeni oran (opsiyonel)</param>
+            <param name="targetAmount">Hedef toplam bütçe (opsiyonel)</param>
+            <param name="newMonthsFlag">Yeni aylar flag değeri</param>
+            <returns>Önizleme sonucu</returns>
         </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211ListViewModel.ParentClRef">
+        <member name="M:Koala.Yedpa.Core.Services.IBudgetOrderService.TransferDuesStatisticsToLogoAsync(System.Collections.Generic.List{System.String},System.String,System.Boolean)">
             <summary>
-            Parent Cari Referans
+            DuesStatistic kayıtlarını Logo'ya aktar
             </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211ListViewModel.SpeCode">
-            <summary>
-            Özel Kod
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211ListViewModel.Active">
-            <summary>
-            Aktif Durum
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.Id">
-            <summary>
-            Id
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.LogRef">
-            <summary>
-            Logo Referans Bilgisi
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.ParLogRef">
-            <summary>
-            Logo Üst Referans Bilgisi
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.GroupCode">
-            <summary>
-            Dükkan/Depo Kodu
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.GroupName">
-            <summary>
-            Dükkan/Depo Tam Adresi
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.ClientCode">
-            <summary>
-            Cari Kodu
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.ClientName">
-            <summary>
-            Cari Ünvanı
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.CustomerType">
-            <summary>
-            Müşteri Tipi 1:Mal Sahibi 2:Kiracı,3:İşyeri,4:Diğer
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.PersonCount">
-            <summary>
-            Kişi Sayısı
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.ChiefReg">
-            <summary>
-            Muhtarlık Kaydı 0:Var, 1:Yok
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.TaxPayer">
-            <summary>
-            Vergi Mükellefliği 0:Muaf,1:Gelir Vergisi,2:Kurumsal,3:Diğer
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.IdentityNr">
-            <summary>
-            Kimlik Numarası
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.DeedInfo">
-            <summary>
-            Tapu Bilgisi Hisseli:0, Müstakil/Tam Mülkiyet :1
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.ProfitingOwner">
-            <summary>
-            İntifa Sahibi
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.BegDate">
-            <summary>
-            Giriş Tarihi
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.EndDate">
-            <summary>
-            Çıkış Tarihi
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.OfficialBegDate">
-            <summary>
-            Resmi Giriş Tarihi
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.OfficialEndDate">
-            <summary>
-            Resmi Çıkış Tarihi
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.GasCoefficient">
-            <summary>
-            Gaz Katsayısı
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.ActiveResDate">
-            <summary>
-            Konut Aktif Kayıt Tarihi
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.BudgetDepotMetre1">
-            <summary>
-            1.Depo Bütçe Metre Kare
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.BudgetDepotMetre2">
-            <summary>
-            2.Depo Bütçe Metre Kare
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.BudgetGroundMetre">
-            <summary>
-            Zemin Bütçe Metre Kare
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.BudgetHungMetre">
-            <summary>
-            Asma Kat Bütçe Metre Kare
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.BudgetFloorMetre">
-            <summary>
-            Zemin Kat Bütçe Metre Kare
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.BudgetPassageMetre1">
-            <summary>
-            1.Pasaj Bütçe Metre Kare
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.BudgetPassageMetre2">
-            <summary>
-            2.Pasaj Bütçe Metre Kare
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.BudgetDepotCoefficient1">
-            <summary>
-            1.Depo Bütçe Katsayısı
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.BudgetDepotCoefficient2">
-            <summary>
-            2.Depo Bütçe Katsayısı
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.BudgetGroundCoefficient">
-            <summary>
-            Zemin Bütçe Katsayısı
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.BudgetHungCoefficient">
-            <summary>
-            Asma Kat Bütçe Katsayısı
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.BudgetFloorCoefficient">
-            <summary>
-            Zemin Kat Bütçe Katsayısı
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.BudgetPassageCoefficient1">
-            <summary>
-            1.Pasaj Bütçe Katsayısı
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.BudgetPassageCoefficient2">
-            <summary>
-            2.Pasaj Bütçe Katsayı
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.FuelDepotMetre1">
-            <summary>
-            1.Depo Yakıt Metre Kare
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.FuelDepotMetre2">
-            <summary>
-            2.Depo Yakıt Metre Kare
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.FuelGroundMetre">
-            <summary>
-            Zemin Yakıt Metre Kare
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.FuelHungMetre">
-            <summary>
-            Asma Kat Yakıt Metre Kare
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.FuelFloorMetre">
-            <summary>
-            1.Kat Yakıt Metre Kare
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.FuelPassageMetre1">
-            <summary>
-            1.Pasaj Yakıt Metre Kare
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.FuelPassageMetre2">
-            <summary>
-            2.Pasaj Yakıt Metre Kare
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.FuelDepotCoefficient1">
-            <summary>
-            1.Depo Yakıt Katsayısı
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.FuelDepotCoefficient2">
-            <summary>
-            2.Depo Yakıt Katsayısı
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.FuelGroundCoefficient">
-            <summary>
-            Zemin Yakıt Katsayısı
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.FuelHungCoefficient">
-            <summary>
-            Asma Kat Yakıt Katsayısı
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.FuelFloorCoefficient">
-            <summary>
-            1.Kat Yakıt Katsayısı
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.FuelPassageCoefficient1">
-            <summary>
-            1.Pasaj Yakıt Katsayısı
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.FuelPassageCoefficient2">
-            <summary>
-            2.Pasaj Yakıt Katsayısı
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.TotalBrutCoefficientMetre">
-            <summary>
-            Kayıtlı Bürüt Metrekare
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.TotalNetMetre">
-            <summary>
-            Met Metre Kare
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.TotalFuelMetre">
-            <summary>
-            Yakıt Metrekare
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.ParentClRef">
-            <summary>
-            Parent Cari Referans
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.SpeCode">
-            <summary>
-            Özel Kod
-            </summary>
-        </member>
-        <member name="P:Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel.Actibe">
-            <summary>
-            Aktif Durum
-            </summary>
+            <param name="duesStatisticIds">Aktarılacak DuesStatistic ID'leri</param>
+            <param name="userId">Kullanıcı ID</param>
+            <param name="isDebugMode">Debug modu: Sadece 3 kayıt aktarır ve mail gönderir</param>
+            <returns>Aktarım sonuçları</returns>
         </member>
     </members>
 </doc>

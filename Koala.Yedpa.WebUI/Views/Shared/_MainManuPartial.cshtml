@@ -41,15 +41,17 @@
 					</a>
 				</li>
                
-				<li class="menu-item  menu-item-submenu @ManageNavPages.SiteNavClass(ViewContext)" aria-haspopup="true" data-menu-toggle="hover">
+                <li class="menu-item  menu-item-submenu @ManageNavPages.SiteNavClass(ViewContext)" aria-haspopup="true" data-menu-toggle="hover">
 					<a href="javascript:;" class="menu-link menu-toggle">
 						<i class="menu-icon far fa-building"></i><span class="menu-text">Yedpa Cari Kart Site</span><i class="menu-arrow"></i>
 					</a>
                     <div class="menu-submenu ">
                         <i class="menu-arrow"></i>
                         <ul class="menu-subnav">
-							<li class="menu-item @ManageNavPages.DivisionListNavClass(ViewContext)" aria-haspopup="true"><a class="menu-link " asp-controller="Site"><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">Dükkan-Kiracı/Malsahibi</span></a></li>
-							<li class="menu-item @ManageNavPages.BudgetRatioListNavClass(ViewContext)" aria-haspopup="true"><a class="menu-link " asp-controller="BudgetRatio"><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">Bütçe/Ek Bütçe</span></a></li>
+							<li class="menu-item @ManageNavPages.DivisionListNavClass(ViewContext)" aria-haspopup="true"><a class="menu-link " asp-controller="Site" asp-action="Index"><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">Dükkan-Kiracı/Malsahibi</span></a></li>
+							<li class="menu-item @ManageNavPages.BudgetRatioListNavClass(ViewContext)" aria-haspopup="true"><a class="menu-link " asp-controller="BudgetRatio" asp-action="Index"><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">Bütçe/Ek Bütçe</span></a></li>
+							<li class="menu-item @ManageNavPages.BudgetOrderNavClass(ViewContext)" aria-haspopup="true"><a class="menu-link " asp-controller="BudgetOrder" asp-action="Index"><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">Bütçe & Sipariş</span></a></li>
+							<li class="menu-item @ManageNavPages.WorkplaceNavClass(ViewContext)" aria-haspopup="true"><a class="menu-link " asp-controller="Workplace" asp-action="Index"><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">İşyerleri</span></a></li>
                            @* <li class="menu-item @ManageNavPages.RoleListNavClass(ViewContext)" aria-haspopup="true"><a class="menu-link " asp-action="Index" asp-controller="AppRole"><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">Roller</span></a></li>
                             <li class="menu-item @ManageNavPages.CreateRoleNavClass(ViewContext)" aria-haspopup="true"><a class="menu-link " asp-controller="AppRole" asp-action="CreateRole"><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">Rol Ekle</span></a></li>
 

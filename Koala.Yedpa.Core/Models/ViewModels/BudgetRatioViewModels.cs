@@ -157,3 +157,16 @@ public class BudgetRatioSearchViewModel
     /// </summary>
     public int PageSize { get; set; } = 10;
 }
+
+public class BudgetOrderDetailsViewModel
+{
+    public string Id { get; set; } = string.Empty;
+    public string Code { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public int Year { get; set; }
+    public decimal Ratio { get; set; }
+    public decimal TotalBugget { get; set; }
+    public BuggetRatioMounthEnum BuggetRatioMounths { get; set; }
+    public string BuggetTypeText { get; set; } = string.Empty;
+    public List<DuesStatistic> DuesStatistics { get; set; } = new();
+}

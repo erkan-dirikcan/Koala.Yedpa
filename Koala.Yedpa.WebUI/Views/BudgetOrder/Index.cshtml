@@ -32,22 +32,50 @@
                         </div>
                     </div>
                     <div class="card-body">
+                        @{
+                            var successMsg = TempData["SuccessMessage"] ?? ViewBag.SuccessMessage;
+                            var errorMsg = TempData["ErrorMessage"] ?? ViewBag.ErrorMessage;
+                        }
+
+                        @if (successMsg != null)
+                        {
+                            <div class="alert alert-success" role="alert">
+                                <div class="d-flex align-items-center">
+                                    <div class="alert-icon"><i class="ki ki-check icon-md"></i></div>
+                                    <div class="alert-text">
+                                        @successMsg
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        @if (errorMsg != null)
+                        {
+                            <div class="alert alert-danger" role="alert">
+                                <div class="d-flex align-items-center">
+                                    <div class="alert-icon"><i class="ki ki-close icon-md"></i></div>
+                                    <div class="alert-text">
+                                        @errorMsg
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
                         <div class="alert alert-info" role="alert">
                             <strong>Bilgi:</strong> Buradan bütçe ve sipariş oluşturabilirsiniz.
                             <ul>
-                                <li>Kaynak yıl verilerini baz alarak hedef yıl bütçesi oluşturun</li>
-                                <li>Seçtiğiniz aylara göre dağıtım yapılır</li>
-                                <li>Logo Tiger'a otomatik sipariş gönderimi</li>
+                                <li><strong>Aktarım Bekleniyor:</strong> Henüz aktarım yapılmamış, güncelleme ve aktarım yapılabilir</li>
+                                <li><strong>Kilitli:</strong> Logo Tiger'a aktarılmış, sadece görüntüleme yapılabilir</li>
                             </ul>
                         </div>
 
                         <table class="table table-bordered table-hover" id="BudgetOrderTable" style="margin-top: 13px !important">
                             <thead>
                                 <tr>
-                                    <th>Hedef Yıl</th>
+                                    <th>Yıl</th>
                                     <th>Bütçe Türü</th>
-                                    <th>Toplam Tutar</th>
-                                    <th>Oluşturma Tarihi</th>
+                                    <th>Oran</th>
+                                    <th>Toplam Bütçe</th>
                                     <th>Durum</th>
                                     <th>İşlemler</th>
                                 </tr>
@@ -65,5 +93,5 @@
 
 @section Scripts
 {
-    <script src="~/assets/js/custom/budget-order-list-page.js"></script>
+    <script src="~/assets/js/custom/budget-order-list-page.js?v=3"></script>
 }

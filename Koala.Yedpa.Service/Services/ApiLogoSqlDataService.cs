@@ -476,18 +476,18 @@ namespace Koala.Yedpa.Service.Services
                     LTRIM(RTRIM(CLP.DEFINITION_)) AS DUKKAN_ADRES_ORJINAL,
                     ISNULL(NULLIF(LTRIM(RTRIM(LEFT(CLP.DEFINITION_, CHARINDEX(' CADDESİ', UPPER(CLP.DEFINITION_ + ' CADDESİ')) - 1))), ''), '') AS CADDE,
                     ISNULL(NULLIF(LTRIM(RTRIM(SUBSTRING(CLP.DEFINITION_, CHARINDEX('NO:', UPPER(CLP.DEFINITION_ + ' NO:')) + 3,
-                        CASE 
-                            WHEN CHARINDEX(' (YENI', UPPER(CLP.DEFINITION_), CHARINDEX('NO:', UPPER(CLP.DEFINITION_))) > 0 
+                        CASE
+                            WHEN CHARINDEX(' (YENI', UPPER(CLP.DEFINITION_), CHARINDEX('NO:', UPPER(CLP.DEFINITION_))) > 0
                                 THEN CHARINDEX(' (YENI', UPPER(CLP.DEFINITION_), CHARINDEX('NO:', UPPER(CLP.DEFINITION_))) - CHARINDEX('NO:', UPPER(CLP.DEFINITION_)) - 3
-                            WHEN CHARINDEX(' AS', UPPER(CLP.DEFINITION_), CHARINDEX('NO:', UPPER(CLP.DEFINITION_))) > 0 
+                            WHEN CHARINDEX(' AS', UPPER(CLP.DEFINITION_), CHARINDEX('NO:', UPPER(CLP.DEFINITION_))) > 0
                                 THEN CHARINDEX(' AS', UPPER(CLP.DEFINITION_), CHARINDEX('NO:', UPPER(CLP.DEFINITION_))) - CHARINDEX('NO:', UPPER(CLP.DEFINITION_)) - 3
-                            WHEN CHARINDEX(' ZE', UPPER(CLP.DEFINITION_), CHARINDEX('NO:', UPPER(CLP.DEFINITION_))) > 0 
+                            WHEN CHARINDEX(' ZE', UPPER(CLP.DEFINITION_), CHARINDEX('NO:', UPPER(CLP.DEFINITION_))) > 0
                                 THEN CHARINDEX(' ZE', UPPER(CLP.DEFINITION_), CHARINDEX('NO:', UPPER(CLP.DEFINITION_))) - CHARINDEX('NO:', UPPER(CLP.DEFINITION_)) - 3
-                            ELSE 30 
+                            ELSE 30
                         END ))), ''), '') AS NO,
-                    ISNULL(NULLIF(CASE 
+                    ISNULL(NULLIF(CASE
                         WHEN PATINDEX('%[0-9][.]PASAJ%', UPPER(CLP.DEFINITION_)) > 0 THEN SUBSTRING(CLP.DEFINITION_, PATINDEX('%[0-9][.]PASAJ%', UPPER(CLP.DEFINITION_)), 1)
-                        WHEN PATINDEX('%[0-9] .PASAJ%', UPPER(CLP.DEFINITION_)) > 0 THEN SUBSTRING(CLP.DEFINITION_, PATINDEX('%[0-9] .PASAJ%', UPPER(CLP.DEFINITION_)), 1) 
+                        WHEN PATINDEX('%[0-9] .PASAJ%', UPPER(CLP.DEFINITION_)) > 0 THEN SUBSTRING(CLP.DEFINITION_, PATINDEX('%[0-9] .PASAJ%', UPPER(CLP.DEFINITION_)), 1)
                         END, ''), '') AS PASAJ_NO,
                     ISNULL(NULLIF(LTRIM(RTRIM(REPLACE(REPLACE(SUBSTRING(CLP.DEFINITION_, CHARINDEX('(YENI NO:', UPPER(CLP.DEFINITION_ + '(YENI NO:')) + 9, 30), ')', ''), ' ', ''))), ''), '') AS YENI_NO,
                     ISNULL(NULLIF(CASE
@@ -496,13 +496,98 @@ namespace Koala.Yedpa.Service.Services
                         WHEN UPPER(CLP.DEFINITION_) LIKE '%DEPOLAR%' THEN 'DEPOLAR'
                         WHEN UPPER(CLP.DEFINITION_) LIKE '%KİRALIK DEPO%' THEN 'KİRALIK DEPO'
                         WHEN UPPER(CLP.DEFINITION_) LIKE '%BODRUM%' THEN 'BODRUM KAT'
-                        ELSE NULL 
+                        ELSE NULL
                     END, ''), '') AS KAT
                 FROM LG_{LogoSetting.Firm}_CLCARD AS CLC
                 INNER JOIN LG_{LogoSetting.Firm}_CLCARD AS CLP ON CLP.LOGICALREF = CLC.PARENTCLREF
                 WHERE CLP.CODE LIKE '%.IS'
                   AND CLP.DEFINITION_ IS NOT NULL
                   AND LTRIM(RTRIM(CLP.DEFINITION_)) <> ''";
+        }
+
+        public async Task<ResponseDto<(string ClientCode, long ClientRef)>> GetClientInfoByWorkplaceCodeAsync(string workplaceCode)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(workplaceCode))
+                {
+                    return ResponseDto<(string, long)>.FailData(400, "İşyeri kodu boş olamaz", "workplaceCode parametresi gereklidir", true);
+                }
+
+                var query = $@"
+                    WITH RankedRecords AS (
+                        SELECT
+                            CL.CODE,
+                            CL.LOGICALREF,
+                            ROW_NUMBER() OVER (
+                                PARTITION BY IC.CODE
+                                ORDER BY
+                                    CASE
+                                        -- Rakam kontrolü (10-99) - En yüksek öncelik
+                                        WHEN RIGHT(CL.CODE, 2) LIKE '[1-9][0-9]'
+                                             AND CAST(RIGHT(CL.CODE, 2) AS INT) BETWEEN 10 AND 99
+                                        THEN 5000 + CAST(RIGHT(CL.CODE, 2) AS INT)
+
+                                        -- K kontrolü (K ile rakam) - İkinci öncelik
+                                        WHEN LEFT(RIGHT(CL.CODE, 2), 1) = 'K'
+                                             AND RIGHT(CL.CODE, 1) LIKE '[0-9]'
+                                        THEN 4000 + CAST(RIGHT(CL.CODE, 1) AS INT)
+
+                                        -- KR kontrolü - Üçüncü öncelik
+                                        WHEN RIGHT(CL.CODE, 2) = 'KR' THEN 3000
+
+                                        -- M[0-9] kontrolü - Dördüncü öncelik
+                                        WHEN RIGHT(CL.CODE, 2) LIKE 'M[0-9]'
+                                        THEN 2000 + CAST(RIGHT(CL.CODE, 1) AS INT)
+
+                                        -- MS kontrolü - En düşük öncelik
+                                        WHEN RIGHT(CL.CODE, 2) = 'MS' THEN 1000
+
+                                        ELSE 0
+                                    END DESC
+                            ) AS RowNum
+                        FROM LG_{LogoSetting.Firm}_CLCARD AS CL
+                        INNER JOIN LG_{LogoSetting.Firm}_CLCARD AS IC ON IC.LOGICALREF = CL.PARENTCLREF
+                        WHERE
+                            IC.CODE = '{workplaceCode.Replace("'", "''")}'
+                            AND CL.CODE NOT LIKE '%DK0%'
+                            AND CL.CODE NOT LIKE '%DK1%'
+                            AND CL.CODE NOT LIKE '%KD%'
+                            AND (CL.SPECODE NOT IN('KIRMIZI','YEŞİL','MAVİ') OR CL.SPECODE IS NULL)
+                            AND LEFT(CL.CODE, 1) = '1'
+                            AND CL.ACTIVE = 0
+                    )
+                    SELECT CODE, LOGICALREF
+                    FROM RankedRecords
+                    WHERE RowNum = 1";
+
+                var result = _sqlProvider.SqlReader(query);
+                if (!result.IsSuccess)
+                {
+                    _logger.LogError("GetClientInfoByWorkplaceCodeAsync - Sorgu hatası: {Message}, WorkplaceCode: {WorkplaceCode}",
+                        result.Message, workplaceCode);
+                    return ResponseDto<(string, long)>.FailData(500, "Cari bilgisi bulunamadı", result.Message, true);
+                }
+
+                if (result.Data == null || result.Data.Rows.Count == 0)
+                {
+                    _logger.LogWarning("GetClientInfoByWorkplaceCodeAsync - Cari bilgisi bulunamadı: {WorkplaceCode}", workplaceCode);
+                    return ResponseDto<(string, long)>.FailData(404, "Cari bilgisi bulunamadı",
+                        $"İşyeri kodu '{workplaceCode}' için cari hesap bilgisi bulunamadı", false);
+                }
+
+                var clientCode = result.Data.Rows[0]["CODE"]?.ToString() ?? string.Empty;
+                var clientRef = result.Data.Rows[0]["LOGICALREF"] != DBNull.Value
+                    ? Convert.ToInt64(result.Data.Rows[0]["LOGICALREF"])
+                    : 0L;
+
+                return ResponseDto<(string, long)>.SuccessData(200, "Cari bilgisi başarıyla getirildi", (clientCode, clientRef));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GetClientInfoByWorkplaceCodeAsync - Beklenmeyen hata: {WorkplaceCode}", workplaceCode);
+                return ResponseDto<(string, long)>.FailData(500, "Beklenmeyen bir hata oluştu", ex.Message, true);
+            }
         }
 
 

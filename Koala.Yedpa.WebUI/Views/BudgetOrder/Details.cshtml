@@ -1,0 +1,175 @@
+@using Koala.Yedpa.Core.Dtos
+@model Koala.Yedpa.Core.Models.ViewModels.BudgetOrderDetailsViewModel
+
+@{
+    ViewData["Title"] = "Bütçe Sipariş Detayı";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Bütçe Sipariş Detayı</h3>
+                    <div class="card-tools">
+                        <a href="/BudgetOrder/Index" class="btn btn-tool btn-sm">
+                            <i class="fas fa-arrow-left"></i> Listeye Dön
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+
+                    <!-- Bütçe Bilgileri -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5 class="mb-3">Bütçe Bilgileri</h5>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Yıl</label>
+                                <input type="text" class="form-control" value="@Model.Year" readonly />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Bütçe Türü</label>
+                                <input type="text" class="form-control" value="@Model.BuggetTypeText" readonly />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Oran (%)</label>
+                                <input type="text" class="form-control" value="@((Model.Ratio * 100).ToString("F2"))" readonly />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Toplam Bütçe</label>
+                                <input type="text" class="form-control" value="@Model.TotalBugget.ToString("F2") TL" readonly />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Açıklama</label>
+                                <input type="text" class="form-control" value="@(Model.Description ?? "")" readonly />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label>Aylar</label>
+                                <div class="form-control">
+                                    @if (Model.BuggetRatioMounths != null && Model.BuggetRatioMounths != 0)
+                                    {
+                                        var months = new List<string>();
+                                        if ((Model.BuggetRatioMounths & BuggetRatioMounthEnum.January) != 0) months.Add("Ocak");
+                                        if ((Model.BuggetRatioMounths & BuggetRatioMounthEnum.February) != 0) months.Add("Şubat");
+                                        if ((Model.BuggetRatioMounths & BuggetRatioMounthEnum.March) != 0) months.Add("Mart");
+                                        if ((Model.BuggetRatioMounths & BuggetRatioMounthEnum.April) != 0) months.Add("Nisan");
+                                        if ((Model.BuggetRatioMounths & BuggetRatioMounthEnum.May) != 0) months.Add("Mayıs");
+                                        if ((Model.BuggetRatioMounths & BuggetRatioMounthEnum.June) != 0) months.Add("Haziran");
+                                        if ((Model.BuggetRatioMounths & BuggetRatioMounthEnum.July) != 0) months.Add("Temmuz");
+                                        if ((Model.BuggetRatioMounths & BuggetRatioMounthEnum.August) != 0) months.Add("Ağustos");
+                                        if ((Model.BuggetRatioMounths & BuggetRatioMounthEnum.September) != 0) months.Add("Eylül");
+                                        if ((Model.BuggetRatioMounths & BuggetRatioMounthEnum.October) != 0) months.Add("Ekim");
+                                        if ((Model.BuggetRatioMounths & BuggetRatioMounthEnum.November) != 0) months.Add("Kasım");
+                                        if ((Model.BuggetRatioMounths & BuggetRatioMounthEnum.December) != 0) months.Add("Aralık");
+
+                                        @string.Join(", ", months)
+                                    }
+                                    else
+                                    {
+                                        <span>Tüm aylar seçili değil</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (Model.DuesStatistics != null && Model.DuesStatistics.Any())
+                    {
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <h5 class="mb-3">Aidat Bilgileri</h5>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="table-responsive">
+                                    <table id="duesStatisticsTable" class="table table-bordered table-striped table-sm w-100">
+                                        <thead>
+                                            <tr>
+                                                <th>İşyeri Kodu</th>
+                                                <th>İşyeri Adı</th>
+                                                <th>Kod</th>
+                                                <th>Yıl</th>
+                                                <th>Ocak</th>
+                                                <th>Şubat</th>
+                                                <th>Mart</th>
+                                                <th>Nisan</th>
+                                                <th>Mayıs</th>
+                                                <th>Haziran</th>
+                                                <th>Temmuz</th>
+                                                <th>Ağustos</th>
+                                                <th>Eylül</th>
+                                                <th>Ekim</th>
+                                                <th>Kasım</th>
+                                                <th>Aralık</th>
+                                                <th>Toplam</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var dues in Model.DuesStatistics)
+                                            {
+                                                <tr>
+                                                    <td>@dues.DivCode</td>
+                                                    <td>@dues.DivName</td>
+                                                    <td>@dues.Code</td>
+                                                    <td>@dues.Year</td>
+                                                    <td class="text-end">@dues.January.ToString("F2")</td>
+                                                    <td class="text-end">@dues.February.ToString("F2")</td>
+                                                    <td class="text-end">@dues.March.ToString("F2")</td>
+                                                    <td class="text-end">@dues.April.ToString("F2")</td>
+                                                    <td class="text-end">@dues.May.ToString("F2")</td>
+                                                    <td class="text-end">@dues.June.ToString("F2")</td>
+                                                    <td class="text-end">@dues.July.ToString("F2")</td>
+                                                    <td class="text-end">@dues.August.ToString("F2")</td>
+                                                    <td class="text-end">@dues.September.ToString("F2")</td>
+                                                    <td class="text-end">@dues.October.ToString("F2")</td>
+                                                    <td class="text-end">@dues.November.ToString("F2")</td>
+                                                    <td class="text-end">@dues.December.ToString("F2")</td>
+                                                    <td class="text-end">@dues.Total.ToString("F2")</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info mt-3">
+                            <i class="fas fa-info-circle"></i> Bu kayda ait aidat bilgisi bulunmuyor.
+                        </div>
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/assets/js/custom/budget-order-details-page.js"></script>
+}

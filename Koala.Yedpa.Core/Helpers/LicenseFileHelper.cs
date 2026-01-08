@@ -50,11 +50,7 @@ namespace Koala.Yedpa.Core.Helpers
                 CustomerCode = "",
                 ExpirationDate = "",
                 ApplicationId = "",
-                CustomContent = new
-                {
-                    LogoClientId = "",
-                    LogoClientSecret = ""
-                },
+                CustomContent = "",  // Changed to string - it's stored as JSON string in the file
                 Mode = ""
             });
 
@@ -62,8 +58,27 @@ namespace Koala.Yedpa.Core.Helpers
 
             DateTime? exp = DateTime.TryParse(payload.ExpirationDate, out var dt) ? dt : null;
 
-            var logoClientId = payload.CustomContent?.LogoClientId;
-            var logoClientSecret = payload.CustomContent?.LogoClientSecret;
+            // Parse CustomContent from JSON string to object
+            string? logoClientId = "";
+            string? logoClientSecret = "";
+
+            if (!string.IsNullOrEmpty(payload.CustomContent))
+            {
+                try
+                {
+                    var customContentObj = JsonConvert.DeserializeAnonymousType(payload.CustomContent, new
+                    {
+                        LogoClientId = "",
+                        LogoClientSecret = ""
+                    });
+                    logoClientId = customContentObj?.LogoClientId ?? "";
+                    logoClientSecret = customContentObj?.LogoClientSecret ?? "";
+                }
+                catch
+                {
+                    // If parsing fails, leave them empty
+                }
+            }
 
             return (payload.CustomerCode, payload.ApplicationId, exp, logoClientId, logoClientSecret);
         }
