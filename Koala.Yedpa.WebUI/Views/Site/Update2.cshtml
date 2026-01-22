@@ -1,0 +1,202 @@
+@model Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel
+
+@{
+    ViewData["Title"] = "Yeni Kayıt";
+}
+
+<div class="container mt-4">
+
+    <!-- TİP -->
+    <div class="card mb-4 p-3">
+        <h5 class="mb-3">Tip</h5>
+
+        <div class="d-flex gap-4">
+            <div>
+                <input type="radio" id="tip1" name="CustomerType" value="1" />
+                <label for="tip1">İşyeri Sahibi</label>
+            </div>
+            <div>
+                <input type="radio" id="tip2" name="CustomerType" value="2" />
+                <label for="tip2">Kiracı</label>
+            </div>
+            <div>
+                <input type="radio" id="tip3" name="CustomerType" value="3" />
+                <label for="tip3">İş Yeri</label>
+            </div>
+            <div>
+                <input type="radio" id="tip4" name="CustomerType" value="4" />
+                <label for="tip4">Diğer</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ev Sahibi / Kiracı Bilgileri -->
+    <div class="card p-3 mb-4">
+        <h5 class="mb-3">Ev Sahibi - Kiracı Bilgileri</h5>
+
+        <div class="row mb-2">
+            <label class="col-2 col-form-label fw-bold">Muhtarlık Kaydı</label>
+            <div class="col-10 d-flex gap-4">
+                <div>
+                    <input type="radio" id="mvar" name="ChiefReg" value="1" />
+                    <label for="mvar">Var</label>
+                </div>
+
+                <div>
+                    <input type="radio" id="myok" name="ChiefReg" value="0" />
+                    <label for="myok">Yok</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-3">
+
+            <div class="col-md-3">
+                <label class="form-label">T.C. Kimlik No</label>
+                @Html.TextBoxFor(m => m.IdentityNr, new { @class = "form-control" })
+            </div>
+
+            <div class="col-md-2">
+                <label class="form-label">Kişi Sayısı</label>
+                @Html.TextBoxFor(m => m.PersonCount, new { @class = "form-control" })
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">İntifa Sahibi</label>
+                @Html.TextBoxFor(m => m.ProfitingOwner, new { @class = "form-control" })
+            </div>
+
+            <div class="col-md-2">
+                <label class="form-label">Vergi Mükellefliği</label>
+                @Html.DropDownListFor(m => m.TaxPayer, new List<SelectListItem> {
+                new("Muaf", "0"),
+                                new("Mükellef", "1")
+                                }, "Seçiniz", new { @class = "form-select" })
+            </div>
+
+            <div class="col-md-2">
+                <label class="form-label">Tapu Bilgileri</label>
+                @Html.DropDownListFor(m => m.DeedInfo, new List<SelectListItem> {
+                                new("Hisseli", "1"),
+                                new("Tam", "2")
+                                }, "Seçiniz", new { @class = "form-select" })
+            </div>
+
+        </div>
+
+        <div class="row mt-4 g-3">
+            <div class="col-md-3">
+                <label class="form-label">Giriş/Baş. Tarihi</label>
+                @Html.TextBoxFor(m => m.BegDate, "{0:dd.MM.yyyy}", new { @class = "form-control datepicker", disabled = "disabled" })
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Çıkış/Bitiş Tarihi</label>
+                @Html.TextBoxFor(m => m.EndDate, "{0:dd.MM.yyyy}", new { @class = "form-control datepicker", disabled = "disabled" })
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Resmi Giriş Tarihi</label>
+                @Html.TextBoxFor(m => m.OfficialBegDate, "{0:dd.MM.yyyy}", new { @class = "form-control datepicker", disabled = "disabled" })
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Resmi Çıkış Tarihi</label>
+                @Html.TextBoxFor(m => m.OfficialEndDate, "{0:dd.MM.yyyy}", new { @class = "form-control datepicker", disabled = "disabled" })
+            </div>
+        </div>
+
+    </div>
+
+    <!-- METREKARE TABLOSU -->
+    <div class="card p-3">
+
+        <h5 class="mb-3">Metrekare Bilgileri</h5>
+
+        <table class="table table-bordered align-middle">
+            <thead>
+                <tr>
+                    <th> </th>
+                    <th>Bütçe M2</th>
+                    <th>Bütçe Katsayı</th>
+                    <th>Yakıt M2</th>
+                    <th>Yakıt Katsayı</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td>1. Depo</td>
+                    <td>@Html.TextBoxFor(m => m.BudgetDepotMetre1, new { @class = "form-control" })</td>
+                    <td>@Html.TextBoxFor(m => m.BudgetDepotCoefficient1, new { @class = "form-control" })</td>
+                    <td>@Html.TextBoxFor(m => m.FuelDepotMetre1, new { @class = "form-control" })</td>
+                    <td>@Html.TextBoxFor(m => m.FuelDepotCoefficient1, new { @class = "form-control" })</td>
+                </tr>
+
+                <tr>
+                    <td>2. Depo</td>
+                    <td>@Html.TextBoxFor(m => m.BudgetDepotMetre2, new { @class = "form-control" })</td>
+                    <td>@Html.TextBoxFor(m => m.BudgetDepotCoefficient2, new { @class = "form-control" })</td>
+                    <td>@Html.TextBoxFor(m => m.FuelDepotMetre2, new { @class = "form-control" })</td>
+                    <td>@Html.TextBoxFor(m => m.FuelDepotCoefficient2, new { @class = "form-control" })</td>
+                </tr>
+
+                <tr>
+                    <td>Zemin</td>
+                    <td>@Html.TextBoxFor(m => m.BudgetGroundMetre, new { @class = "form-control" })</td>
+                    <td>@Html.TextBoxFor(m => m.BudgetGroundCoefficient, new { @class = "form-control" })</td>
+                    <td>@Html.TextBoxFor(m => m.FuelGroundMetre, new { @class = "form-control" })</td>
+                    <td>@Html.TextBoxFor(m => m.FuelGroundCoefficient, new { @class = "form-control" })</td>
+                </tr>
+
+                <tr>
+                    <td>Asma Kat</td>
+                    <td>@Html.TextBoxFor(m => m.BudgetHungMetre, new { @class = "form-control" })</td>
+                    <td>@Html.TextBoxFor(m => m.BudgetHungCoefficient, new { @class = "form-control" })</td>
+                    <td>@Html.TextBoxFor(m => m.FuelHungMetre, new { @class = "form-control" })</td>
+                    <td>@Html.TextBoxFor(m => m.FuelHungCoefficient, new { @class = "form-control" })</td>
+                </tr>
+
+                <tr>
+                    <td>1. Kat</td>
+                    <td>@Html.TextBoxFor(m => m.BudgetFloorMetre, new { @class = "form-control" })</td>
+                    <td>@Html.TextBoxFor(m => m.BudgetFloorCoefficient, new { @class = "form-control" })</td>
+                    <td>@Html.TextBoxFor(m => m.FuelFloorMetre, new { @class = "form-control" })</td>
+                    <td>@Html.TextBoxFor(m => m.FuelFloorCoefficient, new { @class = "form-control" })</td>
+                </tr>
+
+                <tr>
+                    <td>Pasaj 1</td>
+                    <td>@Html.TextBoxFor(m => m.BudgetPassageMetre1, new { @class = "form-control" })</td>
+                    <td>@Html.TextBoxFor(m => m.BudgetPassageCoefficient1, new { @class = "form-control" })</td>
+                    <td>@Html.TextBoxFor(m => m.FuelPassageMetre1, new { @class = "form-control" })</td>
+                    <td>@Html.TextBoxFor(m => m.FuelPassageCoefficient1, new { @class = "form-control" })</td>
+                </tr>
+
+                <tr>
+                    <td>Pasaj 2</td>
+                    <td>@Html.TextBoxFor(m => m.BudgetPassageMetre2, new { @class = "form-control" })</td>
+                    <td>@Html.TextBoxFor(m => m.BudgetPassageCoefficient2, new { @class = "form-control" })</td>
+                    <td>@Html.TextBoxFor(m => m.FuelPassageMetre2, new { @class = "form-control" })</td>
+                    <td>@Html.TextBoxFor(m => m.FuelPassageCoefficient2, new { @class = "form-control" })</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- TOPLAM ALANI -->
+        <div class="row mt-4">
+            <div class="col-md-3 offset-md-9">
+
+                <label class="form-label">Katsayılı Brüt M2</label>
+                @Html.TextBoxFor(m => m.TotalBrutCoefficientMetre, new { @class = "form-control", @readonly = "readonly" })
+
+                <label class="form-label mt-3">Net M2</label>
+                @Html.TextBoxFor(m => m.TotalNetMetre, new { @class = "form-control", @readonly = "readonly" })
+
+                <label class="form-label mt-3">Yakıt M2</label>
+                @Html.TextBoxFor(m => m.TotalFuelMetre, new { @class = "form-control", @readonly = "readonly" })
+            </div>
+        </div>
+
+    </div>
+</div>
