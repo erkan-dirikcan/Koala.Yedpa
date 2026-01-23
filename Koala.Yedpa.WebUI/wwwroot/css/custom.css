@@ -122,3 +122,52 @@
 .progress-bar-danger {
     background-color: #ed7453 !important;
 }
+
+/**
+ * Compact Table Styles
+ * Reduce table row heights while maintaining readability
+ */
+.table td,
+.table th {
+    padding: 0.4rem 0.5rem !important; /* Reduced from 0.75rem */
+    vertical-align: middle;
+}
+
+.table.table-sm td,
+.table.table-sm th {
+    padding: 0.25rem 0.4rem !important; /* Reduced from 0.3rem */
+    vertical-align: middle;
+}
+
+/* Reduce cell spacing even more for very compact tables */
+.table.table-compact td,
+.table.table-compact th {
+    padding: 0.15rem 0.3rem !important;
+    vertical-align: middle;
+}
+
+/* Optimize line-height for table cells */
+.table td,
+.table th {
+    line-height: 1.2;
+}
+
+/* Ensure button cells maintain minimum clickable area */
+.table td .btn,
+.table th .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.85rem;
+}
+
+/* Compact form controls in tables */
+.table .form-control,
+.table .form-select {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.85rem;
+}
+
+/* Ensure child table rows inherit compact style */
+table.table table td,
+table.table table th {
+    padding: 0.25rem 0.4rem !important;
+}
