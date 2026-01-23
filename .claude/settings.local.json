@@ -16,7 +16,8 @@
       "Bash(timeout:*)",
       "Bash(dotnet ef database update:*)",
       "mcp__web-reader__webReader",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(git rm:*)"
     ]
   }
 }
