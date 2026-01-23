@@ -82,8 +82,8 @@ document.addEventListener('DOMContentLoaded', function () {
             sourceYearLoading.style.display = 'block';
             sourceYearSelect.disabled = true;
 
-            // Veriyi yükle
-            loadDuesStatisticData(selectedYear, currentBudgetType);
+            // Veriyi yükle - Her zaman budgetType=1 (kaynaktaki mevcut kayıtları çek)
+            loadDuesStatisticData(selectedYear, 1);
         } else {
             duesStatisticSection.style.display = 'none';
             monthsSelectionSection.style.display = 'none';
