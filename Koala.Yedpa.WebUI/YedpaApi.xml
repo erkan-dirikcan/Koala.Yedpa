@@ -146,12 +146,12 @@
             <param name="budgetType">Budget type (1=Budget, 2=ExtraBudget)</param>
             <returns>Monthly budget summary</returns>
         </member>
-        <member name="M:Koala.Yedpa.WebUI.Controllers.DuesStatisticApiController.GetByYearAndType(System.Int32,Koala.Yedpa.Core.Dtos.BuggetTypeEnum)">
+        <member name="M:Koala.Yedpa.WebUI.Controllers.DuesStatisticApiController.GetByYearAndType(System.Int32,System.Nullable{Koala.Yedpa.Core.Dtos.BuggetTypeEnum})">
             <summary>
             Get DuesStatistics by year and budget type
             </summary>
             <param name="year">Year</param>
-            <param name="budgetType">Budget type (1=Budget, 2=ExtraBudget)</param>
+            <param name="budgetType">Budget type (1=Budget, 2=ExtraBudget) - Optional, defaults to 1</param>
             <returns>List of DuesStatistics</returns>
         </member>
         <member name="M:Koala.Yedpa.WebUI.Controllers.DuesStatisticApiController.GetPagedList(Koala.Yedpa.Core.Models.ViewModels.DataTableRequest)">

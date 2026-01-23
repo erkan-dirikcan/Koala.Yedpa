@@ -81,10 +81,10 @@ public class DuesStatisticApiController : ControllerBase
     /// Get DuesStatistics by year and budget type
     /// </summary>
     /// <param name="year">Year</param>
-    /// <param name="budgetType">Budget type (1=Budget, 2=ExtraBudget)</param>
+    /// <param name="budgetType">Budget type (1=Budget, 2=ExtraBudget) - Optional, defaults to 1</param>
     /// <returns>List of DuesStatistics</returns>
     [HttpGet("GetByYearAndType")]
-    public async Task<IActionResult> GetByYearAndType([FromQuery] int year, [FromQuery] BuggetTypeEnum budgetType)
+    public async Task<IActionResult> GetByYearAndType([FromQuery] int year, [FromQuery] BuggetTypeEnum? budgetType)
     {
         try
         {
@@ -96,9 +96,11 @@ public class DuesStatisticApiController : ControllerBase
                 return StatusCode(result.StatusCode, result);
             }
 
-            // Filter by budget type
+            // Filter by budget type - if not specified, default to Budget (1)
+            var targetBudgetType = budgetType ?? BuggetTypeEnum.Budget;
+
             var filteredData = result.Data
-                .Where(d => d.BudgetType == budgetType)
+                .Where(d => d.BudgetType == targetBudgetType)
                 .Select(d => new
                 {
                     id = d.Id,
@@ -136,7 +138,7 @@ public class DuesStatisticApiController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error getting dues statistics for year: {Year}, budgetType: {BudgetType}", year, budgetType);
+            _logger.LogError(ex, "Error getting dues statistics for year: {Year}, budgetType: {BudgetType}", year, budgetType ?? BuggetTypeEnum.Budget);
             return StatusCode(500, new
             {
                 isSuccess = false,
