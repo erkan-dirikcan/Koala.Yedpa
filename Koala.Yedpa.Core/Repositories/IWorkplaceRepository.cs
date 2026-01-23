@@ -13,6 +13,7 @@ public interface IWorkplaceRepository
     Task<Workplace?> GetByLogRefAsync(int logRef);
     Task<List<int>> Select(Expression<Func<Workplace, int>> selector);
     Workplace Update(Workplace entity);
+    Task<Workplace> UpdateAsync(Workplace entity);
     Task<int> CountAsync();
     Task<int> CountAsync(Expression<Func<Workplace, bool>> predicate);
     Task<IEnumerable<Workplace>> GetPagedAsync(int skip, int take, Expression<Func<Workplace, bool>>? predicate = null, string? orderBy = null, bool ascending = true);

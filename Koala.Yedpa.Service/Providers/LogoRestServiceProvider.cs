@@ -39,7 +39,14 @@ public class LogoRestServiceProvider : ILogoRestServiceProvider
                 return ResponseDto<string>.FailData(500, "Ayarlar alınamadı", "Logo REST ayarları bulunamadı", true);
             }
 
-            var baseUri = $"http://{settings.Data.Server}:{settings.Data.Port}/api/v1/";
+            // UriBuilder kullanarak güvenli URL oluştur
+            var serverUri = new Uri(settings.Data.Server);
+            var uriBuilder = new UriBuilder(serverUri)
+            {
+                Port = settings.Data.Port,
+                Path = "api/v1/"
+            };
+            var baseUri = uriBuilder.ToString();
             var client = _httpClientFactory.CreateClient();
             client.BaseAddress = new Uri(baseUri);
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -70,7 +77,14 @@ public class LogoRestServiceProvider : ILogoRestServiceProvider
                 return ResponseDto<string>.FailData(500, "Ayarlar alınamadı", "Logo REST ayarları bulunamadı", true);
             }
 
-            var baseUri = $"http://{settings.Data.Server}:{settings.Data.Port}/api/v1/";
+            // UriBuilder kullanarak güvenli URL oluştur
+            var serverUri = new Uri(settings.Data.Server);
+            var uriBuilder = new UriBuilder(serverUri)
+            {
+                Port = settings.Data.Port,
+                Path = "api/v1/"
+            };
+            var baseUri = uriBuilder.ToString();
             var client = _httpClientFactory.CreateClient();
             client.BaseAddress = new Uri(baseUri);
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -101,7 +115,14 @@ public class LogoRestServiceProvider : ILogoRestServiceProvider
                 return ResponseDto<string>.FailData(500, "Ayarlar alınamadı", "Logo REST ayarları bulunamadı", true);
             }
 
-            var baseUri = $"http://{settings.Data.Server}:{settings.Data.Port}/api/v1/";
+            // UriBuilder kullanarak güvenli URL oluştur
+            var serverUri = new Uri(settings.Data.Server);
+            var uriBuilder = new UriBuilder(serverUri)
+            {
+                Port = settings.Data.Port,
+                Path = "api/v1/"
+            };
+            var baseUri = uriBuilder.ToString();
             var client = _httpClientFactory.CreateClient();
             client.BaseAddress = new Uri(baseUri);
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -132,7 +153,14 @@ public class LogoRestServiceProvider : ILogoRestServiceProvider
                 return ResponseDto<string>.FailData(500, "Ayarlar alınamadı", "Logo REST ayarları bulunamadı", true);
             }
 
-            var baseUri = $"http://{settings.Data.Server}:{settings.Data.Port}/api/v1/";
+            // UriBuilder kullanarak güvenli URL oluştur
+            var serverUri = new Uri(settings.Data.Server);
+            var uriBuilder = new UriBuilder(serverUri)
+            {
+                Port = settings.Data.Port,
+                Path = "api/v1/"
+            };
+            var baseUri = uriBuilder.ToString();
             var client = _httpClientFactory.CreateClient();
             client.BaseAddress = new Uri(baseUri);
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -175,9 +203,14 @@ public class LogoRestServiceProvider : ILogoRestServiceProvider
                 return ResponseDto<string>.FailData(500, "License bilgileri alınamadı", "ClientId veya ClientSecret bulunamadı", true);
             }
 
-            // 3. Token URL oluştur
-            var baseUri = $"http://{settings.Server}:{settings.Port}/api/v1/";
-            var tokenUrl = $"{baseUri}/token";
+            // 3. Token URL oluştur - UriBuilder kullanarak güvenli URL oluştur
+            var serverUri = new Uri(settings.Server);
+            var uriBuilder = new UriBuilder(serverUri)
+            {
+                Port = settings.Port,
+                Path = "api/v1/token"
+            };
+            var tokenUrl = uriBuilder.ToString();
 
             // 4. HTTP client oluştur
             var client = _httpClientFactory.CreateClient();
@@ -262,7 +295,14 @@ public class LogoRestServiceProvider : ILogoRestServiceProvider
             }
 
             var settings = settingsResponse.Data;
-            var baseUri = $"http://{settings.Server}:{settings.Port}";
+
+            // UriBuilder kullanarak güvenli URL oluştur
+            var serverUri = new Uri(settings.Server);
+            var uriBuilder = new UriBuilder(serverUri)
+            {
+                Port = settings.Port
+            };
+            var baseUri = uriBuilder.ToString();
             var revokeUrl = $"{baseUri}/Revoke";
 
             var client = _httpClientFactory.CreateClient();
@@ -430,8 +470,24 @@ public class LogoRestServiceProvider : ILogoRestServiceProvider
 
             if (response.IsSuccess)
             {
-                _logger.LogInformation("SalesOrder başarıyla gönderildi: {Data}", response.Data);
-                return ResponseDto<string>.SuccessData(200, "SalesOrder başarıyla oluşturuldu", response.Data);
+                // Response'tan sipariş numarasını al
+                // JSON parse et ve INTERNAL_REFERENCE veya NUMBER alanını al
+                try
+                {
+                    var orderResponse = JsonConvert.DeserializeObject<SalesOrderResponse>(response.Data);
+                    var orderNumber = orderResponse?.INTERNAL_REFERENCE.ToString() ?? orderResponse?.NUMBER ?? response.Data;
+
+                    _logger.LogInformation("SalesOrder başarıyla oluşturuldu. Order Number: {OrderNumber}, INTERNAL_REFERENCE: {InternalRef}",
+                        orderNumber, orderResponse?.INTERNAL_REFERENCE);
+
+                    return ResponseDto<string>.SuccessData(200, "SalesOrder başarıyla oluşturuldu", orderNumber);
+                }
+                catch (Exception parseEx)
+                {
+                    // JSON parse edilemezse, tüm response'u dön (fallback)
+                    _logger.LogWarning(parseEx, "SalesOrder response parse edilemedi, tam response kullanılıyor: {Response}", response.Data);
+                    return ResponseDto<string>.SuccessData(200, "SalesOrder başarıyla oluşturuldu (parse edilemedi)", response.Data);
+                }
             }
             else
             {
@@ -466,5 +522,14 @@ public class LogoRestServiceProvider : ILogoRestServiceProvider
             _logger.LogError(ex, "PostSalesOrderAsync genel hata: {Message}", ex.Message);
             return ResponseDto<string>.FailData(500, "SalesOrder gönderim hatası", ex.Message, true);
         }
+    }
+
+    /// <summary>
+    /// SalesOrder API yanıtı (sipariş numarası almak için)
+    /// </summary>
+    private class SalesOrderResponse
+    {
+        public int INTERNAL_REFERENCE { get; set; }
+        public string NUMBER { get; set; } = string.Empty;
     }
 }

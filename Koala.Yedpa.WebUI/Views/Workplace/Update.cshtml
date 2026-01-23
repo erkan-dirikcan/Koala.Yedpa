@@ -1,19 +1,19 @@
-site@* @model Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel
+@model Koala.Yedpa.Core.Models.ViewModels.WorkplaceDetailViewModel
 
 @{
-    var Cl = Model == null ? "" : Model.ClientName;
-    ViewData["Title"] = $"{Cl} Site Bilgisi Güncelle";
-    ViewData["ActivePage"] = "Site";
+    var Cl = Model == null ? "" : Model.Definition;
+    ViewData["Title"] = $"{Cl} İşyeri Bilgisi Güncelle";
+    ViewData["ActivePage"] = "Workplace";
 }
 <div class="container mt-3">
     <div class="card card-custom card-stretch gutter-b">
         <div class="card-header border-0 py-5">
             <h3 class="card-title align-items-start flex-column">
-                <span class="card-label font-weight-bolder text-dark">Cari Hesap Site Bilgileri</span>
-                <span class="text-muted mt-3 font-weight-bold font-size-sm">Cari Hesap Site Bilgilerini Güncelle</span>
+                <span class="card-label font-weight-bolder text-dark">İşyeri Site Bilgileri</span>
+                <span class="text-muted mt-3 font-weight-bold font-size-sm">İşyeri Site Bilgilerini Güncelle</span>
             </h3>
         </div>
-        <form name="UpdateSiteForm" id="UpdateForm" asp-action="Update" asp-controller="Site" method="post">
+        <form name="UpdateWorkplaceForm" id="UpdateForm" asp-action="Update" asp-controller="Workplace" method="post">
             <div class="card-body">
                 <input type="hidden" asp-for="Id" />
                 @Html.AntiForgeryToken()
@@ -113,17 +113,6 @@ site@* @model Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel
                                     <div class="col-6">
                                         <label>Çıkış / Bitiş Tarihi</label>
                                         @Html.TextBoxFor(m => m.EndDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", @readonly = "readonly" })
-                                    </div>
-                                </div>
-
-                                <div class="row mt-2">
-                                    <div class="col-6">
-                                        <label>Resmi Giriş Tarihi</label>
-                                        @Html.TextBoxFor(m => m.OfficialBegDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", @readonly = "readonly" })
-                                    </div>
-                                    <div class="col-6">
-                                        <label>Resmi Çıkış Tarihi</label>
-                                        @Html.TextBoxFor(m => m.OfficialEndDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", @readonly = "readonly" })
                                     </div>
                                 </div>
 
@@ -286,9 +275,8 @@ site@* @model Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel
 
                 <div class="card-footer text-right">
                     <button type="submit" class="btn btn-warning mr-2">Güncelle</button>
-                    <a href="~/site" class="btn btn-secondary">Vazgeç</a>
+                    <a href="~/Workplace" class="btn btn-secondary">Vazgeç</a>
                 </div>
-
 
 
 
@@ -299,6 +287,5 @@ site@* @model Koala.Yedpa.Core.Models.ViewModels.LgXt001211UpdateViewModel
 @section Scripts
 {
 
-    <script src="/assets/js/custom/site-update-page.js"></script>
+    <script src="/assets/js/custom/workplace-update-page.js"></script>
 }
- *@

@@ -1,8 +1,10 @@
 using Koala.Yedpa.Core.Services;
 using Koala.Yedpa.Core.Models.ViewModels;
 using Koala.Yedpa.Core.Dtos;
+using Koala.Yedpa.Service.Services.BackgroundServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Koala.Yedpa.WebUI.Controllers
 {
@@ -13,11 +15,16 @@ namespace Koala.Yedpa.WebUI.Controllers
     {
         private readonly IBudgetOrderService _budgetOrderService;
         private readonly ILogger<BudgetOrderApiController> _logger;
+        private readonly DuesStatisticTransferQueue _transferQueue;
 
-        public BudgetOrderApiController(IBudgetOrderService budgetOrderService, ILogger<BudgetOrderApiController> logger)
+        public BudgetOrderApiController(
+            IBudgetOrderService budgetOrderService,
+            ILogger<BudgetOrderApiController> logger,
+            DuesStatisticTransferQueue transferQueue)
         {
             _budgetOrderService = budgetOrderService;
             _logger = logger;
+            _transferQueue = transferQueue;
         }
 
         /// <summary>
@@ -392,22 +399,46 @@ namespace Koala.Yedpa.WebUI.Controllers
         [HttpPost("Transfer")]
         public async Task<IActionResult> TransferDuesStatistics([FromBody] TransferDuesStatisticsViewModel model)
         {
-            _logger.LogInformation("Transfer başladı. Kayıt sayısı: {Count}, Debug Mod: {IsDebugMode}",
+            _logger.LogInformation("Transfer job kuyruğa eklendi. Kayıt sayısı: {Count}, Debug Mod: {IsDebugMode}",
                 model.DuesStatisticIds.Count, model.IsDebugMode);
 
-            var result = await _budgetOrderService.TransferDuesStatisticsToLogoAsync(
-                model.DuesStatisticIds,
-                model.UserId,
-                model.IsDebugMode);
+            // BudgetRatio'yu Locked yap (aktarım başlatıldığında)
+            if (!string.IsNullOrEmpty(model.BudgetRatioId))
+            {
+                var lockResult = await _budgetOrderService.LockBudgetRatioAsync(model.BudgetRatioId);
+                if (!lockResult.IsSuccess)
+                {
+                    _logger.LogWarning("BudgetRatio kilitlenemedi: {BudgetRatioId}, Hata: {Error}",
+                        model.BudgetRatioId, lockResult.Message);
+                    return StatusCode(500, new
+                    {
+                        isSuccess = false,
+                        message = "BudgetRatio kilitlenemedi",
+                        error = lockResult.Message
+                    });
+                }
+                _logger.LogInformation("BudgetRatio Locked yapıldı: {BudgetRatioId}", model.BudgetRatioId);
+            }
 
-            if (result.IsSuccess)
+            // Arka planda çalıştır (BackgroundService)
+            // Current user'ı HttpContext'ten al (client'dan gelen değere güvenme)
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var workItem = new DuesStatisticTransferWorkItem
             {
-                return Ok(result);
-            }
-            else
-            {
-                return StatusCode(result.StatusCode, result);
-            }
+                DuesStatisticIds = model.DuesStatisticIds,
+                UserId = currentUserId,
+                IsDebugMode = model.IsDebugMode
+            };
+
+            await _transferQueue.EnqueueAsync(workItem);
+            _logger.LogInformation("Transfer job BackgroundService queue'ya eklendi. Job ID: {JobId}, UserId: {UserId}, Queue'daki bekleyen job sayısı: {Count}",
+                workItem.JobId, workItem.UserId ?? "null", _transferQueue.Count);
+
+            // Hemen yanıt döndür
+            return Ok(ResponseDto<object>.SuccessData(200,
+                "Aktarım işlemi arka planda başlatıldı. Tamamlandığında e-posta ile bilgilendirileceksiniz.",
+                new { jobId = workItem.JobId }));
         }
 
         /// <summary>

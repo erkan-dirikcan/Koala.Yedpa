@@ -12,6 +12,7 @@ public static class MappingExtention
             cfg.AddProfile<BudgetRatioProfile>();
             cfg.AddProfile<ClaimsProfile>();
             cfg.AddProfile<DuesStatisticProfile>();
+            cfg.AddProfile<EmailTemplateProfile>();
             cfg.AddProfile<ExtendedPropertiesProfile>();
             cfg.AddProfile<ExtendedPropertyRecordValuesProfile>();
             cfg.AddProfile<ExtendedPropertyValuesProfile>();

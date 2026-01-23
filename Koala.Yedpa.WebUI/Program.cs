@@ -112,6 +112,13 @@ namespace Koala.Yedpa.WebUI
                 return new CryptoService(client, licenseReader!);
             });
 
+            // Message34 Email API
+            builder.Services.Configure<Message34Settings>(builder.Configuration.GetSection(Message34Settings.SectionName));
+            builder.Services.AddHttpClient<IMessage34EmailService, Message34EmailService>(client =>
+            {
+                client.Timeout = TimeSpan.FromSeconds(30);
+            });
+
 
 
             // =================================================================

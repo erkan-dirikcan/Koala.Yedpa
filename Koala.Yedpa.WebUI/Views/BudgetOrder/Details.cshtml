@@ -1,9 +1,17 @@
 @using Koala.Yedpa.Core.Dtos
+@using Koala.Yedpa.Core.Models
 @model Koala.Yedpa.Core.Models.ViewModels.BudgetOrderDetailsViewModel
 
 @{
     ViewData["Title"] = "Bütçe Sipariş Detayı";
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    // İstatistikleri hesapla
+    var totalCount = Model.DuesStatistics?.Count ?? 0;
+    var completedCount = Model.DuesStatistics?.Count(d => d.TransferStatus == TransferStatusEnum.Completed) ?? 0;
+    var failedCount = Model.DuesStatistics?.Count(d => d.TransferStatus == TransferStatusEnum.Failed) ?? 0;
+    var pendingCount = Model.DuesStatistics?.Count(d => d.TransferStatus == TransferStatusEnum.Pending) ?? 0;
+    var pendingItems = Model.DuesStatistics?.Where(d => d.TransferStatus != TransferStatusEnum.Completed).ToList() ?? new List<DuesStatistic>();
 }
 
 <div class="container-fluid">
@@ -95,6 +103,68 @@
                         </div>
                     </div>
 
+                    <!-- Aktarım İstatistikleri -->
+                    <div class="row mt-4 mb-4">
+                        <div class="col-12">
+                            <h5 class="mb-3">Aktarım Durumu</h5>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <div class="card card-stats bg-light-primary">
+                                <div class="card-body">
+                                    <div class="text-center">
+                                        <h3 class="text-primary">@totalCount</h3>
+                                        <p class="text-muted">Toplam Kayıt</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card card-stats bg-light-success">
+                                <div class="card-body">
+                                    <div class="text-center">
+                                        <h3 class="text-success">@completedCount</h3>
+                                        <p class="text-muted">Aktarılan</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card card-stats bg-light-danger">
+                                <div class="card-body">
+                                    <div class="text-center">
+                                        <h3 class="text-danger">@failedCount</h3>
+                                        <p class="text-muted">Başarısız</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card card-stats bg-light-warning">
+                                <div class="card-body">
+                                    <div class="text-center">
+                                        <h3 class="text-warning">@pendingCount</h3>
+                                        <p class="text-muted">Bekleyen</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Aktarılmamış Kayıtlar İçin Toplu Aktarım Butonu -->
+                    @if (pendingItems.Any())
+                    {
+                        <div class="alert alert-warning" role="alert">
+                            <h4 class="alert-heading"><i class="fas fa-exclamation-triangle"></i> Aktarılmamış Kayıtlar Mevcut</h4>
+                            <p>@pendingItems.Count adet kayıt Logo Tiger'a aktarılmamıştır.</p>
+                            <button id="retryAllBtn" class="btn btn-primary" data-budgetratio-id="@Model.Id">
+                                <i class="fas fa-redo"></i> Tüm Aktarılmamış Kayıtları Yeniden Aktar
+                            </button>
+                        </div>
+                    }
+
                     @if (Model.DuesStatistics != null && Model.DuesStatistics.Any())
                     {
                         <div class="row mt-4">
@@ -109,46 +179,67 @@
                                     <table id="duesStatisticsTable" class="table table-bordered table-striped table-sm w-100">
                                         <thead>
                                             <tr>
+                                                <th></th>
                                                 <th>İşyeri Kodu</th>
                                                 <th>İşyeri Adı</th>
-                                                <th>Kod</th>
                                                 <th>Yıl</th>
-                                                <th>Ocak</th>
-                                                <th>Şubat</th>
-                                                <th>Mart</th>
-                                                <th>Nisan</th>
-                                                <th>Mayıs</th>
-                                                <th>Haziran</th>
-                                                <th>Temmuz</th>
-                                                <th>Ağustos</th>
-                                                <th>Eylül</th>
-                                                <th>Ekim</th>
-                                                <th>Kasım</th>
-                                                <th>Aralık</th>
                                                 <th>Toplam</th>
+                                                <th>Aktarım Durumu</th>
+                                                <th>İşlem</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @foreach (var dues in Model.DuesStatistics)
                                             {
-                                                <tr>
+                                                var isCompleted = dues.TransferStatus == TransferStatusEnum.Completed;
+                                                var statusBadge = dues.TransferStatus switch
+                                                {
+                                                    TransferStatusEnum.Completed => "<span class='badge badge-success'>Aktarıldı</span>",
+                                                    TransferStatusEnum.Failed => "<span class='badge badge-danger'>Başarısız</span>",
+                                                    TransferStatusEnum.Pending => "<span class='badge badge-warning'>Bekliyor</span>",
+                                                    _ => "<span class='badge badge-secondary'>Bilinmiyor</span>"
+                                                };
+                                                <tr data-dues-id="@dues.Id"
+                                                    data-code="@dues.Code"
+                                                    data-div-name="@dues.DivName"
+                                                    data-january="@dues.January.ToString("F2")"
+                                                    data-february="@dues.February.ToString("F2")"
+                                                    data-march="@dues.March.ToString("F2")"
+                                                    data-april="@dues.April.ToString("F2")"
+                                                    data-may="@dues.May.ToString("F2")"
+                                                    data-june="@dues.June.ToString("F2")"
+                                                    data-july="@dues.July.ToString("F2")"
+                                                    data-august="@dues.August.ToString("F2")"
+                                                    data-september="@dues.September.ToString("F2")"
+                                                    data-october="@dues.October.ToString("F2")"
+                                                    data-november="@dues.November.ToString("F2")"
+                                                    data-december="@dues.December.ToString("F2")"
+                                                    data-budgetratio-id="@Model.Id"
+                                                    data-is-completed="@isCompleted.ToString().ToLower()">
+                                                    <td class="details-control"></td>
                                                     <td>@dues.DivCode</td>
                                                     <td>@dues.DivName</td>
-                                                    <td>@dues.Code</td>
                                                     <td>@dues.Year</td>
-                                                    <td class="text-end">@dues.January.ToString("F2")</td>
-                                                    <td class="text-end">@dues.February.ToString("F2")</td>
-                                                    <td class="text-end">@dues.March.ToString("F2")</td>
-                                                    <td class="text-end">@dues.April.ToString("F2")</td>
-                                                    <td class="text-end">@dues.May.ToString("F2")</td>
-                                                    <td class="text-end">@dues.June.ToString("F2")</td>
-                                                    <td class="text-end">@dues.July.ToString("F2")</td>
-                                                    <td class="text-end">@dues.August.ToString("F2")</td>
-                                                    <td class="text-end">@dues.September.ToString("F2")</td>
-                                                    <td class="text-end">@dues.October.ToString("F2")</td>
-                                                    <td class="text-end">@dues.November.ToString("F2")</td>
-                                                    <td class="text-end">@dues.December.ToString("F2")</td>
                                                     <td class="text-end">@dues.Total.ToString("F2")</td>
+                                                    <td>@Html.Raw(statusBadge)</td>
+                                                    <td>
+                                                        @if (!isCompleted)
+                                                        {
+                                                            <button class="btn btn-sm btn-success btn-retry-single"
+                                                                    data-id="@dues.Id"
+                                                                    data-code="@dues.Code"
+                                                                    data-budgetratio-id="@Model.Id"
+                                                                    title="Yeniden Aktar">
+                                                                <i class="ki ki-arrow-next"></i> Aktar
+                                                            </button>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="text-muted">
+                                                                <i class="ki ki-check"></i> Tamamlandı
+                                                            </span>
+                                                        }
+                                                    </td>
                                                 </tr>
                                             }
                                         </tbody>
@@ -171,5 +262,5 @@
 </div>
 
 @section Scripts {
-    <script src="~/assets/js/custom/budget-order-details-page.js"></script>
+    <script src="~/js/custom/budget-order-details-page.js"></script>
 }

@@ -17,6 +17,9 @@ public interface IUnitOfWork<TContext> : IDisposable where TContext : DbContext
     IBudgetRatioRepository BudgetRatioRepository { get; }
     IDuesStatisticRepository DuesStatisticRepository { get; }
 
+    // Email Repositories
+    IEmailTemplateRepository EmailTemplateRepository { get; }
+
     // Commit Operations
     Task CommitAsync();
     void Commit();

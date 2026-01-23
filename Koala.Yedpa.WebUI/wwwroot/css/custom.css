@@ -71,3 +71,54 @@
 .progress-bar-info {
     background-color: #85d8ff !important;
 }
+
+/* Danger Button */
+.btn-danger {
+    background-color: #ed7453 !important;
+    border-color: #ed7453 !important;
+    color: #fff !important;
+}
+
+.btn-danger:hover, .btn-danger:focus, .btn-danger:active, .btn-danger.active {
+    background-color: #d45f3e !important;
+    border-color: #d45f3e !important;
+    color: #fff !important;
+}
+
+.btn-danger.show {
+    background-color: #d45f3e !important;
+    border-color: #d45f3e !important;
+    color: #fff !important;
+}
+
+/* Danger Background Utilities */
+.bg-danger {
+    background-color: #ed7453 !important;
+}
+
+.bg-danger:hover {
+    background-color: #d45f3e !important;
+}
+
+/* Danger Text Utilities */
+.text-danger {
+    color: #ed7453 !important;
+}
+
+/* Danger Alert */
+.alert-danger {
+    background-color: #fff0ed !important;
+    border-color: #ed7453 !important;
+    color: #d45f3e !important;
+}
+
+/* Danger Badge */
+.badge-danger {
+    background-color: #ed7453 !important;
+    color: #fff !important;
+}
+
+/* Progress Bar Danger */
+.progress-bar-danger {
+    background-color: #ed7453 !important;
+}

@@ -1,0 +1,303 @@
+@using Koala.Yedpa.Core.Dtos
+@using Koala.Yedpa.Core.Models
+@model Koala.Yedpa.Core.Models.ViewModels.BudgetOrderReviewViewModel
+@{
+    ViewData["Title"] = "Bütçe Aktarım İnceleme";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="d-flex flex-column-fluid">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card card-custom">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <h3 class="card-label">Bütçe Aktarım İnceleme</h3>
+                        </div>
+                        <div class="card-toolbar">
+                            <a href="/BudgetOrder/Index" class="btn btn-secondary">
+                                <i class="ki ki-arrow-back"></i> Listeye Dön
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+
+                        <!-- Bütçe Bilgileri -->
+                        <div class="alert alert-info" role="alert">
+                            <h4 class="alert-heading"><i class="fas fa-info-circle"></i> Bütçe Bilgileri</h4>
+                            <hr>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Kod:</strong> @Model.Code</p>
+                                    <p><strong>Açıklama:</strong> @Model.Description</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Yıl:</strong> @Model.Year</p>
+                                    <p><strong>Bütçe Türü:</strong> @(Model.BuggetType == BuggetTypeEnum.Budget ? "Bütçe" : "Ek Bütçe")</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- İstatistikler -->
+                        <div class="row mb-5">
+                            <div class="col-md-3">
+                                <div class="card card-stats bg-light-primary">
+                                    <div class="card-body">
+                                        <div class="text-center">
+                                            <h3 class="text-primary">@Model.TotalCount</h3>
+                                            <p class="text-muted">Toplam Kayıt</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card card-stats bg-light-success">
+                                    <div class="card-body">
+                                        <div class="text-center">
+                                            <h3 class="text-success">@Model.CompletedCount</h3>
+                                            <p class="text-muted">Aktarılan</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card card-stats bg-light-danger">
+                                    <div class="card-body">
+                                        <div class="text-center">
+                                            <h3 class="text-danger">@Model.FailedCount</h3>
+                                            <p class="text-muted">Başarısız</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card card-stats bg-light-warning">
+                                    <div class="card-body">
+                                        <div class="text-center">
+                                            <h3 class="text-warning">@Model.PendingCount</h3>
+                                            <p class="text-muted">Bekleyen</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Aktarılmamış Kayıtlar -->
+                        @if (Model.PendingItems.Any())
+                        {
+                            <div class="alert alert-warning" role="alert">
+                                <h4 class="alert-heading"><i class="fas fa-exclamation-triangle"></i> Aktarılmamış Kayıtlar</h4>
+                                <p>Aşağıdaki kayıtlar Logo Tiger'a aktarılmamıştır. Tekrar aktarım başlatabilirsiniz.</p>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Kod</th>
+                                            <th>Bölüm</th>
+                                            <th>Cari Kodu</th>
+                                            <th>Tutar</th>
+                                            <th>Durum</th>
+                                            <th>İşlem</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.PendingItems)
+                                        {
+                                            <tr>
+                                                <td>@item.Code</td>
+                                                <td>@item.DivName</td>
+                                                <td>@item.ClientCode</td>
+                                                <td>@item.Total.ToString("N2") TL</td>
+                                                <td>
+                                                    @if (item.TransferStatus == TransferStatusEnum.Pending)
+                                                    {
+                                                        <span class="badge badge-warning">Bekliyor</span>
+                                                    }
+                                                    else if (item.TransferStatus == TransferStatusEnum.Failed)
+                                                    {
+                                                        <span class="badge badge-danger">Başarısız</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge badge-secondary">Bilinmiyor</span>
+                                                    }
+                                                </td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-success btn-retry-transfer"
+                                                            data-id="@item.Id"
+                                                            data-code="@item.Code"
+                                                            title="Yeniden Aktar">
+                                                        <i class="ki ki-arrow-next"></i> Aktar
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Toplu Yeniden Aktarım -->
+                            <div class="mt-5">
+                                <button id="retryAllBtn" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-redo"></i> Tüm Aktarılmamış Kayıtları Yeniden Aktar
+                                </button>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-success" role="alert">
+                                <h4 class="alert-heading"><i class="fas fa-check-circle"></i> Tüm Kayıtlar Aktarıldı</h4>
+                                <p>Bütçeye ait tüm kayıtlar başarıyla Logo Tiger'a aktarılmıştır.</p>
+                            </div>
+                        }
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const budgetRatioId = '@Model.BudgetRatioId';
+            const currentUserId = '@ViewData["CurrentUserId"]';
+
+            // Tekrar aktarım butonları
+            document.querySelectorAll('.btn-retry-transfer').forEach(button => {
+                button.addEventListener('click', async function () {
+                    const id = this.getAttribute('data-id');
+                    const code = this.getAttribute('data-code');
+
+                    if (!confirm(`${code} kodlu kaydı yeniden aktarmak istediğinize emin misiniz?`)) {
+                        return;
+                    }
+
+                    this.disabled = true;
+                    this.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Aktarılıyor...';
+
+                    try {
+                        // Önce DuesStatistic ID'leri al
+                        const response = await fetch(`/api/BudgetOrderApi/GetDuesStatisticIds?budgetRatioId=${budgetRatioId}`, {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        });
+
+                        const data = await response.json();
+
+                        if (!data.isSuccess || !data.data || data.data.length === 0) {
+                            alert('Aktarılacak kayıt bulunamadı!');
+                            this.disabled = false;
+                            this.innerHTML = '<i class="ki ki-arrow-next"></i> Aktar';
+                            return;
+                        }
+
+                        // Sadece seçili kaydı aktar
+                        const transferResponse = await fetch('/api/BudgetOrderApi/Transfer', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                duesStatisticIds: [id],
+                                userId: currentUserId || null,
+                                isDebugMode: false,
+                                budgetRatioId: budgetRatioId
+                            })
+                        });
+
+                        const transferData = await transferResponse.json();
+
+                        if (!transferData.isSuccess) {
+                            alert('Aktarım başlatılırken hata: ' + transferData.message);
+                            this.disabled = false;
+                            this.innerHTML = '<i class="ki ki-arrow-next"></i> Aktar';
+                            return;
+                        }
+
+                        // Başarılı - sayfayı yenile
+                        alert('Aktarım başlatıldı! Tamamlandığında e-posta ile bilgilendirileceksiniz.');
+                        location.reload();
+
+                    } catch (error) {
+                        console.error('Aktarım hatası:', error);
+                        alert('Aktarım başlatılırken bir hata oluştu: ' + error.message);
+                        this.disabled = false;
+                        this.innerHTML = '<i class="ki ki-arrow-next"></i> Aktar';
+                    }
+                });
+            });
+
+            // Tümünü yeniden aktar butonu
+            const retryAllBtn = document.getElementById('retryAllBtn');
+            if (retryAllBtn) {
+                retryAllBtn.addEventListener('click', async function () {
+                    if (!confirm('Tüm aktarılmamış kayıtları yeniden aktarmak istediğinize emin misiniz?')) {
+                        return;
+                    }
+
+                    this.disabled = true;
+                    this.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Aktarılıyor...';
+
+                    try {
+                        // DuesStatistic ID'lerini al
+                        const response = await fetch(`/api/BudgetOrderApi/GetDuesStatisticIds?budgetRatioId=${budgetRatioId}`, {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        });
+
+                        const data = await response.json();
+
+                        if (!data.isSuccess || !data.data || data.data.length === 0) {
+                            alert('Aktarılacak kayıt bulunamadı!');
+                            this.disabled = false;
+                            this.innerHTML = '<i class="fas fa-redo"></i> Tüm Aktarılmamış Kayıtları Yeniden Aktar';
+                            return;
+                        }
+
+                        // Tümünü aktar
+                        const transferResponse = await fetch('/api/BudgetOrderApi/Transfer', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                duesStatisticIds: data.data,
+                                userId: currentUserId || null,
+                                isDebugMode: false,
+                                budgetRatioId: budgetRatioId
+                            })
+                        });
+
+                        const transferData = await transferResponse.json();
+
+                        if (!transferData.isSuccess) {
+                            alert('Aktarım başlatılırken hata: ' + transferData.message);
+                            this.disabled = false;
+                            this.innerHTML = '<i class="fas fa-redo"></i> Tüm Aktarılmamış Kayıtları Yeniden Aktar';
+                            return;
+                        }
+
+                        // Başarılı - sayfayı yenile
+                        alert('Aktarım başlatıldı! Tamamlandığında e-posta ile bilgilendirileceksiniz.');
+                        location.reload();
+
+                    } catch (error) {
+                        console.error('Aktarım hatası:', error);
+                        alert('Aktarım başlatılırken bir hata oluştu: ' + error.message);
+                        this.disabled = false;
+                        this.innerHTML = '<i class="fas fa-redo"></i> Tüm Aktarılmamış Kayıtları Yeniden Aktar';
+                    }
+                });
+            }
+        });
+    </script>
+}

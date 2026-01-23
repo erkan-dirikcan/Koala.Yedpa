@@ -401,9 +401,24 @@
             Debug modu: Sadece 3 kayıt aktarır ve mail gönderir
             </summary>
         </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.TransferDuesStatisticsViewModel.BudgetRatioId">
+            <summary>
+            BudgetRatio ID (aktarım başladığında kilitlemek için)
+            </summary>
+        </member>
         <member name="T:Koala.Yedpa.Core.Models.ViewModels.BudgetOrderTransferViewModel">
             <summary>
             BudgetOrder Transfer sayfası ViewModel
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Models.ViewModels.BudgetOrderReviewViewModel">
+            <summary>
+            BudgetOrder Review sayfası ViewModel (İnceleme ve Yeniden Aktarım)
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Models.ViewModels.DuesStatisticReviewItemViewModel">
+            <summary>
+            DuesStatistic inceleme öğesi
             </summary>
         </member>
         <member name="P:Koala.Yedpa.Core.Models.ViewModels.CreateBudgetRatioViewModel.Code">
@@ -672,6 +687,34 @@
             <param name="userId">Kullanıcı ID</param>
             <param name="isDebugMode">Debug modu: Sadece 3 kayıt aktarır ve mail gönderir</param>
             <returns>Aktarım sonuçları</returns>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Services.IBudgetOrderService.LockBudgetRatioAsync(System.String)">
+            <summary>
+            BudgetRatio durumunu Locked yap (aktarım başlatıldığında)
+            </summary>
+            <param name="budgetRatioId">BudgetRatio ID</param>
+            <returns>Kilitleme sonucu</returns>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Services.IMessage34EmailService.SendTransactionEmailAsync(Koala.Yedpa.Core.Dtos.EmailDto,System.Collections.Generic.List{System.String})">
+            <summary>
+            Tek veya çoklu alıcıya transactional email gönderir
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Services.IMessage34EmailService.SendBulkEmailAsync(Koala.Yedpa.Core.Dtos.Message34.Message34SendBulkEmailRequest)">
+            <summary>
+            Belirtilen gruplara bulk email gönderir
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:Koala.Yedpa.Core.Services.IMessage34EmailService.TransferAndSendEmailAsync(Koala.Yedpa.Core.Dtos.Message34.Message34TransferAndSendRequest)" -->
+        <member name="M:Koala.Yedpa.Core.Services.IMessage34EmailService.GetCampaignDetailsAsync(System.Int32)">
+            <summary>
+            Kampanya detaylarını getirir
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Services.IMessage34EmailService.AuthenticateAsync">
+            <summary>
+            Authentication - token yeniler
+            </summary>
         </member>
     </members>
 </doc>

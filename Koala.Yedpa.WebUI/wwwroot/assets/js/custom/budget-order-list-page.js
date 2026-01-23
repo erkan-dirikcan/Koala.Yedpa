@@ -53,7 +53,18 @@ document.addEventListener('DOMContentLoaded', function () {
                                 </a>
                             `;
                         }
-                        // Aktarılmış (1 veya diğer): Sadece Görüntüle
+                        // Kilitli (1) durumu: İncele ve Görüntüle butonları
+                        else if (row.statusCode === 1) {
+                            return `
+                                <a href="/BudgetOrder/Review/${row.id}" class="btn btn-sm btn-light-warning" title="İncele">
+                                    <i class="ki ki-search"></i> İncele
+                                </a>
+                                <a href="/BudgetOrder/Details/${row.id}" class="btn btn-sm btn-light-info" title="Görüntüle">
+                                    <i class="ki ki-eye"></i> Görüntüle
+                                </a>
+                            `;
+                        }
+                        // Diğer durumlar: Sadece Görüntüle
                         else {
                             return `
                                 <a href="/BudgetOrder/Details/${row.id}" class="btn btn-sm btn-light-info" title="Görüntüle">

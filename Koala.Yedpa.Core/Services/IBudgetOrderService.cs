@@ -100,5 +100,12 @@ namespace Koala.Yedpa.Core.Services
         /// <param name="isDebugMode">Debug modu: Sadece 3 kayıt aktarır ve mail gönderir</param>
         /// <returns>Aktarım sonuçları</returns>
         Task<ResponseDto<List<OrderResultViewModel>>> TransferDuesStatisticsToLogoAsync(List<string> duesStatisticIds, string? userId = null, bool isDebugMode = false);
+
+        /// <summary>
+        /// BudgetRatio durumunu Locked yap (aktarım başlatıldığında)
+        /// </summary>
+        /// <param name="budgetRatioId">BudgetRatio ID</param>
+        /// <returns>Kilitleme sonucu</returns>
+        Task<ResponseDto<bool>> LockBudgetRatioAsync(string budgetRatioId);
     }
 }

@@ -17,6 +17,7 @@ public class UnitOfWork<TContext>(TContext context) : IUnitOfWork<TContext>
     private ITransactionTypeRepository? _transactionTypeRepository;
     private IBudgetRatioRepository? _budgetRatioRepository;
     private IDuesStatisticRepository? _duesStatisticRepository;
+    private IEmailTemplateRepository? _emailTemplateRepository;
 
     // Transaction Repositories
     public ITransactionRepository TransactionRepository =>
@@ -35,6 +36,10 @@ public class UnitOfWork<TContext>(TContext context) : IUnitOfWork<TContext>
     public IDuesStatisticRepository DuesStatisticRepository =>
         _duesStatisticRepository ??= new DuesStatisticRepository(context as AppDbContext ?? throw new ArgumentException("Context must be AppDbContext"));
 
+    // Email Repositories
+    public IEmailTemplateRepository EmailTemplateRepository =>
+        _emailTemplateRepository ??= new EmailTemplateRepository(context as AppDbContext ?? throw new ArgumentException("Context must be AppDbContext"));
+
     public void Commit()
     {
         context.SaveChanges();
@@ -42,14 +47,7 @@ public class UnitOfWork<TContext>(TContext context) : IUnitOfWork<TContext>
 
     public async Task CommitAsync()
     {
-        try
-        {
-            var result = await context.SaveChangesAsync();
-        }
-        catch (Exception ex)
-        {
-            throw new Exception(ex.Message);
-        }
+        await context.SaveChangesAsync();
     }
 
     public void Dispose()

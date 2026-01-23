@@ -201,6 +201,11 @@ namespace Koala.Yedpa.Core.Models.ViewModels
         /// Debug modu: Sadece 3 kayıt aktarır ve mail gönderir
         /// </summary>
         public bool IsDebugMode { get; set; } = false;
+
+        /// <summary>
+        /// BudgetRatio ID (aktarım başladığında kilitlemek için)
+        /// </summary>
+        public string BudgetRatioId { get; set; } = string.Empty;
     }
 
     /// <summary>
@@ -214,5 +219,40 @@ namespace Koala.Yedpa.Core.Models.ViewModels
         public int Year { get; set; }
         public BuggetTypeEnum BuggetType { get; set; }
         public int DuesStatisticCount { get; set; }
+    }
+
+    /// <summary>
+    /// BudgetOrder Review sayfası ViewModel (İnceleme ve Yeniden Aktarım)
+    /// </summary>
+    public class BudgetOrderReviewViewModel
+    {
+        public string BudgetRatioId { get; set; } = string.Empty;
+        public string Code { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public int Year { get; set; }
+        public BuggetTypeEnum BuggetType { get; set; }
+
+        // İstatistikler
+        public int TotalCount { get; set; }
+        public int CompletedCount { get; set; }
+        public int FailedCount { get; set; }
+        public int PendingCount { get; set; }
+
+        // Aktarılmamış kayıtlar
+        public List<DuesStatisticReviewItemViewModel> PendingItems { get; set; } = new List<DuesStatisticReviewItemViewModel>();
+    }
+
+    /// <summary>
+    /// DuesStatistic inceleme öğesi
+    /// </summary>
+    public class DuesStatisticReviewItemViewModel
+    {
+        public string Id { get; set; } = string.Empty;
+        public string Code { get; set; } = string.Empty;
+        public string? DivName { get; set; }
+        public string? ClientCode { get; set; }
+        public decimal Total { get; set; }
+        public TransferStatusEnum TransferStatus { get; set; }
+        public string? ErrorMessage { get; set; }
     }
 }

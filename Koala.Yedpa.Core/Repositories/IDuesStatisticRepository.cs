@@ -6,6 +6,7 @@ namespace Koala.Yedpa.Core.Repositories
     public interface IDuesStatisticRepository
     {
         Task<DuesStatistic> GetByIdAsync(string id);
+        Task<IEnumerable<DuesStatistic>> GetByIdsAsync(List<string> ids);
         Task<IEnumerable<DuesStatistic>> GetAllAsync();
         Task<IEnumerable<DuesStatistic>> GetByYearAsync(string year);
         Task<IEnumerable<DuesStatistic>> GetByBudgetTypeAsync(BuggetTypeEnum budgetType);

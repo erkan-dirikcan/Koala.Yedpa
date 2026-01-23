@@ -21,6 +21,13 @@ namespace Koala.Yedpa.Repositories.Repositories
             return await _dbSet.FirstOrDefaultAsync(d => d.Id == id);
         }
 
+        public async Task<IEnumerable<DuesStatistic>> GetByIdsAsync(List<string> ids)
+        {
+            return await _dbSet
+                .Where(d => ids.Contains(d.Id))
+                .ToListAsync();
+        }
+
         public async Task<IEnumerable<DuesStatistic>> GetAllAsync()
         {
             return await _dbSet
@@ -73,6 +80,7 @@ namespace Koala.Yedpa.Repositories.Repositories
             if (existing == null)
                 return;// false;
 
+            // Property değerlerini güncelle
             existing.DivName = duesStatistic.DivName;
             existing.BudgetType = duesStatistic.BudgetType;
             existing.January = duesStatistic.January;
@@ -88,9 +96,12 @@ namespace Koala.Yedpa.Repositories.Repositories
             existing.November = duesStatistic.November;
             existing.December = duesStatistic.December;
             existing.Total = duesStatistic.Total;
+            existing.TransferStatus = duesStatistic.TransferStatus;
+            existing.ClientRef = duesStatistic.ClientRef;
             existing.LastUpdateTime = DateTime.UtcNow;
 
-            _dbSet.Update(existing);
+            // Entity zaten tracking'de, SaveChangesChanges otomatik günceller
+            // _dbSet.Update(existing) çağrısına gerek yok ve NotSupportedException hatası verir
         }
 
         public async Task DeleteAsync(string id)

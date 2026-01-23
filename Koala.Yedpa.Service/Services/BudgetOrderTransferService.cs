@@ -9,6 +9,7 @@ using Koala.Yedpa.Repositories;
 using Microsoft.Extensions.Logging;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
+using ClosedXML.Excel;
 
 namespace Koala.Yedpa.Service.Services
 {
@@ -56,16 +57,9 @@ namespace Koala.Yedpa.Service.Services
                 _logger.LogInformation("Aktarım başladı. Kayıt sayısı: {Count}, Debug Mod: {IsDebugMode}",
                     duesStatisticIds.Count, isDebugMode);
 
-                // DuesStatistic kayıtlarını tek tek getir
-                var duesStatistics = new List<DuesStatistic>();
-                foreach (var id in duesStatisticIds)
-                {
-                    var dues = await _unitOfWork.DuesStatisticRepository.GetByIdAsync(id);
-                    if (dues != null)
-                    {
-                        duesStatistics.Add(dues);
-                    }
-                }
+                // DuesStatistic kayıtlarını tek seferde getir (N+1 problemi çözümü)
+                var duesStatisticsList = await _unitOfWork.DuesStatisticRepository.GetByIdsAsync(duesStatisticIds);
+                var duesStatistics = duesStatisticsList.ToList();
 
                 if (!duesStatistics.Any())
                 {
@@ -99,9 +93,13 @@ namespace Koala.Yedpa.Service.Services
                         if (response.IsSuccess)
                         {
                             // Başarılı - DuesStatistic transfer status'unu güncelle
+                            var oldStatus = dues.TransferStatus;
                             dues.TransferStatus = TransferStatusEnum.Completed;
                             dues.LastUpdateTime = DateTime.Now;
                             await _unitOfWork.DuesStatisticRepository.UpdateAsync(dues);
+
+                            _logger.LogInformation("TransferStatus güncellendi: {Code}, Eski durum: {OldStatus}, Yeni durum: {NewStatus}, Sipariş no: {OrderNumber}",
+                                dues.Code, oldStatus, dues.TransferStatus, response.Data);
 
                             successCount++;
                             results.Add(new OrderResultViewModel
@@ -118,7 +116,22 @@ namespace Koala.Yedpa.Service.Services
                         }
                         else
                         {
-                            // Başarısız
+                            // Başarısız - DuesStatistic transfer status'unu güncelle
+                            var oldStatus = dues.TransferStatus;
+                            dues.TransferStatus = TransferStatusEnum.Failed;
+                            dues.LastUpdateTime = DateTime.Now;
+                            await _unitOfWork.DuesStatisticRepository.UpdateAsync(dues);
+
+                            _logger.LogWarning("TransferStatus güncellendi (BAŞARISIZ): {Code}, Eski durum: {OldStatus}, Yeni durum: {NewStatus}, Hata: {Error}",
+                                dues.Code, oldStatus, dues.TransferStatus, response.Message);
+
+                            // Hata mesajını detaylandır
+                            var errorMessage = response.Message ?? "";
+                            if (response.Errors != null && response.Errors.Errors.Any())
+                            {
+                                errorMessage += " | " + string.Join(", ", response.Errors.Errors);
+                            }
+
                             failedCount++;
                             results.Add(new OrderResultViewModel
                             {
@@ -126,15 +139,31 @@ namespace Koala.Yedpa.Service.Services
                                 ClientRef = dues.ClientRef.ToString(),
                                 IsSuccess = false,
                                 OrderNumber = null,
-                                ErrorMessage = response.Message,
+                                ErrorMessage = errorMessage,
                                 OrderAmount = dues.Total
                             });
 
-                            _logger.LogError("Başarısız: {Code} - {Error}", dues.Code, response.Message);
+                            _logger.LogError("Başarısız: {Code} - {Error}", dues.Code, errorMessage);
                         }
                     }
                     catch (Exception ex)
                     {
+                        // Exception - DuesStatistic transfer status'unu güncelle
+                        var oldStatus = dues.TransferStatus;
+                        dues.TransferStatus = TransferStatusEnum.Failed;
+                        dues.LastUpdateTime = DateTime.Now;
+                        await _unitOfWork.DuesStatisticRepository.UpdateAsync(dues);
+
+                        _logger.LogError(ex, "TransferStatus güncellendi (EXCEPTION): {Code}, Eski durum: {OldStatus}, Yeni durum: {NewStatus}",
+                            dues.Code, oldStatus, dues.TransferStatus);
+
+                        // Hata mesajını detaylandır (InnerException'ı da dahil et)
+                        var errorMessage = ex.Message;
+                        if (ex.InnerException != null)
+                        {
+                            errorMessage += " | " + ex.InnerException.Message;
+                        }
+
                         failedCount++;
                         results.Add(new OrderResultViewModel
                         {
@@ -142,7 +171,7 @@ namespace Koala.Yedpa.Service.Services
                             ClientRef = dues.ClientRef.ToString(),
                             IsSuccess = false,
                             OrderNumber = null,
-                            ErrorMessage = ex.Message,
+                            ErrorMessage = errorMessage,
                             OrderAmount = dues.Total
                         });
 
@@ -153,6 +182,9 @@ namespace Koala.Yedpa.Service.Services
                 // Değişiklikleri kaydet
                 await _unitOfWork.CommitAsync();
 
+                // Not: BudgetRatio zaten aktarım başladığında Locked yapıldı
+                // Burada tekrar kilitlemeye gerek yok
+
                 var message = $"Aktarım tamamlandı. Başarılı: {successCount}, Başarısız: {failedCount}";
                 if (isDebugMode)
                 {
@@ -161,7 +193,20 @@ namespace Koala.Yedpa.Service.Services
                 _logger.LogInformation(message);
 
                 // Her durumda rapor maili gönder (debug veya normal mod)
-                await SendTransferReportEmailAsync(results, duesStatistics.Count, recordsToTransfer.Count, successCount, failedCount, isDebugMode, userId);
+                // E-posta gönderimi başarısız olsa bile aktarım başarılı sayılsın
+                try
+                {
+                    // Bütçe türünü al (ilk kayıttan)
+                    var buggetType = duesStatistics.FirstOrDefault()?.BudgetType ?? BuggetTypeEnum.Budget;
+
+                    await SendTransferReportEmailAsync(results, duesStatistics.Count, recordsToTransfer.Count, successCount, failedCount, isDebugMode, userId, buggetType);
+                    _logger.LogInformation("Aktarım rapor e-postası gönderildi");
+                }
+                catch (Exception emailEx)
+                {
+                    // E-posta gönderimi başarısız olsa bile aktarım başarılı sayılsın
+                    _logger.LogError(emailEx, "Aktarım rapor e-postası gönderilemedi ancak aktarım başarılı");
+                }
 
                 return ResponseDto<List<OrderResultViewModel>>.SuccessData(
                     200, message, results);
@@ -184,102 +229,153 @@ namespace Koala.Yedpa.Service.Services
             int successCount,
             int failedCount,
             bool isDebugMode,
-            string? userId)
+            string? userId,
+            BuggetTypeEnum buggetType)
         {
             try
             {
-                var modeText = isDebugMode ? "Debug Raporu" : "Tam Rapor";
-                var subject = $"BudgetOrder Aktarım {modeText} - {DateTime.Now:yyyy-MM-dd HH:mm}";
-                var body = new StringBuilder();
-
-                body.AppendLine($"<h2>BudgetOrder Aktarım {modeText}</h2>");
-                body.AppendLine($"<p><strong>Tarih:</strong> {DateTime.Now:yyyy-MM-dd HH:mm:ss}</p>");
-
-                if (isDebugMode)
-                {
-                    body.AppendLine($"<p style='color: #ff9800;'><strong>⚠ DEBUG MOD:</strong> Toplam {totalCount} kayıttan {processedCount} tanesi işlendi</p>");
-                }
-                else
-                {
-                    body.AppendLine($"<p><strong>Toplam Kayıt:</strong> {totalCount}</p>");
-                }
-
-                body.AppendLine($"<p><strong>Başarılı:</strong> <span style='color: green; font-weight: bold;'>{successCount}</span></p>");
-                body.AppendLine($"<p><strong>Başarısız:</strong> <span style='color: red; font-weight: bold;'>{failedCount}</span></p>");
-                body.AppendLine("<hr/>");
-
-                body.AppendLine("<h3>Aktarım Detayları</h3>");
-                body.AppendLine("<table border='1' cellpadding='5' style='border-collapse: collapse; width: 100%;'>");
-                body.AppendLine("<tr style='background-color: #f0f0f0;'>");
-                body.AppendLine("<th>Cari Kodu</th>");
-                body.AppendLine("<th>Cari Ref</th>");
-                body.AppendLine("<th>Durum</th>");
-                body.AppendLine("<th>Sipariş No</th>");
-                body.AppendLine("<th>Tutar</th>");
-                body.AppendLine("<th>Hata Mesajı</th>");
-                body.AppendLine("</tr>");
-
-                foreach (var result in results)
-                {
-                    var rowColor = result.IsSuccess ? "#d4edda" : "#f8d7da";
-                    var statusIcon = result.IsSuccess ? "✓" : "✗";
-                    var statusText = result.IsSuccess ? "Başarılı" : "Başarısız";
-
-                    body.AppendLine($"<tr style='background-color: {rowColor};'>");
-                    body.AppendLine($"<td>{result.ClientCode}</td>");
-                    body.AppendLine($"<td>{result.ClientRef}</td>");
-                    body.AppendLine($"<td><strong>{statusIcon} {statusText}</strong></td>");
-                    body.AppendLine($"<td>{result.OrderNumber ?? "-"}</td>");
-                    body.AppendLine($"<td>{result.OrderAmount:F2} TL</td>");
-                    body.AppendLine($"<td style='color: red;'>{result.ErrorMessage ?? "-"}</td>");
-                    body.AppendLine("</tr>");
-                }
-
-                body.AppendLine("</table>");
-                body.AppendLine("<hr/>");
-                body.AppendLine("<p style='color: #666; font-size: 12px;'><em>Bu otomatik olarak üretilen bir rapordur.</em></p>");
-
-                // İşlemi yapan kullanıcının email adresini al
+                // 1. Kullanıcı bilgilerini al
                 string toEmail = "admin@sistembilgisayar.app"; // Fallback email
+                string userName = "Kullanıcı";
+
+                _logger.LogInformation("Email gönderimi başlıyor. UserId: {UserId}", userId ?? "null");
 
                 if (!string.IsNullOrEmpty(userId))
                 {
                     try
                     {
-                        // DbContext üzerinden AppUser'ı al
                         var user = await _unitOfWork.Context.Set<Koala.Yedpa.Core.Models.AppUser>()
                             .FirstOrDefaultAsync(u => u.Id == userId);
 
-                        if (user != null && !string.IsNullOrEmpty(user.Email))
+                        if (user != null)
                         {
-                            toEmail = user.Email;
-                            _logger.LogInformation("Kullanıcı email adresi bulundu: {Email}", toEmail);
+                            if (!string.IsNullOrEmpty(user.Email))
+                            {
+                                toEmail = user.Email;
+                            }
+                            userName = user.ToString() ?? "Kullanıcı";
+                            _logger.LogInformation("Kullanıcı bilgileri bulundu: {Email}, {Name}", toEmail, userName);
                         }
                         else
                         {
-                            _logger.LogWarning("Kullanıcı veya email adresi bulunamadı. UserId: {UserId}", userId);
+                            _logger.LogWarning("Kullanıcı bulunamadı. UserId: {UserId}, Fallback email kullanılacak: {Email}", userId, toEmail);
                         }
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError(ex, "Kullanıcı email adresi alınırken hata oluştu. UserId: {UserId}", userId);
+                        _logger.LogError(ex, "Kullanıcı bilgileri alınırken hata oluştu. UserId: {UserId}", userId);
                     }
                 }
                 else
                 {
-                    _logger.LogWarning("UserId boş, fallback email kullanılacak: {Email}", toEmail);
+                    _logger.LogWarning("UserId boş, Fallback email kullanılacak: {Email}", toEmail);
                 }
+
+                // 2. Bütçe türü metni
+                var budgetTypeText = buggetType == BuggetTypeEnum.Budget ? "Bütçe" : "Ek Bütçe";
+
+                // 3. Body içeriğini hazırla (sadece [[Body]] kısmına gelecek kısım)
+                var modeText = isDebugMode ? "Debug Raporu" : "Tam Rapor";
+                var bodyContent = new StringBuilder();
+
+                // Rapor başlığı
+                bodyContent.AppendLine($"<h2 style='color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px;'>📊 {budgetTypeText} Aktarım Raporu</h2>");
+                bodyContent.AppendLine($"<p>{budgetTypeText} aktarım işlemi <strong>{modeText}</strong> olarak tamamlandı.</p>");
+
+                // İstatistikler kutusu
+                bodyContent.AppendLine("<div style='background: #f8f9fa; padding: 15px; margin: 15px 0; border-left: 4px solid #3498db; border-radius: 4px;'>");
+
+                if (isDebugMode)
+                {
+                    bodyContent.AppendLine($"<p style='color: #f39c12; margin: 5px 0;'>⚠ <strong>DEBUG MOD:</strong> Toplam {totalCount} kayıttan {processedCount} tanesi işlendi</p>");
+                }
+                else
+                {
+                    bodyContent.AppendLine($"<p style='margin: 5px 0;'><strong>📦 Toplam Kayıt:</strong> {totalCount}</p>");
+                }
+
+                bodyContent.AppendLine($"<p style='margin: 5px 0;'><strong>✅ Başarılı:</strong> <span style='color: #27ae60; font-weight: bold;'>{successCount}</span></p>");
+                bodyContent.AppendLine($"<p style='margin: 5px 0;'><strong>❌ Başarısız:</strong> <span style='color: #e74c3c; font-weight: bold;'>{failedCount}</span></p>");
+                bodyContent.AppendLine("</div>");
+
+                // Excel dosyası bildirimi
+                bodyContent.AppendLine("<p style='margin-top: 15px;'><strong>📎 Dosya Eki:</strong> Aktarım detayları Excel dosyasında yer almaktadır.</p>");
+
+                // 4. Excel dosyası oluştur - 2 sheet
+                byte[] excelBytes;
+                using (var workbook = new XLWorkbook())
+                {
+                    // Sheet 1: Aktarılanlar
+                    var successfulSheet = workbook.Worksheets.Add("Aktarılanlar");
+                    successfulSheet.Cell("A1").Value = "Cari Kodu";
+                    successfulSheet.Cell("B1").Value = "Cari Ref";
+                    successfulSheet.Cell("C1").Value = "Sipariş No";
+                    successfulSheet.Cell("D1").Value = "Tutar";
+
+                    int row = 2;
+                    foreach (var result in results.Where(r => r.IsSuccess))
+                    {
+                        successfulSheet.Cell(row, 1).Value = result.ClientCode;
+                        successfulSheet.Cell(row, 2).Value = result.ClientRef.ToString();
+                        successfulSheet.Cell(row, 3).Value = result.OrderNumber ?? "-";
+                        successfulSheet.Cell(row, 4).Value = result.OrderAmount;
+                        row++;
+                    }
+
+                    // Sheet 2: Aktarılamayanlar
+                    var failedSheet = workbook.Worksheets.Add("Aktarılamayanlar");
+                    failedSheet.Cell("A1").Value = "Cari Kodu";
+                    failedSheet.Cell("B1").Value = "Cari Ref";
+                    failedSheet.Cell("C1").Value = "Hata Mesajı";
+                    failedSheet.Cell("D1").Value = "Tutar";
+
+                    row = 2;
+                    foreach (var result in results.Where(r => !r.IsSuccess))
+                    {
+                        failedSheet.Cell(row, 1).Value = result.ClientCode;
+                        failedSheet.Cell(row, 2).Value = result.ClientRef.ToString();
+                        failedSheet.Cell(row, 3).Value = result.ErrorMessage ?? "-";
+                        failedSheet.Cell(row, 4).Value = result.OrderAmount;
+                        row++;
+                    }
+
+                    using (var stream = new MemoryStream())
+                    {
+                        workbook.SaveAs(stream);
+                        excelBytes = stream.ToArray();
+                    }
+                }
+
+                // 5. Email başlığı
+                var subject = $"{budgetTypeText} Aktarım {modeText} - {DateTime.Now:yyyy-MM-dd HH:mm}";
+
+                // 6. CustomEmailDto oluştur (template kullanarak)
+                // Ad ve soyadı ayrı ayrı gönder (template [[Name]] placeholder'ını kullanacak)
+                var nameParts = userName.Split(' ');
+                var name = nameParts.Length > 0 ? nameParts[0] : userName;
+                var lastName = nameParts.Length > 1 ? string.Join(" ", nameParts.Skip(1)) : "";
 
                 var emailDto = new CustomEmailDto
                 {
                     Email = toEmail,
-                    Content = body.ToString(),
-                    Title = subject
+                    Content = bodyContent.ToString(),
+                    Title = subject,
+                    Name = name,
+                    Lastname = lastName,
+                    Attachments = new List<EmailAttachmentDto>
+                    {
+                        new EmailAttachmentDto
+                        {
+                            FileName = $"Aktarim_Raporu_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx",
+                            Content = excelBytes,
+                            ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                        }
+                    }
                 };
 
                 await _emailService.SendCustomMail(emailDto);
 
-                _logger.LogInformation("Aktarım raporu maili gönderildi: {Email}, Mod: {Mode}", toEmail, isDebugMode ? "Debug" : "Normal");
+                _logger.LogInformation("Aktarım raporu maili gönderildi: {Email}, Mod: {Mode}, Excel eklendi", toEmail, isDebugMode ? "Debug" : "Normal");
             }
             catch (Exception ex)
             {

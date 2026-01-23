@@ -16,6 +16,7 @@
                     <table id="workplaceTable" class="table table-bordered table-sm table-striped table-hover">
                         <thead>
                             <tr>
+                                <th></th>
                                 <th>İşyeri Kodu</th>
                                 <th>İşyeri Adı</th>
                                 <th>Cari Kodu</th>
@@ -33,7 +34,18 @@
                             {
                                 @foreach (var item in Model)
                                 {
-                                    <tr>
+                                    <tr data-id="@item.Id"
+                                        data-code="@item.Code"
+                                        data-definition="@item.Definition"
+                                        data-clcode="@item.ClCode"
+                                        data-cldefinition="@item.ClDefinition"
+                                        data-customertype="@(item.CustomerType?.ToString() ?? "")"
+                                        data-begdate="@(item.BegDate?.ToString("dd.MM.yyyy") ?? "")"
+                                        data-enddate="@(item.EndDate?.ToString("dd.MM.yyyy") ?? "")"
+                                        data-totalnetmetre="@(item.TotalNetMetre?.ToString("F2") ?? "")"
+                                        data-totalfuelmetre="@(item.TotalFuelMetre?.ToString("F2") ?? "")"
+                                        data-currentaccounts='@Html.Raw(System.Text.Json.JsonSerializer.Serialize(item.CurrentAccounts ?? new List<Koala.Yedpa.Core.Models.ViewModels.WorkplaceCurrentAccounts>()))'>
+                                        <td class="details-control"></td>
                                         <td>@item.Code</td>
                                         <td>@item.Definition</td>
                                         <td>@item.ClCode</td>
@@ -44,8 +56,8 @@
                                         <td>@(item.TotalNetMetre?.ToString("F2") ?? "")</td>
                                         <td>@(item.TotalFuelMetre?.ToString("F2") ?? "")</td>
                                         <td>
-                                            <a href="/Workplace/Detail/@item.Id" class="btn btn-icon btn-sm btn-info">
-                                                <i class="fas fa-eye"></i>
+                                            <a href="/Workplace/Update/@item.Id" class="btn btn-icon btn-sm btn-warning">
+                                                <i class="fas fa-edit"></i>
                                             </a>
                                         </td>
                                     </tr>

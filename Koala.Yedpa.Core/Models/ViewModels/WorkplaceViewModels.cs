@@ -14,6 +14,7 @@ public class WorkplaceListViewModel
     public DateTime? EndDate { get; set; }
     public double? TotalNetMetre { get; set; }
     public double? TotalFuelMetre { get; set; }
+    public List<WorkplaceCurrentAccounts> CurrentAccounts { get; set; }
 }
 
 public class WorkplaceDetailViewModel
@@ -105,4 +106,15 @@ public class WorkplaceDetailViewModel
     // Cari bilgileri
     public string? CariCode { get; set; }
     public string? CariDefinition { get; set; }
+
+    public List<WorkplaceCurrentAccounts> CurrentAccounts { get; set; }
+}
+
+public class WorkplaceCurrentAccounts
+{
+    public int LogicalRef { get; set; }
+    public string Code { get; set; }
+    public string Definition { get; set; }
+    public string EmailAddress { get; set; }
+    
 }

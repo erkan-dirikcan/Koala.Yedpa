@@ -57,6 +57,12 @@ public class WorkplaceRepository : IWorkplaceRepository
         return entity;
     }
 
+    public async Task<Workplace> UpdateAsync(Workplace entity)
+    {
+        await Task.Run(() => _dbSet.Update(entity));
+        return entity;
+    }
+
     public async Task<int> CountAsync()
     {
         return await _dbSet.CountAsync();

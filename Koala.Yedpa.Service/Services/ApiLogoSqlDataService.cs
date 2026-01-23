@@ -590,6 +590,63 @@ namespace Koala.Yedpa.Service.Services
             }
         }
 
+        public async Task<ResponseDto<Dictionary<string, List<WorkplaceCurrentAccounts>>>> GetWorkplaceCurrentAccountsAsync()
+        {
+            try
+            {
+                var query = $@"
+                    SELECT WP.CODE AS WPCODE, WP.DEFINITION_ AS WPADDRESS, CL.LOGICALREF AS CLREFFERANCE,
+                           CL.CODE AS CLCODE, CL.DEFINITION_ AS CLCTITLE, CL.EMAILADDR AS CLMAIL
+                    FROM LG_{LogoSetting.Firm}_CLCARD AS CL
+                    INNER JOIN LG_{LogoSetting.Firm}_CLCARD AS WP ON WP.LOGICALREF = CL.PARENTCLREF
+                    WHERE CL.SPECODE NOT IN ('KIRMIZI','MAVİ','YEŞİL')
+                      AND LEFT(TRIM(CL.CODE), 1) = '1'
+                      AND CL.ACTIVE = 0
+                    ORDER BY WP.CODE";
 
+                var result = _sqlProvider.SqlReader(query);
+                if (!result.IsSuccess)
+                {
+                    _logger.LogError("GetWorkplaceCurrentAccountsAsync - Sorgu hatası: {Message}", result.Message);
+                    return ResponseDto<Dictionary<string, List<WorkplaceCurrentAccounts>>>.FailData(500, "Veri çekilemedi", result.Message, true);
+                }
+
+                var workplaceAccounts = new Dictionary<string, List<WorkplaceCurrentAccounts>>();
+
+                if (result.Data != null && result.Data.Rows.Count > 0)
+                {
+                    foreach (DataRow row in result.Data.Rows)
+                    {
+                        var wpCode = row["WPCODE"]?.ToString() ?? string.Empty;
+
+                        if (string.IsNullOrEmpty(wpCode))
+                            continue;
+
+                        var account = new WorkplaceCurrentAccounts
+                        {
+                            LogicalRef = row["CLREFFERANCE"] != DBNull.Value ? Convert.ToInt32(row["CLREFFERANCE"]) : 0,
+                            Code = row["CLCODE"]?.ToString() ?? string.Empty,
+                            Definition = row["CLCTITLE"]?.ToString() ?? string.Empty,
+                            EmailAddress = row["CLMAIL"]?.ToString() ?? string.Empty
+                        };
+
+                        if (!workplaceAccounts.ContainsKey(wpCode))
+                        {
+                            workplaceAccounts[wpCode] = new List<WorkplaceCurrentAccounts>();
+                        }
+
+                        workplaceAccounts[wpCode].Add(account);
+                    }
+                }
+
+                return ResponseDto<Dictionary<string, List<WorkplaceCurrentAccounts>>>.SuccessData(
+                    200, "İşyeri cari hesapları başarıyla getirildi", workplaceAccounts);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GetWorkplaceCurrentAccountsAsync - Beklenmeyen hata");
+                return ResponseDto<Dictionary<string, List<WorkplaceCurrentAccounts>>>.FailData(500, "Beklenmeyen bir hata oluştu", ex.Message, true);
+            }
+        }
     }
 }

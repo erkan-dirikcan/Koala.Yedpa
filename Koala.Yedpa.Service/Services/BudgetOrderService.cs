@@ -1210,5 +1210,38 @@ namespace Koala.Yedpa.Service.Services
 
             return await transferService.TransferDuesStatisticsToLogoAsync(duesStatisticIds, userId, isDebugMode);
         }
+
+        public async Task<ResponseDto<bool>> LockBudgetRatioAsync(string budgetRatioId)
+        {
+            try
+            {
+                var budgetRatio = await _unitOfWork.BudgetRatioRepository.GetByIdAsync(budgetRatioId);
+                if (budgetRatio == null)
+                {
+                    return ResponseDto<bool>.FailData(404, "BudgetRatio bulunamadı", "", true);
+                }
+
+                // Zaten Locked ise başarılı say
+                if (budgetRatio.Status == StatusEnum.Locked)
+                {
+                    _logger.LogInformation("BudgetRatio zaten Locked: {Id}", budgetRatioId);
+                    return ResponseDto<bool>.SuccessData(200, "BudgetRatio zaten kilitli", true);
+                }
+
+                // Durumu Locked yap
+                budgetRatio.Status = StatusEnum.Locked;
+                budgetRatio.LastUpdateTime = DateTime.Now;
+                await _unitOfWork.BudgetRatioRepository.UpdateAsync(budgetRatio);
+                await _unitOfWork.CommitAsync();
+
+                _logger.LogInformation("BudgetRatio Locked yapıldı: {Id} - {Code}", budgetRatio.Id, budgetRatio.Code);
+                return ResponseDto<bool>.SuccessData(200, "BudgetRatio başarıyla kilitlendi", true);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "BudgetRatio kilitleme hatası: {Id}", budgetRatioId);
+                return ResponseDto<bool>.FailData(500, "BudgetRatio kilitlenirken hata oluştu", ex.Message, true);
+            }
+        }
     }
 }

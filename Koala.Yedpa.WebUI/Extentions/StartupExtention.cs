@@ -9,6 +9,7 @@ using Koala.Yedpa.Repositories.Repositories;
 using Koala.Yedpa.Repositories.UnitOfWork;
 using Koala.Yedpa.Service.Providers;
 using Koala.Yedpa.Service.Services;
+using Koala.Yedpa.Service.Services.BackgroundServices;
 using Koala.Yedpa.Service.Services.Jobs;
 using Koala.Yedpa.WebUI.Localizations;
 using Microsoft.AspNetCore.Authorization;
@@ -93,7 +94,13 @@ namespace Koala.Yedpa.WebUI.Extentions
             services.AddScoped<IWorkplaceRepository, WorkplaceRepository>();
             //services.AddScoped<, >();
             //services.AddScoped<, >();
-            services.AddHangfireServer();
+
+            // Hangfire kaldırıldı, BackgroundService kullanılıyor
+            // services.AddHangfireServer();
+
+            // DuesStatistic Transfer BackgroundService ve Queue (Singleton)
+            services.AddSingleton<DuesStatisticTransferQueue>();
+            services.AddHostedService<DuesStatisticTransferBackgroundService>();
 
 
         }
@@ -109,6 +116,7 @@ namespace Koala.Yedpa.WebUI.Extentions
             services.AddScoped<ICurrentUserService, CurrentUserService>();
             services.AddScoped<IDuesStatisticService, DuesStatisticService>();
             services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IMessage34EmailService, Message34EmailService>();
             services.AddScoped<Microsoft.AspNetCore.Identity.UI.Services.IEmailSender, EmailSenderAdapter>();
             services.AddScoped<IEmailTemplateService, EmailTemplateService>();
             services.AddScoped<IExtendedPropertiesService, ExtendedPropertiesService>();

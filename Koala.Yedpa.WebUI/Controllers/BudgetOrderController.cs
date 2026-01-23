@@ -1,3 +1,4 @@
+using Koala.Yedpa.Core.Dtos;
 using Koala.Yedpa.Core.Models;
 using Koala.Yedpa.Core.Models.ViewModels;
 using Koala.Yedpa.Core.Services;
@@ -148,6 +149,67 @@ namespace Koala.Yedpa.WebUI.Controllers
             // Kullanıcı ID'sini ViewData ile view'a geç
             ViewData["CurrentUserId"] = currentUserId;
 
+            return View(model);
+        }
+
+        public async Task<IActionResult> Review(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                TempData["ErrorMessage"] = "BudgetRatio ID gereklidir";
+                return RedirectToAction("Index");
+            }
+
+            var result = await _budgetOrderService.GetBudgetRatioWithDuesAsync(id);
+
+            if (!result.IsSuccess)
+            {
+                TempData["ErrorMessage"] = result.Message ?? "Kayıt bulunamadı";
+                return RedirectToAction("Index");
+            }
+
+            var (budgetRatio, duesStatistics) = result.Data;
+
+            // İstatistikleri hesapla
+            var totalCount = duesStatistics?.Count() ?? 0;
+            var completedCount = duesStatistics?.Count(d => d.TransferStatus == TransferStatusEnum.Completed) ?? 0;
+            var failedCount = duesStatistics?.Count(d => d.TransferStatus == TransferStatusEnum.Failed) ?? 0;
+            var pendingCount = duesStatistics?.Count(d => d.TransferStatus == TransferStatusEnum.Pending) ?? 0;
+
+            // Aktarılmamış kayıtlar (Pending veya Failed, Completed değil)
+            var pendingItems = duesStatistics?
+                .Where(d => d.TransferStatus != TransferStatusEnum.Completed)
+                .Select(d => new DuesStatisticReviewItemViewModel
+                {
+                    Id = d.Id,
+                    Code = d.Code,
+                    DivName = d.DivName,
+                    ClientCode = d.ClientCode,
+                    Total = d.Total,
+                    TransferStatus = d.TransferStatus,
+                    ErrorMessage = null // Hata mesajını farklı bir yerden alabiliriz
+                })
+                .ToList() ?? new List<DuesStatisticReviewItemViewModel>();
+
+            var model = new BudgetOrderReviewViewModel
+            {
+                BudgetRatioId = budgetRatio.Id,
+                Code = budgetRatio.Code,
+                Description = budgetRatio.Description,
+                Year = budgetRatio.Year,
+                BuggetType = budgetRatio.BuggetType,
+                TotalCount = totalCount,
+                CompletedCount = completedCount,
+                FailedCount = failedCount,
+                PendingCount = pendingCount,
+                PendingItems = pendingItems
+            };
+
+            // Mevcut kullanıcının ID'sini al
+            var currentUser = await _userManager.GetUserAsync(User);
+            ViewData["CurrentUserId"] = currentUser?.Id;
+
+            ViewData["ActivePage"] = "BudgetOrderList";
             return View(model);
         }
 

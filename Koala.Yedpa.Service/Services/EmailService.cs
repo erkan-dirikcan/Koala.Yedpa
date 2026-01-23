@@ -66,20 +66,46 @@ public class EmailService: IEmailService
         var mailContent = "";
         var mailTemplateRes = await _templateService.GetByNameAsyc("Default");
 
-        if (!mailTemplateRes.IsSuccess || string.IsNullOrWhiteSpace(model.Content))
+        if (!mailTemplateRes.IsSuccess)
         {
-            mailContent = $"Sistem bilgisayar Koala uygulaması üzerinden bilgilendirme mesajı";
+            // Template yoksa, içeriği doğrudan gönder
+            mailContent = model.Content ?? "Sistem bilgisayar Koala uygulaması üzerinden bilgilendirme mesajı";
         }
         else
         {
+            // Template varsa, placeholder'ları değiştir
+            var fullName = string.IsNullOrWhiteSpace(model.Name)
+                ? ""
+                : (string.IsNullOrWhiteSpace(model.Lastname)
+                    ? model.Name
+                    : $"{model.Name} {model.Lastname}");
+
             mailContent = mailTemplateRes.Data.Content
-                .Replace("[[Title]]", model.Title ?? "Yedpa Ticaret Merkezi Yönetim Uygulaması")
+                .Replace("[[Title]]", model.Title ?? "Bilgilendirme")
                 .Replace("[[Date]]", DateTime.Now.ToLongDateString())
-                .Replace("[[Name]]", model.Name + " " + model.Lastname)
-                .Replace("[[Body]]", model.Content);
+                .Replace("[[Name]]", fullName)
+                .Replace("[[Body]]", model.Content ?? "");
         }
 
-        return await SendEmailAsync(new EmailDto { Content = mailContent, Email = model.Email, Title = model.Title ?? "Bilgilendirme" });
+        var emailDto = new EmailDto
+        {
+            Content = mailContent,
+            Email = model.Email,
+            Title = model.Title ?? "Bilgilendirme",
+            Attachments = model.Attachments
+        };
+
+        return await SendEmailAsync(emailDto);
+    }
+
+    /// <summary>
+    /// Template kullanmadan direkt raw HTML e-posta gönder
+    /// Transfer raporları gibi özel HTML içerikleri için kullanılır
+    /// </summary>
+    public async Task<bool> SendRawHtmlMail(EmailDto model)
+    {
+        // Template kullanma, direkt HTML gönder
+        return await SendEmailAsync(model);
     }
 
     private async Task<bool> SendEmailAsync(EmailDto model)

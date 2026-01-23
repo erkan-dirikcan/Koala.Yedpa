@@ -43,4 +43,45 @@ public class WorkplaceController : Controller
 
         return View(result.Data);
     }
+
+    [HttpGet]
+    public async Task<IActionResult> Update(string id)
+    {
+        if (string.IsNullOrWhiteSpace(id))
+        {
+            TempData["ErrorMessage"] = "Geçersiz kayıt ID'si.";
+            return RedirectToAction("Index");
+        }
+
+        var result = await _workplaceService.GetByIdAsync(id);
+        if (!result.IsSuccess || result.Data == null)
+        {
+            TempData["ErrorMessage"] = result.Message ?? "Kayıt bulunamadı.";
+            return RedirectToAction("Index");
+        }
+
+        ViewData["ActivePage"] = "WorkplaceUpdate";
+        return View(result.Data);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Update(WorkplaceDetailViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            TempData["ErrorMessage"] = "Girdiğiniz bilgiler doğrulanamadı.";
+            return View(model);
+        }
+
+        var result = await _workplaceService.UpdateAsync(model);
+        if (!result.IsSuccess)
+        {
+            TempData["ErrorMessage"] = result.Message ?? "Güncelleme başarısız.";
+            return View(model);
+        }
+
+        TempData["SuccessMessage"] = "İşyeri bilgileri başarıyla güncellendi.";
+        return RedirectToAction("Detail", new { id = model.Id });
+    }
 }

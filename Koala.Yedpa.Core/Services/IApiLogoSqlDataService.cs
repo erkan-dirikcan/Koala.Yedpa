@@ -10,4 +10,5 @@ public interface IApiLogoSqlDataService
     Task<ResponseDto<List<StatementSummeryViewModel>>> GetClsStatementsSummertAsync();
     Task<ResponseDto<List<ClCardStatementViewModel>>> GetClCardStatementAsync(string clCode);
     Task<ResponseDto<(string ClientCode, long ClientRef)>> GetClientInfoByWorkplaceCodeAsync(string workplaceCode);
+    Task<ResponseDto<Dictionary<string, List<WorkplaceCurrentAccounts>>>> GetWorkplaceCurrentAccountsAsync();
 }

@@ -34,6 +34,10 @@ public class EmailTemplateService(
         try
         {
             var res = await repository.GetByNameAsyc(name);
+            if (res == null)
+            {
+                return ResponseDto<EmailTemplateDetailViewModel>.FailData(404, "E-Posta Şablonu Bulunamadı", $"'{name}' adında e-posta şablonu bulunamadı", true);
+            }
             var retVal = mapper.Map<EmailTemplateDetailViewModel>(res);
             return ResponseDto<EmailTemplateDetailViewModel>.SuccessData(200, "E-Posta Şablonu Bilgisi Başarıyla Alındı", retVal);
         }
@@ -48,6 +52,10 @@ public class EmailTemplateService(
         try
         {
             var res = await repository.GetByIdAsync(id);
+            if (res == null)
+            {
+                return ResponseDto<EmailTemplateDetailViewModel>.FailData(404, "E-Posta Şablonu Bulunamadı", $"'{id}' ID'li e-posta şablonu bulunamadı", true);
+            }
             var retVal = mapper.Map<EmailTemplateDetailViewModel>(res);
             return ResponseDto<EmailTemplateDetailViewModel>.SuccessData(200, "E-Posta Şablonu Bilgisi Başarıyla Alındı", retVal);
         }

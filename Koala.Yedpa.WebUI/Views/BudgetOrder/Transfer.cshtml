@@ -156,6 +156,7 @@
 
                     // Aktarımı başlat
                     const currentUserId = '@ViewData["CurrentUserId"]';
+                    const budgetRatioId = '@Model.BudgetRatioId';
 
                     const transferResponse = await fetch('/api/BudgetOrderApi/Transfer', {
                         method: 'POST',
@@ -165,21 +166,24 @@
                         body: JSON.stringify({
                             duesStatisticIds: data.data,
                             userId: currentUserId || null,
-                            isDebugMode: true // Debug mod: Sadece 3 kayıt aktarır ve mail gönderir
+                            isDebugMode: false, // Production mod: Tüm kayıtları aktarır
+                            budgetRatioId: budgetRatioId // BudgetRatio ID'yi ekle
                         })
                     });
 
                     const transferData = await transferResponse.json();
 
-                    // Yükleniyor göster
-                    transferFormContainer.style.display = 'none';
-                    loadingContainer.style.display = 'block';
+                    if (!transferData.isSuccess) {
+                        alert('Aktarım başlatılırken hata: ' + transferData.message);
+                        startTransferBtn.disabled = false;
+                        startTransferBtn.innerHTML = '<i class="fas fa-play"></i> Aktarımı Başlat';
+                        return;
+                    }
 
-                    // 2 saniye sonra başarı mesajına geç
-                    setTimeout(function () {
-                        loadingContainer.style.display = 'none';
-                        successContainer.style.display = 'block';
-                    }, 2000);
+                    // API hemen yanıt döndürür, direkt başarı mesajına geç
+                    transferFormContainer.style.display = 'none';
+                    loadingContainer.style.display = 'none';
+                    successContainer.style.display = 'block';
 
                 } catch (error) {
                     console.error('Aktarım hatası:', error);

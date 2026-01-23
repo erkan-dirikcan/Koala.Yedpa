@@ -530,8 +530,8 @@ document.addEventListener('DOMContentLoaded', function () {
                         columns: ':visible',
                         format: {
                             body: function (data, row, column, node) {
-                                // Para birimi sütunları için
-                                if (column >= 3 && column <= 15) {
+                                // Para birimi sütunları için (Toplam sütunu - column 4)
+                                if (column === 4) {
                                     var parsedValue = 0;
 
                                     if (typeof data === 'string') {
@@ -576,8 +576,8 @@ document.addEventListener('DOMContentLoaded', function () {
                         // Başlık satırı
                         $('row:first c', sheet).attr('s', '2');
 
-                        // Para birimi sütunları (D-P: 4-16. sütunlar)
-                        var colLetters = [ 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P' ];
+                        // Para birimi sütunları (E: Toplam sütunu - 5. sütun)
+                        var colLetters = ['E'];
 
                         colLetters.forEach(function (col) {
                             $('row c[r^="' + col + '"]', sheet).each(function (index) {
@@ -599,95 +599,18 @@ document.addEventListener('DOMContentLoaded', function () {
             ],
             columns: [
                 {
+                    className: 'details-control',
+                    orderable: false,
+                    data: null,
+                    defaultContent: '',
+                    width: '30px'
+                },
+                {
                     data: 'divName',
                     width: '200px'
                 },
                 { data: 'divCode' },
                 { data: 'clientCode' },
-                {
-                    data: 'january',
-                    render: function (data) {
-                        return data > 0 ? formatCurrency(data) : '-';
-                    },
-                    className: 'text-right january-cell'
-                },
-                {
-                    data: 'february',
-                    render: function (data) {
-                        return data > 0 ? formatCurrency(data) : '-';
-                    },
-                    className: 'text-right february-cell'
-                },
-                {
-                    data: 'march',
-                    render: function (data) {
-                        return data > 0 ? formatCurrency(data) : '-';
-                    },
-                    className: 'text-right march-cell'
-                },
-                {
-                    data: 'april',
-                    render: function (data) {
-                        return data > 0 ? formatCurrency(data) : '-';
-                    },
-                    className: 'text-right april-cell'
-                },
-                {
-                    data: 'may',
-                    render: function (data) {
-                        return data > 0 ? formatCurrency(data) : '-';
-                    },
-                    className: 'text-right may-cell'
-                },
-                {
-                    data: 'june',
-                    render: function (data) {
-                        return data > 0 ? formatCurrency(data) : '-';
-                    },
-                    className: 'text-right june-cell'
-                },
-                {
-                    data: 'july',
-                    render: function (data) {
-                        return data > 0 ? formatCurrency(data) : '-';
-                    },
-                    className: 'text-right july-cell'
-                },
-                {
-                    data: 'august',
-                    render: function (data) {
-                        return data > 0 ? formatCurrency(data) : '-';
-                    },
-                    className: 'text-right august-cell'
-                },
-                {
-                    data: 'september',
-                    render: function (data) {
-                        return data > 0 ? formatCurrency(data) : '-';
-                    },
-                    className: 'text-right september-cell'
-                },
-                {
-                    data: 'october',
-                    render: function (data) {
-                        return data > 0 ? formatCurrency(data) : '-';
-                    },
-                    className: 'text-right october-cell'
-                },
-                {
-                    data: 'november',
-                    render: function (data) {
-                        return data > 0 ? formatCurrency(data) : '-';
-                    },
-                    className: 'text-right november-cell'
-                },
-                {
-                    data: 'december',
-                    render: function (data) {
-                        return data > 0 ? formatCurrency(data) : '-';
-                    },
-                    className: 'text-right december-cell'
-                },
                 {
                     data: 'total',
                     render: function (data) {
@@ -701,11 +624,85 @@ document.addEventListener('DOMContentLoaded', function () {
             language: {
                 url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/tr.json'
             },
-            order: [[0, 'asc']],
+            order: [[1, 'asc']],
             drawCallback: function () {
                 updateTotals();
             }
         });
+
+        // Child row toggle - detay satırını aç/kapat
+        $('#duesStatisticTable').on('click', 'td.details-control', function () {
+            const tr = $(this).closest('tr');
+            const row = dataTable.row(tr);
+
+            if (row.child.isShown()) {
+                row.child.hide();
+                tr.removeClass('shown');
+            } else {
+                const data = row.data();
+
+                const childRowContent = `
+                    <table class="table table-sm table-borderless" style="width: 100%; margin: 0;">
+                        <thead>
+                            <tr style="background-color: #f8f9fa;">
+                                <th style="width: 8%;">Ocak</th>
+                                <th style="width: 8%;">Şubat</th>
+                                <th style="width: 8%;">Mart</th>
+                                <th style="width: 8%;">Nisan</th>
+                                <th style="width: 8%;">Mayıs</th>
+                                <th style="width: 8%;">Haziran</th>
+                                <th style="width: 8%;">Temmuz</th>
+                                <th style="width: 8%;">Ağustos</th>
+                                <th style="width: 8%;">Eylül</th>
+                                <th style="width: 8%;">Ekim</th>
+                                <th style="width: 8%;">Kasım</th>
+                                <th style="width: 8%;">Aralık</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="text-end">${data.january > 0 ? formatCurrency(data.january) : '-'}</td>
+                                <td class="text-end">${data.february > 0 ? formatCurrency(data.february) : '-'}</td>
+                                <td class="text-end">${data.march > 0 ? formatCurrency(data.march) : '-'}</td>
+                                <td class="text-end">${data.april > 0 ? formatCurrency(data.april) : '-'}</td>
+                                <td class="text-end">${data.may > 0 ? formatCurrency(data.may) : '-'}</td>
+                                <td class="text-end">${data.june > 0 ? formatCurrency(data.june) : '-'}</td>
+                                <td class="text-end">${data.july > 0 ? formatCurrency(data.july) : '-'}</td>
+                                <td class="text-end">${data.august > 0 ? formatCurrency(data.august) : '-'}</td>
+                                <td class="text-end">${data.september > 0 ? formatCurrency(data.september) : '-'}</td>
+                                <td class="text-end">${data.october > 0 ? formatCurrency(data.october) : '-'}</td>
+                                <td class="text-end">${data.november > 0 ? formatCurrency(data.november) : '-'}</td>
+                                <td class="text-end">${data.december > 0 ? formatCurrency(data.december) : '-'}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                `;
+
+                row.child(childRowContent).show();
+                tr.addClass('shown');
+            }
+        });
+
+        // Detay butonu için stil ekle
+        const style = document.createElement('style');
+        style.textContent = `
+            td.details-control {
+                text-align: center;
+                cursor: pointer;
+            }
+            td.details-control:before {
+                content: '▶';
+                display: inline-block;
+                font-size: 12px;
+                color: #3498db;
+                transition: transform 0.2s;
+            }
+            tr.shown td.details-control:before {
+                content: '▼';
+                transform: rotate(90deg);
+            }
+        `;
+        document.head.appendChild(style);
     }
 
     // Tabloyu doldur (helper)
