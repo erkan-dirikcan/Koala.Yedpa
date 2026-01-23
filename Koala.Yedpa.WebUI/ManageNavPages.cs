@@ -22,6 +22,9 @@ namespace Koala.Yedpa.WebUI
 
         private static string BudgetOrderList => "BudgetOrderList";
         private static string WorkplaceList => "WorkplaceList";
+        private static string WorkplaceIndex => "WorkplaceIndex";
+        private static string WorkplaceDetail => "WorkplaceDetail";
+        private static string WorkplaceUpdate => "WorkplaceUpdate";
 
 
 
@@ -46,6 +49,9 @@ namespace Koala.Yedpa.WebUI
 
         public static string BudgetOrderNavClass(ViewContext viewContext) => PageMainNavClass(viewContext, BudgetOrderList);
         public static string WorkplaceNavClass(ViewContext viewContext) => PageMainNavClass(viewContext, WorkplaceList);
+        public static string WorkplaceIndexNavClass(ViewContext viewContext) => PageMainNavClass(viewContext, WorkplaceIndex);
+        public static string WorkplaceDetailNavClass(ViewContext viewContext) => PageMainNavClass(viewContext, WorkplaceDetail);
+        public static string WorkplaceUpdateNavClass(ViewContext viewContext) => PageMainNavClass(viewContext, WorkplaceUpdate);
 
 
 

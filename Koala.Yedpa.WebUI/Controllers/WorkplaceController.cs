@@ -15,7 +15,7 @@ public class WorkplaceController : Controller
 
     public async Task<IActionResult> Index()
     {
-        ViewData["ActivePage"] = "WorkplaceList";
+        ViewData["ActivePage"] = "WorkplaceIndex";
         var result = await _workplaceService.GetAllAsync();
         if (!result.IsSuccess)
         {
@@ -41,6 +41,7 @@ public class WorkplaceController : Controller
             return RedirectToAction("Index");
         }
 
+        ViewData["ActivePage"] = "WorkplaceDetail";
         return View(result.Data);
     }
 
