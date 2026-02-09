@@ -1,0 +1,164 @@
+@{
+    ViewData["Title"] = "QR Kod Oluştur";
+    ViewData["ActivePage"] = "CreatePdf";
+    ViewData["MenuToggle"] = "QRCode";
+}
+
+<div class="d-flex flex-column-fluid">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card card-custom card-stretch gutter-b">
+                    <div class="card-header border-0 py-5">
+                        <h3 class="card-title align-items-start flex-column">
+                            <span class="card-label font-weight-bolder text-dark">QR Kod Toplu Oluşturma</span>
+                            <span class="text-muted mt-3 font-weight-bold font-size-sm">Logo veritabanından cari hesapları çekerek QR kodlar oluşturun</span>
+                        </h3>
+                        <div class="card-toolbar">
+                            <button id="generateQRCodesBtn" class="btn btn-primary font-weight-bolder">
+                                <i class="fas fa-qrcode"></i>
+                                QR Kodları Oluştur
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body pt-0 pb-3">
+                        <!-- Bilgilendirme Alanı -->
+                        <div class="alert alert-info" role="alert">
+                            <h5 class="alert-heading"><i class="fas fa-info-circle"></i> QR Kod Oluşturma Bilgisi</h5>
+                            <p class="mb-0">
+                                <strong>QR Kod Ayarları:</strong> Ayarlar menüsünden QR kod yılı, ön kod ve SQL sorgusunu yapılandırabilirsiniz.<br>
+                                <strong>Oluşturma İşlemi:</strong> "QR Kodları Oluştur" butonuna basıldığında, Logo veritabanında ayarladığınız SQL sorgusu çalıştırılır.<br>
+                                <strong>Kaydetme:</strong> QR kodlar <code>wwwroot/Uploads/Qr/{Yıl}/</code> klasörüne <code>{ÖnKod}-{PARTNERNO}.jpg</code> formatında kaydedilir.
+                            </p>
+                        </div>
+
+                        <!-- İşlem Durumu -->
+                        <div id="progressArea" style="display: none;">
+                            <div class="progress mb-3">
+                                <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%">
+                                    0%
+                                </div>
+                            </div>
+                            <div id="progressMessage" class="alert alert-secondary">
+                                İşlem başlatılıyor...
+                            </div>
+                        </div>
+
+                        <!-- Sonuç Alanı -->
+                        <div id="resultArea" style="display: none;">
+                            <div class="alert alert-success">
+                                <h5 class="alert-heading"><i class="fas fa-check-circle"></i> İşlem Tamamlandı</h5>
+                                <p id="resultMessage" class="mb-0"></p>
+                            </div>
+
+                            <!-- QR Kod Listesi -->
+                            <div id="qrCodeListContainer" class="mt-4">
+                                <h4>Oluşturulan QR Kodlar</h4>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <thead class="thead-dark">
+                                            <tr>
+                                                <th style="width: 100px;">QR Kod</th>
+                                                <th>Partner No</th>
+                                                <th>Dosya Adı</th>
+                                                <th>Klasör</th>
+                                                <th>İşlem</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="qrCodeTableBody">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // QR Kodları Oluştur butonu
+            $('#generateQRCodesBtn').click(function() {
+                var btn = $(this);
+                btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Oluşturuluyor...');
+
+                // Progress alanını göster
+                $('#progressArea').slideDown();
+                $('#resultArea').slideUp();
+                updateProgress(0, 'QR kodlar oluşturuluyor...');
+
+                // AJAX isteği
+                $.ajax({
+                    url: '@Url.Action("GenerateQRCodes", "QRCode")',
+                    type: 'POST',
+                    dataType: 'json',
+                    success: function(response) {
+                        btn.prop('disabled', false).html('<i class="fas fa-qrcode"></i> QR Kodları Oluştur');
+
+                        $('#progressArea').slideUp();
+
+                        if (response.success) {
+                            updateProgress(100, 'İşlem tamamlandı!');
+
+                            $('#resultArea').slideDown();
+                            $('#resultMessage').text(response.message);
+
+                            // QR kod listesini göster
+                            if (response.data && response.data.length > 0) {
+                                renderQRCodeList(response.data);
+                            }
+                        } else {
+                            $('#resultArea').removeClass('alert-success').addClass('alert-danger').slideDown();
+                            $('#resultMessage').text(response.message || 'QR kod oluşturma sırasında hata oluştu.');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        btn.prop('disabled', false).html('<i class="fas fa-qrcode"></i> QR Kodları Oluştur');
+
+                        $('#progressArea').slideUp();
+                        $('#resultArea').removeClass('alert-success').addClass('alert-danger').slideDown();
+                        $('#resultMessage').text('Bir hata oluştu: ' + error);
+                    }
+                });
+            });
+
+            // Progress güncelleme
+            function updateProgress(percent, message) {
+                $('#progressBar').css('width', percent + '%').text(percent + '%');
+                $('#progressMessage').text(message);
+            }
+
+            // QR kod listesini render et
+            function renderQRCodeList(qrCodes) {
+                var tbody = $('#qrCodeTableBody');
+                tbody.empty();
+
+                qrCodes.forEach(function(qr) {
+                    var row = `
+                        <tr>
+                            <td class="text-center">
+                                <img src="${qr.qrPath}" alt="QR Code" class="img-thumbnail" style="width: 80px; height: 80px;" onerror="this.src='/assets/media/misc/qr-placeholder.png'">
+                            </td>
+                            <td><strong>${qr.partnerNo}</strong></td>
+                            <td><code>${qr.fileName}</code></td>
+                            <td>${qr.folder}</td>
+                            <td>
+                                <a href="${qr.qrPath}" target="_blank" class="btn btn-sm btn-light-primary" title="QR Kodu Görüntüle">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="@Url.Action("CurrentAccountDetail", "QRCode")?partnerNo=${qr.partnerNo}" class="btn btn-sm btn-light-success" title="Detay">
+                                    <i class="fas fa-info-circle"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    `;
+                    tbody.append(row);
+                });
+            }
+        });
+    </script>
+}

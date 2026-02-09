@@ -767,4 +767,418 @@ public class SettingsService(ISettingsRepository repository, IUnitOfWork<AppDbCo
     //    }
     //    return ResponseDto<LogoRestServiceSettingViewModel>.SuccessData(200, "Logo Rest Service Ayarları Başarıyla Getirildi", retVal);
     //}
+
+    public async Task<ResponseDto> AddMessage34Settings(List<AddSettingViewModel> model)
+    {
+        try
+        {
+            if (model == null || !model.Any())
+            {
+                return ResponseDto.Fail(400, "Herhangibir Ayar Bilgisi Girilmemiş",
+                    "Eklenecek Herhangi Bir Ayar Bilgisi Bulunmuyor", true);
+            }
+            var entities = _mapper.Map<List<Settings>>(model);
+            foreach (var entity in entities)
+            {
+                entity.SettingType = SettingsTypeEnum.Message34Settings;
+                await repository.AddSettingsAsync(entity);
+            }
+            await unitOfWork.CommitAsync();
+            return ResponseDto.Success(200, "Message34 Ayarları Başarıyla Eklendi");
+        }
+        catch (Exception ex)
+        {
+            return ResponseDto.Fail(400, "Message34 Ayarları Oluşturulurken Bir Sorunla Karşılaşıldı", ex.Message, true);
+        }
+    }
+
+    public async Task<ResponseDto> UpdateMessage34SettingsAsync(Message34SettingsViewModel model)
+    {
+        try
+        {
+            var errors = new List<string>();
+
+            // Tüm Message34 ayarlarını bir kereye mahsus çekip dictionary'ye alalım
+            var entities = await repository.GetSettings(SettingsTypeEnum.Message34Settings);
+            var entityDict = entities.ToDictionary(e => e.Name, e => e);
+
+            foreach (var prop in typeof(Message34SettingsViewModel).GetProperties())
+            {
+                var propertyName = prop.Name;
+                var propertyValue = prop.GetValue(model)?.ToString() ?? string.Empty;
+
+                // TÜM ALANLARI ŞİFRELE (boş string bile gelse)
+                string encryptedValue;
+                try
+                {
+                    encryptedValue = await cryptoService.EncryptAsync(propertyValue);
+                }
+                catch (CryptoLicenseException licenseEx)
+                {
+                    // Lisans hatasında hemen durdur ve hata mesajını döndür
+                    return ResponseDto.Fail(403, licenseEx.Message, licenseEx.Message, true);
+                }
+                catch (Exception cryptoEx)
+                {
+                    errors.Add($"'{propertyName}' şifrelenirken hata: {cryptoEx.Message}");
+                    continue;
+                }
+
+                if (!entityDict.TryGetValue(propertyName, out var entity))
+                {
+                    errors.Add($"'{propertyName}' isimli ayar veritabanında bulunamadı.");
+                    continue;
+                }
+
+                entity.Value = encryptedValue;
+                repository.UpdateSettings(entity);
+            }
+
+            if (errors.Any())
+            {
+                return ResponseDto.Fail(400, "Message34 Ayarları Güncellenirken Hata Oluştu", errors, true);
+            }
+
+            await unitOfWork.CommitAsync();
+            return ResponseDto.Success(200, "Message34 Ayarları Başarıyla Güncellendi");
+        }
+        catch (Exception ex)
+        {
+            return ResponseDto.Fail(500, "Message34 Ayarları güncellenirken beklenmeyen hata", ex.Message, true);
+        }
+    }
+
+    public async Task<ResponseDto<Message34SettingsViewModel>> GetMessage34SettingsAsync()
+    {
+        try
+        {
+            var entities = await repository.GetSettings(SettingsTypeEnum.Message34Settings);
+
+            if (entities == null || !entities.Any())
+            {
+                return ResponseDto<Message34SettingsViewModel>.FailData(
+                    404,
+                    "Message34 Ayarları Henüz Yapılandırılmamış",
+                    "Message34 Ayarları Henüz Yapılandırılmamış",
+                    true);
+            }
+
+            var model = new Message34SettingsViewModel();
+            var entityDict = entities.ToDictionary(e => e.Name, e => e.Value);
+
+            foreach (var prop in typeof(Message34SettingsViewModel).GetProperties())
+            {
+                var propName = prop.Name;
+
+                if (!entityDict.TryGetValue(propName, out var encryptedValue) || string.IsNullOrEmpty(encryptedValue))
+                {
+                    prop.SetValue(model, prop.PropertyType == typeof(string) ? "" : null);
+                    continue;
+                }
+
+                string decryptedValue;
+                try
+                {
+                    decryptedValue = await cryptoService.DecryptAsync(encryptedValue);
+                }
+                catch (CryptoLicenseException licenseEx)
+                {
+                    // Lisans hatasında hemen durdur ve hata mesajını döndür
+                    return ResponseDto<Message34SettingsViewModel>.FailData(403, licenseEx.Message, licenseEx.Message, true);
+                }
+                catch (Exception)
+                {
+                    decryptedValue = ""; // asla şifreli veri dönmesin
+                }
+
+                prop.SetValue(model, decryptedValue);
+            }
+
+            return ResponseDto<Message34SettingsViewModel>.SuccessData(200, "Message34 Ayarları Başarıyla Getirildi",
+                model);
+        }
+        catch (Exception ex)
+        {
+            return ResponseDto<Message34SettingsViewModel>.FailData(500, "Message34 ayarları getirilirken hata oluştu",
+                ex.Message, true);
+        }
+    }
+
+    public async Task<ResponseDto> AddKoalaApiSettings(List<AddSettingViewModel> model)
+    {
+        try
+        {
+            if (model == null || !model.Any())
+            {
+                return ResponseDto.Fail(400, "Herhangibir Ayar Bilgisi Girilmemiş",
+                    "Eklenecek Herhangi Bir Ayar Bilgisi Bulunmuyor", true);
+            }
+            var entities = _mapper.Map<List<Settings>>(model);
+            foreach (var entity in entities)
+            {
+                entity.SettingType = SettingsTypeEnum.KoalaApiSettings;
+                await repository.AddSettingsAsync(entity);
+            }
+            await unitOfWork.CommitAsync();
+            return ResponseDto.Success(200, "Koala API Ayarları Başarıyla Eklendi");
+        }
+        catch (Exception ex)
+        {
+            return ResponseDto.Fail(400, "Koala API Ayarları Oluşturulurken Bir Sorunla Karşılaşıldı", ex.Message, true);
+        }
+    }
+
+    public async Task<ResponseDto> UpdateKoalaApiSettingsAsync(KoalaApiSettingsViewModel model)
+    {
+        try
+        {
+            var errors = new List<string>();
+
+            // Tüm KoalaApiSettings ayarlarını bir kereye mahsus çekip dictionary'ye alalım
+            var entities = await repository.GetSettings(SettingsTypeEnum.KoalaApiSettings);
+
+            // Kayıt yoksa hata ver
+            if (entities == null || !entities.Any())
+            {
+                return ResponseDto.Fail(404, "Koala API Ayarları Henüz Veritabanında Oluşturulmamış",
+                    "Lütfen önce veritabanında KoalaApiSettings kayıtlarını oluşturun.", true);
+            }
+
+            var entityDict = entities.ToDictionary(e => e.Name, e => e);
+
+            foreach (var prop in typeof(KoalaApiSettingsViewModel).GetProperties())
+            {
+                var propertyName = prop.Name;
+                var propertyValue = prop.GetValue(model)?.ToString() ?? string.Empty;
+
+                // TÜM ALANLARI ŞİFRELE (boş string bile gelse)
+                string encryptedValue;
+                try
+                {
+                    encryptedValue = await cryptoService.EncryptAsync(propertyValue);
+                }
+                catch (CryptoLicenseException licenseEx)
+                {
+                    // Lisans hatasında hemen durdur ve hata mesajını döndür
+                    return ResponseDto.Fail(403, licenseEx.Message, licenseEx.Message, true);
+                }
+                catch (Exception cryptoEx)
+                {
+                    errors.Add($"'{propertyName}' şifrelenirken hata: {cryptoEx.Message}");
+                    continue;
+                }
+
+                if (!entityDict.TryGetValue(propertyName, out var entity))
+                {
+                    errors.Add($"'{propertyName}' isimli ayar veritabanında bulunamadı.");
+                    continue;
+                }
+
+                entity.Value = encryptedValue;
+                repository.UpdateSettings(entity);
+            }
+
+            if (errors.Any())
+            {
+                return ResponseDto.Fail(400, "Koala API Ayarları Güncellenirken Hata Oluştu", errors, true);
+            }
+
+            await unitOfWork.CommitAsync();
+            return ResponseDto.Success(200, "Koala API Ayarları Başarıyla Güncellendi");
+        }
+        catch (Exception ex)
+        {
+            return ResponseDto.Fail(500, "Koala API Ayarları güncellenirken beklenmeyen hata", ex.Message, true);
+        }
+    }
+
+    public async Task<ResponseDto> UpdateQRCodeSettingsAsync(QRCodeSettingsViewModel model)
+    {
+        try
+        {
+            var errors = new List<string>();
+
+            // Tüm QRCode ayarlarını bir kereye mahsus çekip dictionary'ye alalım
+            var entities = await repository.GetSettings(SettingsTypeEnum.ApplicationSettings);
+
+            // Kayıt yoksa hata ver
+            if (entities == null || !entities.Any())
+            {
+                return ResponseDto.Fail(404, "QR Code Ayarları Henüz Veritabanında Oluşturulmamış",
+                    "Lütfen önce veritabanında QRCodeSettings kayıtlarını oluşturun.", true);
+            }
+
+            var entityDict = entities.ToDictionary(e => e.Name, e => e);
+
+            foreach (var prop in typeof(QRCodeSettingsViewModel).GetProperties())
+            {
+                var propertyName = prop.Name;
+                var propertyValue = prop.GetValue(model)?.ToString() ?? string.Empty;
+
+                // TÜM ALANLARI ŞİFRELE (boş string bile gelse)
+                string encryptedValue;
+                try
+                {
+                    encryptedValue = await cryptoService.EncryptAsync(propertyValue);
+                }
+                catch (CryptoLicenseException licenseEx)
+                {
+                    // Lisans hatasında hemen durdur ve hata mesajını döndür
+                    return ResponseDto.Fail(403, licenseEx.Message, licenseEx.Message, true);
+                }
+                catch (Exception cryptoEx)
+                {
+                    errors.Add($"'{propertyName}' şifrelenirken hata: {cryptoEx.Message}");
+                    continue;
+                }
+
+                if (!entityDict.TryGetValue(propertyName, out var entity))
+                {
+                    errors.Add($"'{propertyName}' isimli ayar veritabanında bulunamadı.");
+                    continue;
+                }
+
+                entity.Value = encryptedValue;
+                repository.UpdateSettings(entity);
+            }
+
+            if (errors.Any())
+            {
+                return ResponseDto.Fail(400, "QR Code Ayarları Güncellenirken Hata Oluştu", errors, true);
+            }
+
+            await unitOfWork.CommitAsync();
+            return ResponseDto.Success(200, "QR Code Ayarları Başarıyla Güncellendi");
+        }
+        catch (Exception ex)
+        {
+            return ResponseDto.Fail(500, "QR Code Ayarları güncellenirken beklenmeyen hata", ex.Message, true);
+        }
+    }
+
+    public async Task<ResponseDto<QRCodeSettingsViewModel>> GetQRCodeSettingsAsync()
+    {
+        try
+        {
+            var entities = await repository.GetSettings(SettingsTypeEnum.ApplicationSettings);
+
+            // Kayıt yoksa boş model döndür (kullanıcı formu doldurabilir)
+            var model = new QRCodeSettingsViewModel();
+
+            if (entities != null && entities.Any())
+            {
+                var entityDict = entities.ToDictionary(e => e.Name, e => e.Value);
+
+                foreach (var prop in typeof(QRCodeSettingsViewModel).GetProperties())
+                {
+                    var propName = prop.Name;
+
+                    if (!entityDict.TryGetValue(propName, out var encryptedValue) || string.IsNullOrEmpty(encryptedValue))
+                    {
+                        prop.SetValue(model, prop.PropertyType == typeof(string) ? "" : null);
+                        continue;
+                    }
+
+                    string decryptedValue;
+                    try
+                    {
+                        decryptedValue = await cryptoService.DecryptAsync(encryptedValue);
+                    }
+                    catch (CryptoLicenseException licenseEx)
+                    {
+                        // Lisans hatasında hemen durdur ve hata mesajını döndür
+                        return ResponseDto<QRCodeSettingsViewModel>.FailData(403, licenseEx.Message, licenseEx.Message, true);
+                    }
+                    catch (Exception)
+                    {
+                        decryptedValue = ""; // asla şifreli veri dönmesin
+                    }
+
+                    prop.SetValue(model, decryptedValue);
+                }
+            }
+
+            return ResponseDto<QRCodeSettingsViewModel>.SuccessData(200, "QR Code Ayarları Başarıyla Getirildi", model);
+        }
+        catch (Exception ex)
+        {
+            return ResponseDto<QRCodeSettingsViewModel>.FailData(500, "QR Code ayarları getirilirken hata oluştu",
+                ex.Message, true);
+        }
+    }
+
+    public async Task<ResponseDto<KoalaApiSettingsViewModel>> GetKoalaApiSettingsAsync()
+    {
+        try
+        {
+            var entities = await repository.GetSettings(SettingsTypeEnum.KoalaApiSettings);
+
+            // Kayıt yoksa boş model döndür (kullanıcı formu doldurabilir)
+            var model = new KoalaApiSettingsViewModel();
+
+            if (entities != null && entities.Any())
+            {
+                var entityDict = entities.ToDictionary(e => e.Name, e => e.Value);
+
+                foreach (var prop in typeof(KoalaApiSettingsViewModel).GetProperties())
+                {
+                    var propName = prop.Name;
+
+                    if (!entityDict.TryGetValue(propName, out var encryptedValue) || string.IsNullOrEmpty(encryptedValue))
+                    {
+                        prop.SetValue(model, prop.PropertyType == typeof(string) ? "" : null);
+                        continue;
+                    }
+
+                    string decryptedValue;
+                    try
+                    {
+                        decryptedValue = await cryptoService.DecryptAsync(encryptedValue);
+                    }
+                    catch (CryptoLicenseException licenseEx)
+                    {
+                        // Lisans hatasında hemen durdur ve hata mesajını döndür
+                        return ResponseDto<KoalaApiSettingsViewModel>.FailData(403, licenseEx.Message, licenseEx.Message, true);
+                    }
+                    catch (Exception)
+                    {
+                        decryptedValue = ""; // asla şifreli veri dönmesin
+                    }
+
+                    prop.SetValue(model, decryptedValue);
+                }
+            }
+
+            return ResponseDto<KoalaApiSettingsViewModel>.SuccessData(200, "Koala API Ayarları Başarıyla Getirildi", model);
+        }
+        catch (Exception ex)
+        {
+            return ResponseDto<KoalaApiSettingsViewModel>.FailData(500, "Koala API ayarları getirilirken hata oluştu",
+                ex.Message, true);
+        }
+    }
+
+    public async Task<ResponseDto> AddQRCodeSettings(List<AddSettingViewModel> model)
+    {
+        try
+        {
+            if (model == null || !model.Any())
+            {
+                return ResponseDto.Fail(400, "Herhangibir Ayar Bilgisi Girilmemiş",
+                    "Eklenecek Herhangi Bir Ayar Bilgisi Bulunmuyor", true);
+            }
+            var entities = _mapper.Map<List<Settings>>(model);
+            foreach (var entity in entities)
+            {
+                entity.SettingType = SettingsTypeEnum.ApplicationSettings;
+                await repository.AddSettingsAsync(entity);
+            }
+            await unitOfWork.CommitAsync();
+            return ResponseDto.Success(200, "QR Code Ayarları Başarıyla Eklendi");
+        }
+        catch (Exception ex)
+        {
+            return ResponseDto.Fail(400, "QR Code Ayarları Oluşturulurken Bir Sorunla Karşılaşıldı", ex.Message, true);
+        }
+    }
 }

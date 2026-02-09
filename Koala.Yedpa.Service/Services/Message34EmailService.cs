@@ -3,29 +3,57 @@ using System.Text;
 using System.Text.Json;
 using Koala.Yedpa.Core.Dtos;
 using Koala.Yedpa.Core.Dtos.Message34;
+using Koala.Yedpa.Core.Models.ViewModels;
 using Koala.Yedpa.Core.Services;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace Koala.Yedpa.Service.Services;
 
 public class Message34EmailService : IMessage34EmailService
 {
     private readonly HttpClient _httpClient;
-    private readonly Message34Settings _settings;
+    private readonly ISettingsService _settingsService;
     private readonly ILogger<Message34EmailService> _logger;
     private string? _authToken;
     private DateTime? _tokenExpiry;
+    private Message34SettingsViewModel? _cachedSettings;
+    private DateTime? _settingsCacheExpiry;
 
     public Message34EmailService(
         HttpClient httpClient,
-        IOptions<Message34Settings> settings,
+        ISettingsService settingsService,
         ILogger<Message34EmailService> logger)
     {
         _httpClient = httpClient;
-        _settings = settings.Value;
+        _settingsService = settingsService;
         _logger = logger;
-        _httpClient.BaseAddress = new Uri(_settings.BaseUrl);
+    }
+
+    private async Task<Message34SettingsViewModel?> GetSettingsAsync()
+    {
+        // Ayarlar cache'de varsa ve 5 dakikadan daha yeniyse cache'den dön
+        if (_cachedSettings != null && _settingsCacheExpiry.HasValue && DateTime.Now < _settingsCacheExpiry.Value)
+        {
+            return _cachedSettings;
+        }
+
+        var settingsResponse = await _settingsService.GetMessage34SettingsAsync();
+        if (!settingsResponse.IsSuccess || settingsResponse.Data == null)
+        {
+            _logger.LogError("Message34 ayarları alınamadı");
+            return null;
+        }
+
+        _cachedSettings = settingsResponse.Data;
+        _settingsCacheExpiry = DateTime.Now.AddMinutes(5); // 5 dakika cache
+
+        // BaseAddress'i güncelle
+        if (!string.IsNullOrEmpty(_cachedSettings.BaseApi))
+        {
+            _httpClient.BaseAddress = new Uri(_cachedSettings.BaseApi);
+        }
+
+        return _cachedSettings;
     }
 
     public async Task<bool> AuthenticateAsync()
@@ -36,12 +64,18 @@ public class Message34EmailService : IMessage34EmailService
             return true;
         }
 
+        var settings = await GetSettingsAsync();
+        if (settings == null)
+        {
+            return false;
+        }
+
         try
         {
             var authRequest = new Message34AuthenticationRequest
             {
-                Username = _settings.Username,
-                Password = _settings.Password
+                Username = settings.UserName,
+                Password = settings.Password
             };
 
             var json = JsonSerializer.Serialize(authRequest);
@@ -61,8 +95,8 @@ public class Message34EmailService : IMessage34EmailService
 
             if (authResponse != null && authResponse.Success)
             {
-                // Token'ı response body'den al
-                _authToken = authResponse.Token;
+                // Token'ı response body'den Value property'sinden al
+                _authToken = authResponse.Value;
 
                 if (!string.IsNullOrEmpty(_authToken))
                 {
@@ -95,11 +129,20 @@ public class Message34EmailService : IMessage34EmailService
             return ResponseDto<int?>.FailData(500, "Authentication failed", "Message34 authentication failed", true);
         }
 
+        var settings = await GetSettingsAsync();
+        if (settings == null)
+        {
+            return ResponseDto<int?>.FailData(500, "Settings not available", "Message34 settings not available", true);
+        }
+
         try
         {
             // Email listesi hazırla
-            var emailList = toEmails ?? new List<string> { email.Email };
-
+            var emailList = new List<string>();// toEmails ?? new List<string> { email.Email };
+            emailList.Add("erkan@sistem-bilgisayar.com.tr");
+            emailList.Add("simsek_ozcan@hotmail.com");
+            emailList.Add("tahsilat@yedpa.com.tr");
+            emailList.Add("adegimli@yedpa.com.tr");
             // Attachment varsa base64'e çevir
             string? fileBase64 = null;
             string? fileName = null;
@@ -111,13 +154,15 @@ public class Message34EmailService : IMessage34EmailService
                 fileBase64 = Convert.ToBase64String(attachment.Content);
             }
 
+       
+
             var request = new Message34SendTransactionEmailRequest
             {
                 Subject = email.Title,
                 Body = email.Content,
-                FromName = _settings.FromName,
-                FromEmail = _settings.FromEmail,
-                ReplyEmail = _settings.ReplyEmail,
+                FromName = email.FromName ?? settings.SendName,
+                FromEmail = email.FromEmail ?? settings.SendMail,
+                ReplyEmail = email.ReplyEmail ?? settings.ReplyEmail,
                 FileName = fileName,
                 FileBase64 = fileBase64,
                 SendEmails = emailList
@@ -158,12 +203,18 @@ public class Message34EmailService : IMessage34EmailService
             return ResponseDto<int?>.FailData(500, "Authentication failed", "Message34 authentication failed", true);
         }
 
+        var settings = await GetSettingsAsync();
+        if (settings == null)
+        {
+            return ResponseDto<int?>.FailData(500, "Settings not available", "Message34 settings not available", true);
+        }
+
         try
         {
             // Default values
-            request.FromName ??= _settings.FromName;
-            request.FromEmail ??= _settings.FromEmail;
-            request.ReplyEmail ??= _settings.ReplyEmail;
+            request.FromName ??= settings.SendName;
+            request.FromEmail ??= settings.SendMail;
+            request.ReplyEmail ??= settings.ReplyEmail;
 
             var json = JsonSerializer.Serialize(request);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -200,12 +251,18 @@ public class Message34EmailService : IMessage34EmailService
             return ResponseDto<int?>.FailData(500, "Authentication failed", "Message34 authentication failed", true);
         }
 
+        var settings = await GetSettingsAsync();
+        if (settings == null)
+        {
+            return ResponseDto<int?>.FailData(500, "Settings not available", "Message34 settings not available", true);
+        }
+
         try
         {
             // Default values
-            request.FromName ??= _settings.FromName;
-            request.FromEmail ??= _settings.FromEmail;
-            request.ReplyEmail ??= _settings.ReplyEmail;
+            request.FromName ??= settings.SendName;
+            request.FromEmail ??= settings.SendMail;
+            request.ReplyEmail ??= settings.ReplyEmail;
 
             var json = JsonSerializer.Serialize(request);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -285,13 +342,13 @@ public class Message34EmailService : IMessage34EmailService
     }
 }
 
-public class Message34Settings
-{
-    public const string SectionName = "Message34";
-    public string BaseUrl { get; set; } = "https://api.message34.com";
-    public string Username { get; set; } = string.Empty;
-    public string Password { get; set; } = string.Empty;
-    public string FromName { get; set; } = "Yedpa";
-    public string FromEmail { get; set; } = string.Empty;
-    public string? ReplyEmail { get; set; }
-}
+//public class Message34Settings
+//{
+//    public const string SectionName = "Message34";
+//    public string BaseApi { get; set; } = "https://api.message34.com";
+//    public string UserName { get; set; } = string.Empty;
+//    public string Password { get; set; } = string.Empty;
+//    public string SendName { get; set; } = "Yedpa";
+//    public string SendMail { get; set; } = string.Empty;
+//    public string? ReplyEmail { get; set; }
+//}

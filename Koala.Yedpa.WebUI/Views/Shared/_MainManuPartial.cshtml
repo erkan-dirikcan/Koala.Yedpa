@@ -53,7 +53,20 @@
                         </ul>
                     </div>
                 </li>
-                
+
+                <li class="menu-item  menu-item-submenu @ManageNavPages.QRCodeNavClass(ViewContext)" aria-haspopup="true" data-menu-toggle="hover">
+					<a href="javascript:;" class="menu-link menu-toggle">
+						<i class="menu-icon fas fa-qrcode"></i><span class="menu-text">QR Kod</span><i class="menu-arrow"></i>
+					</a>
+                    <div class="menu-submenu ">
+                        <i class="menu-arrow"></i>
+                        <ul class="menu-subnav">
+							<li class="menu-item @ManageNavPages.QRCodeIndexNavClass(ViewContext)" aria-haspopup="true"><a class="menu-link " asp-controller="QRCode" asp-action="Index"><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">QR Kod Listesi</span></a></li>
+                        </ul>
+                    </div>
+                </li>
+
+
 
 
                 <li class="menu-section ">
@@ -95,6 +108,9 @@
 							<li class="menu-item  @ManageNavPages.LogoSqlSettingsNavClass(ViewContext)" aria-haspopup="true"><a asp-controller="Settings" asp-action="LogoSqlSettings" class="menu-link "><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">Logo Veri Tabanı Ayarları</span></a></li>
 							<li class="menu-item  @ManageNavPages.LogoRestServiceSettingsNavClass(ViewContext)" aria-haspopup="true"><a asp-controller="Settings" asp-action="LogoRestServiceSettings" class="menu-link "><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">Logo Rest Servis Ayarları</span></a></li>
 							<li class="menu-item  @ManageNavPages.SmtpSettingsNavClass(ViewContext)" aria-haspopup="true"><a asp-controller="Settings" asp-action="EmailSettings" class="menu-link "><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">E-Posta Ayarları</span></a></li>
+							<li class="menu-item  @ManageNavPages.Message34SettingsNavClass(ViewContext)" aria-haspopup="true"><a asp-controller="Settings" asp-action="Message34Settings" class="menu-link "><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">Message34 API Ayarları</span></a></li>
+							<li class="menu-item  @ManageNavPages.KoalaApiSettingsNavClass(ViewContext)" aria-haspopup="true"><a asp-controller="Settings" asp-action="KoalaApiSettings" class="menu-link "><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">Koala API Ayarları</span></a></li>
+							<li class="menu-item  @ManageNavPages.QRCodeSettingsNavClass(ViewContext)" aria-haspopup="true"><a asp-controller="Settings" asp-action="QRCodeSettings" class="menu-link "><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">QR Kod Ayarları</span></a></li>
 							<li class="menu-item  @ManageNavPages.CreateModuleNavClass(ViewContext)" aria-haspopup="true"><a asp-controller="Settings" class="menu-link "><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">Sistem Ayarları</span></a></li>
 						</ul>
 					</div>

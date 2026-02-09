@@ -26,6 +26,69 @@
             POST /api/v1/salesOrders
             </summary>
         </member>
+        <member name="P:Koala.Yedpa.Core.Models.QRCode.BatchId">
+            <summary>
+            Hangi QRCodeBatch işlemine ait olduğu
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.QRCode.PartnerNo">
+            <summary>
+            Cari hesap partner numarası
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.QRCode.QRCodeNumber">
+            <summary>
+            QR kod numarası: {QrCodePreCode}-{PartnerNo}
+            Örnek: G11522-Yd-12001
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.QRCode.QRImagePath">
+            <summary>
+            QR kod resim dosyasının yolu (relative path)
+            Örnek: /Uploads/Qr/2025/G11522-Yd-12001.jpg
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.QRCode.FolderPath">
+            <summary>
+            QR kodların bulunduğu klasör yolu
+            Örnek: Uploads/Qr/2025/
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.QRCode.QrCodeYear">
+            <summary>
+            QR kod yılı
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.QRCode.Batch">
+            <summary>
+            QRCodeBatch navigation property
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.QRCodeBatch.SqlQuery">
+            <summary>
+            Kullanılan SQL sorgusu
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.QRCodeBatch.QrCodeYear">
+            <summary>
+            QR kod yılı
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.QRCodeBatch.QrCodePreCode">
+            <summary>
+            QR kod ön kodu
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.QRCodeBatch.QRCodeCount">
+            <summary>
+            Oluşturulan QR kod sayısı
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.QRCodeBatch.Description">
+            <summary>
+            İşlem açıklaması
+            </summary>
+        </member>
         <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoViewModel.CARI_KODU">
             <summary>
             Ana cari kart kodu
@@ -589,6 +652,66 @@
         <member name="M:Koala.Yedpa.Core.Providers.ILogoRestServiceProvider.PostSalesOrderAsync(Koala.Yedpa.Core.Models.LogoJsonModels.SalesOrderJsonViewModel)">
             <summary>
             Logo'ya SalesOrder gönder
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Repositories.IQRCodeRepository.GetAllAsync">
+            <summary>
+            Tüm QR kodlarını getirir
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Repositories.IQRCodeRepository.GetByBatchIdAsync(System.Int32)">
+            <summary>
+            BatchId'ye göre QR kodları getirir
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Repositories.IQRCodeRepository.GetByPartnerNoAsync(System.String)">
+            <summary>
+            PartnerNo'ya göre QR kod getirir
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Repositories.IQRCodeRepository.GetByYearAsync(System.String)">
+            <summary>
+            QR kod yılına göre QR kodları getirir
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Repositories.IQRCodeRepository.GetByStatusAsync(Koala.Yedpa.Core.Dtos.StatusEnum)">
+            <summary>
+            Durumuna göre QR kodları getirir
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Repositories.IQRCodeRepository.AddAsync(Koala.Yedpa.Core.Models.QRCode)">
+            <summary>
+            Yeni QR kod ekler
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Repositories.IQRCodeRepository.Update(Koala.Yedpa.Core.Models.QRCode)">
+            <summary>
+            QR kod günceller
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Repositories.IQRCodeRepository.DeleteAsync(System.Int32)">
+            <summary>
+            QR kod siler (soft delete)
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Repositories.IQRCodeRepository.DeleteAllAsync">
+            <summary>
+            Tüm QR kodlarını siler (hard delete)
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Repositories.IQRCodeRepository.DeleteByYearAsync(System.String)">
+            <summary>
+            Belirli bir yıldaki tüm QR kodlarını siler
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Repositories.IQRCodeRepository.CountAsync">
+            <summary>
+            QR kod sayısını getirir
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Repositories.IQRCodeRepository.CountAsync(Koala.Yedpa.Core.Dtos.StatusEnum)">
+            <summary>
+            Belirli bir durumdaki QR kod sayısını getirir
             </summary>
         </member>
         <member name="T:Koala.Yedpa.Core.Services.IBudgetOrderService">

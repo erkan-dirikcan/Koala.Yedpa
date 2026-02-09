@@ -1,4 +1,5 @@
-﻿using Koala.Yedpa.Core.Models.ViewModels;
+﻿using Koala.Yedpa.Core.Dtos;
+using Koala.Yedpa.Core.Models.ViewModels;
 using Koala.Yedpa.Core.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -101,6 +102,120 @@ namespace Koala.Yedpa.WebUI.Controllers
         {
             var res = await _settingsService.UpdateLogoRestServiceSettingsAsync(model);
             return View();
+        }
+
+        public async Task<IActionResult> Message34Settings()
+        {
+            var settings = await _settingsService.GetMessage34SettingsAsync();
+            if (settings.IsSuccess) return View(settings.Data);
+            TempData["Error"] = settings;
+            return View("Error");
+        }
+        [HttpPost]
+        public async Task<IActionResult> Message34Settings(Message34SettingsViewModel model)
+        {
+            var settings = await _settingsService.GetMessage34SettingsAsync();
+            if (!settings.IsSuccess)
+            {
+                TempData["Error"] = settings;
+                return View("Error");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+            var res = await _settingsService.UpdateMessage34SettingsAsync(model);
+            if (!res.IsSuccess)
+            {
+                TempData["Error"] = res;
+                return View("Error");
+            }
+            settings = await _settingsService.GetMessage34SettingsAsync();
+            if (!settings.IsSuccess)
+            {
+                TempData["Error"] = settings;
+                return View("Error");
+            }
+
+            return View(settings.Data);
+        }
+
+        public async Task<IActionResult> KoalaApiSettings()
+        {
+            var settings = await _settingsService.GetKoalaApiSettingsAsync();
+            if (settings.IsSuccess) return View(settings.Data);
+            TempData["Error"] = settings;
+            return View("Error");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> KoalaApiSettings(KoalaApiSettingsViewModel model)
+        {
+            var settings = await _settingsService.GetKoalaApiSettingsAsync();
+            if (!settings.IsSuccess)
+            {
+                TempData["Error"] = settings;
+                return View("Error");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+            var res = await _settingsService.UpdateKoalaApiSettingsAsync(model);
+            if (!res.IsSuccess)
+            {
+                TempData["Error"] = res;
+                return View("Error");
+            }
+            settings = await _settingsService.GetKoalaApiSettingsAsync();
+            if (!settings.IsSuccess)
+            {
+                TempData["Error"] = settings;
+                return View("Error");
+            }
+
+            return View(settings.Data);
+        }
+
+        public async Task<IActionResult> QRCodeSettings()
+        {
+            var settings = await _settingsService.GetQRCodeSettingsAsync();
+            if (settings.IsSuccess) return View(settings.Data);
+            TempData["Error"] = settings;
+            return View("Error");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> QRCodeSettings(QRCodeSettingsViewModel model)
+        {
+            var settings = await _settingsService.GetQRCodeSettingsAsync();
+            if (!settings.IsSuccess)
+            {
+                TempData["Error"] = settings;
+                return View("Error");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+            var res = await _settingsService.UpdateQRCodeSettingsAsync(model);
+            if (!res.IsSuccess)
+            {
+                TempData["Error"] = res;
+                return View("Error");
+            }
+            settings = await _settingsService.GetQRCodeSettingsAsync();
+            if (!settings.IsSuccess)
+            {
+                TempData["Error"] = settings;
+                return View("Error");
+            }
+
+            return View(settings.Data);
         }
 
     }

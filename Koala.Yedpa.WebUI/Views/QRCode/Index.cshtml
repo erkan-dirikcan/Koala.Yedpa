@@ -1,0 +1,367 @@
+@model dynamic
+@{
+    ViewData["Title"] = "QR Kod Batch Listesi";
+    ViewData["ActivePage"] = "QRCodeIndex";
+    ViewData["MenuToggle"] = "QRCode";
+}
+
+<div class="d-flex flex-column-fluid">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card card-custom card-stretch gutter-b">
+                    <div class="card-header border-0 py-5">
+                        <div class="card-title">
+                            <h3 class="card-label">
+                                <i class="fas fa-qrcode"></i>
+                                QR Kod Yönetimi
+                            </h3>
+                        </div>
+                        <div class="card-toolbar">
+                            <button id="createQRCodesBtn" class="btn btn-primary font-weight-bolder mr-2">
+                                <i class="fas fa-plus"></i>
+                                Yeni QR Kod Oluştur
+                            </button>
+                            <button id="deleteAllQRCodesBtn" class="btn btn-danger font-weight-bolder">
+                                <i class="fas fa-trash"></i>
+                                Tüm Batchleri Sil
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body pt-0 pb-3">
+                        <!-- Bilgilendirme Alanı -->
+                        <div class="alert alert-info" role="alert">
+                            <h5 class="alert-heading"><i class="fas fa-info-circle"></i> QR Kod Bilgisi</h5>
+                            <p class="mb-0">
+                                <strong>Yeni QR Kod Oluştur:</strong> Ayarlardaki SQL sorgusunu çalıştırır, her PARTNERNO için QR kod oluşturur ve yeni bir batch kaydı oluşturur.<br>
+                                <strong>Batch Görüntüle:</strong> Seçili batch'e ait tüm QR kodları görsel olarak listeler.<br>
+                                <strong>Batch Sil:</strong> Seçili batch'e ait tüm QR kodları (dosya + veritabanı) siler.<br>
+                                <strong>Tüm Batchleri Sil:</strong> Tüm QR kodlarını ve batchleri hem dosya sisteminden hem de veritabanından siler.
+                            </p>
+                        </div>
+
+                        <!-- İşlem Durumu -->
+                        <div id="progressArea" style="display: none;">
+                            <div class="progress mb-3">
+                                <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-primary"
+                                      role="progressbar" style="width: 0%">
+                                    0%
+                                </div>
+                            </div>
+                            <div id="progressMessage" class="alert alert-secondary">
+                                İşlem başlatılıyor...
+                            </div>
+                        </div>
+
+                        <!-- Batch Tablosu -->
+                        <div class="table-responsive">
+                            <table id="qrCodeTable" class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Batch ID</th>
+                                        <th>Oluşturulma Tarihi</th>
+                                        <th>Yıl</th>
+                                        <th>Ön Kod</th>
+                                        <th>QR Adet</th>
+                                        <th>Açıklama</th>
+                                        <th>Durum</th>
+                                        <th>İşlemler</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- DataTables ile AJAX yükleme -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            var dataTable;
+
+            // DataTable'ı başlat
+            function initDataTable() {
+                dataTable = $('#qrCodeTable').DataTable({
+                    processing: true,
+                    serverSide: false,
+                    ajax: {
+                        url: '@Url.Action("List", "QRCode")',
+                        type: 'GET',
+                        dataSrc: function(json) {
+                            if (!json.success) {
+                                showError(json.message || 'Batch listesi yüklenirken hata oluştu');
+                                return [];
+                            }
+                            return json.data;
+                        },
+                        error: function(xhr, status, error) {
+                            showError('Batch listesi yüklenirken hata: ' + error);
+                        }
+                    },
+                    columns: [
+                        { data: 'id' },
+                        { data: 'createdDate' },
+                        { data: 'qrCodeYear' },
+                        { data: 'qrCodePreCode' },
+                        {
+                            data: 'qrCodeCount',
+                            render: function(data, type, row) {
+                                return '<span class="badge badge-primary">' + data + ' adet</span>';
+                            }
+                        },
+                        {
+                            data: 'description',
+                            render: function(data, type, row) {
+                                return data ? '<small>' + data + '</small>' : '-';
+                            }
+                        },
+                        {
+                            data: 'status',
+                            render: function(data, type, row) {
+                                if (data === 'Aktif') {
+                                    return '<span class="badge badge-success">Aktif</span>';
+                                } else {
+                                    return '<span class="badge badge-secondary">Pasif</span>';
+                                }
+                            }
+                        },
+                        {
+                            data: null,
+                            orderable: false,
+                            render: function(data, type, row) {
+                                return `
+                                    <button class="btn btn-sm btn-light-primary view-batch-btn"
+                                            data-batchid="${row.id}"
+                                            title="QR Kodları Görüntüle">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-light-danger delete-batch-btn"
+                                            data-batchid="${row.id}"
+                                            title="Batch Sil">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                `;
+                            }
+                        }
+                    ],
+                    language: {
+                        url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/tr.json'
+                    },
+                    order: [[1, 'desc']]
+                });
+            }
+
+            // Tabloyu yükle
+            initDataTable();
+
+            // Yeni QR Kod Oluştur
+            $('#createQRCodesBtn').click(function() {
+                confirmAndExecute(
+                    'Yeni QR Kod Oluştur',
+                    'Ayarlarınızda bulunan SQL sorgusunu çalıştırarak yeni QR kodlar oluşturulacak ve yeni bir batch kaydı oluşturulacak. Devam etmek istiyor musunuz?',
+                    'create'
+                );
+            });
+
+            // Tüm Batchleri Sil
+            $('#deleteAllQRCodesBtn').click(function() {
+                confirmAndExecute(
+                    'Tüm Batchleri Sil',
+                    'Tüm QR kodlarını ve batchleri hem dosya sisteminden hem de veritabanından sileceksiniz. Bu işlem geri alınamaz. Devam etmek istiyor musunuz?',
+                    'deleteAll'
+                );
+            });
+
+            // Batch Görüntüle butonu (delegation)
+            $(document).on('click', '.view-batch-btn', function() {
+                var batchId = $(this).data('batchid');
+                window.location.href = '@Url.Action("ViewBatch", "QRCode")?batchId=' + batchId;
+            });
+
+            // Batch Sil butonu (delegation)
+            $(document).on('click', '.delete-batch-btn', function() {
+                var batchId = $(this).data('batchid');
+                confirmDeleteBatch(batchId);
+            });
+
+            // Onay ve çalıştır fonksiyonu
+            function confirmAndExecute(title, text, action) {
+                Swal.fire({
+                    title: title,
+                    text: text,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: action === 'deleteAll' || action === 'deleteBatch' ? '#d33' : '#3085d6',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Evet, devam et',
+                    cancelButtonText: 'İptal',
+                    showLoaderOnConfirm: true,
+                    allowOutsideClick: false,
+                    allowEscapeKey: false
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        if (action === 'deleteBatch') {
+                            executeDeleteBatch(window.batchToDelete);
+                        } else {
+                            executeAction(action);
+                        }
+                    }
+                });
+            }
+
+            // Batch silme onayı
+            function confirmDeleteBatch(batchId) {
+                window.batchToDelete = batchId;
+                confirmAndExecute(
+                    'Batch Sil',
+                    'Bu batch\'e ait tüm QR kodları (dosya + veritabanı) silinecek. Bu işlem geri alınamaz. Devam etmek istiyor musunuz?',
+                    'deleteBatch'
+                );
+            }
+
+            // Action'ı çalıştır
+            function executeAction(action) {
+                var url = '';
+                var progressTitle = '';
+                var successTitle = '';
+
+                switch(action) {
+                    case 'create':
+                        url = '@Url.Action("Create", "QRCode")';
+                        progressTitle = 'QR Kodlar Oluşturuluyor...';
+                        successTitle = 'QR Kodlar Oluşturuldu';
+                        break;
+                    case 'deleteAll':
+                        url = '@Url.Action("Delete", "QRCode")';
+                        progressTitle = 'Tüm QR Kodlar Siliniyor...';
+                        successTitle = 'Tüm QR Kodlar Silindi';
+                        break;
+                }
+
+                showProgress(progressTitle);
+
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    dataType: 'json',
+                    success: function(response) {
+                        hideProgress();
+
+                        if (response.success) {
+                            Swal.fire({
+                                title: successTitle,
+                                text: response.message,
+                                icon: 'success',
+                                confirmButtonText: 'Tamam'
+                            }).then(() => {
+                                // Tabloyu yenile
+                                if (dataTable) {
+                                    dataTable.ajax.reload(null, false);
+                                }
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Hata',
+                                text: response.message || 'İşlem başarısız',
+                                icon: 'error',
+                                confirmButtonText: 'Tamam'
+                            });
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        hideProgress();
+                        Swal.fire({
+                            title: 'Hata',
+                            text: 'İşlem sırasında bir hata oluştu: ' + error,
+                            icon: 'error',
+                            confirmButtonText: 'Tamam'
+                        });
+                    }
+                });
+            }
+
+            // Batch silme action'ı
+            function executeDeleteBatch(batchId) {
+                var url = '@Url.Action("DeleteBatch", "QRCode")';
+
+                showProgress('Batch Siliniyor...');
+
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: {
+                        batchId: batchId,
+                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        hideProgress();
+
+                        if (response.success) {
+                            Swal.fire({
+                                title: 'Batch Silindi',
+                                text: response.message,
+                                icon: 'success',
+                                confirmButtonText: 'Tamam'
+                            }).then(() => {
+                                // Tabloyu yenile
+                                if (dataTable) {
+                                    dataTable.ajax.reload(null, false);
+                                }
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Hata',
+                                text: response.message || 'İşlem başarısız',
+                                icon: 'error',
+                                confirmButtonText: 'Tamam'
+                            });
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        hideProgress();
+                        Swal.fire({
+                            title: 'Hata',
+                            text: 'İşlem sırasında bir hata oluştu: ' + error,
+                            icon: 'error',
+                            confirmButtonText: 'Tamam'
+                        });
+                    }
+                });
+            }
+
+            // Progress göster
+            function showProgress(title) {
+                $('#progressArea').slideDown();
+                $('#progressMessage').text(title);
+                updateProgress(50);
+            }
+
+            // Progress gizle
+            function hideProgress() {
+                $('#progressArea').slideUp();
+            }
+
+            // Progress güncelle
+            function updateProgress(percent) {
+                $('#progressBar').css('width', percent + '%').text(percent + '%');
+            }
+
+            // Hata göster
+            function showError(message) {
+                Swal.fire({
+                    title: 'Hata',
+                    text: message,
+                    icon: 'error',
+                    confirmButtonText: 'Tamam'
+                });
+            }
+        });
+    </script>
+}

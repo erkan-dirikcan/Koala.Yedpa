@@ -1,4 +1,5 @@
 using Hangfire;
+using Koala.Yedpa.Core.Configuration;
 using Koala.Yedpa.Core.Services;
 using Koala.Yedpa.Repositories;
 using Koala.Yedpa.Service.HangfireDashboard;
@@ -75,6 +76,10 @@ namespace Koala.Yedpa.WebUI
                     x => x.UseCompatibilityLevel(150));
             });
 
+            // QR Code Settings
+            builder.Services.Configure<QRCodeSettings>(
+                builder.Configuration.GetSection(QRCodeSettings.SectionName));
+
             builder.Services.AddHangfire(config => config
                 .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
                 .UseSimpleAssemblyNameTypeSerializer()
@@ -113,7 +118,6 @@ namespace Koala.Yedpa.WebUI
             });
 
             // Message34 Email API
-            builder.Services.Configure<Message34Settings>(builder.Configuration.GetSection(Message34Settings.SectionName));
             builder.Services.AddHttpClient<IMessage34EmailService, Message34EmailService>(client =>
             {
                 client.Timeout = TimeSpan.FromSeconds(30);

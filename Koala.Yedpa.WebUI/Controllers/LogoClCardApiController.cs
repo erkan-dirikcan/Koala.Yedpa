@@ -8,6 +8,7 @@ namespace Koala.Yedpa.WebUI.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [ApiExplorerSettings(IgnoreApi = true)]
     [Produces("application/json")]
     [SwaggerTag("Logo Cari & Dükkan Bilgileri API")]
 

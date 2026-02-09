@@ -143,4 +143,13 @@ public class Workplace
     public double? TotalNetMetre { get; set; }
 
     public double? TotalFuelMetre { get; set; }
+
+    // QR Code fields
+    [MaxLength(100)]
+    public string? QRCodeNumber { get; set; }
+
+    [MaxLength(500)]
+    public string? QRCodeImagePath { get; set; }
+
+    public DateTime? QRCodeGeneratedDate { get; set; }
 }

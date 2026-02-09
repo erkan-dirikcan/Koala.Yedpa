@@ -10,6 +10,7 @@ namespace Koala.Yedpa.WebUI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [ApiExplorerSettings(IgnoreApi = true)]
     [Authorize]
     public class BudgetOrderApiController : ControllerBase
     {

@@ -17,7 +17,19 @@
       "Bash(dotnet ef database update:*)",
       "mcp__web-reader__webReader",
       "Bash(git push:*)",
-      "Bash(git rm:*)"
+      "Bash(git rm:*)",
+      "Bash(dotnet ef:*)",
+      "Bash(dotnet list:*)",
+      "Bash(dotnet add package:*)",
+      "Bash(tree:*)",
+      "Bash(dotnet add:*)",
+      "Bash(grep:*)",
+      "Bash(ls:*)",
+      "Bash(curl:*)",
+      "Bash(dotnet publish:*)"
     ]
+  },
+  "enabledPlugins": {
+    "ralph-wiggum@claude-plugins-official": false
   }
 }

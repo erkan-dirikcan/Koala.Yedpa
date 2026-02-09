@@ -11,6 +11,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
     public DbSet<BudgetRatio> BudgetRatio { get; set; }
     public DbSet<Claims> Claims { get; set; }
     public DbSet<DuesStatistic> DuesStatistics { get; set; }
+    public DbSet<QRCodeBatch> QRCodeBatches { get; set; }
+    public DbSet<QRCode> QRCodes { get; set; }
     public DbSet<Workplace> Workplace { get; set; }
     public DbSet<EmailTemplate> EmailTemplate { get; set; }
     public DbSet<ExtendedProperties> ExtendedProperties { get; set; }

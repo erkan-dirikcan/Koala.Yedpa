@@ -1,0 +1,71 @@
+@model Koala.Yedpa.Core.Models.ViewModels.QRCodeSettingsViewModel
+@{
+    ViewData["Title"] = "QR Kod Ayarları";
+    ViewData["ActivePage"] = "QRCodeSettings";
+    ViewData["MenuToggle"] = "Settings";
+}
+
+
+<div class="d-flex flex-column-fluid">
+
+    <div class="container-fluid">
+
+        <div class="row">
+
+            <div class="col-lg-12">
+                <form name="QRCodeSettingsForm" id="QRCodeSettingsForm" asp-action="QRCodeSettings" asp-controller="Settings" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="card card-custom card-stretch gutter-b">
+                        <div class="card-header border-0 py-5">
+                            <h3 class="card-title align-items-start flex-column">
+                                <span class="card-label font-weight-bolder text-dark">QR Kod Ayarları</span>
+                                <span class="text-muted mt-3 font-weight-bold font-size-sm">QR Kod Ayarlarını Güncelle</span>
+                            </h3>
+                        </div>
+                        <div class="card-body pt-0 pb-3">
+                            <div class="tab-content">
+                                <div asp-validation-summary="ModelOnly"></div>
+                                <div class="form-group row">
+                                    <span class="text-danger col-md-2 col-form-label"><label asp-for="QrCodeYear"></label> *</span>
+                                    <div class="col-md-10">
+                                        <input class="form-control form-control-sm" asp-for="QrCodeYear" type="text" placeholder="2025" />
+                                        <span asp-validation-for="QrCodeYear" class="text-danger"></span>
+                                        <small class="form-text text-muted">QR kod için yıl bilgisi (örn: 2025)</small>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <span class="text-danger col-md-2 col-form-label"><label asp-for="QrCodePreCode"></label> *</span>
+                                    <div class="col-md-10">
+                                        <input class="form-control form-control-sm" asp-for="QrCodePreCode" type="text" placeholder="G11522-Yd" />
+                                        <span asp-validation-for="QrCodePreCode" class="text-danger"></span>
+                                        <small class="form-text text-muted">QR kod ön kodu (örn: G11522-Yd)</small>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <span class="col-md-2 col-form-label"><label asp-for="QrSqlQuery"></label></span>
+                                    <div class="col-md-10">
+                                        <textarea class="form-control form-control-sm" asp-for="QrSqlQuery" rows="5" placeholder="SQL sorgusu..."></textarea>
+                                        <span asp-validation-for="QrSqlQuery" class="text-danger"></span>
+                                        <small class="form-text text-muted">QR kod için özel SQL sorgusu (opsiyonel)</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <button type="submit" class="btn btn-success mr-2">Ayarları Güncelle</button>
+                            <a href="~/Dashboard" class="btn btn-secondary">Vazgeç</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
+
+    </div>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

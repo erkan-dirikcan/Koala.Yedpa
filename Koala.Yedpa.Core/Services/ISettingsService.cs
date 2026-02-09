@@ -9,16 +9,25 @@ public interface ISettingsService
     Task<ResponseDto> AddLogoSettings(List<AddSettingViewModel> model);
     Task<ResponseDto> AddLogoSqlSettings(List<AddSettingViewModel> model);
     Task<ResponseDto> AddLogoRestServiceSettings(List<AddSettingViewModel> model);
+    Task<ResponseDto> AddMessage34Settings(List<AddSettingViewModel> model);
+    Task<ResponseDto> AddKoalaApiSettings(List<AddSettingViewModel> model);
+    Task<ResponseDto> AddQRCodeSettings(List<AddSettingViewModel> model);
 
     Task<ResponseDto> UpdateEmailSettingsAsync(EmailSettingViewModel model);
     Task<ResponseDto> UpdateLogoSettingsAsync(LogoSettingViewModel model);
     Task<ResponseDto> UpdateLogoSqlSettingsAsync(LogoSqlSettingViewModel model);
     Task<ResponseDto> UpdateLogoRestServiceSettingsAsync(LogoRestServiceSettingViewModel model);
+    Task<ResponseDto> UpdateMessage34SettingsAsync(Message34SettingsViewModel model);
+    Task<ResponseDto> UpdateKoalaApiSettingsAsync(KoalaApiSettingsViewModel model);
+    Task<ResponseDto> UpdateQRCodeSettingsAsync(QRCodeSettingsViewModel model);
 
     Task<ResponseDto<EmailSettingViewModel>> GetEmailSettingsAsync();
     Task<ResponseDto<LogoSettingViewModel>> GetLogoSettingsAsync();
     Task<ResponseDto<LogoSqlSettingViewModel>> GetLogoSqlSettingsAsync();
     Task<ResponseDto<LogoRestServiceSettingViewModel>> GetLogoRestServiceSettingsAsync();
+    Task<ResponseDto<Message34SettingsViewModel>> GetMessage34SettingsAsync();
+    Task<ResponseDto<KoalaApiSettingsViewModel>> GetKoalaApiSettingsAsync();
+    Task<ResponseDto<QRCodeSettingsViewModel>> GetQRCodeSettingsAsync();
 
 
 

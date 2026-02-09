@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -542,6 +543,146 @@ namespace Koala.Yedpa.Repositories.Migrations
                     b.ToTable("Module");
                 });
 
+            modelBuilder.Entity("Koala.Yedpa.Core.Models.QRCode", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BatchId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreateTime")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<string>("CreateUserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FolderPath")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime?>("LastUpdateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastUpdateUserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PartnerNo")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("QRCodeNumber")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("QRImagePath")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("QrCodeYear")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<int>("Status")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BatchId")
+                        .HasDatabaseName("IX_QRCodes_BatchId");
+
+                    b.HasIndex("PartnerNo")
+                        .HasDatabaseName("IX_QRCodes_PartnerNo");
+
+                    b.HasIndex("QRCodeNumber")
+                        .HasDatabaseName("IX_QRCodes_QRCodeNumber");
+
+                    b.HasIndex("QrCodeYear")
+                        .HasDatabaseName("IX_QRCodes_QrCodeYear");
+
+                    b.HasIndex("Status")
+                        .HasDatabaseName("IX_QRCodes_Status");
+
+                    b.HasIndex("PartnerNo", "QrCodeYear")
+                        .IsUnique()
+                        .HasDatabaseName("UQ_QRCodes_PartnerNo_Year");
+
+                    b.ToTable("QRCodes", (string)null);
+                });
+
+            modelBuilder.Entity("Koala.Yedpa.Core.Models.QRCodeBatch", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreateTime")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<string>("CreateUserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime?>("LastUpdateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastUpdateUserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("QRCodeCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("QrCodePreCode")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("QrCodeYear")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("SqlQuery")
+                        .HasColumnType("NVARCHAR(MAX)");
+
+                    b.Property<int>("Status")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreateTime")
+                        .HasDatabaseName("IX_QRCodeBatches_CreateTime");
+
+                    b.HasIndex("QrCodeYear")
+                        .HasDatabaseName("IX_QRCodeBatches_QrCodeYear");
+
+                    b.HasIndex("Status")
+                        .HasDatabaseName("IX_QRCodeBatches_Status");
+
+                    b.ToTable("QRCodeBatches", (string)null);
+                });
+
             modelBuilder.Entity("Koala.Yedpa.Core.Models.Settings", b =>
                 {
                     b.Property<string>("Id")
@@ -877,6 +1018,17 @@ namespace Koala.Yedpa.Repositories.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<DateTime?>("QRCodeGeneratedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("QRCodeImagePath")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("QRCodeNumber")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<int?>("ResidenceGroupRef")
                         .HasColumnType("int");
 
@@ -1078,6 +1230,17 @@ namespace Koala.Yedpa.Repositories.Migrations
                         .IsRequired();
 
                     b.Navigation("Module");
+                });
+
+            modelBuilder.Entity("Koala.Yedpa.Core.Models.QRCode", b =>
+                {
+                    b.HasOne("Koala.Yedpa.Core.Models.QRCodeBatch", "Batch")
+                        .WithMany()
+                        .HasForeignKey("BatchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Batch");
                 });
 
             modelBuilder.Entity("Koala.Yedpa.Core.Models.Transaction", b =>

@@ -192,5 +192,69 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="T:Koala.Yedpa.WebUI.Controllers.TestEmailController">
+            <summary>
+            Test Email API - Message34 üzerinden test maili göndermek için kullanılır
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.TestEmailController.SendTestEmail(Koala.Yedpa.WebUI.Controllers.TestEmailRequest)">
+            <summary>
+            Test maili gönderir
+            </summary>
+            <param name="request">Test mail isteği</param>
+            <returns></returns>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.TestEmailController.SendPaymentPlanTestEmail(System.String)">
+            <summary>
+            Önceden tanımlı ödeme planı test maili gönderir
+            </summary>
+            <param name="toEmail">Alıcı e-posta adresi (varsayılan: erkan@sistem-bilgisayar.com.tr)</param>
+            <returns></returns>
+        </member>
+        <member name="T:Koala.Yedpa.WebUI.Controllers.TestEmailRequest">
+            <summary>
+            Test mail isteği modeli
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.WebUI.Controllers.TestEmailRequest.ToEmail">
+            <summary>
+            Alıcı e-posta adresi
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.WebUI.Controllers.TestEmailRequest.TemplateName">
+            <summary>
+            Email şablonu adı (varsayılan: Default)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.WebUI.Controllers.TestEmailRequest.Subject">
+            <summary>
+            Mail başlığı
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.WebUI.Controllers.TestEmailRequest.Name">
+            <summary>
+            [[Name]] placeholder'ı için değer
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.WebUI.Controllers.TestEmailRequest.Body">
+            <summary>
+            [[Body]] placeholder'ı için değer
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.WebUI.Controllers.TestEmailRequest.FromName">
+            <summary>
+            Gönderen adı (opsiyonel)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.WebUI.Controllers.TestEmailRequest.FromEmail">
+            <summary>
+            Gönderen e-posta adresi (opsiyonel)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.WebUI.Controllers.TestEmailRequest.ReplyEmail">
+            <summary>
+            Yanıt e-posta adresi (opsiyonel)
+            </summary>
+        </member>
     </members>
 </doc>

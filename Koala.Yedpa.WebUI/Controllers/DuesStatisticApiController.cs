@@ -11,6 +11,7 @@ namespace Koala.Yedpa.WebUI.Controllers;
 /// </summary>
 [Route("api/[controller]")]
 [ApiController]
+[ApiExplorerSettings(IgnoreApi = true)]
 [Authorize]
 public class DuesStatisticApiController : ControllerBase
 {

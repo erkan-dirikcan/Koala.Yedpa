@@ -78,7 +78,9 @@
         ApplicationSettings = 0x05,
         LogoRestServiceSettings = 0x06,
         LogoUserSettings = 0x07,
-        HangfireSettings = 0x08
+        HangfireSettings = 0x08,
+        Message34Settings = 0x09,
+        KoalaApiSettings = 0x0A
     }
 
     public enum SettingValueTypeEnum

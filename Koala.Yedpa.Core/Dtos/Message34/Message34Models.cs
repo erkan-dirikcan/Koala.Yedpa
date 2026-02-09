@@ -15,14 +15,20 @@ namespace Koala.Yedpa.Core.Dtos.Message34
 
     public class Message34AuthenticationResponse
     {
-        [JsonPropertyName("success")]
-        public bool Success { get; set; }
+        [JsonPropertyName("value")]
+        public string? Value { get; set; }
 
-        [JsonPropertyName("errors")]
-        public List<string>? Errors { get; set; }
+        [JsonPropertyName("statusCode")]
+        public int StatusCode { get; set; }
 
-        [JsonPropertyName("token")]
-        public string? Token { get; set; }
+        [JsonPropertyName("contentType")]
+        public string? ContentType { get; set; }
+
+        // Success hesaplanan property - StatusCode 200 ise başarılı
+        public bool Success => StatusCode == 200;
+
+        // Diğer response'larla uyumlu olması için
+        public List<string>? Errors => Success ? null : new List<string> { $"Status Code: {StatusCode}" };
     }
 
     #endregion

@@ -15,6 +15,10 @@ public class WorkplaceListViewModel
     public double? TotalNetMetre { get; set; }
     public double? TotalFuelMetre { get; set; }
     public List<WorkplaceCurrentAccounts> CurrentAccounts { get; set; }
+
+    // QR Code properties
+    public string? QRCodeNumber { get; set; }
+    public string? QRCodeImagePath { get; set; }
 }
 
 public class WorkplaceDetailViewModel
@@ -108,6 +112,12 @@ public class WorkplaceDetailViewModel
     public string? CariDefinition { get; set; }
 
     public List<WorkplaceCurrentAccounts> CurrentAccounts { get; set; }
+
+    // QR Code properties
+    public string? QRCodeNumber { get; set; }
+    public string? QRCodeImagePath { get; set; }
+    public string? QRCodeUrl { get; set; }
+    public DateTime? QRCodeGeneratedDate { get; set; }
 }
 
 public class WorkplaceCurrentAccounts

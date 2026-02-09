@@ -1,0 +1,179 @@
+@{
+    ViewData["Title"] = "QR Kod Detay";
+    ViewData["ActivePage"] = "CurrentAccountDetail";
+}
+
+<div class="d-flex flex-column-fluid">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card card-custom card-stretch gutter-b">
+                    <div class="card-header border-0 py-5">
+                        <div class="card-title">
+                            <h3 class="card-label font-weight-bolder text-dark">
+                                <i class="fas fa-qrcode"></i> QR Kod Detayı
+                            </h3>
+                        </div>
+                        <div class="card-toolbar">
+                            <a href="@Url.Action("CreatePdf", "QRCode")" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Listeye Dön
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body pt-0 pb-3">
+                        <div class="row">
+                            <!-- QR Kod Görsel -->
+                            <div class="col-lg-6">
+                                <div class="text-center p-4">
+                                    <h4 class="mb-4">QR Kod</h4>
+                                    <div class="qr-code-container">
+                                        <img src="@ViewBag.QrPath"
+                                             alt="QR Code"
+                                             class="img-fluid qr-code-image"
+                                             style="max-width: 300px;"
+                                             onerror="this.src='/assets/media/misc/qr-placeholder.png'; this.nextElementSibling.style.display='block';">
+                                        <div class="alert alert-warning mt-3" style="display: none;">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                            QR kod görseli bulunamadı veya oluşturulmamış.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- QR Kod Bilgileri -->
+                            <div class="col-lg-6">
+                                <h4 class="mb-4">QR Kod Bilgileri</h4>
+                                <table class="table table-bordered table-striped">
+                                    <tbody>
+                                        <tr>
+                                            <th style="width: 200px;">Partner No</th>
+                                            <td><strong>@ViewBag.PartnerNo</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <th>QR Kod Ön Kod</th>
+                                            <td><code>@ViewBag.QrCodePreCode</code></td>
+                                        </tr>
+                                        <tr>
+                                            <th>QR Kod Yıl</th>
+                                            <td>@ViewBag.QrCodeYear</td>
+                                        </tr>
+                                        <tr>
+                                            <th>QR Kod Numarası</th>
+                                            <td><code>@ViewBag.QrCodePreCode-@ViewBag.PartnerNo</code></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Dosya Adı</th>
+                                            <td><code>@ViewBag.QrCodePreCode-@ViewBag.PartnerNo.jpg</code></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Klasör Yolu</th>
+                                            <td><code>wwwroot/Uploads/Qr/@ViewBag.QrCodeYear/</code></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Tam Dosya Yolu</th>
+                                            <td>
+                                                <small>@ViewBag.QrPath</small>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <div class="mt-4">
+                                    <h5>İşlemler</h5>
+                                    <div class="btn-group" role="group">
+                                        <a href="@ViewBag.QrPath" target="_blank" class="btn btn-light-primary">
+                                            <i class="fas fa-external-link-alt"></i> Yeni Sekmede Aç
+                                        </a>
+                                        <a href="@ViewBag.QrPath" download class="btn btn-light-success">
+                                            <i class="fas fa-download"></i> İndir
+                                        </a>
+                                        <button onclick="window.print()" class="btn btn-light-info">
+                                            <i class="fas fa-print"></i> Yazdır
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Teknik Bilgiler -->
+                        <div class="row mt-5">
+                            <div class="col-12">
+                                <div class="card card-light">
+                                    <div class="card-header">
+                                        <h4 class="card-title"><i class="fas fa-info-circle"></i> Teknik Bilgiler</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <dl class="row">
+                                                    <dt class="col-sm-5">QR Code Version:</dt>
+                                                    <dd class="col-sm-7">Auto-detected</dd>
+
+                                                    <dt class="col-sm-5">Error Correction:</dt>
+                                                    <dd class="col-sm-7">Level M (15%)</dd>
+
+                                                    <dt class="col-sm-5">Pixel Size:</dt>
+                                                    <dd class="col-sm-7">10px</dd>
+                                                </dl>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <dl class="row">
+                                                    <dt class="col-sm-5">Image Format:</dt>
+                                                    <dd class="col-sm-7">JPEG</dd>
+
+                                                    <dt class="col-sm-5">Encoding:</dt>
+                                                    <dd class="col-sm-7">UTF-8</dd>
+
+                                                    <dt class="col-sm-5">Generated Date:</dt>
+                                                    <dd class="col-sm-7">@DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss")</dd>
+                                                </dl>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .qr-code-container {
+        display: inline-block;
+        padding: 20px;
+        border: 2px dashed #e0e0e0;
+        border-radius: 10px;
+        background-color: #f8f9fa;
+    }
+
+    .qr-code-image {
+        display: block;
+        margin: 0 auto;
+    }
+
+    @@media print {
+        .card-toolbar,
+        .btn-group {
+            display: none !important;
+        }
+
+        .qr-code-container {
+            border: none;
+        }
+    }
+</style>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Sayfa yüklendiğinde QR kod görselini kontrol et
+            $('.qr-code-image').on('error', function() {
+                $(this).hide();
+                $(this).next('.alert').show();
+            });
+        });
+    </script>
+}

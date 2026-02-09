@@ -1,4 +1,5 @@
 using Hangfire;
+using Koala.Yedpa.Core.Configuration;
 using Koala.Yedpa.Core.Models;
 using Koala.Yedpa.Core.Providers;
 using Koala.Yedpa.Core.Repositories;
@@ -92,6 +93,8 @@ namespace Koala.Yedpa.WebUI.Extentions
             services.AddScoped<ITransactionItemRepository, TransactionItemRepository>();
             services.AddScoped<ITransactionTypeRepository, TransactionTypeRepository>();
             services.AddScoped<IWorkplaceRepository, WorkplaceRepository>();
+            services.AddScoped<IQRCodeRepository, QRCodeRepository>();
+            services.AddScoped<IQRCodeBatchRepository, QRCodeBatchRepository>();
             //services.AddScoped<, >();
             //services.AddScoped<, >();
 
@@ -129,6 +132,7 @@ namespace Koala.Yedpa.WebUI.Extentions
             services.AddScoped<ITransactionItemService, TransactionItemService>();
             services.AddScoped<ITransactionTypeService, TransactionTypeService>();
             services.AddScoped<IWorkplaceService, WorkplaceService>();
+            services.AddScoped<IQRCodeService, QRCodeService>();
 
 
             services.AddHostedService<SeedHostedService>();

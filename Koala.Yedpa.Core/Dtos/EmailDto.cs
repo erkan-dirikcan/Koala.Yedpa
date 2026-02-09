@@ -55,6 +55,11 @@
 
         // Email attachment support
         public List<EmailAttachmentDto>? Attachments { get; set; }
+
+        // Optional sender override fields
+        public string? FromName { get; set; }
+        public string? FromEmail { get; set; }
+        public string? ReplyEmail { get; set; }
     }
 
     public class EmailAttachmentDto

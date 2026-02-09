@@ -17,7 +17,12 @@ namespace Koala.Yedpa.WebUI
         private static string LogoUserSettings => "LogoUserSettings";
         private static string LogoRestServiceSettings => "LogoRestServiceSettings";
         private static string LogoSqlSettings => "LogoSqlSettings";
-
+        private static string Message34Settings => "Message34Settings";
+        private static string KoalaApiSettings => "KoalaApiSettings";
+        private static string QRCodeSettings => "QRCodeSettings";
+        private static string QRCodeIndex => "QRCodeIndex";
+        private static string CreatePdf => "CreatePdf";
+        private static string CurrentAccountDetail => "CurrentAccountDetail";
 
 
         private static string BudgetOrderList => "BudgetOrderList";
@@ -43,6 +48,12 @@ namespace Koala.Yedpa.WebUI
         public static string LogoUserSettingsNavClass(ViewContext viewContext) => PageMainNavClass(viewContext, LogoUserSettings);
         public static string LogoSqlSettingsNavClass(ViewContext viewContext) => PageMainNavClass(viewContext, LogoSqlSettings);
         public static string LogoRestServiceSettingsNavClass(ViewContext viewContext) => PageMainNavClass(viewContext, LogoRestServiceSettings);
+        public static string Message34SettingsNavClass(ViewContext viewContext) => PageMainNavClass(viewContext, Message34Settings);
+        public static string KoalaApiSettingsNavClass(ViewContext viewContext) => PageMainNavClass(viewContext, KoalaApiSettings);
+        public static string QRCodeSettingsNavClass(ViewContext viewContext) => PageMainNavClass(viewContext, QRCodeSettings);
+        public static string QRCodeIndexNavClass(ViewContext viewContext) => PageMainNavClass(viewContext, QRCodeIndex);
+        public static string CreatePdfNavClass(ViewContext viewContext) => PageMainNavClass(viewContext, CreatePdf);
+        public static string CurrentAccountDetailNavClass(ViewContext viewContext) => PageMainNavClass(viewContext, CurrentAccountDetail);
 
 
 
@@ -61,6 +72,7 @@ namespace Koala.Yedpa.WebUI
         private static string Module => "Module";
         private static string Settings => "Settings";
         private static string Site => "Site";
+        private static string QRCode => "QRCode";
 
 
 
@@ -70,6 +82,7 @@ namespace Koala.Yedpa.WebUI
         public static string ModuleNavClass(ViewContext viewContext) => PageMainToogleNavClass(viewContext, Module);
         public static string SettingsNavClass(ViewContext viewContext) => PageMainToogleNavClass(viewContext, Settings);
         public static string SiteNavClass(ViewContext viewContext) => PageMainToogleNavClass(viewContext, Site);
+        public static string QRCodeNavClass(ViewContext viewContext) => PageMainToogleNavClass(viewContext, QRCode);
 
 
         private static string PageMainNavClass(ViewContext viewContext, string page)

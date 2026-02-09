@@ -118,7 +118,7 @@ namespace Koala.Yedpa.Core.Models.ViewModels
     {
         public LogoSettingViewModel()
         {
-            
+
         }
         public LogoSettingViewModel(string userName, string password, string firm, string perriod)
         {
@@ -132,5 +132,71 @@ namespace Koala.Yedpa.Core.Models.ViewModels
         public string Password { get; set; }
         public string Firm { get; set; }
         public string Period { get; set; }
+    }
+
+    public class Message34SettingsViewModel
+    {
+        public Message34SettingsViewModel()
+        {
+        }
+
+        [Required(ErrorMessage = "Base API Alanı Zorunludur")]
+        [Display(Name = "Base API")]
+        public string BaseApi { get; set; }
+
+        [Required(ErrorMessage = "Kullanıcı Adı Alanı Zorunludur")]
+        [Display(Name = "Kullanıcı Adı")]
+        public string UserName { get; set; }
+
+        [Required(ErrorMessage = "Parola Alanı Zorunludur")]
+        [Display(Name = "Parola")]
+        public string Password { get; set; }
+
+        [Display(Name = "Gönderen Adı")]
+        public string SendName { get; set; }
+
+        [Display(Name = "Gönderen Email")]
+        public string SendMail { get; set; }
+
+        [Display(Name = "Cevap Email")]
+        public string ReplyEmail { get; set; }
+    }
+
+    public class KoalaApiSettingsViewModel
+    {
+        public KoalaApiSettingsViewModel()
+        {
+        }
+
+        [Required(ErrorMessage = "Base URL Alanı Zorunludur")]
+        [Display(Name = "Base URL")]
+        [Url(ErrorMessage = "Geçerli bir URL adresi giriniz")]
+        public string BaseUrl { get; set; }
+
+        [Required(ErrorMessage = "Kullanıcı Adı Alanı Zorunludur")]
+        [Display(Name = "Kullanıcı Adı")]
+        public string UserName { get; set; }
+
+        [Required(ErrorMessage = "Parola Alanı Zorunludur")]
+        [Display(Name = "Parola")]
+        public string Password { get; set; }
+    }
+
+    public class QRCodeSettingsViewModel
+    {
+        public QRCodeSettingsViewModel()
+        {
+        }
+
+        [Required(ErrorMessage = "QR Kod Yılı Alanı Zorunludur")]
+        [Display(Name = "QR Kod Yılı")]
+        public string QrCodeYear { get; set; }
+
+        [Required(ErrorMessage = "QR Kod Ön Kodu Alanı Zorunludur")]
+        [Display(Name = "QR Kod Ön Kodu")]
+        public string QrCodePreCode { get; set; }
+
+        [Display(Name = "SQL Sorgusu")]
+        public string QrSqlQuery { get; set; }
     }
 }
