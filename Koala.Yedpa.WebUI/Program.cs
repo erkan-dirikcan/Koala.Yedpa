@@ -10,6 +10,9 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
+using NLog;
+using NLog.Extensions.Logging;
+
 namespace Koala.Yedpa.WebUI
 {
     public class Program
@@ -17,6 +20,13 @@ namespace Koala.Yedpa.WebUI
         public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            // NLog yapılandırması
+            builder.Host.ConfigureLogging(logging =>
+            {
+                logging.ClearProviders();
+                logging.AddNLog();
+            });
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
@@ -114,7 +124,8 @@ namespace Koala.Yedpa.WebUI
                 var factory = sp.GetRequiredService<IHttpClientFactory>();
                 var client = factory.CreateClient("CryptoApi");
                 var licenseReader = sp.GetService<ILicenseReader>();
-                return new CryptoService(client, licenseReader!);
+                var logger = sp.GetRequiredService<ILogger<CryptoService>>();
+                return new CryptoService(client, licenseReader!, logger);
             });
 
             // Message34 Email API

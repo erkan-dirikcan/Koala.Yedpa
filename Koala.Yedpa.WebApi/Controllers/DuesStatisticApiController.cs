@@ -33,15 +33,18 @@ public class DuesStatisticApiController : ControllerBase
     [HttpGet("GetDistinctYears")]
     public async Task<IActionResult> GetDistinctYears()
     {
+        _logger.LogInformation("GetDistinctYears called");
         try
         {
             var result = await _duesStatisticService.GetDistinctYearsAsync();
 
             if (result.IsSuccess)
             {
+                _logger.LogInformation("GetDistinctYears: Successfully retrieved {Count} distinct years", result.Data?.Count ?? 0);
                 return Ok(result);
             }
 
+            _logger.LogWarning("GetDistinctYears: Failed with StatusCode: {StatusCode}", result.StatusCode);
             return StatusCode(result.StatusCode, result);
         }
         catch (Exception ex)
@@ -60,15 +63,18 @@ public class DuesStatisticApiController : ControllerBase
     [HttpGet("GetMonthlyBudgetSummary")]
     public async Task<IActionResult> GetMonthlyBudgetSummary([FromQuery] int year, [FromQuery] BuggetTypeEnum budgetType)
     {
+        _logger.LogInformation("GetMonthlyBudgetSummary called with Year: {Year}, BudgetType: {BudgetType}", year, budgetType);
         try
         {
             var result = await _duesStatisticService.GetMonthlyBudgetSummaryAsync(year, budgetType);
 
             if (result.IsSuccess)
             {
+                _logger.LogInformation("GetMonthlyBudgetSummary: Successfully retrieved summary");
                 return Ok(result);
             }
 
+            _logger.LogWarning("GetMonthlyBudgetSummary: Failed with StatusCode: {StatusCode}", result.StatusCode);
             return StatusCode(result.StatusCode, result);
         }
         catch (Exception ex)
@@ -87,6 +93,7 @@ public class DuesStatisticApiController : ControllerBase
     [HttpGet("GetByYearAndType")]
     public async Task<IActionResult> GetByYearAndType([FromQuery] int year, [FromQuery] BuggetTypeEnum? budgetType)
     {
+        _logger.LogInformation("GetByYearAndType called with Year: {Year}, BudgetType: {BudgetType}", year, budgetType);
         try
         {
             var yearString = year.ToString();
@@ -94,6 +101,7 @@ public class DuesStatisticApiController : ControllerBase
 
             if (!result.IsSuccess)
             {
+                _logger.LogWarning("GetByYearAndType: Failed with StatusCode: {StatusCode}", result.StatusCode);
                 return StatusCode(result.StatusCode, result);
             }
 
@@ -135,6 +143,7 @@ public class DuesStatisticApiController : ControllerBase
                 data = filteredData
             };
 
+            _logger.LogInformation("GetByYearAndType: Successfully retrieved {Count} records", filteredData.Count);
             return Ok(response);
         }
         catch (Exception ex)
@@ -158,6 +167,7 @@ public class DuesStatisticApiController : ControllerBase
     [HttpPost("GetPagedList")]
     public async Task<IActionResult> GetPagedList([FromBody] DataTableRequest request)
     {
+        _logger.LogInformation("GetPagedList called with Start: {Start}, Length: {Length}", request?.Start, request?.Length);
         try
         {
             // Get all data (in a real scenario, implement proper server-side pagination)
@@ -165,6 +175,7 @@ public class DuesStatisticApiController : ControllerBase
 
             if (!allDataResult.IsSuccess)
             {
+                _logger.LogWarning("GetPagedList: Failed to get all data with StatusCode: {StatusCode}", allDataResult.StatusCode);
                 return StatusCode(allDataResult.StatusCode, allDataResult);
             }
 
@@ -233,6 +244,7 @@ public class DuesStatisticApiController : ControllerBase
                 recordsFiltered = allData.Count
             };
 
+            _logger.LogInformation("GetPagedList: Successfully retrieved {Count} of {Total} records", pagedData.Count, totalRecords);
             return Ok(result);
         }
         catch (Exception ex)

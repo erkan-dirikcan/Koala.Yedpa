@@ -11,6 +11,7 @@ public interface IQRCodeService
     Task<ResponseDto<string>> GenerateAndSaveQRCodeAsync(string workplaceCode, string partnerNo);
     Task<ResponseDto<string>> GenerateQRCodeUrlAsync(string workplaceCode, string partnerNo);
     Task<ResponseDto<List<object>>> GenerateBulkQRCodesAsync();
+    Task<ResponseDto<List<object>>> GenerateBulkQRCodesWithParamsAsync(string qrCodeYear, string qrCodePreCode, string sqlQuery, string description);
 
     // QR Kod Listeleme
     Task<ResponseDto<List<QRCodeBatch>>> GetBatchesAsync();

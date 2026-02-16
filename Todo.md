@@ -150,3 +150,85 @@ CREATE TABLE QRCodes (
 
 ## Eski TODO Listesi (Arşiv)
 > Faz 1-6已完成，见"✅ Tamamlanan İşlemler"部分
+
+---
+
+# Eksik Loglama İyileştirme Planı
+
+> **Tüm Fazlar Tamamlandı ✅** - Tüm Service, Provider ve Controller sınıflarına ILogger eklendi ve kullanıma sunuldu.
+
+## ✅ Tamamlanan Fazlar
+
+### ✅ Faz 1: Kritik Service Sınıfları
+- ✅ **SettingsService** - Logger eklendi, tüm metodlarda loglama aktif
+- ✅ **CryptoService** - Logger eklendi, tüm metodlarda loglama aktif
+- ✅ **EmailTemplateService** - Logger eklendi, tüm metodlarda loglama aktif
+- ✅ **ModuleService** - Logger eklendi, tüm metodlarda loglama aktif
+- ✅ **ClaimsService** - Logger tipi düzeltildi (`ILogger<ClaimsService>`), tüm metodlarda loglama aktif
+- ✅ **AppUserService** - Logger tipi düzeltildi (`ILogger<AppUserService>`), tüm metodlarda loglama aktif
+
+### ✅ Faz 2: Provider Sınıfları
+- ✅ **RestServiceProvider** - Logger eklendi, tüm HTTP metodlarında loglama aktif
+  - `HttpPost`, `HttpPut`, `HttpPatch`, `HttpGet` tümünde loglama mevcut
+  - HTTP hataları, timeout'lar loglanıyor
+
+### ✅ Faz 3: API Controllers
+- ✅ **BudgetRatioApiController** - Logger eklendi, tüm endpoint'lerde loglama aktif
+- ✅ **LogoClCardApiController** - Logger eklendi, tüm endpoint'lerde loglama aktif
+- ✅ **QRCodeController (WebUI)** - Logger eklendi, tüm action'larda loglama aktif
+
+### ✅ Faz 4: Kısmi Loglama İyileştirmeleri
+- ✅ **BudgetOrderApiController** - Logger eklendi, tüm metodlarda loglama aktif
+- ✅ **DuesStatisticApiController** - Logger eklendi, tüm endpoint'lerde giriş/çıkış logları aktif
+- ✅ **QRCodeApiController** - Logger eklendi, tüm endpoint'lerde giriş/çıkış logları aktif
+
+---
+
+## ✅ NLog Entegrasyonu Tamamlandı (16.02.2026)
+
+**Yapılan Değişiklikler:**
+
+### Paketler
+- ✅ `NLog.Extensions.Logging` (6.1.1) eklendi
+- ✅ `NLog.Web.AspNetCore` (6.1.1) eklendi
+
+### Konfigürasyon Dosyaları (Güncellenmiş - 16.02.2026)
+- ✅ `Koala.Yedpa.WebApi/nlog.config` - API için JSON loglama yapılandırması
+  - **appLog.json** (Trace/Debug) - Debug logları
+  - **infoLog.json** (Info/Warn) - Bilgi logları
+  - **errLog.json** (Error/Fatal) - Hata logları
+  - Console target (sadece Development)
+  - Microsoft.* logları filtreleniyor
+  - 5MB arşiv boyutu, 50/100 dosya, aylık döngü
+
+- ✅ `Koala.Yedpa.WebUI/nlog.config` - WebUI için JSON loglama yapılandırması
+  - **appLog.json** (Trace/Debug) - Debug logları
+  - **infoLog.json** (Info/Warn) - Bilgi logları
+  - **errLog.json** (Error/Fatal) - Hata logları
+  - Console target (sadece Development)
+  - ASP.NET Context bilgileri (Controller, Action, UserIdentity, IP, URL)
+  - 5MB arşiv boyutu, 50/100 dosya, aylık döngü
+
+### Program.cs Güncellemeleri
+- ✅ WebApi Program.cs - NLog yapılandırması eklendi
+- ✅ WebUI Program.cs - NLog yapılandırması eklendi
+- ✅ `using NLog.Extensions.Logging;` eklendi
+- ✅ `builder.Host.ConfigureLogging()` ile NLog provider eklendi
+
+### Ek Düzeltmeler
+- ✅ QRCodeDto özellikleri güncellendi (Text, Width, Height)
+- ✅ QRCodeService Content/PixelSize → Text/Width olarak güncellendi
+- ✅ CryptoService dynamic tip hatası düzeltildi
+- ✅ .csproj dosyalarına nlog.config CopyToOutputDirectory eklendi
+
+### nlog.config İyileştirmeleri (16.02.2026)
+- ✅ `throwExceptions="false"` - Production güvenliği
+- ✅ `internalLogLevel="Debug"` - Detaylı internal loglama
+- ✅ `archiveAboveSize="5MB"` - Optimum arşiv boyutu
+- ✅ `concurrentWrites="true"` - Performans iyileştirmesi
+- ✅ `includeExceptionProperty="true"` - JSON'da exception özelliği
+- ✅ `Data=maxInnerExceptionDepth=10` - İç içe exception detayı
+- ✅ `StackTrace` attribute - Hata loglarında stack trace
+- ✅ Microsoft.* filtresi - Framework logları engellendi
+- ✅ Console target - Development için ekran çıktısı
+- ✅ Fazladan boşluklar temizlendi

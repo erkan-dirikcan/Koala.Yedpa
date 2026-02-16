@@ -1,5 +1,6 @@
 using Koala.Yedpa.Core.Exceptions;
 using Koala.Yedpa.Core.Services;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Net;
 using System.Net.Http.Json;
@@ -10,12 +11,14 @@ namespace Koala.Yedpa.Service.Services // <-- SENİN NAMESPACE'İN
     {
         private readonly HttpClient _httpClient;
         private readonly ILicenseReader _licenseReader;
+        private readonly ILogger<CryptoService> _logger;
         private string? _cachedAppId;
 
-        public CryptoService(HttpClient httpClient, ILicenseReader licenseReader)
+        public CryptoService(HttpClient httpClient, ILicenseReader licenseReader, ILogger<CryptoService> logger)
         {
             _httpClient = httpClient;
             _licenseReader = licenseReader;
+            _logger = logger;
         }
 
         public async Task<string> EncryptAsync(string plainText)
@@ -27,11 +30,15 @@ namespace Koala.Yedpa.Service.Services // <-- SENİN NAMESPACE'İN
 
         private async Task<string> CallCryptoApi(string action, string data)
         {
+            _logger.LogDebug("CallCryptoApi: Action={Action}, DataLength={DataLength}", action, data?.Length ?? 0);
             try
             {
                 _cachedAppId ??= await _licenseReader.GetApplicationIdAsync();
                 if (string.IsNullOrEmpty(_cachedAppId))
+                {
+                    _logger.LogWarning("CallCryptoApi: ApplicationId is null or empty");
                     return string.Empty;
+                }
 
                 // DİKKAT: encrypt → plainText
                 //         decrypt → cryptedText
@@ -46,7 +53,7 @@ namespace Koala.Yedpa.Service.Services // <-- SENİN NAMESPACE'İN
                 {
                     var errorResponse = await response.Content.ReadAsStringAsync();
                     string errorMessage = "Lisans hatası oluştu.";
-                    
+
                     try
                     {
                         // Sunucudan dönen JSON formatındaki hata mesajını parse et
@@ -64,12 +71,16 @@ namespace Koala.Yedpa.Service.Services // <-- SENİN NAMESPACE'İN
                             errorMessage = errorResponse;
                         }
                     }
-                    
+
+                    _logger.LogError("CallCryptoApi: License error - {ErrorMessage}", errorMessage);
                     throw new CryptoLicenseException(errorMessage);
                 }
 
                 if (!response.IsSuccessStatusCode)
+                {
+                    _logger.LogWarning("CallCryptoApi: API call failed with status {StatusCode}", response.StatusCode);
                     return string.Empty;
+                }
 
                 var jsonResponse = await response.Content.ReadAsStringAsync();
 
@@ -77,17 +88,28 @@ namespace Koala.Yedpa.Service.Services // <-- SENİN NAMESPACE'İN
                 var result = JsonConvert.DeserializeObject<dynamic>(jsonResponse);
 
                 if (action == "encrypt")
-                    return result?.encryptedText?.ToString() ?? string.Empty;
+                {
+                    var encryptedText = result?.encryptedText?.ToString() ?? string.Empty;
+                    var length = (int)encryptedText.Length;
+                    _logger.LogDebug("CallCryptoApi: Encrypt successful, result length={Length}", length);
+                    return encryptedText;
+                }
                 else
-                    return result?.plainText?.ToString() ?? string.Empty;
+                {
+                    var plainText = result?.plainText?.ToString() ?? string.Empty;
+                    var length = (int)plainText.Length;
+                    _logger.LogDebug("CallCryptoApi: Decrypt successful, result length={Length}", length);
+                    return plainText;
+                }
             }
             catch (CryptoLicenseException)
             {
                 // Lisans hatasını yukarı fırlat (yakalanmasın)
                 throw;
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "CallCryptoApi: Unexpected error for action={Action}", action);
                 return string.Empty;
             }
         }

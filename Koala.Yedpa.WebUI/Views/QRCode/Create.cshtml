@@ -1,0 +1,202 @@
+@model Koala.Yedpa.Core.Dtos.QRCodeCreateViewModel
+@{
+    ViewData["Title"] = "Yeni QR Kod Oluştur";
+    ViewData["ActivePage"] = "QRCodeCreate";
+    ViewData["MenuToggle"] = "QRCode";
+}
+
+<div class="d-flex flex-column-fluid">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card card-custom card-stretch gutter-b">
+                    <div class="card-header border-0 py-5">
+                        <div class="card-title">
+                            <h3 class="card-label">
+                                <i class="fas fa-qrcode"></i>
+                                Yeni QR Kod Oluştur
+                            </h3>
+                        </div>
+                        <div class="card-toolbar">
+                            <a href="@Url.Action("Index")" class="btn btn-secondary font-weight-bolder">
+                                <i class="fas fa-arrow-left"></i>
+                                Listeye Dön
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <!-- Bilgilendirme Alanı -->
+                        <div class="alert alert-info" role="alert">
+                            <h5 class="alert-heading"><i class="fas fa-info-circle"></i> Bilgi</h5>
+                            <p class="mb-0">
+                                <strong>QR Kod Yıl:</strong> QR kodların oluşturulacağı yılı girin (örn: 2025, 2026).<br>
+                                <strong>QR Kod Ön Kodu:</strong> QR kodun başına eklenecek önek kodu girin (örn: G11522-Yd).<br>
+                                <strong>SQL Sorgusu:</strong> QR kod oluşturulacak partner (cari) listesini getiren SQL sorgusunu girin.<br>
+                                <strong>Açıklama:</strong> (Opsiyonel) Bu batch için açıklama girin.
+                            </p>
+                        </div>
+
+                        <!-- Form -->
+                        <form id="qrCodeCreateForm" method="post" action="@Url.Action("Create")" autocomplete="off">
+                            @Html.AntiForgeryToken()
+
+                            <div class="row">
+                                <!-- QR Kod Yılı -->
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label asp-for="QrCodeYear" class="control-label">QR Kod Yılı <span class="text-danger">*</span></label>
+                                        <input asp-for="QrCodeYear" class="form-control form-control-solid" placeholder="2025" />
+                                        <span asp-validation-for="QrCodeYear" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <!-- QR Kod Ön Kodu -->
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label asp-for="QrCodePreCode" class="control-label">QR Kod Ön Kodu <span class="text-danger">*</span></label>
+                                        <input asp-for="QrCodePreCode" class="form-control form-control-solid" placeholder="G11522-Yd" />
+                                        <span asp-validation-for="QrCodePreCode" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Açıklama -->
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label asp-for="Description" class="control-label">Açıklama</label>
+                                        <input asp-for="Description" class="form-control form-control-solid" placeholder="Bu QR kodları X işlemi için oluşturuldu" />
+                                        <span asp-validation-for="Description" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- SQL Sorgusu -->
+                            <div class="form-group">
+                                <label asp-for="SqlQuery" class="control-label">SQL Sorgusu <span class="text-danger">*</span></label>
+                                <textarea asp-for="SqlQuery" class="form-control form-control-solid" rows="5" placeholder="SELECT DISTINCT CL.CODE FROM LG_CLCARD AS CL WHERE CARDREF IN (SELECT CARDREF FROM LV_01_CLFLINE)"></textarea>
+                                <span asp-validation-for="SqlQuery" class="text-danger"></span>
+                                <small class="form-text text-muted">
+                                    Sorgu sonucu PARTNERNO (veya CODE) alanı döndürmelidir. QR kod bu değerler için oluşturulacaktır.
+                                </small>
+                            </div>
+
+                            <!-- İşlem Durumu -->
+                            <div id="progressArea" style="display: none;">
+                                <div class="progress mb-3">
+                                    <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-primary"
+                                          role="progressbar" style="width: 0%">
+                                        0%
+                                    </div>
+                                </div>
+                                <div id="progressMessage" class="alert alert-secondary">
+                                    QR kodlar oluşturuluyor...
+                                </div>
+                            </div>
+
+                            <!-- Butonlar -->
+                            <div class="row">
+                                <div class="col-md-12 text-right">
+                                    <button type="submit" class="btn btn-primary font-weight-bolder">
+                                        <i class="fas fa-save"></i>
+                                        QR Kodları Oluştur
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function() {
+            // Form submit
+            $('#qrCodeCreateForm').on('submit', function(e) {
+                e.preventDefault();
+
+                // Client-side validation
+                if (!$(this).valid()) {
+                    return false;
+                }
+
+                var formData = {
+                    qrCodeYear: $('#QrCodeYear').val(),
+                    qrCodePreCode: $('#QrCodePreCode').val(),
+                    sqlQuery: $('#SqlQuery').val(),
+                    description: $('#Description').val(),
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                };
+
+                showProgress('QR kodlar oluşturuluyor...');
+
+                $.ajax({
+                    url: '@Url.Action("Create", "QRCode")',
+                    type: 'POST',
+                    data: formData,
+                    dataType: 'json',
+                    success: function(response) {
+                        hideProgress();
+
+                        if (response.success) {
+                            Swal.fire({
+                                title: 'Başarılı!',
+                                text: response.message,
+                                icon: 'success',
+                                confirmButtonText: 'Tamam'
+                            }).then(() => {
+                                // Listeye yönlendir
+                                window.location.href = '@Url.Action("Index")';
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Hata',
+                                text: response.message || 'QR kod oluşturma başarısız',
+                                icon: 'error',
+                                confirmButtonText: 'Tamam'
+                            });
+
+                            if (response.errors && response.errors.length > 0) {
+                                var errorMsg = response.errors.join('\n');
+                                Swal.fire({
+                                    title: 'Doğrulama Hataları',
+                                    text: errorMsg,
+                                    icon: 'warning',
+                                    confirmButtonText: 'Tamam'
+                                });
+                            }
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        hideProgress();
+                        Swal.fire({
+                            title: 'Hata',
+                            text: 'İşlem sırasında bir hata oluştu: ' + error,
+                            icon: 'error',
+                            confirmButtonText: 'Tamam'
+                        });
+                    }
+                });
+            });
+
+            // Progress göster
+            function showProgress(title) {
+                $('#progressArea').slideDown();
+                $('#progressMessage').text(title);
+                updateProgress(50);
+            }
+
+            // Progress gizle
+            function hideProgress() {
+                $('#progressArea').slideUp();
+            }
+
+            // Progress güncelle
+            function updateProgress(percent) {
+                $('#progressBar').css('width', percent + '%').text(percent + '%');
+            }
+        });
+    </script>
+}

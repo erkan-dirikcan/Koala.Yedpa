@@ -2,6 +2,7 @@ using Koala.Yedpa.Core.Dtos;
 using Koala.Yedpa.Core.Models.ViewModels;
 using Koala.Yedpa.Core.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Koala.Yedpa.WebApi.Controllers;
@@ -14,16 +15,19 @@ namespace Koala.Yedpa.WebApi.Controllers;
 public class LogoClCardApiController : ControllerBase
 {
     private readonly IApiLogoSqlDataService _service;
+    private readonly ILogger<LogoClCardApiController> _logger;
 
-    public LogoClCardApiController(IApiLogoSqlDataService service)
+    public LogoClCardApiController(IApiLogoSqlDataService service, ILogger<LogoClCardApiController> logger)
     {
         _service = service;
+        _logger = logger;
     }
 
     [HttpGet()]
     [ApiExplorerSettings(IgnoreApi = true)]
     public IActionResult Test1()
     {
+        _logger.LogInformation("Test1 called");
         return Ok();
     }
 
@@ -39,7 +43,17 @@ public class LogoClCardApiController : ControllerBase
         [FromQuery] int perPage = 50,
         [FromQuery] int pageNo = 1)
     {
+        _logger.LogInformation("ClCardInfoAll called with perPage={PerPage}, pageNo={PageNo}", perPage, pageNo);
         var result = await _service.GetAllClCardInfoAsync(perPage, pageNo);
+
+        if (result.IsSuccess)
+        {
+            _logger.LogInformation("ClCardInfoAll: Successfully retrieved clcard info");
+        }
+        else
+        {
+            _logger.LogWarning("ClCardInfoAll: Failed to retrieve clcard info, StatusCode: {StatusCode}", result.StatusCode);
+        }
 
         return StatusCode(result.StatusCode, result);
     }
@@ -58,11 +72,24 @@ public class LogoClCardApiController : ControllerBase
         [FromQuery] int perPage = 50,
         [FromQuery] int pageNo = 1)
     {
+        _logger.LogInformation("Search called with perPage={PerPage}, pageNo={PageNo}", perPage, pageNo);
         if (searchModel == null)
+        {
+            _logger.LogWarning("Search: Search model is null");
             return BadRequest(ResponseListDto<List<ClCardInfoViewModel>>.FailData(
                 400, "Arama modeli boş olamaz", "Model null", true));
+        }
 
         var result = await _service.WhereClCardInfoAsync(searchModel, perPage, pageNo);
+
+        if (result.IsSuccess)
+        {
+            _logger.LogInformation("Search: Successfully completed search");
+        }
+        else
+        {
+            _logger.LogWarning("Search: Search failed, StatusCode: {StatusCode}", result.StatusCode);
+        }
 
         return StatusCode(result.StatusCode, result);
     }
@@ -72,6 +99,7 @@ public class LogoClCardApiController : ControllerBase
     [SwaggerOperation(Summary = "API erişim testi - token geçerli mi?")]
     public IActionResult Test()
     {
+        _logger.LogInformation("Test called by user {UserName}", User.Identity?.Name ?? "Unknown");
         return Ok(new { message = "LogoClCard API çalışıyor! Token geçerli.", user = User.Identity?.Name });
     }
 }

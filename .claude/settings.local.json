@@ -26,7 +26,11 @@
       "Bash(grep:*)",
       "Bash(ls:*)",
       "Bash(curl:*)",
-      "Bash(dotnet publish:*)"
+      "Bash(dotnet publish:*)",
+      "Bash(findstr:*)",
+      "Bash(powershell.exe:*)",
+      "Bash(dir:*)",
+      "Bash(git reset:*)"
     ]
   },
   "enabledPlugins": {

@@ -2,6 +2,7 @@ using Koala.Yedpa.Core.Dtos;
 using Koala.Yedpa.Core.Models;
 using Koala.Yedpa.Core.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System.Security.Claims;
 
 namespace Koala.Yedpa.WebUI.Controllers
@@ -10,19 +11,23 @@ namespace Koala.Yedpa.WebUI.Controllers
     {
         private readonly IQRCodeService _qrCodeService;
         private readonly ISettingsService _settingsService;
+        private readonly ILogger<QRCodeController> _logger;
 
-        public QRCodeController(IQRCodeService qrCodeService, ISettingsService settingsService)
+        public QRCodeController(IQRCodeService qrCodeService, ISettingsService settingsService, ILogger<QRCodeController> logger)
         {
             _qrCodeService = qrCodeService;
             _settingsService = settingsService;
+            _logger = logger;
         }
 
         // GET: /QRCode/Index
         public async Task<IActionResult> Index()
         {
+            _logger.LogInformation("Index called");
             var settingsResult = await _settingsService.GetQRCodeSettingsAsync();
             if (!settingsResult.IsSuccess)
             {
+                _logger.LogWarning("Index: QR Code settings not found");
                 TempData["Error"] = "QR Kod ayarları bulunamadı. Lütfen önce ayarları yapın.";
                 return RedirectToAction("QRCodeSettings", "Settings");
             }
@@ -38,13 +43,16 @@ namespace Koala.Yedpa.WebUI.Controllers
         [HttpGet]
         public async Task<IActionResult> List()
         {
+            _logger.LogInformation("List called");
             var result = await _qrCodeService.GetBatchesAsync();
 
             if (!result.IsSuccess)
             {
+                _logger.LogWarning("List: Failed to get batches - {Message}", result.Message);
                 return Json(new { success = false, message = result.Message });
             }
 
+            _logger.LogInformation("List: Retrieved {Count} batches", result.Data?.Count() ?? 0);
             return Json(new
             {
                 success = true,
@@ -62,24 +70,82 @@ namespace Koala.Yedpa.WebUI.Controllers
             });
         }
 
-        // POST: /QRCode/Create - Yeni QR kodlar oluşturur
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        // GET: /QRCode/Create - QR kod oluşturma tanımlama sayfası
+        [HttpGet]
         public async Task<IActionResult> Create()
         {
-            var result = await _qrCodeService.GenerateBulkQRCodesAsync();
+            _logger.LogInformation("Create GET called");
+            // Mevcut ayarları getir
+            var settingsResult = await _settingsService.GetQRCodeSettingsAsync();
 
-            if (!result.IsSuccess)
+            var model = new QRCodeCreateViewModel();
+            if (settingsResult.IsSuccess && settingsResult.Data != null)
             {
-                return Json(new { success = false, message = result.Message });
+                // Ayarları varsayılan değerler olarak doldur
+                model.QrCodeYear = settingsResult.Data.QrCodeYear;
+                model.QrCodePreCode = settingsResult.Data.QrCodePreCode;
+                model.SqlQuery = settingsResult.Data.QrSqlQuery;
             }
 
-            return Json(new
+            ViewData["Title"] = "Yeni QR Kod Oluştur";
+            ViewData["ActivePage"] = "QRCodeCreate";
+            ViewData["MenuToggle"] = "QRCode";
+
+            return View(model);
+        }
+
+        // POST: /QRCode/Create - QR kodları oluşturur
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(QRCodeCreateViewModel model)
+        {
+            _logger.LogInformation("Create POST called with Year={Year}, PreCode={PreCode}", model?.QrCodeYear, model?.QrCodePreCode);
+            if (!ModelState.IsValid)
             {
-                success = true,
-                message = result.Message,
-                data = result.Data
-            });
+                _logger.LogWarning("Create POST: Invalid model state");
+                return Json(new { success = false, message = "Lütfen tüm alanları doldurun", errors = GetModelStateErrors() });
+            }
+
+            try
+            {
+                var result = await _qrCodeService.GenerateBulkQRCodesWithParamsAsync(
+                    model.QrCodeYear,
+                    model.QrCodePreCode,
+                    model.SqlQuery,
+                    model.Description);
+
+                if (!result.IsSuccess)
+                {
+                    _logger.LogWarning("Create POST: Failed to generate QR codes - {Message}", result.Message);
+                    return Json(new { success = false, message = result.Message, errors = result.Errors?.Errors });
+                }
+
+                _logger.LogInformation("Create POST: Successfully generated QR codes");
+                return Json(new
+                {
+                    success = true,
+                    message = result.Message,
+                    redirectUrl = Url.Action("Index")
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Create POST: Unexpected error");
+                return Json(new { success = false, message = "Beklenmeyen hata: " + ex.Message, stackTrace = ex.StackTrace });
+            }
+        }
+
+        private List<string> GetModelStateErrors()
+        {
+            var errors = new List<string>();
+            foreach (var state in ModelState)
+            {
+                foreach (var error in state.Value.Errors)
+                {
+                    errors.Add(error.ErrorMessage);
+                }
+            }
+            return errors;
         }
 
         // POST: /QRCode/Refresh - Mevcut QR kodları yeniden oluşturur
@@ -87,13 +153,16 @@ namespace Koala.Yedpa.WebUI.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Refresh()
         {
+            _logger.LogInformation("Refresh called");
             var result = await _qrCodeService.RefreshQRCodesAsync();
 
             if (!result.IsSuccess)
             {
+                _logger.LogWarning("Refresh: Failed to refresh QR codes - {Message}", result.Message);
                 return Json(new { success = false, message = result.Message });
             }
 
+            _logger.LogInformation("Refresh: Successfully refreshed QR codes");
             return Json(new
             {
                 success = true,
@@ -106,13 +175,16 @@ namespace Koala.Yedpa.WebUI.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete()
         {
+            _logger.LogInformation("Delete called");
             var result = await _qrCodeService.DeleteQRCodesAsync(deleteFiles: true);
 
             if (!result.IsSuccess)
             {
+                _logger.LogWarning("Delete: Failed to delete QR codes - {Message}", result.Message);
                 return Json(new { success = false, message = result.Message });
             }
 
+            _logger.LogInformation("Delete: Successfully deleted all QR codes");
             return Json(new
             {
                 success = true,
@@ -125,13 +197,16 @@ namespace Koala.Yedpa.WebUI.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteBatch(int batchId)
         {
+            _logger.LogInformation("DeleteBatch called for batch ID {BatchId}", batchId);
             var result = await _qrCodeService.DeleteBatchAsync(batchId, deleteFiles: true);
 
             if (!result.IsSuccess)
             {
+                _logger.LogWarning("DeleteBatch: Failed to delete batch {BatchId} - {Message}", batchId, result.Message);
                 return Json(new { success = false, message = result.Message });
             }
 
+            _logger.LogInformation("DeleteBatch: Successfully deleted batch {BatchId}", batchId);
             return Json(new
             {
                 success = true,
@@ -142,14 +217,18 @@ namespace Koala.Yedpa.WebUI.Controllers
         // GET: /QRCode/ViewBatch?batchId=1 - Oluşturulan QR görsellerini gösterir
         public async Task<IActionResult> ViewBatch(int batchId)
         {
+            _logger.LogInformation("ViewBatch called for batch ID {BatchId}", batchId);
             var result = await _qrCodeService.GetQRCodesByBatchIdAsync(batchId);
 
             if (!result.IsSuccess || !result.Data.Any())
             {
+                _logger.LogWarning("ViewBatch: No QR codes found for batch ID {BatchId}", batchId);
                 TempData["Warning"] = $"Batch ID {batchId} için görüntülenecek QR kod bulunamadı.";
                 return RedirectToAction("Index");
             }
 
+            var activeCount = result.Data.Count(q => q.Status == StatusEnum.Active);
+            _logger.LogInformation("ViewBatch: Found {Count} active QR codes for batch {BatchId}", activeCount, batchId);
             ViewData["Title"] = $"QR Kod Görselleri - Batch {batchId}";
             ViewBag.BatchId = batchId;
             return View(result.Data.Where(q => q.Status == StatusEnum.Active).ToList());
@@ -159,13 +238,16 @@ namespace Koala.Yedpa.WebUI.Controllers
         [HttpGet]
         public async Task<IActionResult> QRCodesByBatch(int batchId)
         {
+            _logger.LogInformation("QRCodesByBatch called for batch ID {BatchId}", batchId);
             var result = await _qrCodeService.GetQRCodesByBatchIdAsync(batchId);
 
             if (!result.IsSuccess)
             {
+                _logger.LogWarning("QRCodesByBatch: Failed to get QR codes for batch {BatchId}", batchId);
                 return Json(new { success = false, message = result.Message });
             }
 
+            _logger.LogInformation("QRCodesByBatch: Retrieved {Count} QR codes for batch {BatchId}", result.Data?.Count() ?? 0, batchId);
             return Json(new
             {
                 success = true,
@@ -187,14 +269,17 @@ namespace Koala.Yedpa.WebUI.Controllers
         // GET: /QRCode/CurrentAccountDetail?partnerNo=xxx - Tekil QR detay
         public async Task<IActionResult> CurrentAccountDetail(string partnerNo)
         {
+            _logger.LogInformation("CurrentAccountDetail called for partner {PartnerNo}", partnerNo);
             if (string.IsNullOrEmpty(partnerNo))
             {
+                _logger.LogWarning("CurrentAccountDetail: PartnerNo is null or empty");
                 return BadRequest("PartnerNo gereklidir");
             }
 
             var settings = await _settingsService.GetQRCodeSettingsAsync();
             if (!settings.IsSuccess)
             {
+                _logger.LogWarning("CurrentAccountDetail: QR Code settings not found for partner {PartnerNo}", partnerNo);
                 TempData["Error"] = "QR Kod ayarları bulunamadı";
                 return RedirectToAction("Index");
             }
@@ -213,6 +298,7 @@ namespace Koala.Yedpa.WebUI.Controllers
                 qrPath = $"/Uploads/Qr/{settings.Data.QrCodeYear}/{settings.Data.QrCodePreCode}-{partnerNo}.jpg";
             }
 
+            _logger.LogInformation("CurrentAccountDetail: Successfully retrieved QR code for partner {PartnerNo}", partnerNo);
             ViewData["Title"] = $"QR Kod - {partnerNo}";
             ViewBag.PartnerNo = partnerNo;
             ViewBag.QrPath = qrPath;
@@ -225,6 +311,7 @@ namespace Koala.Yedpa.WebUI.Controllers
         // GET: /QRCode/CreatePdf (eski action - deprecated)
         public async Task<IActionResult> CreatePdf()
         {
+            _logger.LogInformation("CreatePdf called (deprecated action)");
             return RedirectToAction("Index");
         }
     }

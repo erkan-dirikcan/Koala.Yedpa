@@ -36,14 +36,18 @@ public class BudgetOrderApiController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateBudgetAndOrders([FromBody] CreateBudgetOrderViewModel model)
     {
+        _logger.LogInformation("CreateBudgetAndOrders called with SourceYear: {SourceYear}, BudgetType: {BudgetType}",
+            model?.SourceYear, model?.BudgetType);
         var result = await _budgetOrderService.CreateBudgetAndOrdersAsync(model);
 
         if (result.IsSuccess)
         {
+            _logger.LogInformation("CreateBudgetAndOrders: Successfully created budget and orders");
             return Ok(result);
         }
         else
         {
+            _logger.LogWarning("CreateBudgetAndOrders: Failed with StatusCode: {StatusCode}", result.StatusCode);
             return StatusCode(result.StatusCode, result);
         }
     }
@@ -56,14 +60,18 @@ public class BudgetOrderApiController : ControllerBase
     [HttpPost("create-budget")]
     public async Task<IActionResult> CreateBudget([FromBody] CreateBudgetOrderViewModel model)
     {
+        _logger.LogInformation("CreateBudget called with SourceYear: {SourceYear}, BudgetType: {BudgetType}",
+            model?.SourceYear, model?.BudgetType);
         var result = await _budgetOrderService.CreateBudgetAsync(model);
 
         if (result.IsSuccess)
         {
+            _logger.LogInformation("CreateBudget: Successfully created budget");
             return Ok(result);
         }
         else
         {
+            _logger.LogWarning("CreateBudget: Failed with StatusCode: {StatusCode}", result.StatusCode);
             return StatusCode(result.StatusCode, result);
         }
     }
@@ -76,6 +84,8 @@ public class BudgetOrderApiController : ControllerBase
     [HttpPost("create-orders")]
     public async Task<IActionResult> CreateOrdersForExistingBudget([FromBody] CreateOrdersForExistingBudgetViewModel model)
     {
+        _logger.LogInformation("CreateOrdersForExistingBudget called for BudgetRatioId: {BudgetRatioId}, UserId: {UserId}",
+            model?.BudgetRatioId, model?.UserId);
         var result = await _budgetOrderService.CreateOrdersForExistingBudgetAsync(
             model.BudgetRatioId,
             model.SelectedMonths,
@@ -83,10 +93,12 @@ public class BudgetOrderApiController : ControllerBase
 
         if (result.IsSuccess)
         {
+            _logger.LogInformation("CreateOrdersForExistingBudget: Successfully created orders");
             return Ok(result);
         }
         else
         {
+            _logger.LogWarning("CreateOrdersForExistingBudget: Failed with StatusCode: {StatusCode}", result.StatusCode);
             return StatusCode(result.StatusCode, result);
         }
     }
@@ -271,14 +283,18 @@ public class BudgetOrderApiController : ControllerBase
     [HttpPost("CalculateBudget")]
     public async Task<IActionResult> CalculateBudget([FromBody] BudgetCalculationRequestViewModel request)
     {
+        _logger.LogInformation("CalculateBudget called with SourceYear: {SourceYear}, BudgetType: {BudgetType}",
+            request?.SourceYear, request?.BudgetType);
         var result = await _budgetOrderService.CalculateBudgetAsync(request);
 
         if (result.IsSuccess)
         {
+            _logger.LogInformation("CalculateBudget: Successfully calculated budget");
             return Ok(result);
         }
         else
         {
+            _logger.LogWarning("CalculateBudget: Failed with StatusCode: {StatusCode}", result.StatusCode);
             return StatusCode(result.StatusCode, result);
         }
     }
@@ -291,6 +307,7 @@ public class BudgetOrderApiController : ControllerBase
     [HttpPost("PreviewUpdate")]
     public async Task<IActionResult> PreviewUpdate([FromBody] PreviewUpdateRequestViewModel request)
     {
+        _logger.LogInformation("PreviewUpdate called for BudgetRatioId: {BudgetRatioId}", request?.Id);
         var result = await _budgetOrderService.PreviewUpdateAsync(
             request.Id,
             request.Ratio,
@@ -300,10 +317,12 @@ public class BudgetOrderApiController : ControllerBase
 
         if (result.IsSuccess)
         {
+            _logger.LogInformation("PreviewUpdate: Successfully generated preview");
             return Ok(result);
         }
         else
         {
+            _logger.LogWarning("PreviewUpdate: Failed with StatusCode: {StatusCode}", result.StatusCode);
             return StatusCode(result.StatusCode, result);
         }
     }
@@ -316,6 +335,7 @@ public class BudgetOrderApiController : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> TestCreateBudget()
     {
+        _logger.LogInformation("TestCreateBudget called");
         var testModel = new CreateBudgetOrderViewModel
         {
             SourceYear = 2025,
@@ -331,6 +351,7 @@ public class BudgetOrderApiController : ControllerBase
 
         if (result.IsSuccess)
         {
+            _logger.LogInformation("TestCreateBudget: Test successful");
             return Ok(new
             {
                 message = "Test bütçe oluşturma başarılı!",
@@ -340,6 +361,7 @@ public class BudgetOrderApiController : ControllerBase
         }
         else
         {
+            _logger.LogWarning("TestCreateBudget: Test failed - {Message}", result.Message);
             return BadRequest(new
             {
                 message = "Test bütçe oluşturma hatası!",

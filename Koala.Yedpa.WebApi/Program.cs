@@ -13,6 +13,8 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
+using NLog;
+using NLog.Extensions.Logging;
 
 namespace Koala.Yedpa.WebApi
 {
@@ -21,6 +23,13 @@ namespace Koala.Yedpa.WebApi
         public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            // NLog yapılandırması
+            builder.Host.ConfigureLogging(logging =>
+            {
+                logging.ClearProviders();
+                logging.AddNLog();
+            });
 
             // Add services to the container
             builder.Services.AddControllers()
@@ -149,12 +158,12 @@ namespace Koala.Yedpa.WebApi
             // Configure the HTTP request pipeline
             if (app.Environment.IsDevelopment())
             {
-                app.UseSwagger();
-                app.UseSwaggerUI(c =>
-                {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Koala Yedpa Web API v1");
-                });
             }
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Koala Yedpa Web API v1");
+            });
 
             app.UseCors("AllowAll");
             app.UseHttpsRedirection();

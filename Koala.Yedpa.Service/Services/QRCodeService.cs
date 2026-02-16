@@ -48,10 +48,10 @@ public class QRCodeService : IQRCodeService
         try
         {
             using var qrGenerator = new QRCodeGenerator();
-            var qrCodeData = qrGenerator.CreateQrCode(request.Content, QRCodeGenerator.ECCLevel.Q);
+            var qrCodeData = qrGenerator.CreateQrCode(request.Text, QRCodeGenerator.ECCLevel.Q);
 
             using var qrCode = new QRCoder.QRCode(qrCodeData);
-            using var bitmap = qrCode.GetGraphic(request.PixelSize);
+            using var bitmap = qrCode.GetGraphic(request.Width);
 
             using var stream = new MemoryStream();
             bitmap.Save(stream, ImageFormat.Png);
@@ -70,13 +70,13 @@ public class QRCodeService : IQRCodeService
         try
         {
             using var qrGenerator = new QRCodeGenerator();
-            var qrCodeData = qrGenerator.CreateQrCode(request.Content, QRCodeGenerator.ECCLevel.H);
+            var qrCodeData = qrGenerator.CreateQrCode(request.Text, QRCodeGenerator.ECCLevel.H);
 
             using var qrCode = new QRCoder.QRCode(qrCodeData);
 
             // For now, generate QR code without logo
             // Logo integration requires more complex bitmap manipulation
-            using var bitmap = qrCode.GetGraphic(request.PixelSize);
+            using var bitmap = qrCode.GetGraphic(request.Width);
 
             using var stream = new MemoryStream();
             bitmap.Save(stream, ImageFormat.Png);
@@ -110,8 +110,8 @@ public class QRCodeService : IQRCodeService
 
             var request = new QRCodeDto
             {
-                Content = qrUrl,
-                PixelSize = _settings.DefaultPixelSize,
+                Text = qrUrl,
+                Width = _settings.DefaultPixelSize,
                 IncludeLogo = !string.IsNullOrEmpty(_settings.LogoFilePath),
                 LogoFilePath = _settings.LogoFilePath
             };
@@ -220,11 +220,11 @@ public class QRCodeService : IQRCodeService
                     var folderRelativePath = $"Uploads/Qr/{settings.QrCodeYear}/";
 
                     // QR kod içeriğini oluştur
-                    var qrContent = $"{partnerNo}";
+                    var qrText = $"{partnerNo}";
 
                     // QR kod oluştur
                     using var qrGenerator = new QRCodeGenerator();
-                    var qrCodeData = qrGenerator.CreateQrCode(qrContent, QRCodeGenerator.ECCLevel.M);
+                    var qrCodeData = qrGenerator.CreateQrCode(qrText, QRCodeGenerator.ECCLevel.M);
                     using var qrCode = new QRCoder.QRCode(qrCodeData);
                     using var bitmap = qrCode.GetGraphic(10); // 10px piksel boyutu
 
@@ -242,6 +242,138 @@ public class QRCodeService : IQRCodeService
                         QRImagePath = relativePath,
                         FolderPath = folderRelativePath,
                         QrCodeYear = settings.QrCodeYear,
+                        Status = StatusEnum.Active
+                    };
+                    await _qrCodeRepository.AddAsync(qrCodeEntity);
+
+                    generatedQRCodes.Add(new
+                    {
+                        partnerNo = partnerNo,
+                        fileName = qrFileName,
+                        qrPath = relativePath,
+                        folder = folderRelativePath
+                    });
+
+                    successCount++;
+                    _logger.LogInformation("QR kod oluşturuldu: {FileName} (PartnerNo: {PartnerNo})", qrFileName, (object)partnerNo);
+                }
+                catch (Exception ex)
+                {
+                    errorCount++;
+                    _logger.LogError(ex, "QR kod oluşturulurken hata oluştu. PartnerNo: {PartnerNo}", (object)(partnerNo ?? "unknown"));
+                }
+            }
+
+            // Batch kaydını güncelle - QR kod sayısı
+            batch.QRCodeCount = successCount;
+            _qrCodeBatchRepository.Update(batch);
+            _logger.LogInformation("Batch kaydı güncellendi. BatchId: {BatchId}, QR Kod Sayısı: {Count}", batch.Id, successCount);
+
+            _logger.LogInformation("Toplu QR kod oluşturma tamamlandı. BatchId: {BatchId}, Başarılı: {Success}, Hatalı: {Error}", batch.Id, successCount, errorCount);
+
+            return ResponseDto<List<object>>.SuccessData(
+                200,
+                $"{successCount} adet QR kod başarıyla oluşturuldu. Batch ID: {batch.Id}. {errorCount} adet hata oluştu.",
+                generatedQRCodes);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Toplu QR kod oluşturulurken hata oluştu");
+            return ResponseDto<List<object>>.FailData(500, "Toplu QR kod oluşturma başarısız", ex.Message, true);
+        }
+    }
+
+    public async Task<ResponseDto<List<object>>> GenerateBulkQRCodesWithParamsAsync(string qrCodeYear, string qrCodePreCode, string sqlQuery, string description)
+    {
+        try
+        {
+            // Parametreleri doğrula
+            if (string.IsNullOrEmpty(sqlQuery))
+            {
+                return ResponseDto<List<object>>.FailData(400, "SQL sorgusu boş", "Lütfen SQL sorgusunu girin", true);
+            }
+            if (string.IsNullOrEmpty(qrCodeYear))
+            {
+                return ResponseDto<List<object>>.FailData(400, "QR kod yılı boş", "Lütfen yıl bilgisini girin", true);
+            }
+            if (string.IsNullOrEmpty(qrCodePreCode))
+            {
+                return ResponseDto<List<object>>.FailData(400, "QR kod ön kodu boş", "Lütfen ön kod bilgisini girin", true);
+            }
+
+            // Logo veritabanında sorguyu çalıştır
+            var partners = await ExecuteSqlQueryAsync(sqlQuery);
+            if (!partners.Any())
+            {
+                return ResponseDto<List<object>>.FailData(404, "Kayıt bulunamadı", "SQL sorgusu herhangi bir kayıt döndürmedi", true);
+            }
+
+            // 1. Yeni Batch kaydı oluştur
+            var batch = new AppQRCodeBatch
+            {
+                SqlQuery = sqlQuery,
+                QrCodeYear = qrCodeYear,
+                QrCodePreCode = qrCodePreCode,
+                QRCodeCount = 0,
+                Description = string.IsNullOrEmpty(description) ? $"{DateTime.Now:dd.MM.yyyy HH:mm} tarihinde oluşturulan QR kodları" : description,
+                Status = StatusEnum.Active
+            };
+            batch = await _qrCodeBatchRepository.AddAsync(batch);
+            _logger.LogInformation("Yeni QR kod batch oluşturuldu. BatchId: {BatchId}", batch.Id);
+
+            // Klasör yapısını oluştur: wwwroot/Uploads/Qr/{Yıl}/
+            var folderPath = Path.Combine(_environment.WebRootPath, "Uploads", "Qr", qrCodeYear);
+            if (!Directory.Exists(folderPath))
+            {
+                Directory.CreateDirectory(folderPath);
+                _logger.LogInformation("QR kod klasörü oluşturuldu: {FolderPath}", folderPath);
+            }
+
+            var generatedQRCodes = new List<object>();
+            var successCount = 0;
+            var errorCount = 0;
+
+            // Her partner için QR kod oluştur
+            foreach (var partner in partners)
+            {
+                var partnerNo = partner?.ToString();
+                try
+                {
+                    if (string.IsNullOrEmpty(partnerNo))
+                    {
+                        _logger.LogWarning("PartnerNo boş geldi, atlanıyor");
+                        errorCount++;
+                        continue;
+                    }
+
+                    var qrFileName = $"{qrCodePreCode}-{partnerNo}.jpg";
+                    var fullPath = Path.Combine(folderPath, qrFileName);
+                    var relativePath = $"/Uploads/Qr/{qrCodeYear}/{qrFileName}";
+                    var folderRelativePath = $"Uploads/Qr/{qrCodeYear}/";
+
+                    // QR kod içeriğini oluştur
+                    var qrText = $"{partnerNo}";
+
+                    // QR kod oluştur
+                    using var qrGenerator = new QRCodeGenerator();
+                    var qrCodeData = qrGenerator.CreateQrCode(qrText, QRCodeGenerator.ECCLevel.M);
+                    using var qrCode = new QRCoder.QRCode(qrCodeData);
+                    using var bitmap = qrCode.GetGraphic(10); // 10px piksel boyutu
+
+                    // JPEG formatında kaydet
+                    using var stream = new MemoryStream();
+                    bitmap.Save(stream, ImageFormat.Jpeg);
+                    await File.WriteAllBytesAsync(fullPath, stream.ToArray());
+
+                    // Veritabanına kaydet
+                    var qrCodeEntity = new AppQRCode
+                    {
+                        BatchId = batch.Id,
+                        PartnerNo = partnerNo,
+                        QRCodeNumber = $"{qrCodePreCode}-{partnerNo}",
+                        QRImagePath = relativePath,
+                        FolderPath = folderRelativePath,
+                        QrCodeYear = qrCodeYear,
                         Status = StatusEnum.Active
                     };
                     await _qrCodeRepository.AddAsync(qrCodeEntity);

@@ -33,7 +33,7 @@
                         <div class="alert alert-info" role="alert">
                             <h5 class="alert-heading"><i class="fas fa-info-circle"></i> QR Kod Bilgisi</h5>
                             <p class="mb-0">
-                                <strong>Yeni QR Kod Oluştur:</strong> Ayarlardaki SQL sorgusunu çalıştırır, her PARTNERNO için QR kod oluşturur ve yeni bir batch kaydı oluşturur.<br>
+                                <strong>Yeni QR Kod Oluştur:</strong> Yıl, ön kod ve SQL sorgusu girerek QR kodları oluşturur ve yeni bir batch kaydı oluşturur.<br>
                                 <strong>Batch Görüntüle:</strong> Seçili batch'e ait tüm QR kodları görsel olarak listeler.<br>
                                 <strong>Batch Sil:</strong> Seçili batch'e ait tüm QR kodları (dosya + veritabanı) siler.<br>
                                 <strong>Tüm Batchleri Sil:</strong> Tüm QR kodlarını ve batchleri hem dosya sisteminden hem de veritabanından siler.
@@ -160,13 +160,9 @@
             // Tabloyu yükle
             initDataTable();
 
-            // Yeni QR Kod Oluştur
+            // Yeni QR Kod Oluştur - Create sayfasına yönlendir
             $('#createQRCodesBtn').click(function() {
-                confirmAndExecute(
-                    'Yeni QR Kod Oluştur',
-                    'Ayarlarınızda bulunan SQL sorgusunu çalıştırarak yeni QR kodlar oluşturulacak ve yeni bir batch kaydı oluşturulacak. Devam etmek istiyor musunuz?',
-                    'create'
-                );
+                window.location.href = '@Url.Action("Create")';
             });
 
             // Tüm Batchleri Sil

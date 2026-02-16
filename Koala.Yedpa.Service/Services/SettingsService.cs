@@ -7,20 +7,24 @@ using Koala.Yedpa.Core.Repositories;
 using Koala.Yedpa.Core.Services;
 using Koala.Yedpa.Core.UnitOfWorks;
 using Koala.Yedpa.Repositories;
+using Microsoft.Extensions.Logging;
 
 namespace Koala.Yedpa.Service.Services;
 
-public class SettingsService(ISettingsRepository repository, IUnitOfWork<AppDbContext> unitOfWork, ICryptoService cryptoService, IMapper mapper)
+public class SettingsService(ISettingsRepository repository, IUnitOfWork<AppDbContext> unitOfWork, ICryptoService cryptoService, IMapper mapper, ILogger<SettingsService> logger)
     : ISettingsService
 {
     private readonly IMapper _mapper = mapper;
+    private readonly ILogger<SettingsService> _logger = logger;
 
     public async Task<ResponseDto> AddEmailSettings(List<AddSettingViewModel> model)
     {
+        _logger.LogInformation("AddEmailSettings called with {Count} settings", model?.Count ?? 0);
         try
         {
             if (model == null || !model.Any())
             {
+                _logger.LogWarning("AddEmailSettings: No settings provided");
                 return ResponseDto.Fail(400, "Herhangibir Ayar Bilgisi Girilmemiş",
                     "Eklenecek Herhangi Bir Ayar Bilgisi Bulunmuyor", true);
             }
@@ -31,10 +35,12 @@ public class SettingsService(ISettingsRepository repository, IUnitOfWork<AppDbCo
                 await repository.AddSettingsAsync(entity);
             }
             await unitOfWork.CommitAsync();
+            _logger.LogInformation("AddEmailSettings: Successfully added {Count} email settings", entities.Count);
             return ResponseDto.Success(200, "E-Posta Ayarları Başarıyla Eklendi");
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "AddEmailSettings: Error while adding email settings");
             return ResponseDto.Fail(400, "E-Posta Ayarları Oluşturulurken Bir Sorunla Karşılaşıldı", ex.Message, true);
         }
     }
@@ -114,6 +120,7 @@ public class SettingsService(ISettingsRepository repository, IUnitOfWork<AppDbCo
 
     public async Task<ResponseDto> UpdateEmailSettingsAsync(EmailSettingViewModel model)
     {
+        _logger.LogInformation("UpdateEmailSettingsAsync called");
         try
         {
             var errors = new List<string>();
@@ -132,6 +139,7 @@ public class SettingsService(ISettingsRepository repository, IUnitOfWork<AppDbCo
                 }
                 catch (Exception cryptoEx)
                 {
+                    _logger.LogError(cryptoEx, "UpdateEmailSettingsAsync: Error encrypting property {PropertyName}", propertyName);
                     errors.Add($"'{propertyName}' şifrelenirken hata: {cryptoEx.Message}");
                     continue;
                 }
@@ -139,6 +147,7 @@ public class SettingsService(ISettingsRepository repository, IUnitOfWork<AppDbCo
                 var entity = await repository.GetSettingByName(propertyName, SettingsTypeEnum.EmailSettings);
                 if (entity == null)
                 {
+                    _logger.LogWarning("UpdateEmailSettingsAsync: Setting not found for {PropertyName}", propertyName);
                     errors.Add($"'{propertyName}' isimli ayar bulunamadı.");
                     continue;
                 }
@@ -149,22 +158,24 @@ public class SettingsService(ISettingsRepository repository, IUnitOfWork<AppDbCo
 
             if (errors.Any())
             {
+                _logger.LogWarning("UpdateEmailSettingsAsync: Completed with {ErrorCount} errors", errors.Count);
                 return ResponseDto.Fail(400, "E-Posta Ayarları Güncellenirken Hata Oluştu", errors, true);
             }
 
             await unitOfWork.CommitAsync();
-
+            _logger.LogInformation("UpdateEmailSettingsAsync: Successfully updated email settings");
             return ResponseDto.Success(200, "E-Posta Ayarları Başarıyla Güncellendi");
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "UpdateEmailSettingsAsync: Unexpected error");
             return ResponseDto.Fail(500, "E-Posta Ayarları Güncellenirken Beklenmeyen Hata", ex.Message, true);
         }
     }
 
     public async Task<ResponseDto> UpdateLogoSettingsAsync(LogoSettingViewModel model)
     {
-
+        _logger.LogInformation("UpdateLogoSettingsAsync called");
         try
         {
             var errors = new List<string>();
@@ -184,10 +195,12 @@ public class SettingsService(ISettingsRepository repository, IUnitOfWork<AppDbCo
                 catch (CryptoLicenseException licenseEx)
                 {
                     // Lisans hatasında hemen durdur ve hata mesajını döndür
+                    _logger.LogError(licenseEx, "UpdateLogoSettingsAsync: License error");
                     return ResponseDto.Fail(403, licenseEx.Message, licenseEx.Message, true);
                 }
                 catch (Exception cryptoEx)
                 {
+                    _logger.LogError(cryptoEx, "UpdateLogoSettingsAsync: Error encrypting property {PropertyName}", propertyName);
                     errors.Add($"'{propertyName}' şifrelenirken hata: {cryptoEx.Message}");
                     continue;
                 }
@@ -195,6 +208,7 @@ public class SettingsService(ISettingsRepository repository, IUnitOfWork<AppDbCo
                 var entity = await repository.GetSettingByName(propertyName, SettingsTypeEnum.LogoUserSettings);
                 if (entity == null)
                 {
+                    _logger.LogWarning("UpdateLogoSettingsAsync: Setting not found for {PropertyName}", propertyName);
                     errors.Add($"'{propertyName}' isimli ayar bulunamadı.");
                     continue;
                 }
@@ -205,18 +219,19 @@ public class SettingsService(ISettingsRepository repository, IUnitOfWork<AppDbCo
 
             if (errors.Any())
             {
+                _logger.LogWarning("UpdateLogoSettingsAsync: Completed with {ErrorCount} errors", errors.Count);
                 return ResponseDto.Fail(400, "Logo Kullanıcı Ayarları Güncellenirken Hata Oluştu", errors, true);
             }
 
             await unitOfWork.CommitAsync();
-
+            _logger.LogInformation("UpdateLogoSettingsAsync: Successfully updated logo settings");
             return ResponseDto.Success(200, "Logo Kullanıcı Ayarları Başarıyla Güncellendi");
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "UpdateLogoSettingsAsync: Unexpected error");
             return ResponseDto.Fail(500, "Logo Kullanıcı Ayarları Güncellenirken Beklenmeyen Hata", ex.Message, true);
         }
-
     }
 
     public async Task<ResponseDto> UpdateLogoSqlSettingsAsync(LogoSqlSettingViewModel model)
@@ -420,9 +435,11 @@ public class SettingsService(ISettingsRepository repository, IUnitOfWork<AppDbCo
 
     public async Task<ResponseDto<EmailSettingViewModel>> GetEmailSettingsAsync()
     {
+        _logger.LogInformation("GetEmailSettingsAsync called");
         var res = await repository.GetSettings(SettingsTypeEnum.EmailSettings);
         if (res == null || res.Count < 1)
         {
+            _logger.LogWarning("GetEmailSettingsAsync: No email settings found");
             return ResponseDto<EmailSettingViewModel>.FailData(404, "E-Posta Ayarları Henüz Yapılandırılmamış", "Email Ayarları Henüz Yapılandırılmamış", true);
         }
 
@@ -444,10 +461,12 @@ public class SettingsService(ISettingsRepository repository, IUnitOfWork<AppDbCo
                 catch (CryptoLicenseException licenseEx)
                 {
                     // Lisans hatasında hemen durdur ve hata mesajını döndür
+                    _logger.LogError(licenseEx, "GetEmailSettingsAsync: License error while decrypting");
                     return ResponseDto<EmailSettingViewModel>.FailData(403, licenseEx.Message, licenseEx.Message, true);
                 }
-                catch
+                catch (Exception decryptEx)
                 {
+                    _logger.LogError(decryptEx, "GetEmailSettingsAsync: Error decrypting value for {SettingName}", item.Name);
                     decryptedValue = "****** (Çözülemedi)"; // hata olursa gizle
                 }
             }
@@ -480,6 +499,7 @@ public class SettingsService(ISettingsRepository repository, IUnitOfWork<AppDbCo
             }
         }
 
+        _logger.LogInformation("GetEmailSettingsAsync: Successfully retrieved email settings");
         return ResponseDto<EmailSettingViewModel>.SuccessData(200, "E-Posta Ayarları Başarıyla Getirildi", retVal);
     }
 
@@ -613,12 +633,14 @@ public class SettingsService(ISettingsRepository repository, IUnitOfWork<AppDbCo
 
     public async Task<ResponseDto<LogoSettingViewModel>> GetLogoSettingsAsync()
     {
+        _logger.LogInformation("GetLogoSettingsAsync called");
         try
         {
             var entities = await repository.GetSettings(SettingsTypeEnum.LogoUserSettings);
 
             if (entities == null || !entities.Any())
             {
+                _logger.LogWarning("GetLogoSettingsAsync: No logo settings found");
                 return ResponseDto<LogoSettingViewModel>.FailData(
                     404,
                     "Logo Ayarları Henüz Yapılandırılmamış",
@@ -648,22 +670,25 @@ public class SettingsService(ISettingsRepository repository, IUnitOfWork<AppDbCo
                 catch (CryptoLicenseException licenseEx)
                 {
                     // Lisans hatasında hemen durdur ve hata mesajını döndür
+                    _logger.LogError(licenseEx, "GetLogoSettingsAsync: License error while decrypting");
                     return ResponseDto<LogoSettingViewModel>.FailData(403, licenseEx.Message, licenseEx.Message, true);
                 }
                 catch (Exception cryptoEx)
                 {
                     // Şifre çözme hatasında logla ama kullanıcıya şifreli veri gösterme!
-                    // Örnek: _logger.LogError(cryptoEx, $"Ayar çözülürken hata: {propName}");
+                    _logger.LogError(cryptoEx, "GetLogoSettingsAsync: Error decrypting property {PropertyName}", propName);
                     decryptedValue = string.Empty; // veya "[Çözülemedi]" gibi bir placeholder
                 }
 
                 prop.SetValue(model, decryptedValue);
             }
 
+            _logger.LogInformation("GetLogoSettingsAsync: Successfully retrieved logo settings");
             return ResponseDto<LogoSettingViewModel>.SuccessData(200, "Logo Ayarları Başarıyla Getirildi", model);
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "GetLogoSettingsAsync: Unexpected error");
             return ResponseDto<LogoSettingViewModel>.FailData(500, "Logo ayarları getirilirken hata oluştu.", ex.Message, true);
         }
     }
