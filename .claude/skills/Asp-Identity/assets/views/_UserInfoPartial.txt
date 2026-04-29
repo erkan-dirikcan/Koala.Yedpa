@@ -1,0 +1,99 @@
+@model UserInfoViewModel
+
+<div class="user-info-partial modal fade" id="userInfoModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">User Information</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="user-detail-avatar">
+                    <img src="@(string.IsNullOrEmpty(Model.Avatar) ? "/images/default-avatar.png" : Model.Avatar)"
+                         alt="@Model.FullName" />
+                </div>
+
+                <div class="user-detail-basic">
+                    <div class="detail-row">
+                        <span class="label">Name:</span>
+                        <span class="value">@Model.FullName</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Email:</span>
+                        <span class="value">@Model.Email</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Status:</span>
+                        <span class="value badge badge-@Model.UserStatus.ToString().ToLower()">@Model.UserStatus</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Type:</span>
+                        <span class="value">@(Model.IsApiUser ? "API User" : "Web User")</span>
+                    </div>
+                </div>
+
+                @if (Model.Roles != null && Model.Roles.Any())
+                {
+                    <div class="user-detail-roles">
+                        <h6>Roles</h6>
+                        <ul>
+                            @foreach (var role in Model.Roles)
+                            {
+                                <li>@role</li>
+                            }
+                        </ul>
+                    </div>
+                }
+
+                @if (Model.ExtendedProperties != null && Model.ExtendedProperties.Any())
+                {
+                    <div class="user-detail-extended">
+                        <h6>Additional Information</h6>
+                        @foreach (var prop in Model.ExtendedProperties)
+                        {
+                            <div class="detail-row">
+                                <span class="label">@prop.Key:</span>
+                                <span class="value">@prop.Value</span>
+                            </div>
+                        }
+                    </div>
+                }
+
+                @if (!string.IsNullOrEmpty(Model.Department))
+                {
+                    <div class="detail-row">
+                        <span class="label">Department:</span>
+                        <span class="value">@Model.Department</span>
+                    </div>
+                }
+
+                @if (!string.IsNullOrEmpty(Model.JobTitle))
+                {
+                    <div class="detail-row">
+                        <span class="label">Job Title:</span>
+                        <span class="value">@Model.JobTitle</span>
+                    </div>
+                }
+
+                @if (!string.IsNullOrEmpty(Model.PhoneNumber))
+                {
+                    <div class="detail-row">
+                        <span class="label">Phone:</span>
+                        <span class="value">@Model.PhoneNumber</span>
+                    </div>
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                @if (Model.CanEdit)
+                {
+                    <a href="@Url.Action("Edit", "AdminUser", new { id = Model.UserId })" class="btn btn-primary">
+                        Edit User
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+</div>

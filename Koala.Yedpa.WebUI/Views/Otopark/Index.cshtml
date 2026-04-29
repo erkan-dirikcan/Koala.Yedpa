@@ -1,0 +1,296 @@
+@{
+    ViewData["Title"] = "Otopark Yönetimi";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!--begin::Content-->
+<div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+    <!--begin::Toolbar-->
+    <div class="toolbar" id="kt_toolbar">
+        <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
+            <div data-kt-swapper="true" data-kt-swapper-mode="prepend" class="page-title d-flex align-items-center flex-wrap me-3 mb-5 mb-lg-0">
+                <h1 class="d-flex align-items-center text-dark fw-bolder my-1 fs-3">
+                    <span class="bullet bg-info align-self-end me-3"></span>
+                    Otopark Yönetimi
+                </h1>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <a href="/Otopark/Giris" class="btn btn-success">
+                    <i class="fas fa-car"></i> Giriş
+                </a>
+                <a href="/Otopark/Cikis" class="btn btn-warning">
+                    <i class="fas fa-car-side"></i> Çıkış
+                </a>
+                <a href="/Otopark/Abonelik" class="btn btn-primary">
+                    <i class="fas fa-id-card"></i> Abonelik
+                </a>
+            </div>
+        </div>
+    </div>
+    <!--end::Toolbar-->
+
+    <!--begin::Post-->
+    <div class="post d-flex flex-column-fluid" id="kt_post">
+        <div id="kt_content_container" class="container-fluid">
+            <!--begin::Stats Cards-->
+            <div class="row g-4 mb-4">
+                <div class="col-xl-3">
+                    <div class="card card-xl-stretch mb-5 mb-xl-8">
+                        <div class="card-body d-flex align-items-center">
+                            <div class="symbol symbol-50px me-5">
+                                <span class="symbol-label bg-light-success">
+                                    <i class="fas fa-car text-success fs-2"></i>
+                                </span>
+                            </div>
+                            <div class="d-flex flex-column">
+                                <span class="text-dark fw-bolder fs-2" id="toplamKayit">-</span>
+                                <span class="text-muted fw-bold fs-7">Toplam Kayıt</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3">
+                    <div class="card card-xl-stretch mb-5 mb-xl-8">
+                        <div class="card-body d-flex align-items-center">
+                            <div class="symbol symbol-50px me-5">
+                                <span class="symbol-label bg-light-primary">
+                                    <i class="fas fa-parking text-primary fs-2"></i>
+                                </span>
+                            </div>
+                            <div class="d-flex flex-column">
+                                <span class="text-dark fw-bolder fs-2" id="icindekiler">-</span>
+                                <span class="text-muted fw-bold fs-7">İçeride</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3">
+                    <div class="card card-xl-stretch mb-5 mb-xl-8">
+                        <div class="card-body d-flex align-items-center">
+                            <div class="symbol symbol-50px me-5">
+                                <span class="symbol-label bg-light-warning">
+                                    <i class="fas fa-clock text-warning fs-2"></i>
+                                </span>
+                            </div>
+                            <div class="d-flex flex-column">
+                                <span class="text-dark fw-bolder fs-2" id="cikanlar">-</span>
+                                <span class="text-muted fw-bold fs-7">Çıkan</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3">
+                    <div class="card card-xl-stretch mb-5 mb-xl-8">
+                        <div class="card-body d-flex align-items-center">
+                            <div class="symbol symbol-50px me-5">
+                                <span class="symbol-label bg-light-info">
+                                    <i class="fas fa-id-card text-info fs-2"></i>
+                                </span>
+                            </div>
+                            <div class="d-flex flex-column">
+                                <span class="text-dark fw-bolder fs-2" id="aboneler">-</span>
+                                <span class="text-muted fw-bold fs-7">Abonelik</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--end::Stats Cards-->
+
+            <!--begin::Table Card-->
+            <div class="card card-xl-stretch mb-5 mb-xl-8">
+                <!--begin::Card header-->
+                <div class="card-header border-0 pt-5">
+                    <h3 class="card-title align-items-start flex-column">
+                        <span class="card-label fw-bolder fs-3 mb-1">Otopark Kayıtları</span>
+                        <span class="text-muted mt-1 fw-bold fs-7">Giriş/Çıkış kayıtları</span>
+                    </h3>
+                    <div class="card-toolbar">
+                        <ul class="nav nav-tabs nav-line-tabs nav-line-tabs-2x mb-0 mt-3 fs-6">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-bs-toggle="tab" href="#tumTab" onclick="loadOtoparkKayitlari('tum')">
+                                    Tümü
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#aktifTab" onclick="loadOtoparkKayitlari('aktif')">
+                                    İçeridekiler
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <!--end::Card header-->
+
+                <!--begin::Card body-->
+                <div class="card-body py-3">
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="tumTab">
+                            <div class="table-responsive">
+                                <table class="table table-row-dashed table-row-gray-300 align-middle g-4">
+                                    <thead>
+                                        <tr class="fw-bolder fs-6 text-gray-800">
+                                            <th>Plaka</th>
+                                            <th>Giriş Zamanı</th>
+                                            <th>Çıkış Zamanı</th>
+                                            <th>Süre</th>
+                                            <th>Abone Adı</th>
+                                            <th>Durum</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="otoparkTableBody">
+                                        <tr>
+                                            <td colspan="6" class="text-center">Yükleniyor...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="aktifTab">
+                            <div class="table-responsive">
+                                <table class="table table-row-dashed table-row-gray-300 align-middle g-4">
+                                    <thead>
+                                        <tr class="fw-bolder fs-6 text-gray-800">
+                                            <th>Plaka</th>
+                                            <th>Giriş Zamanı</th>
+                                            <th>Kalan Süre</th>
+                                            <th>Telefon</th>
+                                            <th>İşlemler</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="aktifTableBody">
+                                        <tr>
+                                            <td colspan="6" class="text-center">Yükleniyor...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--end::Card body-->
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let kayitlar = [];
+
+        function loadOtoparkKayitlari(tur) {
+            const url = tur === 'aktif' ? '/api/otopark/active' : '/api/otopark';
+
+            $.ajax({
+                url: url,
+                method: 'GET',
+                success: function(response) {
+                    if (response.isSuccess) {
+                        kayitlar = response.data;
+                        updateStats(kayitlar);
+                        renderOtoparkTable(tur);
+                    } else {
+                        toastr.error(response.message || 'Veri yüklenemedi');
+                    }
+                },
+                error: function() {
+                    toastr.error('Bir hata oluştu');
+                }
+            });
+        }
+
+        function updateStats(data) {
+            const toplam = data.length;
+            const icinde = data.filter(k => k.aktif).length;
+            const cikan = toplam - icinde;
+
+            $('#toplamKayit').text(toplam);
+            $('#icindekiler').text(icinde);
+            $('#cikanlar').text(cikan);
+            $('#aboneler').text(data.filter(k => k.aboneAd).length);
+        }
+
+        function renderOtoparkTable(tur) {
+            const tbodyId = tur === 'aktif' ? '#aktifTableBody' : '#otoparkTableBody';
+            const tbody = $(tbodyId);
+
+            if (data.length === 0) {
+                tbody.html('<tr><td colspan="6" class="text-center text-muted">Kayıt bulunmuyor</td></tr>');
+                return;
+            }
+
+            let html = '';
+            data.forEach(k => {
+                if (tur === 'aktif') {
+                    const saat = k.kalanSaat ? k.kalanSaat.toFixed(1) : '0';
+                    const saatClass = k.kalanSaat > 24 ? 'text-muted' :
+                                      k.kalanSaat > 2 ? 'text-warning' : 'text-danger';
+
+                    html += `
+                        <tr>
+                            <td><span class="fw-bolder fs-6">${k.plaka || '-'}</span></td>
+                            <td>${formatDateTime(k.girisTarih)}</td>
+                            <td class="${saatClass} fw-bolder">${saat} saat</td>
+                            <td>${k.telefon || '-'}</td>
+                            <td>
+                                <button class="btn btn-sm btn-warning" onclick="cikisYap('${k.plaka}')">
+                                    <i class="fas fa-sign-out-alt"></i> Çıkış
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                } else {
+                    const durumClass = k.aktif ? 'badge-light-success' : 'badge-light-secondary';
+                    const sure = k.toplamSaat ? k.toplamSaat.toFixed(1) + ' saat' : '-';
+
+                    html += `
+                        <tr>
+                            <td><span class="fw-bolder fs-6">${k.plaka || '-'}</span></td>
+                            <td>${formatDateTime(k.girisTarih)}</td>
+                            <td>${k.cikisTarih ? formatDateTime(k.cikisTarih) : '-'}</td>
+                            <td>${sure}</td>
+                            <td>${k.aboneAd || '-'}</td>
+                            <td><span class="badge ${durumClass}">${k.durum}</span></td>
+                        </tr>
+                    `;
+                }
+            });
+
+            tbody.html(html);
+        }
+
+        function cikisYap(plaka) {
+            if (!confirm(`"${plaka}" plakalı araç çıkış yapmak istediğinizden emin misiniz?`)) {
+                return;
+            }
+
+            $.ajax({
+                url: '/api/otopark/cikis',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ plaka: plaka }),
+                success: function(response) {
+                    if (response.isSuccess) {
+                        toastr.success('Çıkış başarıyla kaydedildi');
+                        loadOtoparkKayitlari('aktif');
+                    } else {
+                        toastr.error(response.message || 'Çıkış yapılamadı');
+                    }
+                },
+                error: function() {
+                    toastr.error('Bir hata oluştu');
+                }
+            });
+        }
+
+        function formatDateTime(dateStr) {
+            if (!dateStr) return '-';
+            const d = new Date(dateStr);
+            return d.toLocaleString('tr-TR');
+        }
+
+        $(document).ready(function() {
+            loadOtoparkKayitlari('tum');
+        });
+    </script>
+}

@@ -466,10 +466,18 @@ namespace Koala.Yedpa.WebUI.Controllers
             return Json(ResponseDto.Success(200, "Kullanıcı Başarıyla Güncellendi"));
         }
 
-        public async Task Logout()
+        public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
+            return RedirectToAction("Login", "User");
         }
+
+        [AllowAnonymous]
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+
         public async Task<IActionResult> UserProfile()
         {
             var currentUser = User;

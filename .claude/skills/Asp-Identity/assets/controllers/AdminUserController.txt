@@ -1,0 +1,327 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+
+[Authorize(Policy = "Admin.User.View")]
+public class AdminUserController : Controller
+{
+    private readonly IIdentityService _identityService;
+    private readonly UserManager<AppUser> _userManager;
+    private readonly IClaimManagementService _claimService;
+    private readonly ILogger<AdminUserController> _logger;
+
+    public AdminUserController(
+        IIdentityService identityService,
+        UserManager<AppUser> userManager,
+        IClaimManagementService claimService,
+        ILogger<AdminUserController> logger)
+    {
+        _identityService = identityService;
+        _userManager = userManager;
+        _claimService = claimService;
+        _logger = logger;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Index()
+    {
+        var users = await _identityService.GetUsersAsync();
+        return View(users);
+    }
+
+    [HttpGet]
+    public IActionResult Create()
+    {
+        var model = new CreateUserViewModel
+        {
+            AvailableRoles = _identityService.GetRolesAsync().Result.ToList()
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(CreateUserViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            model.AvailableRoles = await _identityService.GetRolesAsync();
+            return View(model);
+        }
+
+        var user = new AppUser
+        {
+            UserName = model.Email,
+            Email = model.Email,
+            Name = model.Name,
+            LastName = model.LastName,
+            IsApiUser = model.IsApiUser,
+            UserStatus = UserStatus.Active
+        };
+
+        var result = await _identityService.CreateUserAsync(user, model.Password);
+
+        if (result.Succeeded)
+        {
+            // Assign roles
+            foreach (var roleId in model.SelectedRoles)
+            {
+                var role = await _identityService.GetRoleByIdAsync(roleId);
+                if (role != null)
+                    await _identityService.AddToRoleAsync(user, role.Name);
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        foreach (var error in result.Errors)
+            ModelState.AddModelError(string.Empty, error);
+
+        model.AvailableRoles = await _identityService.GetRolesAsync();
+        return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Edit(string id)
+    {
+        var user = await _identityService.GetUserByIdAsync(id);
+        if (user == null)
+            return NotFound();
+
+        var model = new EditUserViewModel
+        {
+            Id = user.Id.ToString(),
+            Name = user.Name,
+            LastName = user.LastName,
+            Email = user.Email,
+            UserStatus = user.UserStatus,
+            IsApiUser = user.IsApiUser,
+            Avatar = user.Avatar
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(EditUserViewModel model)
+    {
+        if (!ModelState.IsValid)
+            return View(model);
+
+        var user = await _identityService.GetUserByIdAsync(model.Id);
+        if (user == null)
+            return NotFound();
+
+        user.Name = model.Name;
+        user.LastName = model.LastName;
+        user.Email = model.Email;
+        user.UserName = model.Email;
+        user.UserStatus = model.UserStatus;
+        user.IsApiUser = model.IsApiUser;
+
+        var result = await _identityService.UpdateUserAsync(user);
+
+        if (result.Succeeded)
+            return RedirectToAction("Index");
+
+        foreach (var error in result.Errors)
+            ModelState.AddModelError(string.Empty, error);
+
+        return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Delete(string id)
+    {
+        var user = await _identityService.GetUserByIdAsync(id);
+        if (user == null)
+            return NotFound();
+
+        return View(user);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(string id)
+    {
+        var result = await _identityService.DeleteUserAsync(id);
+
+        if (result.Succeeded)
+            return RedirectToAction("Index");
+
+        ModelState.AddModelError(string.Empty, string.Join(", ", result.Errors));
+        return await Delete(id);
+    }
+
+    [HttpGet]
+    public IActionResult ChangePassword(string id)
+    {
+        var model = new AdminChangePasswordViewModel { UserId = id };
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ChangePassword(AdminChangePasswordViewModel model)
+    {
+        if (!ModelState.IsValid)
+            return View(model);
+
+        var user = await _identityService.GetUserByIdAsync(model.UserId);
+        if (user == null)
+            return NotFound();
+
+        var result = await _identityService.AdminChangePasswordAsync(user, model.NewPassword);
+
+        if (result.Succeeded)
+            return RedirectToAction("Index");
+
+        foreach (var error in result.Errors)
+            ModelState.AddModelError(string.Empty, error);
+
+        return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Roles(string id)
+    {
+        var user = await _identityService.GetUserByIdAsync(id);
+        if (user == null)
+            return NotFound();
+
+        var userRoles = await _identityService.GetUserRolesAsync(user);
+        var allRoles = await _identityService.GetRolesAsync();
+
+        var model = new ManageUserRolesViewModel
+        {
+            UserId = id,
+            UserName = user.FullName,
+            AvailableRoles = allRoles.Select(r => new RoleCheckboxViewModel
+            {
+                RoleId = r.Id.ToString(),
+                RoleName = r.Name,
+                IsSelected = userRoles.Contains(r.Name)
+            }).ToList()
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Roles(ManageUserRolesViewModel model)
+    {
+        var user = await _identityService.GetUserByIdAsync(model.UserId);
+        if (user == null)
+            return NotFound();
+
+        var currentRoles = await _identityService.GetUserRolesAsync(user);
+
+        // Remove roles
+        foreach (var role in currentRoles)
+        {
+            if (!model.AvailableRoles.Any(r => r.RoleName == role && r.IsSelected))
+                await _identityService.RemoveFromRoleAsync(user, role);
+        }
+
+        // Add roles
+        foreach (var roleViewModel in model.AvailableRoles)
+        {
+            if (roleViewModel.IsSelected && !currentRoles.Contains(roleViewModel.RoleName))
+                await _identityService.AddToRoleAsync(user, roleViewModel.RoleName);
+        }
+
+        return RedirectToAction("Index");
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Claims(string id)
+    {
+        var user = await _identityService.GetUserByIdAsync(id);
+        if (user == null)
+            return NotFound();
+
+        var claimGroups = await _claimService.GetUserClaimGroupsAsync(id);
+
+        var model = new ManageUserClaimsViewModel
+        {
+            UserId = id,
+            UserName = user.FullName,
+            ClaimGroups = claimGroups.ToList()
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Claims(ManageUserClaimsViewModel model)
+    {
+        var result = await _claimService.UpdateUserClaimsAsync(model.UserId, model.SelectedClaims);
+
+        if (result.Succeeded)
+            return RedirectToAction("Index");
+
+        foreach (var error in result.Errors)
+            ModelState.AddModelError(string.Empty, error);
+
+        var user = await _identityService.GetUserByIdAsync(model.UserId);
+        model.ClaimGroups = (await _claimService.GetUserClaimGroupsAsync(model.UserId)).ToList();
+        model.UserName = user?.FullName ?? "";
+
+        return View(model);
+    }
+
+    #region JSON Actions
+
+    [HttpGet]
+    public async Task<JsonResult> GetUsersJson()
+    {
+        var users = await _identityService.GetUsersAsync();
+        var result = users.Select(u => new
+        {
+            id = u.Id.ToString(),
+            name = u.FullName,
+            email = u.Email,
+            status = u.UserStatus.ToString(),
+            isApiUser = u.IsApiUser
+        });
+
+        return Json(result);
+    }
+
+    [HttpGet]
+    public async Task<JsonResult> GetUserDetailsJson(string id)
+    {
+        var user = await _identityService.GetUserByIdAsync(id);
+        if (user == null)
+            return Json(new { success = false, message = "User not found" });
+
+        var roles = await _identityService.GetUserRolesAsync(user);
+        var claims = await _identityService.GetUserClaimsAsync(user);
+
+        var result = new
+        {
+            success = true,
+            data = new
+            {
+                id = user.Id.ToString(),
+                name = user.Name,
+                lastName = user.LastName,
+                fullName = user.FullName,
+                email = user.Email,
+                avatar = user.Avatar,
+                status = user.UserStatus.ToString(),
+                isApiUser = user.IsApiUser,
+                roles = roles,
+                claims = claims.Select(c => new { type = c.Type, value = c.Value })
+            }
+        };
+
+        return Json(result);
+    }
+
+    #endregion
+}

@@ -1,0 +1,167 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+
+[Authorize(Policy = "Admin.Module.View")]
+public class ModuleController : Controller
+{
+    private readonly ApplicationDbContext _context;
+    private readonly ILogger<ModuleController> _logger;
+
+    public ModuleController(ApplicationDbContext context, ILogger<ModuleController> logger)
+    {
+        _context = context;
+        _logger = logger;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Index()
+    {
+        var modules = await _context.Modules
+            .Include(m => m.Claims)
+            .OrderBy(m => m.DisplayName ?? m.Name)
+            .ToListAsync();
+
+        return View(modules);
+    }
+
+    [HttpGet]
+    public IActionResult Create()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(CreateModuleViewModel model)
+    {
+        if (!ModelState.IsValid)
+            return View(model);
+
+        var module = new Module
+        {
+            Name = model.Name,
+            DisplayName = model.DisplayName,
+            Description = model.Description
+        };
+
+        _context.Modules.Add(module);
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformation("Module {ModuleName} created by {UserId}", model.Name, User.Identity?.Name);
+
+        return RedirectToAction("Index");
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Edit(string id)
+    {
+        var module = await _context.Modules
+            .Include(m => m.Claims)
+            .FirstOrDefaultAsync(m => m.Id == id);
+
+        if (module == null)
+            return NotFound();
+
+        var model = new EditModuleViewModel
+        {
+            Id = module.Id,
+            Name = module.Name,
+            DisplayName = module.DisplayName,
+            Description = module.Description
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(EditModuleViewModel model)
+    {
+        if (!ModelState.IsValid)
+            return View(model);
+
+        var module = await _context.Modules.FindAsync(model.Id);
+        if (module == null)
+            return NotFound();
+
+        module.Name = model.Name;
+        module.DisplayName = model.DisplayName;
+        module.Description = model.Description;
+
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformation("Module {ModuleName} updated by {UserId}", model.Name, User.Identity?.Name);
+
+        return RedirectToAction("Index");
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Delete(string id)
+    {
+        var module = await _context.Modules
+            .Include(m => m.Claims)
+            .FirstOrDefaultAsync(m => m.Id == id);
+
+        if (module == null)
+            return NotFound();
+
+        return View(module);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(string id)
+    {
+        var module = await _context.Modules.FindAsync(id);
+        if (module == null)
+            return NotFound();
+
+        _context.Modules.Remove(module);
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformation("Module {ModuleId} deleted by {UserId}", id, User.Identity?.Name);
+
+        return RedirectToAction("Index");
+    }
+
+    #region JSON Actions
+
+    [HttpGet]
+    public async Task<JsonResult> GetModulesJson()
+    {
+        var modules = await _context.Modules
+            .OrderBy(m => m.DisplayName ?? m.Name)
+            .Select(m => new
+            {
+                id = m.Id,
+                name = m.Name,
+                displayName = m.DisplayName,
+                description = m.Description,
+                claimCount = m.Claims.Count
+            })
+            .ToListAsync();
+
+        return Json(modules);
+    }
+
+    [HttpGet]
+    public async Task<JsonResult> GetModuleClaimsJson(string id)
+    {
+        var claims = await _context.ModuleClaims
+            .Where(c => c.ModuleId == id)
+            .OrderBy(c => c.DisplayName ?? c.Name)
+            .Select(c => new
+            {
+                id = c.Id,
+                name = c.Name,
+                displayName = c.DisplayName,
+                description = c.Description
+            })
+            .ToListAsync();
+
+        return Json(claims);
+    }
+
+    #endregion
+}

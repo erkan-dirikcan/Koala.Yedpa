@@ -1,0 +1,254 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+
+[Authorize]
+public class AccountController : Controller
+{
+    private readonly IAccountService _accountService;
+    private readonly IIdentityService _identityService;
+    private readonly UserManager<AppUser> _userManager;
+    private readonly ILogger<AccountController> _logger;
+
+    public AccountController(
+        IAccountService accountService,
+        IIdentityService identityService,
+        UserManager<AppUser> userManager,
+        ILogger<AccountController> logger)
+    {
+        _accountService = accountService;
+        _identityService = identityService;
+        _userManager = userManager;
+        _logger = logger;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Profile()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+            return NotFound();
+
+        var profile = await _accountService.GetUserProfileAsync(user.Id.ToString());
+        return View(profile);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> EditProfile()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+            return NotFound();
+
+        var profile = await _accountService.GetUserProfileAsync(user.Id.ToString());
+        var model = new EditProfileViewModel
+        {
+            Name = profile.Name,
+            LastName = profile.LastName,
+            Email = profile.Email
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditProfile(EditProfileViewModel model)
+    {
+        if (!ModelState.IsValid)
+            return View(model);
+
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+            return NotFound();
+
+        var profileModel = new ProfileViewModel
+        {
+            Name = model.Name,
+            LastName = model.LastName,
+            Email = model.Email
+        };
+
+        var result = await _accountService.UpdateProfileAsync(user.Id.ToString(), profileModel);
+
+        if (result.Succeeded)
+            return RedirectToAction("Profile");
+
+        foreach (var error in result.Errors)
+            ModelState.AddModelError(string.Empty, error);
+
+        return View(model);
+    }
+
+    [HttpGet]
+    public IActionResult ChangePassword()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
+    {
+        if (!ModelState.IsValid)
+            return View(model);
+
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+            return NotFound();
+
+        var result = await _accountService.ChangePasswordAsync(user.Id.ToString(), model.CurrentPassword, model.NewPassword);
+
+        if (result.Succeeded)
+        {
+            await _userManager.UpdateSecurityStampAsync(user);
+            return RedirectToAction("ChangePasswordConfirmation");
+        }
+
+        foreach (var error in result.Errors)
+            ModelState.AddModelError(string.Empty, error);
+
+        return View(model);
+    }
+
+    public IActionResult ChangePasswordConfirmation()
+    {
+        return View();
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> TwoFactorAuthentication()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+            return NotFound();
+
+        var model = new TwoFactorAuthenticationViewModel
+        {
+            IsTwoFactorEnabled = await _userManager.GetTwoFactorEnabledAsync(user)
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EnableTwoFactor()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+            return NotFound();
+
+        var result = await _accountService.EnableTwoFactorAsync(user.Id.ToString());
+
+        if (result.Succeeded)
+        {
+            // Generate QR code and shared key
+            var sharedKey = await _userManager.GetAuthenticatorKeyAsync(user);
+            return RedirectToAction("SetupTwoFactor", new { sharedKey });
+        }
+
+        foreach (var error in result.Errors)
+            ModelState.AddModelError(string.Empty, error);
+
+        return await TwoFactorAuthentication();
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> SetupTwoFactor(string sharedKey)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+            return NotFound();
+
+        var model = new SetupTwoFactorViewModel
+        {
+            SharedKey = sharedKey,
+            AuthenticatorUri = GenerateQrCodeUri(user.Email, sharedKey)
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> VerifyTwoFactor(VerifyTwoFactorViewModel model)
+    {
+        if (!ModelState.IsValid)
+            return View(model);
+
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+            return NotFound();
+
+        var isValid = await _identityService.VerifyTwoFactorTokenAsync(user, model.Code);
+
+        if (isValid)
+        {
+            await _userManager.SetTwoFactorEnabledAsync(user, true);
+            return RedirectToAction("TwoFactorAuthentication");
+        }
+
+        ModelState.AddModelError(string.Empty, "Invalid verification code");
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DisableTwoFactor()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+            return NotFound();
+
+        var result = await _accountService.DisableTwoFactorAsync(user.Id.ToString());
+
+        if (result.Succeeded)
+            return RedirectToAction("TwoFactorAuthentication");
+
+        foreach (var error in result.Errors)
+            ModelState.AddModelError(string.Empty, error);
+
+        return await TwoFactorAuthentication();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> UploadAvatar(IFormFile avatar)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+            return NotFound();
+
+        if (avatar == null || avatar.Length == 0)
+            return BadRequest("No file uploaded");
+
+        var result = await _identityService.UpdateAvatarAsync(user, avatar);
+
+        if (result.Succeeded)
+            return RedirectToAction("Profile");
+
+        return BadRequest("Failed to upload avatar");
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RemoveAvatar()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+            return NotFound();
+
+        var result = await _identityService.RemoveAvatarAsync(user);
+
+        if (result.Succeeded)
+            return RedirectToAction("Profile");
+
+        return BadRequest("Failed to remove avatar");
+    }
+
+    private string GenerateQrCodeUri(string email, string secretKey)
+    {
+        return $"otpauth://totp/YourApp:{email}?secret={secretKey}&issuer=YourApp";
+    }
+}

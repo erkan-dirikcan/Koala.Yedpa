@@ -1,0 +1,100 @@
+# View Folder Structure for Identity
+
+## Create these folders and empty views in your project:
+
+```
+Views/
+├── Auth/ (Custom design, NO main layout)
+│   ├── Login.cshtml          - Custom login form (email, password, remember me)
+│   ├── Register.cshtml       - Custom registration form (if public registration enabled)
+│   ├── ForgotPassword.cshtml - Custom forgot password form (email input)
+│   ├── ResetPassword.cshtml  - Custom reset password form (new password + confirm)
+│   ├── RegisterConfirmation.cshtml - Registration success message
+│   ├── ForgotPasswordConfirmation.cshtml - Forgot password sent message
+│   └── ResetPasswordConfirmation.cshtml - Password reset success message
+│
+├── Account/ (Uses main layout)
+│   ├── Profile.cshtml        - View current user profile
+│   ├── EditProfile.cshtml    - Edit profile form (name, lastname, email, avatar upload)
+│   ├── ChangePassword.cshtml - Change password form (current, new, confirm)
+│   ├── TwoFactorAuthentication.cshtml - 2FA status and enable/disable options
+│   ├── SetupTwoFactor.cshtml - 2FA setup with QR code
+│   ├── VerifyTwoFactor.cshtml - Verify 2FA code input
+│   └── ChangePasswordConfirmation.cshtml - Password changed confirmation
+│
+├── AdminUser/ (Uses main layout, requires Admin policy)
+│   ├── Index.cshtml          - List all users with search/filter
+│   ├── Create.cshtml         - Create new user form
+│   ├── Edit.cshtml           - Edit user form (basic info, status, api user flag)
+│   ├── Delete.cshtml         - Delete user confirmation
+│   ├── ChangePassword.cshtml - Admin password change form
+│   ├── Roles.cshtml          - Manage user roles (checkbox list of roles)
+│   └── Claims.cshtml         - Manage user claims (Select2 multi-select)
+│
+├── Role/ (Uses main layout, requires Admin policy)
+│   ├── Index.cshtml          - List all roles
+│   ├── Create.cshtml         - Create role form (name, description)
+│   ├── Edit.cshtml           - Edit role form
+│   ├── Delete.cshtml         - Delete role confirmation
+│   └── Claims.cshtml         - Manage role claims (checkbox list by module)
+│
+├── Claim/ (Uses main layout, requires Admin policy)
+│   ├── Index.cshtml          - List all claims grouped by module
+│   ├── Create.cshtml         - Create claim form (select module, name, display name, description)
+│   ├── Edit.cshtml           - Edit claim form
+│   └── Delete.cshtml         - Delete claim confirmation
+│
+├── Module/ (Uses main layout, requires Admin policy)
+│   ├── Index.cshtml          - List all modules with claim counts
+│   ├── Create.cshtml         - Create module form (name, display name, description)
+│   ├── Edit.cshtml           - Edit module form
+│   └── Delete.cshtml         - Delete module confirmation
+│
+└── Shared/
+    ├── _UserPartial.cshtml           - User summary (avatar + name + badges)
+    ├── _UserActivityPartial.cshtml   - User activity summary (last 5 activities)
+    └── _UserInfoPartial.cshtml       - User details modal (full info popup)
+```
+
+## Notes for Frontend Developer:
+
+### Auth Views (Custom Design)
+- NO main layout inheritance
+- Custom CSS (separate from app styles)
+- Responsive, mobile-first design
+- Clean, modern UI without Bootstrap dependency (unless project uses it)
+- Include social login buttons if configured
+
+### Account Views
+- Inherit from main layout: `@{ Layout = "_Layout"; }`
+- Use navigation tabs for account sections
+- Avatar upload with preview
+- 2FA QR code display (use QR code library)
+
+### AdminUser Views
+- Data tables with sorting, filtering, pagination
+- Status badges with color coding
+- Action buttons (Edit, Delete, Roles, Claims, Change Password)
+- Bulk actions support
+- Export functionality
+
+### Role/Claim/Module Views
+- Master-detail relationships
+- Collapsible panels for nested items
+- Drag-and-drop for ordering (if applicable)
+- Visual indicators for inherited vs direct claims
+
+### Partial Views
+- Designed to be embedded in modals, tooltips, or inline
+- Minimal dependencies
+- AJAX refresh support
+- Accessible (ARIA attributes)
+
+### Common Components Needed:
+- Select2 or similar multi-select component
+- Date picker (for activity timeline)
+- File upload component (avatar)
+- Modal dialog system
+- Toast notification system
+- Data table component
+- Confirmation dialogs

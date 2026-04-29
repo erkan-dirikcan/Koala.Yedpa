@@ -1,6 +1,7 @@
 using Koala.Yedpa.Core.Dtos;
 using Koala.Yedpa.Core.Models.ViewModels;
 using Koala.Yedpa.Core.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
@@ -11,7 +12,8 @@ namespace Koala.Yedpa.WebApi.Controllers;
 [ApiController]
 [Produces("application/json")]
 [SwaggerTag("Logo Cari & Dükkan Bilgileri API")]
-[ApiExplorerSettings(IgnoreApi = true)]
+[Authorize(Policy = "CurrentAccuant")]
+//[ApiExplorerSettings(IgnoreApi = true)]
 public class LogoClCardApiController : ControllerBase
 {
     private readonly IApiLogoSqlDataService _service;

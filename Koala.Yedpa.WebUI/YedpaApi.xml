@@ -127,6 +127,23 @@
             <param name="year">Year</param>
             <returns>Bütçe / Ek Bütçe Veri Tabanı Kontrol Sonucu</returns>
         </member>
+        <member name="T:Koala.Yedpa.WebUI.Controllers.ConnectionTestController">
+            <summary>
+            Bağlantı Testi
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.ConnectionTestController.Get">
+            <summary>
+            Bağlantı testi - API'ye erişim kontrolü
+            </summary>
+            <returns>Başarılı cevap</returns>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.ConnectionTestController.GetDetails">
+            <summary>
+            Bağlantı testi - Detaylı bilgi
+            </summary>
+            <returns>Detaylı sistem bilgisi</returns>
+        </member>
         <member name="T:Koala.Yedpa.WebUI.Controllers.DuesStatisticApiController">
             <summary>
             Dues Statistics API Controller
@@ -171,6 +188,23 @@
             Belirli bir cari hesap için detaylı ekstre getirir
             </summary>
         </member>
+        <member name="T:Koala.Yedpa.WebUI.Controllers.KoalaApiController">
+            <summary>
+            Koala API Ayarları Yönetimi
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.KoalaApiController.GetSettings">
+            <summary>
+            Koala API Ayarlarını Getir
+            </summary>
+            <returns>Koala API Ayarları (BaseUrl, UserName, Password - Password şifreli olarak döner)</returns>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.KoalaApiController.GetBaseUrl">
+            <summary>
+            Koala API Base URL'ini Getir (Şifresiz)
+            </summary>
+            <returns>Base URL</returns>
+        </member>
         <member name="M:Koala.Yedpa.WebUI.Controllers.LogoClCardApiController.ClCardInfoAll(System.Int32,System.Int32)">
             <summary>
             Tüm dükkan cari bilgilerini sayfalı getirir
@@ -180,6 +214,40 @@
             <summary>
             Gelişmiş arama - tüm alanlarda filtreleme yapar
             </summary>
+        </member>
+        <member name="T:Koala.Yedpa.WebUI.Controllers.QRCodeApiController">
+            <summary>
+            QR Code API Controller
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.QRCodeApiController.Generate(Koala.Yedpa.Core.Dtos.QRCodeDto)">
+            <summary>
+            Generate QR Code for workplace
+            </summary>
+            <param name="request">QR Code generation request</param>
+            <returns>QR Code image bytes</returns>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.QRCodeApiController.GenerateWithLogo(Koala.Yedpa.Core.Dtos.QRCodeDto)">
+            <summary>
+            Generate QR Code with logo
+            </summary>
+            <param name="request">QR Code generation request</param>
+            <returns>QR Code image bytes</returns>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.QRCodeApiController.GenerateForWorkplace(System.String,System.String)">
+            <summary>
+            Generate and save QR code for workplace
+            </summary>
+            <param name="workplaceCode">Workplace code</param>
+            <param name="partnerNo">Partner number</param>
+            <returns>QR Code file path</returns>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.QRCodeApiController.GetImage(System.String)">
+            <summary>
+            Get QR code image
+            </summary>
+            <param name="filePath">QR code file path</param>
+            <returns>QR Code image</returns>
         </member>
         <member name="T:Koala.Yedpa.WebUI.Controllers.SettingsApiController">
             <summary>
@@ -254,6 +322,106 @@
         <member name="P:Koala.Yedpa.WebUI.Controllers.TestEmailRequest.ReplyEmail">
             <summary>
             Yanıt e-posta adresi (opsiyonel)
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.WebUI.Controllers.Yonetim.ArizaController">
+            <summary>
+            Arıza Yönetimi MVC Controller
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.Yonetim.ArizaController.Index">
+            <summary>
+            Arıza listesi sayfası
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.Yonetim.ArizaController.Detay(System.Int32)">
+            <summary>
+            Arıza detay sayfası (hareketler ile birlikte)
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.Yonetim.ArizaController.Yeni">
+            <summary>
+            Yeni arıza oluşturma sayfası
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.Yonetim.ArizaController.Atama(System.Int32)">
+            <summary>
+            Arıza atama/personel atama sayfası
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.WebUI.Controllers.Yonetim.ArsivController">
+            <summary>
+            Arşiv Yönetimi MVC Controller
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.Yonetim.ArsivController.Index">
+            <summary>
+            Arşiv ana sayfa - Raf/Bölme/Koli ağaç görünümü
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.Yonetim.ArsivController.Detay(System.Int32)">
+            <summary>
+            Koli detay sayfası
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.Yonetim.ArsivController.KoliEkle(System.Int32)">
+            <summary>
+            Yeni koli ekleme modal/popup
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.WebUI.Controllers.Yonetim.OtoparkController">
+            <summary>
+            Otopark Yönetimi MVC Controller
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.Yonetim.OtoparkController.Index">
+            <summary>
+            Otopark durumu/listesi sayfası
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.Yonetim.OtoparkController.Giris">
+            <summary>
+            Giriş işlemi sayfası
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.Yonetim.OtoparkController.Cikis">
+            <summary>
+            Çıkış işlemi sayfası
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.Yonetim.OtoparkController.Abonelik">
+            <summary>
+            Abonelik yönetimi sayfası
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.WebUI.Controllers.Yonetim.SozlesmeController">
+            <summary>
+            Sözleşme Yönetimi MVC Controller
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.Yonetim.SozlesmeController.Index">
+            <summary>
+            Sözleşme listesi sayfası
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.Yonetim.SozlesmeController.Detay(System.Int32)">
+            <summary>
+            Sözleşme detay sayfası
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.Yonetim.SozlesmeController.Yeni">
+            <summary>
+            Yeni sözleşme oluşturma sayfası
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.Yonetim.SozlesmeController.Duzenle(System.Int32)">
+            <summary>
+            Sözleşme düzenleme sayfası
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.Yonetim.SozlesmeController.Yazdir(System.Int32)">
+            <summary>
+            Sözleşme PDF yazdırma
             </summary>
         </member>
     </members>

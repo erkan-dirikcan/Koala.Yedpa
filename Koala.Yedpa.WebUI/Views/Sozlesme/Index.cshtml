@@ -1,0 +1,196 @@
+@{
+    ViewData["Title"] = "Sözleşme Yönetimi";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!--begin::Content-->
+<div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+    <!--begin::Toolbar-->
+    <div class="toolbar" id="kt_toolbar">
+        <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
+            <div data-kt-swapper="true" data-kt-swapper-mode="prepend" class="page-title d-flex align-items-center flex-wrap me-3 mb-5 mb-lg-0">
+                <h1 class="d-flex align-items-center text-dark fw-bolder my-1 fs-3">
+                    <span class="bullet bg-primary align-self-end me-3"></span>
+                    Sözleşme Yönetimi
+                </h1>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <a href="/Sozlesme/Yeni" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Yeni Sözleşme
+                </a>
+            </div>
+        </div>
+    </div>
+    <!--end::Toolbar-->
+
+    <!--begin::Post-->
+    <div class="post d-flex flex-column-fluid" id="kt_post">
+        <div id="kt_content_container" class="container-fluid">
+            <!--begin::Card-->
+            <div class="card card-xl-stretch mb-5 mb-xl-8">
+                <!--begin::Card header-->
+                <div class="card-header border-0 pt-5">
+                    <h3 class="card-title align-items-start flex-column">
+                        <span class="card-label fw-bolder fs-3 mb-1">Sözleşmeler</span>
+                        <span class="text-muted mt-1 fw-bold fs-7">Tüm sözleşmeler</span>
+                    </h3>
+                    <div class="card-toolbar">
+                        <ul class="nav nav-tabs nav-line-tabs nav-line-tabs-2x mb-0 mt-3 fs-6">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-bs-toggle="tab" href="#tumTab" onclick="loadSozlesmeler('tum')">
+                                    Tümü
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#yaklasanTab" onclick="loadSozlesmeler('yaklasan')">
+                                    Yaklaşan (30 Gün)
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <!--end::Card header-->
+
+                <!--begin::Card body-->
+                <div class="card-body py-3">
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="tumTab">
+                            <div class="table-responsive">
+                                <table class="table table-row-dashed table-row-gray-300 align-middle g-4" id="sozlesmeTable">
+                                    <thead>
+                                        <tr class="fw-bolder fs-6 text-gray-800">
+                                            <th>Firma</th>
+                                            <th>Konu</th>
+                                            <th>Başlangıç</th>
+                                            <th>Bitiş</th>
+                                            <th>Durum</th>
+                                            <th>Kalan Gün</th>
+                                            <th>İşlemler</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="sozlesmeTableBody">
+                                        <tr>
+                                            <td colspan="7" class="text-center">Yükleniyor...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="yaklasanTab">
+                            <div class="table-responsive">
+                                <table class="table table-row-dashed table-row-gray-300 align-middle g-4" id="yaklasanTable">
+                                    <thead>
+                                        <tr class="fw-bolder fs-6 text-gray-800">
+                                            <th>Firma</th>
+                                            <th>Konu</th>
+                                            <th>Bitiş Tarihi</th>
+                                            <th>Kalan Gün</th>
+                                            <th>İşlemler</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="yaklasanTableBody">
+                                        <tr>
+                                            <td colspan="5" class="text-center">Yükleniyor...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--end::Card body-->
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let sozlesmeler = [];
+
+        function loadSozlesmeler(tur) {
+            const url = tur === 'yaklasan' ? '/api/sozlesme/expiring/30' : '/api/sozlesme';
+
+            $.ajax({
+                url: url,
+                method: 'GET',
+                success: function(response) {
+                    if (response.isSuccess) {
+                        sozlesmeler = response.data;
+                        renderSozlesmeTable(tur);
+                    } else {
+                        toastr.error(response.message || 'Veri yüklenemedi');
+                    }
+                },
+                error: function() {
+                    toastr.error('Bir hata oluştu');
+                }
+            });
+        }
+
+        function renderSozlesmeTable(tur) {
+            const tbodyId = tur === 'yaklasan' ? '#yaklasanTableBody' : '#sozlesmeTableBody';
+            const tbody = $(tbodyId);
+
+            if (sozlesmeler.length === 0) {
+                tbody.html('<tr><td colspan="7" class="text-center text-muted">Kayıt bulunmuyor</td></tr>');
+                return;
+            }
+
+            let html = '';
+            sozlesmeler.forEach(s => {
+                const durumClass = s.bitti ? 'badge-light-danger' :
+                                   s.yaklasan ? 'badge-light-warning' : 'badge-light-success';
+                const kalanGunClass = s.kalanGun <= 7 ? 'text-danger' :
+                                     s.kalanGun <= 30 ? 'text-warning' : 'text-success';
+
+                if (tur === 'yaklasan') {
+                    html += `
+                        <tr>
+                            <td><span class="fw-bold">${s.firma || '-'}</span></td>
+                            <td>${s.konu || '-'}</td>
+                            <td>${formatDate(s.bitis)}</td>
+                            <td class="${kalanGunClass} fw-bolder">${s.kalanGun} gün</td>
+                            <td>
+                                <a href="/Sozlesme/Detay/${s.sozlesmeID}" class="btn btn-sm btn-light-primary">Detay</a>
+                            </td>
+                        </tr>
+                    `;
+                } else {
+                    html += `
+                        <tr>
+                            <td><span class="fw-bold">${s.firma || '-'}</span></td>
+                            <td>${s.konu || '-'}</td>
+                            <td>${formatDate(s.baslangic)}</td>
+                            <td>${formatDate(s.bitis)}</td>
+                            <td><span class="badge ${durumClass}">${s.durum}</span></td>
+                            <td class="${kalanGunClass} fw-bolder">${s.kalanGun} gün</td>
+                            <td>
+                                <div class="d-flex gap-1">
+                                    <a href="/Sozlesme/Detay/${s.sozlesmeID}" class="btn btn-sm btn-light-primary">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="/Sozlesme/Duzenle/${s.sozlesmeID}" class="btn btn-sm btn-light-warning">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }
+            });
+
+            tbody.html(html);
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            const d = new Date(dateStr);
+            return d.toLocaleDateString('tr-TR');
+        }
+
+        $(document).ready(function() {
+            loadSozlesmeler('tum');
+        });
+    </script>
+}

@@ -1,0 +1,214 @@
+@{
+    ViewData["Title"] = "Arıza Yönetimi";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!--begin::Content-->
+<div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+    <!--begin::Toolbar-->
+    <div class="toolbar" id="kt_toolbar">
+        <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
+            <div data-kt-swapper="true" data-kt-swapper-mode="prepend" class="page-title d-flex align-items-center flex-wrap me-3 mb-5 mb-lg-0">
+                <h1 class="d-flex align-items-center text-dark fw-bolder my-1 fs-3">
+                    <span class="bullet bg-danger align-self-end me-3"></span>
+                    Arıza Yönetimi
+                </h1>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <a href="/Ariza/Yeni" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Yeni Arıza
+                </a>
+            </div>
+        </div>
+    </div>
+    <!--end::Toolbar-->
+
+    <!--begin::Post-->
+    <div class="post d-flex flex-column-fluid" id="kt_post">
+        <div id="kt_content_container" class="container-fluid">
+            <!--begin::Filters-->
+            <div class="card card-xl-stretch mb-5">
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Birim</label>
+                            <select class="form-select" id="birimFilter">
+                                <option value="">Tümü</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Durum</label>
+                            <select class="form-select" id="durumFilter">
+                                <option value="">Tümü</option>
+                                <option value="Beklemede">Beklemede</option>
+                                <option value="İnceleniyor">İnceleniyor</option>
+                                <option value="Tamamlandı">Tamamlandı</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Sadece Aktif</label>
+                            <div class="form-check form-switch mt-8">
+                                <input class="form-check-input" type="checkbox" id="aktifOnly">
+                                <label class="form-check-label" for="aktifOnly">Aktif arızalar</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">&nbsp;</label>
+                            <button class="btn btn-secondary w-100" onclick="filterArizalar()">
+                                <i class="fas fa-filter"></i> Filtrele
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--end::Filters-->
+
+            <!--begin::Table Card-->
+            <div class="card card-xl-stretch mb-5 mb-xl-8">
+                <!--begin::Card header-->
+                <div class="card-header border-0 pt-5">
+                    <h3 class="card-title align-items-start flex-column">
+                        <span class="card-label fw-bolder fs-3 mb-1">Arızalar</span>
+                        <span class="text-muted mt-1 fw-bold fs-7">Arıza listesi</span>
+                    </h3>
+                </div>
+                <!--end::Card header-->
+
+                <!--begin::Card body-->
+                <div class="card-body py-3">
+                    <div class="table-responsive">
+                        <table class="table table-row-dashed table-row-gray-300 align-middle g-4" id="arizaTable">
+                            <thead>
+                                <tr class="fw-bolder fs-6 text-gray-800">
+                                    <th>Konu</th>
+                                    <th>Birim</th>
+                                    <th>Tarih</th>
+                                    <th>Durum</th>
+                                    <th>Son Kişi</th>
+                                    <th>Hareket</th>
+                                    <th>İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody id="arizaTableBody">
+                                <tr>
+                                    <td colspan="7" class="text-center">Yükleniyor...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!--end::Card body-->
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let arizalar = [];
+
+        function loadArizalar() {
+            $.ajax({
+                url: '/api/ariza',
+                method: 'GET',
+                success: function(response) {
+                    if (response.isSuccess) {
+                        arizalar = response.data;
+                        renderArizaTable(arizalar);
+                        loadBirimler();
+                    } else {
+                        toastr.error(response.message || 'Veri yüklenemedi');
+                    }
+                },
+                error: function() {
+                    toastr.error('Bir hata oluştu');
+                }
+            });
+        }
+
+        function loadBirimler() {
+            $.ajax({
+                url: '/api/ortak/birimler',
+                method: 'GET',
+                success: function(response) {
+                    if (response.isSuccess && response.data) {
+                        const select = $('#birimFilter');
+                        select.html('<option value="">Tümü</option>');
+                        response.data.forEach(b => {
+                            select.append(`<option value="${b.birimAdi}">${b.birimAdi}</option>`);
+                        });
+                    }
+                }
+            });
+        }
+
+        function filterArizalar() {
+            const birim = $('#birimFilter').val();
+            const durum = $('#durumFilter').val();
+            const aktifOnly = $('#aktifOnly').is(':checked');
+
+            let filtered = arizalar;
+
+            if (birim) {
+                filtered = filtered.filter(a => a.birim === birim);
+            }
+            if (durum) {
+                filtered = filtered.filter(a => a.durum === durum);
+            }
+            if (aktifOnly) {
+                // Aktif = bitmemiş arızalar
+                filtered = filtered.filter(a => a.durum !== 'Tamamlandı');
+            }
+
+            renderArizaTable(filtered);
+        }
+
+        function renderArizaTable(data) {
+            const tbody = $('#arizaTableBody');
+
+            if (data.length === 0) {
+                tbody.html('<tr><td colspan="7" class="text-center text-muted">Kayıt bulunmuyor</td></tr>');
+                return;
+            }
+
+            let html = '';
+            data.forEach(a => {
+                const durumClass = a.durum === 'Tamamlandı' ? 'badge-light-success' :
+                                   a.durum === 'İnceleniyor' ? 'badge-light-warning' :
+                                   a.durum === 'Beklemede' ? 'badge-light-info' : 'badge-light-secondary';
+
+                html += `
+                    <tr>
+                        <td><span class="fw-bold ${a.gizli ? 'text-decoration-line-through text-muted' : ''}">${a.konu || '-'}</span></td>
+                        <td>${a.birim || '-'}</td>
+                        <td>${formatDateTime(a.tarih)}</td>
+                        <td><span class="badge ${durumClass}">${a.durum || '-'}</span></td>
+                        <td>${a.sonKisi || '-'}</td>
+                        <td><span class="badge badge-light-primary">${a.hareketSayisi} hareket</span></td>
+                        <td>
+                            <div class="d-flex gap-1">
+                                <a href="/Ariza/Detay/${a.arizaID}" class="btn btn-sm btn-light-primary">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tbody.html(html);
+        }
+
+        function formatDateTime(dateStr) {
+            if (!dateStr) return '-';
+            const d = new Date(dateStr);
+            return d.toLocaleString('tr-TR');
+        }
+
+        $(document).ready(function() {
+            loadArizalar();
+
+            $('#birimFilter, #durumFilter, #aktifOnly').on('change', filterArizalar);
+        });
+    </script>
+}

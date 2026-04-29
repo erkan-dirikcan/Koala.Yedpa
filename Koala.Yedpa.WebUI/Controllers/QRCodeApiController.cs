@@ -3,7 +3,7 @@ using Koala.Yedpa.Core.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Koala.Yedpa.WebApi.Controllers;
+namespace Koala.Yedpa.WebUI.Controllers;
 
 /// <summary>
 /// QR Code API Controller

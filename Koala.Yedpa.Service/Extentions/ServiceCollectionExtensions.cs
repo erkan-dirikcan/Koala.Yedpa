@@ -2,17 +2,20 @@ using Hangfire;
 using Koala.Yedpa.Core.Configuration;
 using Koala.Yedpa.Core.Helpers;
 using Koala.Yedpa.Core.Models;
+using Koala.Yedpa.Core.Models.Yonetim;
 using Koala.Yedpa.Core.Providers;
 using Koala.Yedpa.Core.Repositories;
 using Koala.Yedpa.Core.Services;
 using Koala.Yedpa.Core.UnitOfWorks;
 using Koala.Yedpa.Repositories;
 using Koala.Yedpa.Repositories.Repositories;
+using Koala.Yedpa.Repositories.Repositories.Yonetim;
 using Koala.Yedpa.Repositories.UnitOfWork;
 using Koala.Yedpa.Service.Providers;
 using Koala.Yedpa.Service.Services;
 using Koala.Yedpa.Service.Services.BackgroundServices;
 using Koala.Yedpa.Service.Services.Jobs;
+using Koala.Yedpa.Service.Services.Yonetim;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
@@ -44,6 +47,13 @@ namespace Koala.Yedpa.Service.Extentions
             services.AddScoped<IWorkplaceRepository, WorkplaceRepository>();
             services.AddScoped<IQRCodeRepository, QRCodeRepository>();
             services.AddScoped<IQRCodeBatchRepository, QRCodeBatchRepository>();
+
+            // YONETIM Repositories
+            services.AddScoped<IArsivRepository, ArsivRepository>();
+            services.AddScoped<ISozlesmeRepository, SozlesmeRepository>();
+            services.AddScoped<IArizaRepository, ArizaRepository>();
+            services.AddScoped<IOtoparkRepository, OtoparkRepository>();
+            services.AddScoped<IOrtakRepository, OrtakRepository>();
 
             // Hangfire kaldırıldı, BackgroundService kullanılıyor
             // DuesStatistic Transfer BackgroundService ve Queue (Singleton)
@@ -77,6 +87,13 @@ namespace Koala.Yedpa.Service.Extentions
             services.AddScoped<ITransactionTypeService, TransactionTypeService>();
             services.AddScoped<IWorkplaceService, WorkplaceService>();
             services.AddScoped<IQRCodeService, QRCodeService>();
+
+            // YONETIM Services
+            services.AddScoped<IArsivService, ArsivService>();
+            services.AddScoped<ISozlesmeService, SozlesmeService>();
+            services.AddScoped<IArizaService, ArizaService>();
+            services.AddScoped<IOtoparkService, OtoparkService>();
+            services.AddScoped<IOrtakService, OrtakService>();
 
             services.AddHostedService<SeedHostedService>();
         }

@@ -1,0 +1,212 @@
+@{
+    ViewData["Title"] = "Arşiv Yönetimi";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!--begin::Content-->
+<div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+    <!--begin::Toolbar-->
+    <div class="toolbar" id="kt_toolbar">
+        <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
+            <!--begin::Page title-->
+            <div data-kt-swapper="true" data-kt-swapper-mode="prepend" class="page-title d-flex align-items-center flex-wrap me-3 mb-5 mb-lg-0">
+                <h1 class="d-flex align-items-center text-dark fw-bolder my-1 fs-3">
+                    <span class="bullet bg-warning align-self-end me-3"></span>
+                    Arşiv Yönetimi
+                </h1>
+            </div>
+            <!--end::Page title-->
+        </div>
+    </div>
+    <!--end::Toolbar-->
+
+    <!--begin::Post-->
+    <div class="post d-flex flex-column-fluid" id="kt_post">
+        <!--begin::Container-->
+        <div id="kt_content_container" class="container-fluid">
+            <!--begin::Card-->
+            <div class="card card-xl-stretch mb-5 mb-xl-8">
+                <!--begin::Card header-->
+                <div class="card-header border-0 pt-5">
+                    <h3 class="card-title align-items-start flex-column">
+                        <span class="card-label fw-bolder fs-3 mb-1">Raf - Bölme - Koli</span>
+                        <span class="text-muted mt-1 fw-bold fs-7">Arşiv hiyerarşik yapısı</span>
+                    </h3>
+                    <div class="card-toolbar">
+                        <button class="btn btn-sm btn-primary" onclick="showAddRafModal()">
+                            <i class="fas fa-plus"></i> Yeni Raf
+                        </button>
+                    </div>
+                </div>
+                <!--end::Card header-->
+
+                <!--begin::Card body-->
+                <div class="card-body py-3">
+                    <!--begin::Tree View-->
+                    <div id="arsivTree" class="tree-demo">
+                        <!-- Tree content will be loaded here -->
+                    </div>
+                    <!--end::Tree View-->
+                </div>
+                <!--end::Card body-->
+            </div>
+            <!--end::Card-->
+        </div>
+        <!--end::Container-->
+    </div>
+    <!--end::Post-->
+</div>
+
+<!-- Yeni Raf Modal -->
+<div class="modal fade" id="addRafModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Yeni Raf</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addRafForm">
+                    <div class="mb-3">
+                        <label class="form-label">Raf Kodu</label>
+                        <input type="text" class="form-control" id="rafKod" name="rafKod" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                <button type="button" class="btn btn-primary" onclick="saveRaf()">Kaydet</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Tree configuration
+        const treeData = [];
+
+        function loadArsivData() {
+            $.ajax({
+                url: '/api/arsiv',
+                method: 'GET',
+                success: function(response) {
+                    if (response.isSuccess) {
+                        buildTree(response.data);
+                    }
+                }
+            });
+        }
+
+        function buildTree(data) {
+            const tree = $('#arsivTree');
+            tree.empty();
+
+            const grouped = {};
+            data.forEach(item => {
+                const key = item.rafKod || 'Adsız Raf';
+                if (!grouped[key]) {
+                    grouped[key] = {
+                        raf: item.rafKod,
+                        bolumeler: {}
+                    };
+                }
+                if (!grouped[key].bolumeler[item.bolmeNo]) {
+                    grouped[key].bolumeler[item.bolmeNo] = [];
+                }
+                grouped[key].bolumeler[item.bolmeNo].push(item);
+            });
+
+            let html = '<div class="tree-container">';
+            for (const raf in grouped) {
+                html += `<div class="tree-node raf-node" onclick="toggleNode(this)">
+                    <i class="fas fa-folder text-warning me-2"></i>
+                    <strong>${grouped[raf].raf}</strong>
+                </div>`;
+                html += '<div class="tree-children" style="display:none;">';
+                for (const bolme in grouped[raf].bolumeler) {
+                    html += `<div class="tree-node bolme-node" onclick="toggleNode(this)">
+                        <i class="fas fa-folder-open text-info me-2"></i>
+                        ${bolme}
+                    </div>`;
+                    html += '<div class="tree-children" style="display:none;">';
+                    grouped[raf].bolumeler[bolme].forEach(koli => {
+                        html += `<div class="tree-node koli-node">
+                            <i class="fas fa-box text-success me-2"></i>
+                            <a href="/Arsiv/Detay/${koli.koliId}">${koli.koliNo || 'Koli ' + koli.koliId}</a>
+                            ${koli.detay ? `<small class="text-muted ms-2">${koli.detay}</small>` : ''}
+                        </div>`;
+                    });
+                    html += '</div>';
+                }
+                html += '</div>';
+            }
+            html += '</div>';
+
+            tree.html(html);
+        }
+
+        function toggleNode(element) {
+            const children = $(element).next('.tree-children');
+            children.slideToggle();
+            const icon = $(element).find('i');
+            icon.toggleClass('fa-folder fa-folder-open');
+        }
+
+        function showAddRafModal() {
+            $('#addRafModal').modal('show');
+        }
+
+        function saveRaf() {
+            const rafKod = $('#rafKod').val();
+            if (!rafKod) {
+                toastr.error('Raf kodu boş olamaz');
+                return;
+            }
+
+            $.ajax({
+                url: '/api/arsiv/raf',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(rafKod),
+                success: function(response) {
+                    if (response.isSuccess) {
+                        toastr.success('Raf başarıyla eklendi');
+                        $('#addRafModal').modal('hide');
+                        loadArsivData();
+                    } else {
+                        toastr.error(response.message || 'Hata oluştu');
+                    }
+                },
+                error: function() {
+                    toastr.error('Bir hata oluştu');
+                }
+            });
+        }
+
+        // Load data on page load
+        $(document).ready(function() {
+            loadArsivData();
+        });
+    </script>
+
+    <style>
+        .tree-container {
+            padding: 20px;
+        }
+        .tree-node {
+            padding: 8px 12px;
+            margin: 2px 0;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .tree-node:hover {
+            background: #f5f8fa;
+        }
+        .tree-children {
+            margin-left: 30px;
+            border-left: 1px dashed #dee2e8;
+        }
+    </style>
+}

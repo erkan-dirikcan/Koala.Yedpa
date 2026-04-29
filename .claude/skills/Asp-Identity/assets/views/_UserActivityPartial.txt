@@ -1,0 +1,33 @@
+@model UserActivityViewModel
+
+<div class="user-activity-partial">
+    <div class="activity-header">
+        <h5>Recent Activity</h5>
+        <span class="activity-count">@Model.TotalActivities activities</span>
+    </div>
+
+    @if (Model.Activities != null && Model.Activities.Any())
+    {
+        <ul class="activity-list">
+            @foreach (var activity in Model.Activities.Take(5))
+            {
+                <li class="activity-item">
+                    <span class="activity-type @activity.Type.ToString().ToLower()">@activity.Type</span>
+                    <span class="activity-description">@activity.Description</span>
+                    <span class="activity-time">@activity.CreatedAt.ToString("g")</span>
+                </li>
+            }
+        </ul>
+
+        @if (Model.TotalActivities > 5)
+        {
+            <a href="@Url.Action("Activity", "User", new { id = Model.UserId })" class="view-all-link">
+                View all activities
+            </a>
+        }
+    }
+    else
+    {
+        <p class="no-activity">No recent activity</p>
+    }
+</div>

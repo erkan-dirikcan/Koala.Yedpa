@@ -1,0 +1,843 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Koala.Yedpa.Core</name>
+    </assembly>
+    <members>
+        <member name="T:Koala.Yedpa.Core.Exceptions.CryptoLicenseException">
+            <summary>
+            Crypto API lisans hatası için özel exception
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:Koala.Yedpa.Core.Extensions.DataTableExtensions.AsList``1(System.Data.DataTable)" -->
+        <member name="T:Koala.Yedpa.Core.Models.LogoJsonModels.SalesOrderTransactionItem">
+            <summary>
+            Logo SalesOrder Transaction Item
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Models.LogoJsonModels.SalesOrderTransactions">
+            <summary>
+            Logo SalesOrder Transactions
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Models.LogoJsonModels.SalesOrderJsonViewModel">
+            <summary>
+            Logo SalesOrder JSON Model
+            POST /api/v1/salesOrders
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.QRCode.BatchId">
+            <summary>
+            Hangi QRCodeBatch işlemine ait olduğu
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.QRCode.PartnerNo">
+            <summary>
+            Cari hesap partner numarası
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.QRCode.QRCodeNumber">
+            <summary>
+            QR kod numarası: {QrCodePreCode}-{PartnerNo}
+            Örnek: G11522-Yd-12001
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.QRCode.QRImagePath">
+            <summary>
+            QR kod resim dosyasının yolu (relative path)
+            Örnek: /Uploads/Qr/2025/G11522-Yd-12001.jpg
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.QRCode.FolderPath">
+            <summary>
+            QR kodların bulunduğu klasör yolu
+            Örnek: Uploads/Qr/2025/
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.QRCode.QrCodeYear">
+            <summary>
+            QR kod yılı
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.QRCode.Batch">
+            <summary>
+            QRCodeBatch navigation property
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.QRCodeBatch.SqlQuery">
+            <summary>
+            Kullanılan SQL sorgusu
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.QRCodeBatch.QrCodeYear">
+            <summary>
+            QR kod yılı
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.QRCodeBatch.QrCodePreCode">
+            <summary>
+            QR kod ön kodu
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.QRCodeBatch.QRCodeCount">
+            <summary>
+            Oluşturulan QR kod sayısı
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.QRCodeBatch.Description">
+            <summary>
+            İşlem açıklaması
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoViewModel.CARI_KODU">
+            <summary>
+            Ana cari kart kodu
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoViewModel.CARI_UNVAN">
+            <summary>
+            Cari unvanı / firma adı
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoViewModel.VERGI_DAIRESI">
+            <summary>
+            Vergi dairesi adı
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoViewModel.VERGI_NUMARASI">
+            <summary>
+            Vergi kimlik numarası
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoViewModel.TCKN">
+            <summary>
+            T.C. Kimlik numarası (şahıs firmaları için)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoViewModel.IL">
+            <summary>
+            İl adı
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoViewModel.ILCE">
+            <summary>
+            İlçe adı
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoViewModel.MAHALLE">
+            <summary>
+            Mahalle / semt
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoViewModel.ADRES_1">
+            <summary>
+            Adres satırı 1
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoViewModel.ADRES_2">
+            <summary>
+            Adres satırı 2
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoViewModel.EMAIL_3">
+            <summary>
+            3. e-posta adresi (genelde muhasebe)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoViewModel.TELEFON_1">
+            <summary>
+            Ana telefon numarası
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoViewModel.TELEFON_2">
+            <summary>
+            Alternatif telefon numarası
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoViewModel.FAX">
+            <summary>
+            Faks numarası
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoViewModel.OZEL_KOD">
+            <summary>
+            Özel kod 1
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoViewModel.OZEL_KOD2">
+            <summary>
+            Özel kod 2
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoViewModel.OZEL_KOD3">
+            <summary>
+            Özel kod 3
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoViewModel.OZEL_KOD4">
+            <summary>
+            Özel kod 4
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoViewModel.OZEL_KOD5">
+            <summary>
+            Özel kod 5
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoViewModel.DUKKAN_CARI_KODU">
+            <summary>
+            Dükkan cari kodu (.IS ile biten)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoViewModel.DUKKAN_ADRES_ORJINAL">
+            <summary>
+            Dükkan adresi (Logo'dan ham hali)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoViewModel.CADDE">
+            <summary>
+            Cadde / sokak adı
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoViewModel.NO">
+            <summary>
+            Kapı / dükkan numarası (eski no)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoViewModel.PASAJ_NO">
+            <summary>
+            Pasaj numarası
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoViewModel.YENI_NO">
+            <summary>
+            Yeni belediye numarası
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoViewModel.KAT">
+            <summary>
+            Kat bilgisi (ASMAKAT, ZEMİN KAT, DEPOLAR vb.)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoViewModel.YETKILI1_AD_SOYAD">
+            <summary>
+            1. yetkili ad soyad
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoViewModel.YETKILI1_EMAIL">
+            <summary>
+            1. yetkili e-posta adresi
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoViewModel.YETKILI1_TELEFON">
+            <summary>
+            1. yetkili telefon numarası
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoViewModel.YETKILI2_AD_SOYAD">
+            <summary>
+            2. yetkili ad soyad
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoViewModel.YETKILI2_EMAIL">
+            <summary>
+            2. yetkili e-posta adresi
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoViewModel.YETKILI2_TELEFON">
+            <summary>
+            2. yetkili telefon numarası
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoSearchViewModel.CariKodu">
+            <summary>
+            Cari kart kodu (Ana cari kodu)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoSearchViewModel.CariUnvan">
+            <summary>
+            Cari unvanı / firma adı
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoSearchViewModel.VergiDairesi">
+            <summary>
+            Vergi dairesi adı
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoSearchViewModel.VergiNumarasi">
+            <summary>
+            Vergi kimlik numarası
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoSearchViewModel.Tckn">
+            <summary>
+            T.C. Kimlik numarası (şahıs firmaları için)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoSearchViewModel.Il">
+            <summary>
+            İl adı
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoSearchViewModel.Ilce">
+            <summary>
+            İlçe adı
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoSearchViewModel.Mahalle">
+            <summary>
+            Mahalle / semt
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoSearchViewModel.Adres1">
+            <summary>
+            Adres satırı 1
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoSearchViewModel.Adres2">
+            <summary>
+            Adres satırı 2
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoSearchViewModel.OzelKod">
+            <summary>
+            Özel kod 1
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoSearchViewModel.OzelKod2">
+            <summary>
+            Özel kod 2
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoSearchViewModel.OzelKod3">
+            <summary>
+            Özel kod 3
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoSearchViewModel.OzelKod4">
+            <summary>
+            Özel kod 4
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoSearchViewModel.OzelKod5">
+            <summary>
+            Özel kod 5
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoSearchViewModel.DukkanCariKodu">
+            <summary>
+            Dükkan cari kodu (.IS ile biten)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoSearchViewModel.DukkanAdresOrjinal">
+            <summary>
+            Dükkan adresi (Logo'dan ham hali)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoSearchViewModel.Cadde">
+            <summary>
+            Cadde / sokak adı (örn: A, H1, D)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoSearchViewModel.No">
+            <summary>
+            Kapı / dükkan numarası (eski no)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoSearchViewModel.PasajNo">
+            <summary>
+            Pasaj numarası (1.PASAJ ise 1 döner)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoSearchViewModel.YeniNo">
+            <summary>
+            Yeni belediye numarası
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoSearchViewModel.Kat">
+            <summary>
+            Kat bilgisi (ASMAKAT, ZEMİN KAT, DEPOLAR, BODRUM KAT vb.)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoSearchViewModel.Yetkili1AdSoyad">
+            <summary>
+            1. yetkili ad soyad
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoSearchViewModel.Yetkili2AdSoyad">
+            <summary>
+            2. yetkili ad soyad
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.StatementSummeryViewModel.LogicalRef">
+            <summary>
+            Cari kart Referansı (LogicalRef)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.StatementSummeryViewModel.ClCode">
+            <summary>
+            Cari Kart kodu
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.StatementSummeryViewModel.ClDefinition">
+            <summary>
+            Cari kart Açıklaması
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.StatementSummeryViewModel.LastInvoiceDate">
+            <summary>
+            Son fatura tarihi
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.StatementSummeryViewModel.LastPayDate">
+            <summary>
+            Son ödeme yaptığı tarih
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.StatementSummeryViewModel.Balance">
+            <summary>
+            Bakiye
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Models.ViewModels.CreateBudgetOrderViewModel">
+            <summary>
+            Bütçe ve sipariş oluşturma istek modeli
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Models.ViewModels.BudgetCalculationRequestViewModel">
+            <summary>
+            Bütçe hesaplama isteği modeli
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Models.ViewModels.BudgetCalculationResultViewModel">
+            <summary>
+            Bütçe hesaplama sonucu modeli
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Models.ViewModels.BudgetOrderResultViewModel">
+            <summary>
+            Bütçe ve sipariş oluşturma sonuç modeli
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Models.ViewModels.OrderResultViewModel">
+            <summary>
+            Sipariş sonucu modeli
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Models.ViewModels.CreateOrdersForExistingBudgetViewModel">
+            <summary>
+            Mevcut bütçe için sipariş oluşturma modeli
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Models.ViewModels.SaveNewBudgetViewModel">
+            <summary>
+            Yeni bütçe kaydetme modeli (Create page'den gelen)
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Models.ViewModels.DuesStatisticSaveItemViewModel">
+            <summary>
+            DuesStatistic kaydetme öğesi
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Models.ViewModels.PreviewUpdateRequestViewModel">
+            <summary>
+            Bütçe güncelleme önizleme isteği
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Models.ViewModels.PreviewUpdateResultViewModel">
+            <summary>
+            Bütçe güncelleme önizleme sonucu
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Models.ViewModels.PreviewUpdateRowViewModel">
+            <summary>
+            Bütçe güncelleme önizleme satırı
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Models.ViewModels.TransferDuesStatisticsViewModel">
+            <summary>
+            DuesStatistic aktarım modeli
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.TransferDuesStatisticsViewModel.IsDebugMode">
+            <summary>
+            Debug modu: Sadece 3 kayıt aktarır ve mail gönderir
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.TransferDuesStatisticsViewModel.BudgetRatioId">
+            <summary>
+            BudgetRatio ID (aktarım başladığında kilitlemek için)
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Models.ViewModels.BudgetOrderTransferViewModel">
+            <summary>
+            BudgetOrder Transfer sayfası ViewModel
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Models.ViewModels.BudgetOrderReviewViewModel">
+            <summary>
+            BudgetOrder Review sayfası ViewModel (İnceleme ve Yeniden Aktarım)
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Models.ViewModels.DuesStatisticReviewItemViewModel">
+            <summary>
+            DuesStatistic inceleme öğesi
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.CreateBudgetRatioViewModel.Code">
+            <summary>
+            Bütçe / Ek Bütçe Kodu
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.CreateBudgetRatioViewModel.Description">
+            <summary>
+            Bütçe / Ek Bütçe Açıklama
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.CreateBudgetRatioViewModel.Year">
+            <summary>
+            Bütçe / Ek Bütçe Yılı
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.CreateBudgetRatioViewModel.Ratio">
+            <summary>
+            Bütçe / Ek Bütçe Geçen Yıla Göre Oranı
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.CreateBudgetRatioViewModel.TotalBugget">
+            <summary>
+            Toplam / Ek Bütçe Bütçe
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.CreateBudgetRatioViewModel.BuggetRatioMounths">
+            <summary>
+            Bütçe / Ek Bütçe Ayları (Flag Enum - BuggetRatioMounthEnum'ü inceleyiniz.)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.CreateBudgetRatioViewModel.BuggetType">
+            <summary>
+            Bütçe / Ek Bütçe Türü (Detaylar için BuggetTypeEnum'a bakınız)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.UpdateBudgetRatioViewModel.Id">
+            <summary>
+            Kayıt Id
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.UpdateBudgetRatioViewModel.Code">
+            <summary>
+            Bütçe / Ek Bütçe Kodu
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.UpdateBudgetRatioViewModel.Description">
+            <summary>
+            Bütçe / Ek Bütçe Açıklama
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.UpdateBudgetRatioViewModel.Year">
+            <summary>
+            Bütçe / Ek Bütçe Yılı
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.UpdateBudgetRatioViewModel.Ratio">
+            <summary>
+            Bütçe / Ek Bütçe Geçen Yıla Göre Oranı
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.UpdateBudgetRatioViewModel.TotalBugget">
+            <summary>
+            Bütçe / Ek Bütçe Toplam Bütçe
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.UpdateBudgetRatioViewModel.BuggetRatioMounths">
+            <summary>
+            Bütçe / Ek Bütçe Ayları (Flag Enum - BuggetRatioMounthEnum'ü inceleyiniz.)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.UpdateBudgetRatioViewModel.BuggetType">
+            <summary>
+            Bütçe / Ek Bütçe Türü (Detaylar için BuggetTypeEnum'a bakınız)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.BudgetRatioListViewModel.Id">
+            <summary>
+            Bütçe / Ek Bütçe Kayıt Id
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.BudgetRatioListViewModel.Code">
+            <summary>
+            Bütçe / Ek Bütçe Kodu
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.BudgetRatioListViewModel.Year">
+            <summary>
+            Bütçe / Ek Bütçe Yılı
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.BudgetRatioListViewModel.Ratio">
+            <summary>
+            Bütçe / Ek Bütçe Geçen Yıla Göre Oranı
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.BudgetRatioListViewModel.TotalBugget">
+            <summary>
+            Bütçe / Ek Bütçe Toplam Bütçe
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.BudgetRatioListViewModel.BuggetType">
+            <summary>
+            Bütçe / Ek Bütçe Türü (Detaylar için BuggetTypeEnum'a bakınız)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.BudgetRatioListViewModel.Status">
+            <summary>
+            Bütçe / Ek Bütçe Durumu
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.BudgetRatioDetailViewModel.Description">
+            <summary>
+            Bütçe / Ek Bütçe Açıklama
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.BudgetRatioDetailViewModel.BuggetRatioMounths">
+            <summary>
+            Bütçe / Ek Bütçe Ayları (Flag Enum - BuggetRatioMounthEnum'ü inceleyiniz.)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.BudgetRatioDetailViewModel.CreateTime">
+            <summary>
+            Bütçe / Ek Bütçe Oluşturulma Zamanı
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.BudgetRatioDetailViewModel.LastUpdateTime">
+            <summary>
+            Bütçe / Ek Bütçe Son Güncellenme Zamanı
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.BudgetRatioSearchViewModel.Code">
+            <summary>
+            Bütçe / Ek Bütçe Kodu
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.BudgetRatioSearchViewModel.Year">
+            <summary>
+            Bütçe / Ek Bütçe Yılı
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.BudgetRatioSearchViewModel.BuggetType">
+            <summary>
+            Bütçe / Ek Bütçe Türü (Detaylar için BuggetTypeEnum'a bakınız)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.BudgetRatioSearchViewModel.BuggetRatioMounths">
+            <summary>
+            Bütçe / Ek Bütçe Ayları (Flag Enum - BuggetRatioMounthEnum'ü inceleyiniz.)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.BudgetRatioSearchViewModel.Status">
+            <summary>
+            Bütçe / Ek Bütçe Durumu
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.BudgetRatioSearchViewModel.PageIndex">
+            <summary>
+            Bulunacak Sayfa Numarası
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.BudgetRatioSearchViewModel.PageSize">
+            <summary>
+            Bulunacak Sayfa Başına Kayıt Sayısı
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Providers.ILogoRestServiceProvider.PostSalesOrderAsync(Koala.Yedpa.Core.Models.LogoJsonModels.SalesOrderJsonViewModel)">
+            <summary>
+            Logo'ya SalesOrder gönder
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Repositories.IQRCodeRepository.GetAllAsync">
+            <summary>
+            Tüm QR kodlarını getirir
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Repositories.IQRCodeRepository.GetByBatchIdAsync(System.Int32)">
+            <summary>
+            BatchId'ye göre QR kodları getirir
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Repositories.IQRCodeRepository.GetByPartnerNoAsync(System.String)">
+            <summary>
+            PartnerNo'ya göre QR kod getirir
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Repositories.IQRCodeRepository.GetByYearAsync(System.String)">
+            <summary>
+            QR kod yılına göre QR kodları getirir
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Repositories.IQRCodeRepository.GetByStatusAsync(Koala.Yedpa.Core.Dtos.StatusEnum)">
+            <summary>
+            Durumuna göre QR kodları getirir
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Repositories.IQRCodeRepository.AddAsync(Koala.Yedpa.Core.Models.QRCode)">
+            <summary>
+            Yeni QR kod ekler
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Repositories.IQRCodeRepository.Update(Koala.Yedpa.Core.Models.QRCode)">
+            <summary>
+            QR kod günceller
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Repositories.IQRCodeRepository.DeleteAsync(System.Int32)">
+            <summary>
+            QR kod siler (soft delete)
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Repositories.IQRCodeRepository.DeleteAllAsync">
+            <summary>
+            Tüm QR kodlarını siler (hard delete)
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Repositories.IQRCodeRepository.DeleteByYearAsync(System.String)">
+            <summary>
+            Belirli bir yıldaki tüm QR kodlarını siler
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Repositories.IQRCodeRepository.CountAsync">
+            <summary>
+            QR kod sayısını getirir
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Repositories.IQRCodeRepository.CountAsync(Koala.Yedpa.Core.Dtos.StatusEnum)">
+            <summary>
+            Belirli bir durumdaki QR kod sayısını getirir
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Services.IBudgetOrderService">
+            <summary>
+            Bütçe ve sipariş oluşturma servisi interface'i
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Services.IBudgetOrderService.CreateBudgetAndOrdersAsync(Koala.Yedpa.Core.Models.ViewModels.CreateBudgetOrderViewModel)">
+            <summary>
+            Bütçe oluştur VE sipariş gönder
+            </summary>
+            <param name="model">Bütçe ve sipariş oluşturma modeli</param>
+            <returns>Bütçe ve sipariş oluşturma sonucu</returns>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Services.IBudgetOrderService.CreateBudgetAsync(Koala.Yedpa.Core.Models.ViewModels.CreateBudgetOrderViewModel)">
+            <summary>
+            Sadece bütçe oluştur (sipariş gönderme)
+            </summary>
+            <param name="model">Bütçe oluşturma modeli</param>
+            <returns>Oluşturulan bütçe kayıtları</returns>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Services.IBudgetOrderService.CreateOrdersForExistingBudgetAsync(System.String,System.Collections.Generic.List{System.Int32},System.String)">
+            <summary>
+            Mevcut bütçe kayıtları için sipariş oluştur
+            </summary>
+            <param name="budgetRatioId">Bütçe oranı ID</param>
+            <param name="selectedMonths">Seçilen aylar</param>
+            <param name="userId">Kullanıcı ID</param>
+            <returns>Sipariş sonuçları</returns>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Services.IBudgetOrderService.CalculateBudgetAsync(Koala.Yedpa.Core.Models.ViewModels.BudgetCalculationRequestViewModel)">
+            <summary>
+            Bütçe hesapla (preview)
+            </summary>
+            <param name="request">Hesaplama isteği</param>
+            <returns>Hesaplanan bütçe verileri</returns>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Services.IBudgetOrderService.CreateBudgetRatioAsync(Koala.Yedpa.Core.Models.BudgetRatio)">
+            <summary>
+            Yeni BudgetRatio oluştur (SaveNewBudget için)
+            </summary>
+            <param name="budgetRatio">BudgetRatio nesnesi</param>
+            <returns>Oluşturma sonucu</returns>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Services.IBudgetOrderService.CreateDuesStatisticAsync(Koala.Yedpa.Core.Models.DuesStatistic)">
+            <summary>
+            Yeni DuesStatistic oluştur (SaveNewBudget için)
+            </summary>
+            <param name="duesStatistic">DuesStatistic nesnesi</param>
+            <returns>Oluşturma sonucu</returns>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Services.IBudgetOrderService.UpdateBudgetRatioAsync(Koala.Yedpa.Core.Models.BudgetRatio)">
+            <summary>
+            BudgetRatio güncelle (TotalBugget güncellemesi için)
+            </summary>
+            <param name="budgetRatio">BudgetRatio nesnesi</param>
+            <returns>Güncelleme sonucu</returns>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Services.IBudgetOrderService.GetBudgetRatioByIdAsync(System.String)">
+            <summary>
+            BudgetRatio getir (ID ile)
+            </summary>
+            <param name="id">BudgetRatio ID</param>
+            <returns>BudgetRatio detayları</returns>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Services.IBudgetOrderService.GetBudgetRatioWithDuesAsync(System.String)">
+            <summary>
+            BudgetRatio ve bağlı DuesStatistic kayıtlarını getir
+            </summary>
+            <param name="id">BudgetRatio ID</param>
+            <returns>BudgetRatio ve DuesStatistic kayıtları</returns>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Services.IBudgetOrderService.UpdateBudgetRatioWithDuesAsync(Koala.Yedpa.Core.Models.BudgetRatio,Koala.Yedpa.Core.Dtos.BuggetRatioMounthEnum)">
+            <summary>
+            BudgetRatio ve bağlı tüm DuesStatistic kayıtlarını güncelle
+            </summary>
+            <param name="budgetRatio">BudgetRatio nesnesi</param>
+            <param name="selectedMonthsFlag">Seçilen aylar flag değeri</param>
+            <returns>Güncelleme sonucu</returns>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Services.IBudgetOrderService.PreviewUpdateAsync(System.String,System.Nullable{System.Decimal},System.Nullable{System.Decimal},Koala.Yedpa.Core.Dtos.BuggetRatioMounthEnum)">
+            <summary>
+            Bütçe güncelleme önizleme (yeni değerleri hesapla ama kaydetme)
+            </summary>
+            <param name="budgetRatioId">BudgetRatio ID</param>
+            <param name="newRatio">Yeni oran (opsiyonel)</param>
+            <param name="targetAmount">Hedef toplam bütçe (opsiyonel)</param>
+            <param name="newMonthsFlag">Yeni aylar flag değeri</param>
+            <returns>Önizleme sonucu</returns>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Services.IBudgetOrderService.TransferDuesStatisticsToLogoAsync(System.Collections.Generic.List{System.String},System.String,System.Boolean)">
+            <summary>
+            DuesStatistic kayıtlarını Logo'ya aktar
+            </summary>
+            <param name="duesStatisticIds">Aktarılacak DuesStatistic ID'leri</param>
+            <param name="userId">Kullanıcı ID</param>
+            <param name="isDebugMode">Debug modu: Sadece 3 kayıt aktarır ve mail gönderir</param>
+            <returns>Aktarım sonuçları</returns>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Services.IBudgetOrderService.LockBudgetRatioAsync(System.String)">
+            <summary>
+            BudgetRatio durumunu Locked yap (aktarım başlatıldığında)
+            </summary>
+            <param name="budgetRatioId">BudgetRatio ID</param>
+            <returns>Kilitleme sonucu</returns>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Services.IMessage34EmailService.SendTransactionEmailAsync(Koala.Yedpa.Core.Dtos.EmailDto,System.Collections.Generic.List{System.String})">
+            <summary>
+            Tek veya çoklu alıcıya transactional email gönderir
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Services.IMessage34EmailService.SendBulkEmailAsync(Koala.Yedpa.Core.Dtos.Message34.Message34SendBulkEmailRequest)">
+            <summary>
+            Belirtilen gruplara bulk email gönderir
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:Koala.Yedpa.Core.Services.IMessage34EmailService.TransferAndSendEmailAsync(Koala.Yedpa.Core.Dtos.Message34.Message34TransferAndSendRequest)" -->
+        <member name="M:Koala.Yedpa.Core.Services.IMessage34EmailService.GetCampaignDetailsAsync(System.Int32)">
+            <summary>
+            Kampanya detaylarını getirir
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Services.IMessage34EmailService.AuthenticateAsync">
+            <summary>
+            Authentication - token yeniler
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -1,19 +1,11 @@
 using Hangfire;
-using Koala.Yedpa.Core.Configuration;
-using Koala.Yedpa.Core.Models;
-using Koala.Yedpa.Core.Services;
 using Koala.Yedpa.Repositories;
 using Koala.Yedpa.Service.Extentions;
-using Koala.Yedpa.Service.HangfireDashboard;
-using Koala.Yedpa.Service.Services;
-using Koala.Yedpa.WebApi.Controllers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
-using NLog;
 using NLog.Extensions.Logging;
 
 namespace Koala.Yedpa.WebApi
@@ -32,49 +24,65 @@ namespace Koala.Yedpa.WebApi
             });
 
             // Add services to the container
-            builder.Services.AddControllers()
-                .AddApplicationPart(typeof(KoalaApiController).Assembly);
+            builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
 
-            // Swagger Configuration
-            builder.Services.AddSwaggerGen(options =>
+            builder.Services.AddSwaggerGen(c =>
             {
-                options.SwaggerDoc("v1", new OpenApiInfo
+                var jwtSecurityScheme = new OpenApiSecurityScheme
                 {
-                    Title = "Koala Yedpa Web API",
+                    Scheme = "bearer",
+                    BearerFormat = "JWT",
+                    Name = "JWT Authentication",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.Http,
+                    Description = "Bearer token'ı 'Authorize' butonuna yapıştırın. Identity Server'dan aldığınız token'ın tamamını 'Bearer ' kelimesi olmadan yazın.",
+
+                    Reference = new OpenApiReference
+                    {
+                        Id = JwtBearerDefaults.AuthenticationScheme,
+                        Type = ReferenceType.SecurityScheme
+                    }
+                };
+                c.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+        {
+            {jwtSecurityScheme, Array.Empty<string>()}
+        });
+
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Sistem Koala Yedpa Api v01.00",
                     Version = "v1",
-                    Description = "Koala Yedpa Uygulaması için RESTful API",
                     Contact = new OpenApiContact
                     {
-                        Name = "Koala Yedpa Team"
-                    }
+                        Email = "info@sistem-bilgi.com",
+                        Name = "Sistem Bilgisayar",
+                        Url = new Uri("https://www.sistem-bilgi.com")
+
+                    },
+                    Description = "Sistem Bilgisayar Tarafından Yedpa Websitesi tarafından gerekli verilerin Logo Tiger Uygulamasına Aktarmak, ve Okumak İçin Geliştirilmiştir ",
+                    License = new OpenApiLicense { Name = "Sistem Bilgisayar Tarafından Geliştirilmiştir", Url = new Uri("Https://sistem-bilgi.com") },
+
                 });
+                var filePath = Path.Combine(AppContext.BaseDirectory, "YedpaApiCore.xml");
 
-                // Include XML comments for Swagger documentation
-                var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                if (File.Exists(xmlPath))
-                {
-                    options.IncludeXmlComments(xmlPath);
-                }
+                c.IncludeXmlComments(filePath);
+            });
 
-                // Only include controllers from WebApi assembly, ignore WebUI
-                options.DocInclusionPredicate((docName, description) =>
-                {
-                    if (description.ActionDescriptor is not Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor controller)
-                    {
-                        return false;
-                    }
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+       .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, opts =>
+       {
+           opts.Authority = "https://identity.sistem-koala.com:44982/";
+           opts.Audience = "Rs-19001";
+           opts.RequireHttpsMetadata = false;
+       });
 
-                    // Explicitly exclude WebUI controllers
-                    if (controller.ControllerTypeInfo.Assembly.GetName().Name == "Koala.Yedpa.WebUI")
-                    {
-                        return false;
-                    }
-
-                    // Only include WebApi controllers
-                    return controller.ControllerTypeInfo.Assembly.GetName().Name == "Koala.Yedpa.WebApi";
-                });
+            builder.Services.AddAuthorization(opts =>
+            {
+                opts.AddPolicy("CurrentAccuant", policy => { policy.RequireClaim("scope", "sc-190101"); });
+                opts.AddPolicy("Sistem", policy => { policy.RequireClaim("scope", "sc-030100"); });
             });
 
             // Database
@@ -92,48 +100,71 @@ namespace Koala.Yedpa.WebApi
                 .UseSqlServerStorage(builder.Configuration.GetConnectionString("YedpaYonetim")));
 
             builder.Services.AddHttpClient();
-            builder.Services.AddDataProtection();
+            builder.Services.AddHttpContextAccessor();
 
             // AutoMapper Configuration
             builder.Services.AddAutoMapper(cfg => { }, typeof(Program).Assembly);
 
-            // Identity Configuration
-            builder.Services.AddIdentity<AppUser, AppRole>(options =>
-            {
-                options.User.RequireUniqueEmail = true;
-                options.Password.RequireDigit = true;
-                options.Password.RequireLowercase = true;
-                options.Password.RequireUppercase = true;
-                options.Password.RequireNonAlphanumeric = true;
-                options.Password.RequiredUniqueChars = 3;
-                options.Password.RequiredLength = 8;
-                options.Lockout.MaxFailedAccessAttempts = 3;
-                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromHours(2);
-            })
-            .AddEntityFrameworkStores<AppDbContext>()
-            .AddDefaultTokenProviders();
+            // JWT Bearer Authentication for External IdentityServer
+            //var identityServerAuthority = builder.Configuration["IdentityServer:Authority"] ?? "https://identity.sistem-koala.com:44982";
+            //var apiName = builder.Configuration["IdentityServer:ApiName"] ?? "Rs-19001";
+            //var requireHttpsMetadata = bool.Parse(builder.Configuration["IdentityServer:RequireHttpsMetadata"] ?? "false");
 
-            builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
-            {
-                options.TokenLifespan = TimeSpan.FromHours(8);
-            });
+            //builder.Services.AddAuthentication(options =>
+            //{
+            //    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            //    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            //})
+            //.AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+            //{
+            //    options.Authority = identityServerAuthority;
+            //    options.RequireHttpsMetadata = requireHttpsMetadata;
+            //    options.Audience = apiName;
 
-            builder.Services.ConfigureApplicationCookie(options =>
-            {
-                var cookieBuilder = new CookieBuilder();
-                cookieBuilder.Name = "KoalaYedpaApi";
-                options.LoginPath = new PathString("/api/User/Login");
-                options.LogoutPath = new PathString("/api/User/Logout");
-                options.AccessDeniedPath = new PathString("/api/User/AccessDenied");
-                options.Cookie = cookieBuilder;
-                options.ExpireTimeSpan = TimeSpan.FromDays(30);
-                options.SlidingExpiration = true;
-            });
+            //    // Token validation parameters
+            //    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+            //    {
+            //        ValidateAudience = true,
+            //        ValidAudience = apiName,
+            //        ValidateIssuer = true,
+            //        ValidIssuers = new[] { identityServerAuthority },
+            //        ValidateIssuerSigningKey = true,
+            //        ValidateLifetime = true,
+            //        ClockSkew = TimeSpan.FromSeconds(30)
+            //    };
 
-            builder.Services.Configure<SecurityStampValidatorOptions>(options =>
-            {
-                options.ValidationInterval = TimeSpan.FromSeconds(120);
-            });
+            //    // Events for debugging
+            //    options.Events = new JwtBearerEvents
+            //    {
+            //        OnAuthenticationFailed = context =>
+            //        {
+            //            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+            //            logger.LogError($"Authentication failed: {context.Exception.Message}");
+            //            return Task.CompletedTask;
+            //        },
+            //        OnTokenValidated = context =>
+            //        {
+            //            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+            //            logger.LogInformation($"Token validated for: {context.Principal?.Identity?.Name}");
+            //            return Task.CompletedTask;
+            //        },
+            //        OnChallenge = context =>
+            //        {
+            //            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+            //            logger.LogWarning($"Authorization challenge: {context.Error}, {context.ErrorDescription}");
+            //            return Task.CompletedTask;
+            //        }
+            //    };
+            //});
+
+            //// Add Authorization
+            //builder.Services.AddAuthorization(options =>
+            //{
+            //    // Default policy - require authenticated user
+            //    options.FallbackPolicy = new Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder()
+            //        .RequireAuthenticatedUser()
+            //        .Build();
+            //});
 
             builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             builder.Services.AddSingleton<IFileProvider>(new PhysicalFileProvider(Directory.GetCurrentDirectory()));
@@ -158,16 +189,33 @@ namespace Koala.Yedpa.WebApi
             // Configure the HTTP request pipeline
             if (app.Environment.IsDevelopment())
             {
+                app.UseDeveloperExceptionPage();
             }
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Koala Yedpa Web API v1");
+                c.OAuthScopeSeparator(" ");
+
+                // Bearer Token Configuration
+                c.DefaultModelsExpandDepth(0);
+                c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.List);
             });
 
             app.UseCors("AllowAll");
             app.UseHttpsRedirection();
+
+            // Authentication & Authorization middleware order is important
+            app.UseAuthentication();
             app.UseAuthorization();
+
+            // Redirect root to Swagger
+            app.MapGet("/", context =>
+            {
+                context.Response.Redirect("/swagger/index.html", permanent: false);
+                return Task.CompletedTask;
+            });
+
             app.MapControllers();
 
             app.Run();

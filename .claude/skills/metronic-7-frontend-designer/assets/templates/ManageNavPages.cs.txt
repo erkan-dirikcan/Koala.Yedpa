@@ -1,0 +1,37 @@
+using Microsoft.AspNetCore.Mvc.Rendering;
+
+namespace {NameSpace}
+{
+    public class ManageNavPages
+    {
+        //Tek Menü İçin
+        private static string SingleMenu => "SingleMenu";
+        public static string SingleMenuNavClass(ViewContext viewContext) => PageMainNavClass(viewContext, SingleMenu);
+
+        //Child Itemlı Menü İçin
+        private static string TopMenuForChild => "TopMenuForChild";//ÜstMenü
+        public static string TopMenuForChildNavClass(ViewContext viewContext) => PageMainToogleNavClass(viewContext, TopMenuForChild);
+
+        private static string ChildMenuCreate => "ChildMenuCreate";
+        private static string ChildMenuUpdate => "ChildMenuUpdate";
+
+        public static string ChildMenuCreateNavClass(ViewContext viewContext) => PageMainNavClass(viewContext, ChildMenuCreate);
+        public static string ChildMenuUpdateNavClass(ViewContext viewContext) => PageMainNavClass(viewContext, ChildMenuUpdate);
+
+        private static string PageMainNavClass(ViewContext viewContext, string page)
+        {
+            var activePage = viewContext.ViewData["ActivePage"] as string
+                             ?? System.IO.Path.GetFileNameWithoutExtension(viewContext.ActionDescriptor.DisplayName);
+            var retVal= string.Equals(activePage, page, StringComparison.OrdinalIgnoreCase) ? "menu-item-active" : null;
+            return retVal;
+        }
+
+        private static string PageMainToogleNavClass(ViewContext viewContext, string page)
+        {
+            var menuToogle = viewContext.ViewData["MenuToggle"] as string
+                             ?? System.IO.Path.GetFileNameWithoutExtension(viewContext.ActionDescriptor.DisplayName);
+            var retVal=string.Equals(menuToogle, page, StringComparison.OrdinalIgnoreCase) ? "menu-item-open" : "";
+            return retVal;
+        }
+    }
+}

@@ -4,6 +4,121 @@
         <name>Koala.Yedpa.Core</name>
     </assembly>
     <members>
+        <member name="T:Koala.Yedpa.Core.Dtos.Yonetim.ArizaListDto">
+            <summary>
+            Arıza listesi DTO'su
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Dtos.Yonetim.ArizaDto">
+            <summary>
+            Arıza detay DTO'su
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Dtos.Yonetim.ArizaHareketDto">
+            <summary>
+            Arıza hareket DTO'su
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Dtos.Yonetim.ArizaKisiDto">
+            <summary>
+            Arıza ilgili kişi DTO'su
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Dtos.Yonetim.ArizaCreateDto">
+            <summary>
+            Yeni arıza oluşturma DTO'su
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Dtos.Yonetim.ArizaDurumUpdateDto">
+            <summary>
+            Arıza durum güncelleme DTO'su
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Dtos.Yonetim.ArizaHareketEkleDto">
+            <summary>
+            Arıza hareket ekleme DTO'su
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Dtos.Yonetim.ArsivDto">
+            <summary>
+            Arşiv listesi DTO'su
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Dtos.Yonetim.ArsivDetayDto">
+            <summary>
+            Arşiv detay DTO'su
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Dtos.Yonetim.RafDto">
+            <summary>
+            Raf DTO'su
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Dtos.Yonetim.KoliCreateDto">
+            <summary>
+            Yeni koli oluşturma DTO'su
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Dtos.Yonetim.OtoparkListDto">
+            <summary>
+            Otopark listesi DTO'su
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Dtos.Yonetim.OtoparkDto">
+            <summary>
+            Otopark detay DTO'su
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Dtos.Yonetim.OtoparkGirisDto">
+            <summary>
+            Otopark giriş DTO'su
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Dtos.Yonetim.OtoparkCikisDto">
+            <summary>
+            Otopark çıkış DTO'su
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Dtos.Yonetim.OtoparkAboneDto">
+            <summary>
+            Otopark abonelik DTO'su
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Dtos.Yonetim.OtoparkAboneListDto">
+            <summary>
+            Otopark abonelik listesi DTO'su
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Dtos.Yonetim.SozlesmeListDto">
+            <summary>
+            Sözleşme listesi DTO'su
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Dtos.Yonetim.SozlesmeDto">
+            <summary>
+            Sözleşme detay DTO'su
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Dtos.Yonetim.SozlesmeKisiDto">
+            <summary>
+            Sözleşme ilgili kişi DTO'su
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Dtos.Yonetim.SozlesmeCreateDto">
+            <summary>
+            Yeni sözleşme oluşturma DTO'su
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Dtos.Yonetim.SozlesmeUpdateDto">
+            <summary>
+            Sözleşme güncelleme DTO'su
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Dtos.Yonetim.SozlesmeDurumUpdateDto">
+            <summary>
+            Sözleşme durum güncelleme DTO'su
+            </summary>
+        </member>
         <member name="T:Koala.Yedpa.Core.Exceptions.CryptoLicenseException">
             <summary>
             Crypto API lisans hatası için özel exception
@@ -649,6 +764,66 @@
             Bulunacak Sayfa Başına Kayıt Sayısı
             </summary>
         </member>
+        <member name="T:Koala.Yedpa.Core.Models.Yonetim.Ariza">
+            <summary>
+            Ariza - Arıza/fatura takip entity'si
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Models.Yonetim.ArizaHareket">
+            <summary>
+            ArizaHareket - Arıza hareket/fiş entity'si
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Models.Yonetim.ArizaKisi">
+            <summary>
+            ArizaKisi - Arıza ilgili kişi entity'si
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Models.Yonetim.Raf">
+            <summary>
+            Raf - Arşiv sistemi Raf entity'si
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Models.Yonetim.Bolme">
+            <summary>
+            Bolme - Arşiv sistemi Bölme entity'si
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Models.Yonetim.Koli">
+            <summary>
+            Koli - Arşiv sistemi Koli entity'si
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Models.Yonetim.Mail">
+            <summary>
+            Mail - İletişim bilgileri entity'si
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Models.Yonetim.Birim">
+            <summary>
+            Birim - Departman/birim entity'si
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Models.Yonetim.Durum">
+            <summary>
+            Durum - Durum kodları entity'si
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Models.Yonetim.OtoparkKayit">
+            <summary>
+            OtoparkKayit - Otopark kayıt entity'si
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Models.Yonetim.Sozlesme">
+            <summary>
+            Sozlesme - Sözleşme yönetimi entity'si
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Models.Yonetim.SozlesmeKisi">
+            <summary>
+            SozlesmeKisi - Sözleşme ilgili kişi entity'si
+            </summary>
+        </member>
         <member name="M:Koala.Yedpa.Core.Providers.ILogoRestServiceProvider.PostSalesOrderAsync(Koala.Yedpa.Core.Models.LogoJsonModels.SalesOrderJsonViewModel)">
             <summary>
             Logo'ya SalesOrder gönder
@@ -712,6 +887,31 @@
         <member name="M:Koala.Yedpa.Core.Repositories.IQRCodeRepository.CountAsync(Koala.Yedpa.Core.Dtos.StatusEnum)">
             <summary>
             Belirli bir durumdaki QR kod sayısını getirir
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Repositories.IArsivRepository">
+            <summary>
+            Arşiv Repository Interface
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Repositories.ISozlesmeRepository">
+            <summary>
+            Sözleşme Repository Interface
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Repositories.IArizaRepository">
+            <summary>
+            Arıza Repository Interface
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Repositories.IOtoparkRepository">
+            <summary>
+            Otopark Repository Interface
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Repositories.IOrtakRepository">
+            <summary>
+            Ortak Repository Interface
             </summary>
         </member>
         <member name="T:Koala.Yedpa.Core.Services.IBudgetOrderService">
@@ -837,6 +1037,31 @@
         <member name="M:Koala.Yedpa.Core.Services.IMessage34EmailService.AuthenticateAsync">
             <summary>
             Authentication - token yeniler
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Services.IArsivService">
+            <summary>
+            Arşiv Service Interface
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Services.ISozlesmeService">
+            <summary>
+            Sözleşme Service Interface
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Services.IArizaService">
+            <summary>
+            Arıza Service Interface
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Services.IOtoparkService">
+            <summary>
+            Otopark Service Interface
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Services.IOrtakService">
+            <summary>
+            Ortak Service Interface
             </summary>
         </member>
     </members>

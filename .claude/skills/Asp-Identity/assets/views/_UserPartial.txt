@@ -1,0 +1,28 @@
+@model AppUser
+
+@{
+    var avatarPath = string.IsNullOrEmpty(Model.Avatar)
+        ? "/images/default-avatar.png"
+        : Model.Avatar;
+}
+
+<div class="user-partial" data-user-id="@Model.Id">
+    <div class="user-avatar">
+        <img src="@avatarPath" alt="@Model.FullName" class="avatar-img" />
+    </div>
+    <div class="user-info">
+        <div class="user-name">@Model.FullName</div>
+        @if (!string.IsNullOrEmpty(Model.Email))
+        {
+            <div class="user-email">@Model.Email</div>
+        }
+    </div>
+    @if (Model.UserStatus != UserStatus.Active)
+    {
+        <span class="badge badge-@Model.UserStatus.ToString().ToLower()">@Model.UserStatus</span>
+    }
+    @if (Model.IsApiUser)
+    {
+        <span class="badge badge-api">API</span>
+    }
+</div>

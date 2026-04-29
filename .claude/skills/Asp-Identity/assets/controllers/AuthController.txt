@@ -1,0 +1,154 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+
+[AllowAnonymous]
+public class AuthController : Controller
+{
+    private readonly IAccountService _accountService;
+    private readonly ILogger<AuthController> _logger;
+
+    public AuthController(IAccountService accountService, ILogger<AuthController> logger)
+    {
+        _accountService = accountService;
+        _logger = logger;
+    }
+
+    [HttpGet]
+    public IActionResult Login(string returnUrl = null)
+    {
+        ViewData["ReturnUrl"] = returnUrl;
+        return View();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
+    {
+        ViewData["ReturnUrl"] = returnUrl;
+
+        if (!ModelState.IsValid)
+            return View(model);
+
+        var result = await _accountService.LoginAsync(model);
+
+        if (result.Succeeded)
+        {
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                return Redirect(returnUrl);
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        foreach (var error in result.Errors)
+            ModelState.AddModelError(string.Empty, error);
+
+        return View(model);
+    }
+
+    [HttpGet]
+    public IActionResult Register(string returnUrl = null)
+    {
+        ViewData["ReturnUrl"] = returnUrl;
+        return View();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
+    {
+        ViewData["ReturnUrl"] = returnUrl;
+
+        if (!ModelState.IsValid)
+            return View(model);
+
+        var result = await _accountService.RegisterAsync(model);
+
+        if (result.Succeeded)
+        {
+            // If registration requires approval, show message
+            return RedirectToAction("RegisterConfirmation");
+        }
+
+        foreach (var error in result.Errors)
+            ModelState.AddModelError(string.Empty, error);
+
+        return View(model);
+    }
+
+    public IActionResult RegisterConfirmation()
+    {
+        return View();
+    }
+
+    [HttpGet]
+    public IActionResult ForgotPassword()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+    {
+        if (!ModelState.IsValid)
+            return View(model);
+
+        var result = await _accountService.ForgotPasswordAsync(model.Email);
+
+        // Always show success to prevent user enumeration
+        return RedirectToAction("ForgotPasswordConfirmation");
+    }
+
+    public IActionResult ForgotPasswordConfirmation()
+    {
+        return View();
+    }
+
+    [HttpGet]
+    public IActionResult ResetPassword(string token = null)
+    {
+        if (token == null)
+            return BadRequest("A token must be supplied for password reset.");
+
+        var model = new ResetPasswordViewModel { Token = token };
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+    {
+        if (!ModelState.IsValid)
+            return View(model);
+
+        var result = await _accountService.ResetPasswordAsync(model);
+
+        if (result.Succeeded)
+            return RedirectToAction("ResetPasswordConfirmation");
+
+        foreach (var error in result.Errors)
+            ModelState.AddModelError(string.Empty, error);
+
+        return View(model);
+    }
+
+    public IActionResult ResetPasswordConfirmation()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Logout()
+    {
+        await _accountService.LogoutAsync();
+        return RedirectToAction("Index", "Home");
+    }
+
+    [HttpGet]
+    public IActionResult AccessDenied()
+    {
+        return View();
+    }
+}

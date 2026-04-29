@@ -1,0 +1,195 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+
+[Authorize(Policy = "Admin.Claim.View")]
+public class ClaimController : Controller
+{
+    private readonly ApplicationDbContext _context;
+    private readonly ILogger<ClaimController> _logger;
+
+    public ClaimController(ApplicationDbContext context, ILogger<ClaimController> logger)
+    {
+        _context = context;
+        _logger = logger;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Index(string moduleId = null)
+    {
+        var query = _context.ModuleClaims.Include(c => c.Module).AsQueryable();
+
+        if (!string.IsNullOrEmpty(moduleId))
+            query = query.Where(c => c.ModuleId == moduleId);
+
+        var claims = await query
+            .OrderBy(c => c.Module.DisplayName ?? c.Module.Name)
+            .ThenBy(c => c.DisplayName ?? c.Name)
+            .ToListAsync();
+
+        var modules = await _context.Modules
+            .OrderBy(m => m.DisplayName ?? m.Name)
+            .ToListAsync();
+
+        ViewBag.Modules = modules;
+        ViewBag.SelectedModuleId = moduleId;
+
+        return View(claims);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Create()
+    {
+        var modules = await _context.Modules
+            .OrderBy(m => m.DisplayName ?? m.Name)
+            .ToListAsync();
+
+        ViewBag.Modules = new SelectList(modules, "Id", "DisplayName", "Name");
+
+        return View();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(CreateClaimViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            var modules = await _context.Modules.ToListAsync();
+            ViewBag.Modules = new SelectList(modules, "Id", "DisplayName", "Name");
+            return View(model);
+        }
+
+        var claim = new ModuleClaim
+        {
+            ModuleId = model.ModuleId,
+            Name = model.Name,
+            DisplayName = model.DisplayName,
+            Description = model.Description
+        };
+
+        _context.ModuleClaims.Add(claim);
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformation("Claim {ClaimName} created for module {ModuleId} by {UserId}",
+            model.Name, model.ModuleId, User.Identity?.Name);
+
+        return RedirectToAction("Index", new { moduleId = model.ModuleId });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Edit(string id)
+    {
+        var claim = await _context.ModuleClaims
+            .Include(c => c.Module)
+            .FirstOrDefaultAsync(c => c.Id == id);
+
+        if (claim == null)
+            return NotFound();
+
+        var modules = await _context.Modules
+            .OrderBy(m => m.DisplayName ?? m.Name)
+            .ToListAsync();
+
+        ViewBag.Modules = new SelectList(modules, "Id", "DisplayName", claim.ModuleId);
+
+        var model = new EditClaimViewModel
+        {
+            Id = claim.Id,
+            ModuleId = claim.ModuleId,
+            Name = claim.Name,
+            DisplayName = claim.DisplayName,
+            Description = claim.Description
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(EditClaimViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            var modules = await _context.Modules.ToListAsync();
+            ViewBag.Modules = new SelectList(modules, "Id", "DisplayName", model.ModuleId);
+            return View(model);
+        }
+
+        var claim = await _context.ModuleClaims.FindAsync(model.Id);
+        if (claim == null)
+            return NotFound();
+
+        claim.ModuleId = model.ModuleId;
+        claim.Name = model.Name;
+        claim.DisplayName = model.DisplayName;
+        claim.Description = model.Description;
+
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformation("Claim {ClaimId} updated by {UserId}", model.Id, User.Identity?.Name);
+
+        return RedirectToAction("Index", new { moduleId = model.ModuleId });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Delete(string id)
+    {
+        var claim = await _context.ModuleClaims
+            .Include(c => c.Module)
+            .FirstOrDefaultAsync(c => c.Id == id);
+
+        if (claim == null)
+            return NotFound();
+
+        return View(claim);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(string id)
+    {
+        var claim = await _context.ModuleClaims.FindAsync(id);
+        if (claim == null)
+            return NotFound();
+
+        var moduleId = claim.ModuleId;
+
+        _context.ModuleClaims.Remove(claim);
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformation("Claim {ClaimId} deleted by {UserId}", id, User.Identity?.Name);
+
+        return RedirectToAction("Index", new { moduleId });
+    }
+
+    #region JSON Actions
+
+    [HttpGet]
+    public async Task<JsonResult> GetClaimsJson(string moduleId = null)
+    {
+        var query = _context.ModuleClaims.Include(c => c.Module).AsQueryable();
+
+        if (!string.IsNullOrEmpty(moduleId))
+            query = query.Where(c => c.ModuleId == moduleId);
+
+        var claims = await query
+            .OrderBy(c => c.Module.DisplayName ?? c.Module.Name)
+            .ThenBy(c => c.DisplayName ?? c.Name)
+            .Select(c => new
+            {
+                id = c.Id,
+                moduleId = c.ModuleId,
+                moduleName = c.Module.DisplayName ?? c.Module.Name,
+                name = c.Name,
+                displayName = c.DisplayName,
+                description = c.Description,
+                fullClaimName = $"{c.Module.Name}.{c.Name}"
+            })
+            .ToListAsync();
+
+        return Json(claims);
+    }
+
+    #endregion
+}

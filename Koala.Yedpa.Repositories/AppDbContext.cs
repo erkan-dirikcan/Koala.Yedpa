@@ -1,4 +1,5 @@
 ﻿using Koala.Yedpa.Core.Models;
+using Koala.Yedpa.Core.Models.Yonetim;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
@@ -24,7 +25,20 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
     public DbSet<Transaction> Transaction { get; set; }
     public DbSet<TransactionItem> TransactionItem { get; set; }
     public DbSet<TransactionType> TransactionType { get; set; }
-    //public DbSet<>  { get; set; }
+
+    // YONETIM Database Entities
+    public DbSet<Raf> Raflar { get; set; }
+    public DbSet<Bolme> Bolumeler { get; set; }
+    public DbSet<Koli> Koliler { get; set; }
+    public DbSet<Sozlesme> Sozlesmeler { get; set; }
+    public DbSet<SozlesmeKisi> SozlesmeKisiler { get; set; }
+    public DbSet<Ariza> Arizalar { get; set; }
+    public DbSet<ArizaHareket> ArizaHareketleri { get; set; }
+    public DbSet<ArizaKisi> ArizaKisiler { get; set; }
+    public DbSet<OtoparkKayit> OtoparkKayitlari { get; set; }
+    public DbSet<Mail> MailAdresleri { get; set; }
+    public DbSet<Birim> Birimler { get; set; }
+    public DbSet<Durum> Durumlar { get; set; }
     //public DbSet<>  { get; set; }
     //public DbSet<>  { get; set; }
     //public DbSet<>  { get; set; }

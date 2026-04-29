@@ -5,7 +5,6 @@ using Koala.Yedpa.Repositories;
 using Koala.Yedpa.Service.HangfireDashboard;
 using Koala.Yedpa.Service.Services;
 using Koala.Yedpa.WebUI.Extentions;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
@@ -30,6 +29,13 @@ namespace Koala.Yedpa.WebUI
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            // ASP.NET Identity Cookie Authentication for WebUI
+            builder.Services.AddIdentityWithExt();
+
+            // Add Authorization
+            builder.Services.AddAuthorization();
+
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
             {
@@ -40,11 +46,11 @@ namespace Koala.Yedpa.WebUI
                     Name = "JWT Authentication",
                     In = ParameterLocation.Header,
                     Type = SecuritySchemeType.Http,
-                    Description = "Sadece Identity Serverdan aldığınız token bilgisini Bearer Kullanmadan yapıştırın",
+                    Description = "Bearer token'ı 'Authorize' butonuna yapıştırın. Identity Server'dan aldığınız token'ın tamamını 'Bearer ' kelimesi olmadan yazın.",
 
                     Reference = new OpenApiReference
                     {
-                        Id = JwtBearerDefaults.AuthenticationScheme,
+                        Id = "Bearer",
                         Type = ReferenceType.SecurityScheme
                     }
                 };
@@ -98,9 +104,8 @@ namespace Koala.Yedpa.WebUI
 
             builder.Services.AddHttpClient();
             builder.Services.AddDataProtection();
+            builder.Services.AddHttpContextAccessor();
             builder.Services.AddMappingConfExt();
-            builder.Services.AddIdentityConfExt(builder.Configuration);
-            builder.Services.AddIdentityWithExt();
             builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             builder.Services.AddSingleton<IFileProvider>(new PhysicalFileProvider(Directory.GetCurrentDirectory()));
             builder.Services.AddApplicationServices();
@@ -123,9 +128,11 @@ namespace Koala.Yedpa.WebUI
             {
                 var factory = sp.GetRequiredService<IHttpClientFactory>();
                 var client = factory.CreateClient("CryptoApi");
+                var configuration = sp.GetRequiredService<IConfiguration>();
                 var licenseReader = sp.GetService<ILicenseReader>();
+                var licenseValidator = sp.GetRequiredService<ILicenseValidator>();
                 var logger = sp.GetRequiredService<ILogger<CryptoService>>();
-                return new CryptoService(client, licenseReader!, logger);
+                return new CryptoService(client, configuration, licenseReader!, licenseValidator, logger);
             });
 
             // Message34 Email API
@@ -204,6 +211,9 @@ namespace Koala.Yedpa.WebUI
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "YEDPA API V1");
                 c.RoutePrefix = "swagger";
+                c.OAuthScopeSeparator(" ");
+                c.DefaultModelsExpandDepth(0);
+                c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.List);
             });
             
             
@@ -229,11 +239,14 @@ namespace Koala.Yedpa.WebUI
             });
 
             app.UseRouting();
+
+            // Authentication & Authorization middleware (must be after Routing, before endpoint mapping)
             app.UseAuthentication();
             app.UseAuthorization();
+
             app.UseKoalaHangfireDashboard();
             app.MapStaticAssets();
-            //app.MapControllers();
+            app.MapControllers();
 
             app.MapControllerRoute(
                 name: "default",

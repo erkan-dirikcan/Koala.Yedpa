@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using DocumentFormat.OpenXml.Wordprocessing;
+using Koala.Yedpa.Core.Models.Yonetim;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Koala.Yedpa.WebUI
 {
@@ -24,12 +26,18 @@ namespace Koala.Yedpa.WebUI
         private static string CreatePdf => "CreatePdf";
         private static string CurrentAccountDetail => "CurrentAccountDetail";
 
-
+        //======================================İşyeri Menu Value====================================================
         private static string BudgetOrderList => "BudgetOrderList";
         private static string WorkplaceList => "WorkplaceList";
         private static string WorkplaceIndex => "WorkplaceIndex";
         private static string WorkplaceDetail => "WorkplaceDetail";
         private static string WorkplaceUpdate => "WorkplaceUpdate";
+
+        //======================================Yönetim Menu Value====================================================
+        private static string Ariza => "Ariza";
+        private static string Arsiv => "Arsiv";
+        private static string Otopark => "Otopark";
+        private static string Sozlesme => "Sozlesme";
 
 
 
@@ -57,31 +65,39 @@ namespace Koala.Yedpa.WebUI
 
 
 
-
+        //======================================İş Yeri Alt Menü NavClass====================================================
         public static string BudgetOrderNavClass(ViewContext viewContext) => PageMainNavClass(viewContext, BudgetOrderList);
         public static string WorkplaceNavClass(ViewContext viewContext) => PageMainNavClass(viewContext, WorkplaceList);
         public static string WorkplaceIndexNavClass(ViewContext viewContext) => PageMainNavClass(viewContext, WorkplaceIndex);
         public static string WorkplaceDetailNavClass(ViewContext viewContext) => PageMainNavClass(viewContext, WorkplaceDetail);
         public static string WorkplaceUpdateNavClass(ViewContext viewContext) => PageMainNavClass(viewContext, WorkplaceUpdate);
 
+        //======================================Yönetim Alt Menü NavClass====================================================
+
+        public static string ArizaNavClass(ViewContext viewContext) => PageMainNavClass(viewContext, Ariza);
+        public static string ArsivOrderNavClass(ViewContext viewContext) => PageMainNavClass(viewContext, Arsiv);
+        public static string OtoparkOrderNavClass(ViewContext viewContext) => PageMainNavClass(viewContext, Otopark);
+        public static string SozlesmeOrderNavClass(ViewContext viewContext) => PageMainNavClass(viewContext, Sozlesme);
 
 
-        //===============================================================================================================
+        //===================================Üst Menü Value=======================================================
 
         private static string User => "User";
         private static string Module => "Module";
         private static string Settings => "Settings";
         private static string Site => "Site";
+        private static string Yonetim => "Yonetim";
         private static string QRCode => "QRCode";
 
 
 
-        //###############################################################################################################
+        //#################################Üst Menü NavClass#########################################################
 
         public static string UserNavClass(ViewContext viewContext) => PageMainToogleNavClass(viewContext, User);
         public static string ModuleNavClass(ViewContext viewContext) => PageMainToogleNavClass(viewContext, Module);
         public static string SettingsNavClass(ViewContext viewContext) => PageMainToogleNavClass(viewContext, Settings);
         public static string SiteNavClass(ViewContext viewContext) => PageMainToogleNavClass(viewContext, Site);
+        public static string YonetimNavClass(ViewContext viewContext) => PageMainToogleNavClass(viewContext, Yonetim);
         public static string QRCodeNavClass(ViewContext viewContext) => PageMainToogleNavClass(viewContext, QRCode);
 
 

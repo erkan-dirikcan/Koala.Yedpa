@@ -1,0 +1,188 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+
+[Authorize(Policy = "Admin.Role.View")]
+public class RoleController : Controller
+{
+    private readonly IIdentityService _identityService;
+    private readonly IClaimManagementService _claimService;
+    private readonly ILogger<RoleController> _logger;
+
+    public RoleController(
+        IIdentityService identityService,
+        IClaimManagementService claimService,
+        ILogger<RoleController> logger)
+    {
+        _identityService = identityService;
+        _claimService = claimService;
+        _logger = logger;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Index()
+    {
+        var roles = await _identityService.GetRolesAsync();
+        return View(roles);
+    }
+
+    [HttpGet]
+    public IActionResult Create()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(CreateRoleViewModel model)
+    {
+        if (!ModelState.IsValid)
+            return View(model);
+
+        var role = new AppRole
+        {
+            Name = model.Name,
+            Description = model.Description
+        };
+
+        var result = await _identityService.CreateRoleAsync(role);
+
+        if (result.Succeeded)
+            return RedirectToAction("Index");
+
+        foreach (var error in result.Errors)
+            ModelState.AddModelError(string.Empty, error);
+
+        return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Edit(string id)
+    {
+        var role = await _identityService.GetRoleByIdAsync(id);
+        if (role == null)
+            return NotFound();
+
+        var model = new EditRoleViewModel
+        {
+            Id = role.Id.ToString(),
+            Name = role.Name,
+            Description = role.Description
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(EditRoleViewModel model)
+    {
+        if (!ModelState.IsValid)
+            return View(model);
+
+        var role = await _identityService.GetRoleByIdAsync(model.Id);
+        if (role == null)
+            return NotFound();
+
+        role.Name = model.Name;
+        role.Description = model.Description;
+
+        var result = await _identityService.UpdateRoleAsync(role);
+
+        if (result.Succeeded)
+            return RedirectToAction("Index");
+
+        foreach (var error in result.Errors)
+            ModelState.AddModelError(string.Empty, error);
+
+        return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Delete(string id)
+    {
+        var role = await _identityService.GetRoleByIdAsync(id);
+        if (role == null)
+            return NotFound();
+
+        return View(role);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(string id)
+    {
+        var result = await _identityService.DeleteRoleAsync(id);
+
+        if (result.Succeeded)
+            return RedirectToAction("Index");
+
+        ModelState.AddModelError(string.Empty, string.Join(", ", result.Errors));
+        return await Delete(id);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Claims(string id)
+    {
+        var role = await _identityService.GetRoleByIdAsync(id);
+        if (role == null)
+            return NotFound();
+
+        var claimGroups = await _claimService.GetRoleClaimGroupsAsync(id);
+
+        var model = new ManageRoleClaimsViewModel
+        {
+            RoleId = id,
+            RoleName = role.Name,
+            Description = role.Description,
+            ClaimGroups = claimGroups.ToList()
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Claims(ManageRoleClaimsViewModel model)
+    {
+        var result = await _claimService.UpdateRoleClaimsAsync(model.RoleId, model.SelectedClaims);
+
+        if (result.Succeeded)
+            return RedirectToAction("Index");
+
+        foreach (var error in result.Errors)
+            ModelState.AddModelError(string.Empty, error);
+
+        var role = await _identityService.GetRoleByIdAsync(model.RoleId);
+        model.ClaimGroups = (await _claimService.GetRoleClaimGroupsAsync(model.RoleId)).ToList();
+        model.RoleName = role?.Name ?? "";
+        model.Description = role?.Description ?? "";
+
+        return View(model);
+    }
+
+    #region JSON Actions
+
+    [HttpGet]
+    public async Task<JsonResult> GetRolesJson()
+    {
+        var roles = await _identityService.GetRolesAsync();
+        var result = roles.Select(r => new
+        {
+            id = r.Id.ToString(),
+            name = r.Name,
+            description = r.Description
+        });
+
+        return Json(result);
+    }
+
+    [HttpGet]
+    public async Task<JsonResult> GetRoleClaimsJson(string id)
+    {
+        var claimGroups = await _claimService.GetRoleClaimGroupsAsync(id);
+        return Json(claimGroups);
+    }
+
+    #endregion
+}

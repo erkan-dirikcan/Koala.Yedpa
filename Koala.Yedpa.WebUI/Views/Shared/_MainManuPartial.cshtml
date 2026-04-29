@@ -1,4 +1,4 @@
-﻿<div class="aside aside-left  aside-fixed  d-flex flex-column flex-row-auto" id="kt_aside">
+<div class="aside aside-left  aside-fixed  d-flex flex-column flex-row-auto" id="kt_aside">
 	<div class="brand flex-column-auto " id="kt_brand">
 		<a href="~/" class="brand-logo">
 			<img alt="Logo" src="/assets/media/logos/sistem-logo.png" />
@@ -66,7 +66,20 @@
                     </div>
                 </li>
 
-
+				<li class="menu-item  menu-item-submenu @ManageNavPages.YonetimNavClass(ViewContext)" aria-haspopup="true" data-menu-toggle="hover">
+					<a href="javascript:;" class="menu-link menu-toggle">
+						<i class="menu-icon far fa-building"></i><span class="menu-text">Yönetim</span><i class="menu-arrow"></i>
+					</a>
+					<div class="menu-submenu ">
+						<i class="menu-arrow"></i>
+						<ul class="menu-subnav">
+							<li class="menu-item @ManageNavPages.ArizaNavClass(ViewContext)" aria-haspopup="true"><a class="menu-link " asp-controller="Ariza" asp-action="Index"><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">Arıza</span></a></li>
+							<li class="menu-item @ManageNavPages.ArsivOrderNavClass(ViewContext)" aria-haspopup="true"><a class="menu-link " asp-controller="Arsiv" asp-action="Index"><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">Arşiv</span></a></li>
+							<li class="menu-item @ManageNavPages.OtoparkOrderNavClass(ViewContext)" aria-haspopup="true"><a class="menu-link " asp-controller="Otopark" asp-action="Index"><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">Otopark</span></a></li>
+							<li class="menu-item @ManageNavPages.SozlesmeOrderNavClass(ViewContext)" aria-haspopup="true"><a class="menu-link " asp-controller="Sozlesme" asp-action="Index"><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">Sözleşme</span></a></li>
+						</ul>
+					</div>
+				</li>
 
 
                 <li class="menu-section ">

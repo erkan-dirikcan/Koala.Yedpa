@@ -1,23 +1,17 @@
-﻿// Service/Services/SeedService.cs
+// Service/Services/SeedService.cs
 
 using Koala.Yedpa.Core.Dtos;
 using Koala.Yedpa.Core.Helpers;
 using Koala.Yedpa.Core.Models;
 using Koala.Yedpa.Core.Services;
 using Koala.Yedpa.Repositories;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Service.Services
 {
-    public class SeedService(
-        AppDbContext context,
-        UserManager<AppUser> userManager,
-        RoleManager<AppRole> roleManager) : ISeedService
+    public class SeedService(AppDbContext context) : ISeedService
     {
         private readonly AppDbContext _context = context;
-        private readonly UserManager<AppUser> _userManager = userManager;
-        private readonly RoleManager<AppRole> _roleManager = roleManager;
 
         public async Task SeedAsync()
         {
@@ -26,7 +20,7 @@ namespace Service.Services
             string? adminUserId = null;
 
             // Kullanıcı varsa ID'yi al, yoksa oluştur
-            var existingUser = await _userManager.FindByEmailAsync("erkan@sistem-bilgisayar.com.tr");
+            var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == "erkan@sistem-bilgisayar.com.tr");
             if (existingUser != null)
             {
                 adminUserId = existingUser.Id;
@@ -34,7 +28,7 @@ namespace Service.Services
             else
             {
                 await SeedUsersAsync();
-                var user = await _userManager.FindByEmailAsync("erkan@sistem-bilgisayar.com.tr");
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == "erkan@sistem-bilgisayar.com.tr");
                 adminUserId = user?.Id;
             }
 
@@ -46,7 +40,7 @@ namespace Service.Services
 
         private async Task SeedRolesAsync()
         {
-            if (await _roleManager.Roles.AnyAsync()) return;
+            if (await _context.Roles.AnyAsync()) return;
 
             var role = new AppRole
             {
@@ -58,21 +52,24 @@ namespace Service.Services
                 StatusEnum = StatusEnum.Active
             };
 
-            await _roleManager.CreateAsync(role);
+            await _context.Roles.AddAsync(role);
+            await _context.SaveChangesAsync();
         }
 
         private async Task SeedUsersAsync()
         {
-            if (await _userManager.Users.AnyAsync()) return;
+            if (await _context.Users.AnyAsync()) return;
 
-            var role = await _roleManager.FindByNameAsync("SistemKoala");
+            var role = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "SistemKoala");
             if (role == null) return;
 
             var user = new AppUser
             {
                 Id = Tools.CreateGuidStr(),
                 UserName = "erkan@sistem-bilgisayar.com.tr",
+                NormalizedUserName = "ERKAN@SISTEM-BILGISAYAR.COM.TR",
                 Email = "erkan@sistem-bilgisayar.com.tr",
+                NormalizedEmail = "ERKAN@SISTEM-BILGISAYAR.COM.TR",
                 EmailConfirmed = true,
                 PhoneNumber = "2163477889",
                 PhoneNumberConfirmed = true,
@@ -81,14 +78,26 @@ namespace Service.Services
                 LastName = "Bilgisayar",
                 Status = StatusEnum.Active,
                 Avatar = "SistemKoala.jpg",
-                LockoutEnabled = true
+                LockoutEnabled = true,
+                SecurityStamp = Guid.NewGuid().ToString()
             };
 
-            var result = await _userManager.CreateAsync(user, "As26560770!");
-            if (result.Succeeded)
+            // Password hash - Production'da proper hash kullanılmalı
+            // Bu örnek için Identity'in PasswordHasher'ı kullanılmıyor
+            // External IdentityServer kullanacağımız için burada şifre hashlemeye gerek yok
+            user.PasswordHash = "HASH_PLACEHOLDER"; // External IdentityServer will handle auth
+
+            await _context.Users.AddAsync(user);
+
+            // User role relationship
+            var userRole = new Microsoft.AspNetCore.Identity.IdentityUserRole<string>
             {
-                await _userManager.AddToRoleAsync(user, "SistemKoala");
-            }
+                UserId = user.Id,
+                RoleId = role.Id
+            };
+
+            await _context.UserRoles.AddAsync(userRole);
+            await _context.SaveChangesAsync();
         }
 
         private async Task SeedSettingsAsync(string adminUserId)
@@ -376,7 +385,7 @@ namespace Service.Services
         #endregion
     };
 
-            _context.Settings.AddRange(settings);
+            await _context.Settings.AddRangeAsync(settings);
             await _context.SaveChangesAsync();
         }
     }

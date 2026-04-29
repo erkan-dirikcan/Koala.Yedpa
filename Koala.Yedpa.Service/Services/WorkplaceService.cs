@@ -88,12 +88,28 @@ public class WorkplaceService : IWorkplaceService
             var workplaceList = workplaces.ToList();
 
             // 2. Cari bilgilerini Logo veritabanından çek
-            var cariQuery = $@"SELECT WP.CODE AS WPCODE,WP.DEFINITION_ AS WPADDRESS,CL.LOGICALREF AS CLREFFERANCE ,CL.CODE AS CLCODE,CL.DEFINITION_ AS CLCTITLE,CL.EMAILADDR AS EMAILADDR
-                        FROM LG_{LogoSetting.Firm}_CLCARD AS CL
-                        INNER JOIN LG_{LogoSetting.Firm}_CLCARD AS WP ON WP.LOGICALREF=CL.PARENTCLREF
-                        WHERE CL.SPECODE NOT IN ('KIRMIZI','MAVİ','YEŞİL')
-                          AND LEFT(TRIM(CL.CODE),1)='1' AND CL.ACTIVE=0
-                        ORDER BY WP.CODE";
+            var cariQuery = $@"SELECT WP.CODE AS WPCODE,
+                                      WP.DEFINITION_ AS WPADDRESS,
+                                      CL.LOGICALREF AS CLREFFERANCE,
+                                      CL.CODE AS CLCODE,
+                                      CL.DEFINITION_ AS CLCTITLE,
+                                      CL.EMAILADDR AS EMAILADDR
+                               FROM LG_{LogoSetting.Firm}_CLCARD AS CL
+                               INNER JOIN LG_{LogoSetting.Firm}_CLCARD AS WP ON WP.LOGICALREF = CL.PARENTCLREF
+                               WHERE CL.SPECODE NOT IN ('KIRMIZI', 'MAVİ', 'YEŞİL')
+                                 AND LEFT(LTRIM(RTRIM(CL.CODE)), 1) = '1' 
+                                 AND CL.ACTIVE = 0
+                               ORDER BY WP.CODE";
+
+            //var cariQuery = $@"SELECT WP.CODE AS WPCODE,WP.DEFINITION_ AS WPADDRESS,CL.LOGICALREF AS CLREFFERANCE ,CL.CODE AS CLCODE,CL.DEFINITION_ AS CLCTITLE,CL.EMAILADDR AS EMAILADDR
+            //            FROM LG_{LogoSetting.Firm}_CLCARD AS CL
+            //            INNER JOIN LG_{LogoSetting.Firm}_CLCARD AS WP ON WP.LOGICALREF=CL.PARENTCLREF
+            //            WHERE CL.SPECODE NOT IN ('KIRMIZI','MAVİ','YEŞİL')
+            //              AND LEFT(TRIM(CL.CODE),1)='1' AND CL.ACTIVE=0
+            //            ORDER BY WP.CODE";
+
+
+
 
             var cariResult = _sqlProvider.SqlReader(cariQuery);
 

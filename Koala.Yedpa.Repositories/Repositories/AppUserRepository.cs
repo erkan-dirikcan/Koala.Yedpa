@@ -1,64 +1,54 @@
-﻿using Koala.Yedpa.Core.Dtos;
+using Koala.Yedpa.Core.Dtos;
 using Koala.Yedpa.Core.Models;
 using Koala.Yedpa.Core.Repositories;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Koala.Yedpa.Repositories.Repositories
 {
     public class AppUserRepository : IAppUserRepository
     {
-        private readonly UserManager<AppUser> _userManager;
-        private readonly SignInManager<AppUser> _signInManager;
-        private readonly RoleManager<AppRole> _roleManager;
         private readonly AppDbContext _context;
         private readonly DbSet<AppUser> _dbSet;
 
-        public AppUserRepository(UserManager<AppUser> userManager, AppDbContext context, SignInManager<AppUser> signInManager, RoleManager<AppRole> roleManager)
+        public AppUserRepository(AppDbContext context)
         {
-            _userManager = userManager;
             _context = context;
-            _signInManager = signInManager;
-            _roleManager = roleManager;
             _dbSet = _context.Set<AppUser>();
         }
 
         public async Task<AppUser?> GetUserInfoById(string id)
         {
-            var user = await _userManager.FindByIdAsync(id);
-            return user;
+            return await _dbSet.FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task<AppUser?> GetUserInfoByEmail(string email)
         {
-            var user = await _userManager.FindByEmailAsync(email);
-            return user;
+            return await _dbSet.FirstOrDefaultAsync(x => x.Email == email);
         }
 
         public async Task<AppUser?> GetUserInfoByUserName(string userName)
         {
-            var user = await _userManager.FindByNameAsync(userName);
-            return user;
+            return await _dbSet.FirstOrDefaultAsync(x => x.UserName == userName);
         }
 
         public async Task<List<AppUser>> GetAllUsers()
         {
-            return await _userManager.Users.ToListAsync();
+            return await _dbSet.ToListAsync();
         }
 
         public async Task<bool> IsUserExists(string userName)
         {
-            return await _userManager.FindByNameAsync(userName) != null;
+            return await _dbSet.AnyAsync(x => x.UserName == userName);
         }
 
         public async Task<bool> IsUserExistsByEmail(string email)
         {
-            return await _userManager.FindByEmailAsync(email) != null;
+            return await _dbSet.AnyAsync(x => x.Email == email);
         }
 
         public async Task<bool> IsUserExistsById(string id)
         {
-            return await _userManager.FindByIdAsync(id) != null;
+            return await _dbSet.AnyAsync(x => x.Id == id);
         }
 
         public async Task<StatusEnum> GetUserStatusById(string id)
@@ -96,112 +86,99 @@ namespace Koala.Yedpa.Repositories.Repositories
 
         public async Task<List<Claims>> GetUserClaimsById(string id)
         {
-            var user = await _userManager.FindByEmailAsync(id);
-            if (user == null) throw new Exception("Kullanıcı Bulunamadı");
+            var userClaims = await _context.UserClaims
+                .Where(x => x.UserId == id)
+                .ToListAsync();
 
-            var claims = await _userManager.GetClaimsAsync(user);
-            return claims.Select(claim => claim.Value).Select(claimName => new Claims
+            return userClaims.Select(claim => new Claims
             {
-                Name = claimName.Substring(claimName.IndexOf(".", StringComparison.Ordinal))
+                Name = claim.ClaimType.Substring(claim.ClaimType.IndexOf(".", StringComparison.Ordinal) + 1)
             }).ToList();
         }
 
         public async Task<List<Claims>> GetUserClaimsByEmail(string email)
         {
-            var user = await _userManager.FindByEmailAsync(email);
+            var user = await _dbSet.FirstOrDefaultAsync(x => x.Email == email);
             if (user == null) throw new Exception("Kullanıcı Bulunamadı");
 
-            var claims = await _userManager.GetClaimsAsync(user);
-            return claims.Select(claim => claim.Value).Select(claimName => new Claims
+            var userClaims = await _context.UserClaims
+                .Where(x => x.UserId == user.Id)
+                .ToListAsync();
+
+            return userClaims.Select(claim => new Claims
             {
-                Name = claimName.Substring(claimName.IndexOf(".", StringComparison.Ordinal))
+                Name = claim.ClaimType.Substring(claim.ClaimType.IndexOf(".", StringComparison.Ordinal) + 1)
             }).ToList();
         }
 
         public async Task<List<Claims>> GetUserClaimsByUserName(string userName)
         {
-            var user = await _userManager.FindByNameAsync(userName);
+            var user = await _dbSet.FirstOrDefaultAsync(x => x.UserName == userName);
             if (user == null) throw new Exception("Kullanıcı Bulunamadı");
 
-            var claims = await _userManager.GetClaimsAsync(user);
-            return claims.Select(claim => claim.Value).Select(claimName => new Claims
-            {
-                Name = claimName.Substring(claimName.IndexOf(".", StringComparison.Ordinal))
-            }).ToList();
+            var userClaims = await _context.UserClaims
+                .Where(x => x.UserId == user.Id)
+                .ToListAsync();
 
+            return userClaims.Select(claim => new Claims
+            {
+                Name = claim.ClaimType.Substring(claim.ClaimType.IndexOf(".", StringComparison.Ordinal) + 1)
+            }).ToList();
         }
 
         public async Task<List<AppRole>> GetUserRolesById(string id)
         {
-            var user = await _userManager.FindByIdAsync(id);
-            if (user != null)
-            {
-                var roles = await _userManager.GetRolesAsync(user);
-                var appRoles = new List<AppRole>();
-                foreach (var roleName in roles)
-                {
-                    var role = await _roleManager.FindByNameAsync(roleName);
-                    if (role != null)
-                    {
-                        appRoles.Add(role);
-                    }
-                }
-                return appRoles;
-            }
+            var userRoles = await _context.UserRoles
+                .Where(x => x.UserId == id)
+                .Join(_context.Roles,
+                    ur => ur.RoleId,
+                    r => r.Id,
+                    (ur, r) => r)
+                .ToListAsync();
 
-            throw new Exception("Kullanıcı Bulunamadı");
+            return userRoles;
         }
 
         public async Task<List<AppRole>> GetUserRolesByEmail(string email)
         {
-            var user = await _userManager.FindByEmailAsync(email);
-            if (user != null)
-            {
-                var roles = await _userManager.GetRolesAsync(user);
-                var appRoles = new List<AppRole>();
-                foreach (var roleName in roles)
-                {
-                    var role = await _roleManager.FindByNameAsync(roleName);
-                    if (role != null)
-                    {
-                        appRoles.Add(role);
-                    }
-                }
-                return appRoles;
-            }
+            var user = await _dbSet.FirstOrDefaultAsync(x => x.Email == email);
+            if (user == null) throw new Exception("Kullanıcı Bulunamadı");
 
-            throw new Exception("Kullanıcı Bulunamadı");
+            var userRoles = await _context.UserRoles
+                .Where(x => x.UserId == user.Id)
+                .Join(_context.Roles,
+                    ur => ur.RoleId,
+                    r => r.Id,
+                    (ur, r) => r)
+                .ToListAsync();
+
+            return userRoles;
         }
 
         public async Task<List<AppRole>> GetUserRolesByUserName(string userName)
         {
-            var user = await _userManager.FindByNameAsync(userName);
-            if (user != null)
-            {
-                var roles = await _userManager.GetRolesAsync(user);
-                var appRoles = new List<AppRole>();
-                foreach (var roleName in roles)
-                {
-                    var role = await _roleManager.FindByNameAsync(roleName);
-                    if (role != null)
-                    {
-                        appRoles.Add(role);
-                    }
-                }
-                return appRoles;
-            }
+            var user = await _dbSet.FirstOrDefaultAsync(x => x.UserName == userName);
+            if (user == null) throw new Exception("Kullanıcı Bulunamadı");
 
-            throw new Exception("Kullanıcı Bulunamadı");
+            var userRoles = await _context.UserRoles
+                .Where(x => x.UserId == user.Id)
+                .Join(_context.Roles,
+                    ur => ur.RoleId,
+                    r => r.Id,
+                    (ur, r) => r)
+                .ToListAsync();
+
+            return userRoles;
         }
 
         public async Task<bool> UpdateUserStatus(string id, StatusEnum status)
         {
-            var user = await _userManager.FindByIdAsync(id);
+            var user = await _dbSet.FirstOrDefaultAsync(x => x.Id == id);
             if (user != null)
             {
                 user.Status = status;
-                var result = await _userManager.UpdateAsync(user);
-                return result.Succeeded;
+                await _context.SaveChangesAsync();
+                return true;
             }
 
             throw new Exception("Kullanıcı Bulunamadı");
@@ -209,12 +186,12 @@ namespace Koala.Yedpa.Repositories.Repositories
 
         public async Task<bool> UpdateUserStatusByEmail(string email, StatusEnum status)
         {
-            var user = await _userManager.FindByEmailAsync(email);
+            var user = await _dbSet.FirstOrDefaultAsync(x => x.Email == email);
             if (user != null)
             {
                 user.Status = status;
-                var result = await _userManager.UpdateAsync(user);
-                return result.Succeeded;
+                await _context.SaveChangesAsync();
+                return true;
             }
 
             throw new Exception("Kullanıcı Bulunamadı");
@@ -222,12 +199,12 @@ namespace Koala.Yedpa.Repositories.Repositories
 
         public async Task<bool> UpdateUserStatusByUserName(string userName, StatusEnum status)
         {
-            var user = await _userManager.FindByNameAsync(userName);
+            var user = await _dbSet.FirstOrDefaultAsync(x => x.UserName == userName);
             if (user != null)
             {
                 user.Status = status;
-                var result = await _userManager.UpdateAsync(user);
-                return result.Succeeded;
+                await _context.SaveChangesAsync();
+                return true;
             }
 
             throw new Exception("Kullanıcı Bulunamadı");
@@ -235,16 +212,22 @@ namespace Koala.Yedpa.Repositories.Repositories
 
         public async Task<bool> UpdateUser(AppUser user)
         {
-            var result = await _userManager.UpdateAsync(user);
-            return result.Succeeded;
+            _context.Update(user);
+            await _context.SaveChangesAsync();
+            return true;
         }
 
         public async Task<bool> RemoveUserLockout(string id)
         {
-            var user = await _userManager.FindByIdAsync(id);
-            user.LockoutEnd = null;
-            var result = await _userManager.UpdateAsync(user);
-            return result.Succeeded;
+            var user = await _dbSet.FirstOrDefaultAsync(x => x.Id == id);
+            if (user != null)
+            {
+                user.LockoutEnd = null;
+                await _context.SaveChangesAsync();
+                return true;
+            }
+
+            throw new Exception("Kullanıcı Bulunamadı");
         }
     }
 }

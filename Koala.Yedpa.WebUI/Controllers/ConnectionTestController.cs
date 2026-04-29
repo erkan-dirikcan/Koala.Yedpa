@@ -1,13 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
-namespace Koala.Yedpa.WebApi.Controllers;
+namespace Koala.Yedpa.WebUI.Controllers;
 
 /// <summary>
 /// Bağlantı Testi
 /// </summary>
 [Route("api/[controller]")]
 [ApiController]
+[ApiExplorerSettings(IgnoreApi = true)]
 public class ConnectionTestController : ControllerBase
 {
     /// <summary>

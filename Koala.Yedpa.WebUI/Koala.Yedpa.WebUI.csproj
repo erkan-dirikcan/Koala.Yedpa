@@ -43,6 +43,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Views\Yonetim\" />
     <Folder Include="wwwroot\Licenses\" />
   </ItemGroup>
 

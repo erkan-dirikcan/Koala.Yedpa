@@ -1,4 +1,4 @@
-﻿using Koala.Yedpa.Core.Dtos;
+using Koala.Yedpa.Core.Dtos;
 using Koala.Yedpa.Core.Extensions;
 using Koala.Yedpa.Core.Models.ViewModels;
 using Koala.Yedpa.Core.Providers;
@@ -55,10 +55,15 @@ namespace Koala.Yedpa.Service.Services
             var recordsTotal = totalResult.IsSuccess ? Convert.ToInt32(totalResult.Data.Rows[0][0]) : 0;
 
             query = $@"
-                    {query}
-                    ORDER BY CLC.CODE, CLP.CODE
-                    OFFSET {offset} ROWS
-                    FETCH NEXT {perPage} ROWS ONLY";
+                    WITH NumberedClCard AS (
+                        SELECT *, ROW_NUMBER() OVER (ORDER BY CARI_KODU, DUKKAN_CARI_KODU) AS RowNum
+                        FROM (
+                            {query}
+                        ) AS Base
+                    )
+                    SELECT * FROM NumberedClCard
+                    WHERE RowNum BETWEEN {offset + 1} AND {offset + perPage}
+                    ORDER BY RowNum";
 
 
 
@@ -92,53 +97,53 @@ namespace Koala.Yedpa.Service.Services
             var conditions = new List<string>();
 
             if (!string.IsNullOrWhiteSpace(searchModel.CariKodu))
-                conditions.Add("CLC.CODE LIKE '%' + @CariKodu + '%'");
+                conditions.Add($"CLC.CODE LIKE '%{searchModel.CariKodu.Replace("'", "''")}%'");
             if (!string.IsNullOrWhiteSpace(searchModel.CariUnvan))
-                conditions.Add("CLC.DEFINITION_ LIKE '%' + @CariUnvan + '%'");
+                conditions.Add($"CLC.DEFINITION_ LIKE '%{searchModel.CariUnvan.Replace("'", "''")}%'");
             if (!string.IsNullOrWhiteSpace(searchModel.VergiDairesi))
-                conditions.Add("CLC.TAXOFFICE LIKE '%' + @VergiDairesi + '%'");
+                conditions.Add($"CLC.TAXOFFICE LIKE '%{searchModel.VergiDairesi.Replace("'", "''")}%'");
             if (!string.IsNullOrWhiteSpace(searchModel.VergiNumarasi))
-                conditions.Add("CLC.TAXNR LIKE '%' + @VergiNumarasi + '%'");
+                conditions.Add($"CLC.TAXNR LIKE '%{searchModel.VergiNumarasi.Replace("'", "''")}%'");
             if (!string.IsNullOrWhiteSpace(searchModel.Tckn))
-                conditions.Add("CLC.TCKNO LIKE '%' + @Tckn + '%'");
+                conditions.Add($"CLC.TCKNO LIKE '%{searchModel.Tckn.Replace("'", "''")}%'");
             if (!string.IsNullOrWhiteSpace(searchModel.Il))
-                conditions.Add("CLC.CITY LIKE '%' + @Il + '%'");
+                conditions.Add($"CLC.CITY LIKE '%{searchModel.Il.Replace("'", "''")}%'");
             if (!string.IsNullOrWhiteSpace(searchModel.Ilce))
-                conditions.Add("CLC.TOWN LIKE '%' + @Ilce + '%'");
+                conditions.Add($"CLC.TOWN LIKE '%{searchModel.Ilce.Replace("'", "''")}%'");
             if (!string.IsNullOrWhiteSpace(searchModel.Mahalle))
-                conditions.Add("CLC.DISTRICT LIKE '%' + @Mahalle + '%'");
+                conditions.Add($"CLC.DISTRICT LIKE '%{searchModel.Mahalle.Replace("'", "''")}%'");
             if (!string.IsNullOrWhiteSpace(searchModel.Adres1))
-                conditions.Add("CLC.ADDR1 LIKE '%' + @Adres1 + '%'");
+                conditions.Add($"CLC.ADDR1 LIKE '%{searchModel.Adres1.Replace("'", "''")}%'");
             if (!string.IsNullOrWhiteSpace(searchModel.Adres2))
-                conditions.Add("CLC.ADDR2 LIKE '%' + @Adres2 + '%'");
+                conditions.Add($"CLC.ADDR2 LIKE '%{searchModel.Adres2.Replace("'", "''")}%'");
             if (!string.IsNullOrWhiteSpace(searchModel.OzelKod))
-                conditions.Add("CLC.SPECODE LIKE '%' + @OzelKod + '%'");
+                conditions.Add($"CLC.SPECODE LIKE '%{searchModel.OzelKod.Replace("'", "''")}%'");
             if (!string.IsNullOrWhiteSpace(searchModel.OzelKod2))
-                conditions.Add("CLC.SPECODE2 LIKE '%' + @OzelKod2 + '%'");
+                conditions.Add($"CLC.SPECODE2 LIKE '%{searchModel.OzelKod2.Replace("'", "''")}%'");
             if (!string.IsNullOrWhiteSpace(searchModel.OzelKod3))
-                conditions.Add("CLC.SPECODE3 LIKE '%' + @OzelKod3 + '%'");
+                conditions.Add($"CLC.SPECODE3 LIKE '%{searchModel.OzelKod3.Replace("'", "''")}%'");
             if (!string.IsNullOrWhiteSpace(searchModel.OzelKod4))
-                conditions.Add("CLC.SPECODE4 LIKE '%' + @OzelKod4 + '%'");
+                conditions.Add($"CLC.SPECODE4 LIKE '%{searchModel.OzelKod4.Replace("'", "''")}%'");
             if (!string.IsNullOrWhiteSpace(searchModel.OzelKod5))
-                conditions.Add("CLC.SPECODE5 LIKE '%' + @OzelKod5 + '%'");
+                conditions.Add($"CLC.SPECODE5 LIKE '%{searchModel.OzelKod5.Replace("'", "''")}%'");
             if (!string.IsNullOrWhiteSpace(searchModel.DukkanCariKodu))
-                conditions.Add("CLP.CODE LIKE '%' + @DukkanCariKodu + '%'");
+                conditions.Add($"CLP.CODE LIKE '%{searchModel.DukkanCariKodu.Replace("'", "''")}%'");
             if (!string.IsNullOrWhiteSpace(searchModel.DukkanAdresOrjinal))
-                conditions.Add("CLP.DEFINITION_ LIKE '%' + @DukkanAdresOrjinal + '%'");
+                conditions.Add($"CLP.DEFINITION_ LIKE '%{searchModel.DukkanAdresOrjinal.Replace("'", "''")}%'");
             if (!string.IsNullOrWhiteSpace(searchModel.Cadde))
-                conditions.Add("CADDE LIKE '%' + @Cadde + '%'");
+                conditions.Add($"CADDE LIKE '%{searchModel.Cadde.Replace("'", "''")}%'");
             if (!string.IsNullOrWhiteSpace(searchModel.No))
-                conditions.Add("NO LIKE '%' + @No + '%'");
+                conditions.Add($"NO LIKE '%{searchModel.No.Replace("'", "''")}%'");
             if (!string.IsNullOrWhiteSpace(searchModel.PasajNo))
-                conditions.Add("PASAJ_NO LIKE '%' + @PasajNo + '%'");
+                conditions.Add($"PASAJ_NO LIKE '%{searchModel.PasajNo.Replace("'", "''")}%'");
             if (!string.IsNullOrWhiteSpace(searchModel.YeniNo))
-                conditions.Add("YENI_NO LIKE '%' + @YeniNo + '%'");
+                conditions.Add($"YENI_NO LIKE '%{searchModel.YeniNo.Replace("'", "''")}%'");
             if (!string.IsNullOrWhiteSpace(searchModel.Kat))
-                conditions.Add("KAT LIKE '%' + @Kat + '%'");
+                conditions.Add($"KAT LIKE '%{searchModel.Kat.Replace("'", "''")}%'");
             if (!string.IsNullOrWhiteSpace(searchModel.Yetkili1AdSoyad))
-                conditions.Add("CLC.INCHARGE LIKE '%' + @Yetkili1AdSoyad + '%'");
+                conditions.Add($"CLC.INCHARGE LIKE '%{searchModel.Yetkili1AdSoyad.Replace("'", "''")}%'");
             if (!string.IsNullOrWhiteSpace(searchModel.Yetkili2AdSoyad))
-                conditions.Add("CLC.INCHARGE2 LIKE '%' + @Yetkili2AdSoyad + '%'");
+                conditions.Add($"CLC.INCHARGE2 LIKE '%{searchModel.Yetkili2AdSoyad.Replace("'", "''")}%'");
 
             // 1) Filtresiz toplam kayıt (RecordsTotal)
             var whereClause = conditions.Any() ? " AND " + string.Join(" AND ", conditions) : "";
@@ -158,14 +163,19 @@ namespace Koala.Yedpa.Service.Services
 
 
             var pagedQuery = $@"
-                                {query}
-                                {whereClause}
-                                ORDER BY CLC.CODE, CLP.CODE
-                                OFFSET {offset} ROWS
-                                FETCH NEXT {perPage} ROWS ONLY";
+                                WITH NumberedClCard AS (
+                                    SELECT *, ROW_NUMBER() OVER (ORDER BY CARI_KODU, DUKKAN_CARI_KODU) AS RowNum
+                                    FROM (
+                                        {query}
+                                        {whereClause}
+                                    ) AS Base
+                                )
+                                SELECT * FROM NumberedClCard
+                                WHERE RowNum BETWEEN {offset + 1} AND {offset + perPage}
+                                ORDER BY RowNum";
 
 
-            var result = _sqlProvider.SqlReader(query);
+            var result = _sqlProvider.SqlReader(pagedQuery);
             if (!result.IsSuccess)
             {
                 _logger.LogError("WhereClCardInfoAsync - Sorgu hatası: {Message}", result.Message);
@@ -458,8 +468,8 @@ namespace Koala.Yedpa.Service.Services
                     ISNULL(NULLIF(LTRIM(RTRIM(CLC.ADDR1)), ''), '') AS ADRES_1,
                     ISNULL(NULLIF(LTRIM(RTRIM(CLC.ADDR2)), ''), '') AS ADRES_2,
                     ISNULL(NULLIF(LTRIM(RTRIM(CLC.EMAILADDR3)), ''), '') AS EMAIL_3,
-                    ISNULL(NULLIF(LTRIM(RTRIM(CLC.TELEXTNUMS1)), ''), '') AS TELEFON_1,
-                    ISNULL(NULLIF(LTRIM(RTRIM(CLC.TELEXTNUMS2)), ''), '') AS TELEFON_2,
+                    ISNULL(NULLIF(LTRIM(RTRIM(CLC.TELNRS1)), ''), '') AS TELEFON_1,
+                    ISNULL(NULLIF(LTRIM(RTRIM(CLC.TELNRS2)), ''), '') AS TELEFON_2,
                     ISNULL(NULLIF(LTRIM(RTRIM(CLC.FAXNR)), ''), '') AS FAX,
                     ISNULL(NULLIF(LTRIM(RTRIM(CLC.SPECODE)), ''), '') AS OZEL_KOD,
                     ISNULL(NULLIF(LTRIM(RTRIM(CLC.SPECODE2)), ''), '') AS OZEL_KOD2,
@@ -594,15 +604,28 @@ namespace Koala.Yedpa.Service.Services
         {
             try
             {
-                var query = $@"
-                    SELECT WP.CODE AS WPCODE, WP.DEFINITION_ AS WPADDRESS, CL.LOGICALREF AS CLREFFERANCE,
-                           CL.CODE AS CLCODE, CL.DEFINITION_ AS CLCTITLE, CL.EMAILADDR AS CLMAIL
-                    FROM LG_{LogoSetting.Firm}_CLCARD AS CL
-                    INNER JOIN LG_{LogoSetting.Firm}_CLCARD AS WP ON WP.LOGICALREF = CL.PARENTCLREF
-                    WHERE CL.SPECODE NOT IN ('KIRMIZI','MAVİ','YEŞİL')
-                      AND LEFT(TRIM(CL.CODE), 1) = '1'
-                      AND CL.ACTIVE = 0
-                    ORDER BY WP.CODE";
+                var query=$@"SELECT WP.CODE AS WPCODE, 
+                                    WP.DEFINITION_ AS WPADDRESS, 
+                                    CL.LOGICALREF AS CLREFFERANCE,
+                                    CL.CODE AS CLCODE, 
+                                    CL.DEFINITION_ AS CLCTITLE, 
+                                    CL.EMAILADDR AS CLMAIL
+                             FROM LG_211_CLCARD AS CL
+                             INNER JOIN LG_211_CLCARD AS WP ON WP.LOGICALREF = CL.PARENTCLREF
+                             WHERE CL.SPECODE NOT IN ('KIRMIZI','MAVİ','YEŞİL')
+                               AND CL.CODE LIKE '1%'
+                               AND CL.ACTIVE = 0
+                             ORDER BY WP.CODE
+                             ";
+                //var query = $@"
+                //    SELECT WP.CODE AS WPCODE, WP.DEFINITION_ AS WPADDRESS, CL.LOGICALREF AS CLREFFERANCE,
+                //           CL.CODE AS CLCODE, CL.DEFINITION_ AS CLCTITLE, CL.EMAILADDR AS CLMAIL
+                //    FROM LG_{LogoSetting.Firm}_CLCARD AS CL
+                //    INNER JOIN LG_{LogoSetting.Firm}_CLCARD AS WP ON WP.LOGICALREF = CL.PARENTCLREF
+                //    WHERE CL.SPECODE NOT IN ('KIRMIZI','MAVİ','YEŞİL')
+                //      AND LEFT(TRIM(CL.CODE), 1) = '1'
+                //      AND CL.ACTIVE = 0
+                //    ORDER BY WP.CODE";
 
                 var result = _sqlProvider.SqlReader(query);
                 if (!result.IsSuccess)

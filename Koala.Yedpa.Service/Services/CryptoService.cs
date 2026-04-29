@@ -1,23 +1,28 @@
 using Koala.Yedpa.Core.Exceptions;
 using Koala.Yedpa.Core.Services;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Net;
 using System.Net.Http.Json;
 
-namespace Koala.Yedpa.Service.Services // <-- SENİN NAMESPACE'İN
+namespace Koala.Yedpa.Service.Services
 {
     public class CryptoService : ICryptoService
     {
         private readonly HttpClient _httpClient;
         private readonly ILicenseReader _licenseReader;
+        private readonly ILicenseValidator _licenseValidator;
         private readonly ILogger<CryptoService> _logger;
         private string? _cachedAppId;
 
-        public CryptoService(HttpClient httpClient, ILicenseReader licenseReader, ILogger<CryptoService> logger)
+        public CryptoService(HttpClient httpClient, IConfiguration configuration, ILicenseReader licenseReader, ILicenseValidator licenseValidator, ILogger<CryptoService> logger)
         {
             _httpClient = httpClient;
+            _httpClient.BaseAddress ??= new Uri(configuration["CryptoApi:BaseUrl"]
+                ?? "https://GetDec.sistem-koala.com:44326");
             _licenseReader = licenseReader;
+            _licenseValidator = licenseValidator;
             _logger = logger;
         }
 
@@ -45,6 +50,11 @@ namespace Koala.Yedpa.Service.Services // <-- SENİN NAMESPACE'İN
                 object request = action == "encrypt"
                     ? new { applicationId = _cachedAppId, plainText = data }
                     : new { applicationId = _cachedAppId, cryptedText = data };
+
+                _httpClient.DefaultRequestHeaders.Remove("X-SKey");
+                var sKey = _licenseValidator.GetXKey();
+                if (!string.IsNullOrEmpty(sKey))
+                    _httpClient.DefaultRequestHeaders.Add("X-SKey", sKey);
 
                 var response = await _httpClient.PostAsJsonAsync($"api/Crypto/{action}", request);
 
@@ -94,7 +104,6 @@ namespace Koala.Yedpa.Service.Services // <-- SENİN NAMESPACE'İN
                     _logger.LogDebug("CallCryptoApi: Encrypt successful, result length={Length}", length);
                     return encryptedText;
                 }
-                else
                 {
                     var plainText = result?.plainText?.ToString() ?? string.Empty;
                     var length = (int)plainText.Length;

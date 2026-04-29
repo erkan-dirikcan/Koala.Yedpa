@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Koala.Yedpa.Core.Dtos
 {
@@ -22,6 +22,9 @@ namespace Koala.Yedpa.Core.Dtos
         public string customerCode { get; set; } = "";
         public string errorMessage { get; set; } = "";
     }
+
+
+
     //public class CryptoResponse
     //{
     //    public string cipherText { get; set; } = "";
