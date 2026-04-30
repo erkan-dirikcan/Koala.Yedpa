@@ -104,4 +104,67 @@ public class LogoClCardApiController : ControllerBase
         _logger.LogInformation("Test called by user {UserName}", User.Identity?.Name ?? "Unknown");
         return Ok(new { message = "LogoClCard API çalışıyor! Token geçerli.", user = User.Identity?.Name });
     }
+
+    /// <summary>
+    /// Bekleyen (ödenecek) faturaları sayfalı getirir
+    /// </summary>
+    [HttpGet("PendingInvoices")]
+    [SwaggerOperation(Summary = "Bekleyen faturaları sayfalı getirir")]
+    [SwaggerResponse(200, "Başarılı", typeof(ResponseListDto<List<PendingInvoiceViewModel>>))]
+    [SwaggerResponse(401, "Yetkisiz erişim")]
+    [SwaggerResponse(500, "Sunucu hatası")]
+    public async Task<IActionResult> PendingInvoices(
+        [FromQuery] int perPage = 50,
+        [FromQuery] int pageNo = 1)
+    {
+        _logger.LogInformation("PendingInvoices called with perPage={PerPage}, pageNo={PageNo}", perPage, pageNo);
+        var result = await _service.GetPendingInvoicesAsync(perPage, pageNo);
+
+        if (result.IsSuccess)
+        {
+            _logger.LogInformation("PendingInvoices: Successfully retrieved pending invoices");
+        }
+        else
+        {
+            _logger.LogWarning("PendingInvoices: Failed to retrieve, StatusCode: {StatusCode}", result.StatusCode);
+        }
+
+        return StatusCode(result.StatusCode, result);
+    }
+
+    /// <summary>
+    /// Gelişmiş arama - bekleyen faturalarda filtreleme yapar
+    /// </summary>
+    [HttpPost("PendingInvoicesSearch")]
+    [SwaggerOperation(Summary = "Filtreleme ile bekleyen fatura araması")]
+    [SwaggerResponse(200, "Başarılı", typeof(ResponseListDto<List<PendingInvoiceViewModel>>))]
+    [SwaggerResponse(400, "Geçersiz istek")]
+    [SwaggerResponse(401, "Yetkisiz erişim")]
+    [SwaggerResponse(500, "Sunucu hatası")]
+    public async Task<IActionResult> PendingInvoicesSearch(
+        [FromBody] PendingInvoiceSearchViewModel searchModel,
+        [FromQuery] int perPage = 50,
+        [FromQuery] int pageNo = 1)
+    {
+        _logger.LogInformation("PendingInvoicesSearch called with perPage={PerPage}, pageNo={PageNo}", perPage, pageNo);
+        if (searchModel == null)
+        {
+            _logger.LogWarning("PendingInvoicesSearch: Search model is null");
+            return BadRequest(ResponseListDto<List<PendingInvoiceViewModel>>.FailData(
+                400, "Arama modeli boş olamaz", "Model null", true));
+        }
+
+        var result = await _service.SearchPendingInvoicesAsync(searchModel, perPage, pageNo);
+
+        if (result.IsSuccess)
+        {
+            _logger.LogInformation("PendingInvoicesSearch: Successfully completed search");
+        }
+        else
+        {
+            _logger.LogWarning("PendingInvoicesSearch: Search failed, StatusCode: {StatusCode}", result.StatusCode);
+        }
+
+        return StatusCode(result.StatusCode, result);
+    }
 }

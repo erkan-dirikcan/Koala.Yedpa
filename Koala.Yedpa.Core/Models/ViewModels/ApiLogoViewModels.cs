@@ -410,4 +410,82 @@ namespace Koala.Yedpa.Core.Models.ViewModels
         public decimal CumulativeBalance { get; set; }
     }
 
+    public class PendingInvoiceViewModel
+    {
+        [SwaggerSchema(Description = "Cari kart referans numarası")]
+        public int CustomerReference { get; set; }
+
+        [SwaggerSchema(Description = "Müşteri kodu")]
+        public string CustomerCode { get; set; } = string.Empty;
+
+        [SwaggerSchema(Description = "Müşteri adı")]
+        public string CustomerName { get; set; } = string.Empty;
+
+        [SwaggerSchema(Description = "Fatura LogicalRef")]
+        public int InvoiceLogicalRef { get; set; }
+
+        [SwaggerSchema(Description = "Fatura numarası")]
+        public string InvoiceNumber { get; set; } = string.Empty;
+
+        [SwaggerSchema(Description = "Fatura tarihi")]
+        public DateTime InvoiceDate { get; set; }
+
+        [SwaggerSchema(Description = "Fatura türü")]
+        public string InvoiceType { get; set; } = string.Empty;
+
+        [SwaggerSchema(Description = "Fatura açıklama 1")]
+        public string InvoiceDescription1 { get; set; } = string.Empty;
+
+        [SwaggerSchema(Description = "Fatura açıklama 2")]
+        public string InvoiceDescription2 { get; set; } = string.Empty;
+
+        [SwaggerSchema(Description = "Fatura vade tutarı")]
+        public decimal InvoiceDueAmount { get; set; }
+
+        [SwaggerSchema(Description = "Kapatılan tutar")]
+        public decimal PaidAmount { get; set; }
+
+        [SwaggerSchema(Description = "Kalan ödenecek tutar")]
+        public decimal RemainingAmount { get; set; }
+
+        [SwaggerSchema(Description = "Vade tarihi")]
+        public DateTime DueDate { get; set; }
+
+        [SwaggerSchema(Description = "Ay")]
+        public int Month { get; set; }
+
+        [SwaggerSchema(Description = "Hafta")]
+        public int Week { get; set; }
+
+        [SwaggerSchema(Description = "Vade gün sayısı")]
+        public int DueDays { get; set; }
+
+        [SwaggerSchema(Description = "Kalan gün sayısı")]
+        public int RemainingDays { get; set; }
+
+        [SwaggerSchema(Description = "Döviz türü")]
+        public string CurrencyType { get; set; } = string.Empty;
+
+        [SwaggerSchema(Description = "Ödeme durumu")]
+        public string Status { get; set; } = string.Empty;
+    }
+
+    public class PendingInvoiceSearchViewModel
+    {
+        [SwaggerSchema(Description = "Müşteri kodu ile arama")]
+        public string? CustomerCode { get; set; }
+
+        [SwaggerSchema(Description = "Müşteri adı ile arama")]
+        public string? CustomerName { get; set; }
+
+        [SwaggerSchema(Description = "Vade tarihi başlangıç")]
+        public DateTime? DueDateStart { get; set; }
+
+        [SwaggerSchema(Description = "Vade tarihi bitiş")]
+        public DateTime? DueDateEnd { get; set; }
+
+        [SwaggerSchema(Description = "Fatura numarası ile arama")]
+        public string? InvoiceNumber { get; set; }
+    }
+
 }

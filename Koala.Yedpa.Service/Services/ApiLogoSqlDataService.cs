@@ -671,5 +671,207 @@ namespace Koala.Yedpa.Service.Services
                 return ResponseDto<Dictionary<string, List<WorkplaceCurrentAccounts>>>.FailData(500, "Beklenmeyen bir hata oluştu", ex.Message, true);
             }
         }
+
+        private string BuildBasePendingInvoiceQuery()
+        {
+            return $@"
+        SELECT
+            CLNTC.LOGICALREF        AS CustomerReference,
+            CLNTC.CODE              AS CustomerCode,
+            CLNTC.DEFINITION_       AS CustomerName,
+            PTRNS.FICHEREF          AS InvoiceLogicalRef,
+            INVFC.FICHENO           AS InvoiceNumber,
+            PTRNS.PROCDATE          AS InvoiceDate,
+            CASE INVFC.TRCODE
+                WHEN 1  THEN 'Mal Alım Faturası'
+                WHEN 2  THEN 'Perakende Satış İade Faturası'
+                WHEN 3  THEN 'Toptan Satış İade Faturası'
+                WHEN 4  THEN 'Alınan Hizmet Faturası'
+                WHEN 5  THEN 'Alınan Proforma Fatura'
+                WHEN 6  THEN 'Alım İade Faturası'
+                WHEN 7  THEN 'Alım Fiyat Farkı Faturası'
+                WHEN 8  THEN 'Perakende Satış Faturası'
+                WHEN 9  THEN 'Toptan Satış Faturası'
+                WHEN 10 THEN 'Verilen Hizmet Faturası'
+                WHEN 11 THEN 'Verilen Proforma Fatura'
+                WHEN 12 THEN 'Verilen Vade Farkı Faturası'
+                WHEN 13 THEN 'Satış Fiyat Farkı Faturası'
+                WHEN 14 THEN 'Satınalma Fiyat Farkı Faturası'
+                WHEN 26 THEN 'Müstahsil Makbuzu'
+                WHEN 32 THEN 'Alınan Fiyat Farkı Faturası'
+                WHEN 33 THEN 'Verilen Fiyat Farkı Faturası'
+                ELSE 'Diğer'
+            END                     AS InvoiceType,
+            INVFC.GENEXP1           AS InvoiceDescription1,
+            INVFC.GENEXP2           AS InvoiceDescription2,
+            PTRNS.TOTAL             AS InvoiceDueAmount,
+            ISNULL(KAPATILAN.KAPANAN_TUTAR, 0) AS PaidAmount,
+            (PTRNS.TOTAL - ISNULL(KAPATILAN.KAPANAN_TUTAR, 0)) AS RemainingAmount,
+            PTRNS.DATE_             AS DueDate,
+            DATEPART(mm, PTRNS.DATE_) AS Month,
+            DATEPART(wk, PTRNS.DATE_) AS Week,
+            DATEDIFF(DAY, PTRNS.PROCDATE, PTRNS.DATE_) AS DueDays,
+            DATEDIFF(DAY, GETDATE(), PTRNS.DATE_)      AS RemainingDays,
+            CASE PTRNS.TRCURR
+                WHEN 0  THEN 'TL'
+                WHEN 1  THEN 'USD'
+                WHEN 20 THEN 'EUR'
+                ELSE ''
+            END                     AS CurrencyType,
+            CASE
+                WHEN PTRNS.PAID = 0 THEN 'AÇIK'
+                WHEN PTRNS.PAID = 1 AND (PTRNS.TOTAL - ISNULL(KAPATILAN.KAPANAN_TUTAR, 0)) > 0 THEN 'KISMİ ÖDEME'
+                ELSE 'KAPALI'
+            END                     AS Status
+        FROM LG_{LogoSetting.Firm}_{LogoSetting.Period}_PAYTRANS AS PTRNS
+        INNER JOIN LG_{LogoSetting.Firm}_CLCARD AS CLNTC
+            ON CLNTC.LOGICALREF = PTRNS.CARDREF
+        LEFT OUTER JOIN LG_{LogoSetting.Firm}_{LogoSetting.Period}_INVOICE AS INVFC
+            ON INVFC.LOGICALREF = PTRNS.FICHEREF
+        LEFT OUTER JOIN (
+            SELECT
+                CROSSREF,
+                SUM(PAID) AS KAPANAN_TUTAR
+            FROM LG_{LogoSetting.Firm}_{LogoSetting.Period}_PAYTRANS
+            WHERE CROSSREF <> 0
+              AND CANCELLED = 0
+            GROUP BY CROSSREF
+        ) AS KAPATILAN
+            ON KAPATILAN.CROSSREF = PTRNS.LOGICALREF
+        WHERE
+            PTRNS.CROSSREF = 0
+            AND PTRNS.CANCELLED = 0
+            AND PTRNS.SIGN = 1
+            AND ISNULL(INVFC.FROMKASA, 0) = 0
+            AND (PTRNS.TOTAL - ISNULL(KAPATILAN.KAPANAN_TUTAR, 0)) > 0";
+        }
+
+        public async Task<ResponseListDto<List<PendingInvoiceViewModel>>> GetPendingInvoicesAsync(int perPage = 50, int pageNo = 1)
+        {
+            if (perPage <= 0) perPage = 50;
+            if (pageNo <= 0) pageNo = 1;
+            var offset = (pageNo - 1) * perPage;
+
+            var query = BuildBasePendingInvoiceQuery();
+
+            var totalQuery = $@"
+        SELECT COUNT(*)
+        FROM LG_{LogoSetting.Firm}_{LogoSetting.Period}_PAYTRANS AS PTRNS
+        INNER JOIN LG_{LogoSetting.Firm}_CLCARD AS CLNTC ON CLNTC.LOGICALREF = PTRNS.CARDREF
+        LEFT OUTER JOIN LG_{LogoSetting.Firm}_{LogoSetting.Period}_INVOICE AS INVFC ON INVFC.LOGICALREF = PTRNS.FICHEREF
+        LEFT OUTER JOIN (
+            SELECT CROSSREF, SUM(PAID) AS KAPANAN_TUTAR
+            FROM LG_{LogoSetting.Firm}_{LogoSetting.Period}_PAYTRANS
+            WHERE CROSSREF <> 0 AND CANCELLED = 0
+            GROUP BY CROSSREF
+        ) AS KAPATILAN ON KAPATILAN.CROSSREF = PTRNS.LOGICALREF
+        WHERE PTRNS.CROSSREF = 0 AND PTRNS.CANCELLED = 0 AND PTRNS.SIGN = 1
+          AND ISNULL(INVFC.FROMKASA, 0) = 0
+          AND (PTRNS.TOTAL - ISNULL(KAPATILAN.KAPANAN_TUTAR, 0)) > 0";
+
+            var totalResult = _sqlProvider.SqlReader(totalQuery);
+            var recordsTotal = totalResult.IsSuccess ? Convert.ToInt32(totalResult.Data.Rows[0][0]) : 0;
+
+            var pagedQuery = $@"
+        WITH NumberedInvoices AS (
+            SELECT *, ROW_NUMBER() OVER (ORDER BY DueDate DESC) AS RowNum
+            FROM ({query}) AS Base
+        )
+        SELECT * FROM NumberedInvoices
+        WHERE RowNum BETWEEN {offset + 1} AND {offset + perPage}
+        ORDER BY RowNum";
+
+            var result = _sqlProvider.SqlReader(pagedQuery);
+            if (!result.IsSuccess)
+            {
+                _logger.LogError("GetPendingInvoicesAsync - Hata: {Message}", result.Message);
+                return ResponseListDto<List<PendingInvoiceViewModel>>.FailData(500, "Veri çekilemedi", result.Message, true);
+            }
+
+            var list = result.Data.AsList<PendingInvoiceViewModel>();
+
+            return ResponseListDto<List<PendingInvoiceViewModel>>.SuccessData(
+                200, "Bekleyen faturalar getirildi", list,
+                RecordsTotal: recordsTotal,
+                RecordsFiltered: recordsTotal,
+                RecordsShow: list.Count
+            );
+        }
+
+        public async Task<ResponseListDto<List<PendingInvoiceViewModel>>> SearchPendingInvoicesAsync(PendingInvoiceSearchViewModel searchModel, int perPage = 50, int pageNo = 1)
+        {
+            if (searchModel == null) searchModel = new PendingInvoiceSearchViewModel();
+            if (perPage <= 0) perPage = 50;
+            if (pageNo <= 0) pageNo = 1;
+            var offset = (pageNo - 1) * perPage;
+
+            var query = BuildBasePendingInvoiceQuery();
+
+            var conditions = new List<string>();
+
+            if (!string.IsNullOrWhiteSpace(searchModel.CustomerCode))
+                conditions.Add($"CLNTC.CODE LIKE '%{searchModel.CustomerCode.Replace("'", "''")}%'");
+            if (!string.IsNullOrWhiteSpace(searchModel.CustomerName))
+                conditions.Add($"CLNTC.DEFINITION_ LIKE '%{searchModel.CustomerName.Replace("'", "''")}%'");
+            if (searchModel.DueDateStart.HasValue)
+                conditions.Add($"PTRNS.DATE_ >= '{searchModel.DueDateStart.Value:yyyy-MM-dd}'");
+            if (searchModel.DueDateEnd.HasValue)
+                conditions.Add($"PTRNS.DATE_ <= '{searchModel.DueDateEnd.Value:yyyy-MM-dd}'");
+            if (!string.IsNullOrWhiteSpace(searchModel.InvoiceNumber))
+                conditions.Add($"INVFC.FICHENO LIKE '%{searchModel.InvoiceNumber.Replace("'", "''")}%'");
+
+            var whereClause = conditions.Any() ? " AND " + string.Join(" AND ", conditions) : "";
+
+            // Filtresiz toplam
+            var totalQuery = $@"
+        SELECT COUNT(*)
+        FROM LG_{LogoSetting.Firm}_{LogoSetting.Period}_PAYTRANS AS PTRNS
+        INNER JOIN LG_{LogoSetting.Firm}_CLCARD AS CLNTC ON CLNTC.LOGICALREF = PTRNS.CARDREF
+        LEFT OUTER JOIN LG_{LogoSetting.Firm}_{LogoSetting.Period}_INVOICE AS INVFC ON INVFC.LOGICALREF = PTRNS.FICHEREF
+        LEFT OUTER JOIN (
+            SELECT CROSSREF, SUM(PAID) AS KAPANAN_TUTAR
+            FROM LG_{LogoSetting.Firm}_{LogoSetting.Period}_PAYTRANS
+            WHERE CROSSREF <> 0 AND CANCELLED = 0
+            GROUP BY CROSSREF
+        ) AS KAPATILAN ON KAPATILAN.CROSSREF = PTRNS.LOGICALREF
+        WHERE PTRNS.CROSSREF = 0 AND PTRNS.CANCELLED = 0 AND PTRNS.SIGN = 1
+          AND ISNULL(INVFC.FROMKASA, 0) = 0
+          AND (PTRNS.TOTAL - ISNULL(KAPATILAN.KAPANAN_TUTAR, 0)) > 0";
+            var totalResult = _sqlProvider.SqlReader(totalQuery);
+            var recordsTotal = totalResult.IsSuccess ? Convert.ToInt32(totalResult.Data.Rows[0][0]) : 0;
+
+            // Filtreli toplam
+            var filteredCountQuery = query + whereClause;
+            var countQuery = "SELECT COUNT(*) FROM (" + filteredCountQuery + ") AS T";
+            var filteredResult = _sqlProvider.SqlReader(countQuery);
+            var recordsFiltered = filteredResult.IsSuccess ? Convert.ToInt32(filteredResult.Data.Rows[0][0]) : 0;
+
+            var pagedQuery = $@"
+        WITH NumberedInvoices AS (
+            SELECT *, ROW_NUMBER() OVER (ORDER BY DueDate DESC) AS RowNum
+            FROM ({query} {whereClause}) AS Base
+        )
+        SELECT * FROM NumberedInvoices
+        WHERE RowNum BETWEEN {offset + 1} AND {offset + perPage}
+        ORDER BY RowNum";
+
+            var result = _sqlProvider.SqlReader(pagedQuery);
+            if (!result.IsSuccess)
+            {
+                _logger.LogError("SearchPendingInvoicesAsync - Sorgu hatası: {Message}", result.Message);
+                return ResponseListDto<List<PendingInvoiceViewModel>>.FailData(500, "Arama sırasında hata oluştu", result.Message, true);
+            }
+
+            var list = result.Data.AsList<PendingInvoiceViewModel>();
+
+            return ResponseListDto<List<PendingInvoiceViewModel>>.SuccessData(
+                statusCode: 200,
+                message: "Arama başarılı",
+                data: list,
+                RecordsTotal: recordsTotal,
+                RecordsFiltered: recordsFiltered,
+                RecordsShow: list.Count
+            );
+        }
     }
 }
