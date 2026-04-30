@@ -22,39 +22,41 @@ Both return `ResponseListDto<List<PendingInvoiceViewModel>>` with RecordsTotal, 
 
 ### PendingInvoiceViewModel
 
-Maps each row from the PAYTRANS query:
+Maps each row from the PAYTRANS query. **SQL column aliases use PascalCase English names to match C# property names** (required by `AsList<T>` reflection-based mapping, same pattern as `ClCardInfoViewModel` using `CARI_KODU` aliases).
 
-| Property | Type | SQL Source |
-|----------|------|------------|
-| CustomerReference | int | CLNTC.LOGICALREF |
-| CustomerCode | string | CLNTC.CODE |
-| CustomerName | string | CLNTC.DEFINITION_ |
-| InvoiceLogicalRef | int | PTRNS.FICHEREF |
-| InvoiceNumber | string | INVFC.FICHENO |
-| InvoiceDate | DateTime | PTRNS.PROCDATE |
-| InvoiceType | string | CASE INVFC.TRCODE ... END |
-| InvoiceDescription1 | string | INVFC.GENEXP1 |
-| InvoiceDescription2 | string | INVFC.GENEXP2 |
-| InvoiceDueAmount | decimal | PTRNS.TOTAL |
-| PaidAmount | decimal | ISNULL(KAPATILAN.KAPANAN_TUTAR, 0) |
-| RemainingAmount | decimal | PTRNS.TOTAL - ISNULL(KAPATILAN.KAPANAN_TUTAR, 0) |
-| DueDate | DateTime | PTRNS.DATE_ |
-| Month | int | DATEPART(mm, PTRNS.DATE_) |
-| Week | int | DATEPART(wk, PTRNS.DATE_) |
-| DueDays | int | DATEDIFF(DAY, PTRNS.PROCDATE, PTRNS.DATE_) |
-| RemainingDays | int | DATEDIFF(DAY, GETDATE(), PTRNS.DATE_) |
-| CurrencyType | string | CASE PTRNS.TRCURR ... END |
-| Status | string | PAID/PaidAmount/Remaining logic |
+| Property | Type | SQL Alias |
+|----------|------|-----------|
+| CustomerReference | int | `CLNTC.LOGICALREF AS CustomerReference` |
+| CustomerCode | string | `CLNTC.CODE AS CustomerCode` |
+| CustomerName | string | `CLNTC.DEFINITION_ AS CustomerName` |
+| InvoiceLogicalRef | int | `PTRNS.FICHEREF AS InvoiceLogicalRef` |
+| InvoiceNumber | string | `INVFC.FICHENO AS InvoiceNumber` |
+| InvoiceDate | DateTime | `PTRNS.PROCDATE AS InvoiceDate` |
+| InvoiceType | string | `CASE INVFC.TRCODE ... END AS InvoiceType` |
+| InvoiceDescription1 | string | `INVFC.GENEXP1 AS InvoiceDescription1` |
+| InvoiceDescription2 | string | `INVFC.GENEXP2 AS InvoiceDescription2` |
+| InvoiceDueAmount | decimal | `PTRNS.TOTAL AS InvoiceDueAmount` |
+| PaidAmount | decimal | `ISNULL(...) AS PaidAmount` |
+| RemainingAmount | decimal | `(... - ...) AS RemainingAmount` |
+| DueDate | DateTime | `PTRNS.DATE_ AS DueDate` |
+| Month | int | `DATEPART(mm, PTRNS.DATE_) AS Month` |
+| Week | int | `DATEPART(wk, PTRNS.DATE_) AS Week` |
+| DueDays | int | `DATEDIFF(...) AS DueDays` |
+| RemainingDays | int | `DATEDIFF(...) AS RemainingDays` |
+| CurrencyType | string | `CASE PTRNS.TRCURR ... END AS CurrencyType` |
+| Status | string | `CASE ... END AS Status` |
 
 ### PendingInvoiceSearchViewModel
 
 | Property | Type | Filter Logic |
 |----------|------|--------------|
-| CustomerCode | string? | CLNTC.CODE LIKE '%value%' |
-| CustomerName | string? | CLNTC.DEFINITION_ LIKE '%value%' |
-| DueDateStart | DateTime? | PTRNS.DATE_ >= value |
-| DueDateEnd | DateTime? | PTRNS.DATE_ <= value |
-| InvoiceNumber | string? | INVFC.FICHENO LIKE '%value%' |
+| CustomerCode | string? | `CLNTC.CODE LIKE '%value%'` |
+| CustomerName | string? | `CLNTC.DEFINITION_ LIKE '%value%'` |
+| DueDateStart | DateTime? | `PTRNS.DATE_ >= value` |
+| DueDateEnd | DateTime? | `PTRNS.DATE_ <= value` |
+| InvoiceNumber | string? | `INVFC.FICHENO LIKE '%value%'` |
+
+Status filter intentionally omitted: base WHERE clause `remaining > 0` already excludes fully paid invoices, leaving only ACIK and KISMI ODEME rows.
 
 ## Service Layer
 
@@ -66,21 +68,25 @@ Task<ResponseListDto<List<PendingInvoiceViewModel>>> SearchPendingInvoicesAsync(
 ```
 
 Implementation in `ApiLogoSqlDataService`:
+- Table names use `LogoSetting.Firm` and `LogoSetting.Period` for `PAYTRANS` and `INVOICE` tables
 - SQL uses `LG_{Firm}_{Period}_PAYTRANS`, `LG_{Firm}_CLCARD`, `LG_{Firm}_{Period}_INVOICE`
 - KAPATILAN subquery groups CROSSREF to sum paid amounts
 - WHERE filters: CROSSREF=0, CANCELLED=0, SIGN=1, FROMKASA=0, remaining > 0
 - Pagination via ROW_NUMBER() CTE (same as ClCardInfoAll)
-- Filtered version builds dynamic WHERE clauses from non-null search fields
+- Filtered version builds dynamic WHERE clauses from non-null search fields, appended to base query before CTE wrapping (same pattern as `WhereClCardInfoAsync`)
+- Filter values use `.Replace("'", "''")` for SQL escaping (consistent with existing pattern)
 
 ## File Changes
 
 | Action | File | Responsibility |
 |--------|------|----------------|
-| Create | Core/Dtos/PendingInvoiceViewModel.cs | Result model |
-| Create | Core/Dtos/PendingInvoiceSearchViewModel.cs | Filter model |
-| Modify | Core/Services/IApiLogoSqlDataService.cs | Add 2 method signatures |
-| Modify | Service/Services/ApiLogoSqlDataService.cs | SQL query + 2 method implementations |
-| Modify | WebApi/Controllers/LogoClCardApiController.cs | Add 2 endpoints |
+| Create | `Core/Models/ViewModels/PendingInvoiceViewModel.cs` | Result model |
+| Create | `Core/Models/ViewModels/PendingInvoiceSearchViewModel.cs` | Filter model |
+| Modify | `Core/Services/IApiLogoSqlDataService.cs` | Add 2 method signatures |
+| Modify | `Service/Services/ApiLogoSqlDataService.cs` | SQL query + 2 method implementations |
+| Modify | `WebApi/Controllers/LogoClCardApiController.cs` | Add 2 endpoints |
+
+ViewModels placed in `Core/Models/ViewModels/` following existing convention (where `ClCardInfoViewModel` lives).
 
 ## Flow
 
