@@ -1,14 +1,82 @@
-﻿@{
+@using Koala.Yedpa.WebUI.Controllers
+@{
     ViewData["Title"] = "Dashboard";
     ViewData["ActivePage"] = "Dashboard";
-    //ViewData["MenuToggle"] = "Module";
+    var widgets = ViewBag.Widgets as List<DashboardWidgetViewModel> ?? new List<DashboardWidgetViewModel>();
+    var hiddenWidgets = ViewBag.HiddenWidgets as List<DashboardWidgetViewModel> ?? new List<DashboardWidgetViewModel>();
+    var allWidgets = widgets.Concat(hiddenWidgets).ToList();
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<link href="~/css/dashboard/dashboard.css" rel="stylesheet" />
+
+<div class="dashboard-toolbar">
+    <h3 class="card-label font-weight-bolder text-dark mb-0">Dashboard</h3>
+    <div class="toolbar-actions">
+        <button type="button" class="btn btn-sm btn-light-primary" id="btnToggleSidebar">
+            <i class="fas fa-th-large mr-1"></i> Widgetlar
+        </button>
+        <button type="button" class="btn btn-sm btn-light-danger" id="btnResetLayout">
+            <i class="fas fa-undo mr-1"></i> Sifirla
+        </button>
+    </div>
 </div>
+
+<div class="grid-stack dashboard-grid" id="dashboardGrid">
+    @foreach (var widget in widgets)
+    {
+        <div class="grid-stack-item"
+             data-gs-id="@widget.Id"
+             data-gs-x="@widget.GridX"
+             data-gs-y="@widget.GridY"
+             data-gs-w="@widget.Width"
+             data-gs-h="@widget.Height"
+             data-gs-min-w="3"
+             data-gs-min-h="2">
+            <div class="grid-stack-item-content">
+                <div class="widget-card" id="widget-@widget.Id">
+                    <div class="widget-header">
+                        <span class="widget-title">@widget.Title</span>
+                        <button type="button" class="btn btn-icon btn-xs btn-light btn-circle widget-remove" data-widget-id="@widget.Id">
+                            <i class="fas fa-times icon-xs"></i>
+                        </button>
+                    </div>
+                    <div class="widget-body">
+                        <div class="widget-loading">
+                            <i class="fas fa-spinner fa-spin mr-2"></i> Yukleniyor...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Widget Sidebar -->
+<div class="widget-sidebar" id="widgetSidebar">
+    <div class="sidebar-header">
+        <span class="sidebar-title">Widget Yonetimi</span>
+        <button type="button" class="btn btn-icon btn-sm btn-light btn-circle" id="btnCloseSidebar">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    @foreach (var widget in allWidgets)
+    {
+        <div class="widget-toggle-item">
+            <span>@widget.Title</span>
+            <div class="switch switch-sm">
+                <label>
+                    <input type="checkbox" class="widget-toggle" data-widget-id="@widget.Id" @(widget.Visible ? "checked" : "") />
+                    <span></span>
+                </label>
+            </div>
+        </div>
+    }
+</div>
+
+<input type="hidden" id="allWidgetsData" value='@Html.Raw(System.Text.Json.JsonSerializer.Serialize(allWidgets.Select(w => new { w.Id, w.Title, w.PartialView, w.GridX, w.GridY, w.Width, w.Height, w.Visible }).ToList()))' />
+
 @section Scripts
 {
-    <script src="/assets/js/pages/widgets.js"></script>
+    <script src="~/js/dashboard/widgets.js"></script>
+    <script src="~/js/dashboard/dashboard.js"></script>
 }
