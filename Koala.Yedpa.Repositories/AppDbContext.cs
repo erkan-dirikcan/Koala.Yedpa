@@ -2,6 +2,7 @@
 using Koala.Yedpa.Core.Models.Yonetim;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using System.Reflection;
 using Module = Koala.Yedpa.Core.Models.Module;
 
@@ -9,6 +10,11 @@ namespace Koala.Yedpa.Repositories;
 
 public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbContext<AppUser, AppRole, string>(options)
 {
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        base.OnConfiguring(optionsBuilder);
+        optionsBuilder.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
+    }
     public DbSet<BudgetRatio> BudgetRatio { get; set; }
     public DbSet<Claims> Claims { get; set; }
     public DbSet<DuesStatistic> DuesStatistics { get; set; }
