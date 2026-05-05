@@ -25,6 +25,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
     public DbSet<Transaction> Transaction { get; set; }
     public DbSet<TransactionItem> TransactionItem { get; set; }
     public DbSet<TransactionType> TransactionType { get; set; }
+    public DbSet<DashboardWidgetPreference> DashboardWidgetPreferences { get; set; }
 
     // YONETIM Database Entities
     public DbSet<Raf> Raflar { get; set; }
@@ -52,5 +53,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
         builder.Entity<Settings>()
             .Property(s => s.CreateTime)
             .HasDefaultValueSql("GETUTCDATE()");
+
+        builder.Entity<DashboardWidgetPreference>();
     }
 }
