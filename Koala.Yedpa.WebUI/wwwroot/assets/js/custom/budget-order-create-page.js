@@ -171,13 +171,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Tabloyu göster
                 duesStatisticSection.style.display = 'block';
 
-                // DataTable başlat veya güncelle
-                if (!dataTable) {
-                    initDataTable();
-                }
-
-                // Tabloyu doldur
-                populateTable(sourceYearData);
+                // DataTable her zaman yeniden oluştur (temiz state)
+                initDataTable();
 
                 // Update footer totals
                 updateTotals();
@@ -504,6 +499,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (dataTable) {
             dataTable.destroy();
             dataTable = null;
+            $('#duesStatisticTable tbody').empty();
         }
 
         dataTable = $('#duesStatisticTable').DataTable({
@@ -631,7 +627,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         // Child row toggle - detay satırını aç/kapat
-        $('#duesStatisticTable').on('click', 'td.details-control', function () {
+        $('#duesStatisticTable').off('click', 'td.details-control').on('click', 'td.details-control', function () {
             const tr = $(this).closest('tr');
             const row = dataTable.row(tr);
 
@@ -683,26 +679,29 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        // Detay butonu için stil ekle
-        const style = document.createElement('style');
-        style.textContent = `
-            td.details-control {
-                text-align: center;
-                cursor: pointer;
-            }
-            td.details-control:before {
-                content: '▶';
-                display: inline-block;
-                font-size: 12px;
-                color: #3498db;
-                transition: transform 0.2s;
-            }
-            tr.shown td.details-control:before {
-                content: '▼';
-                transform: rotate(90deg);
-            }
-        `;
-        document.head.appendChild(style);
+        // Detay butonu için stil ekle (sadece bir kere)
+        if (!document.getElementById('dues-statistic-table-style')) {
+            const style = document.createElement('style');
+            style.id = 'dues-statistic-table-style';
+            style.textContent = `
+                td.details-control {
+                    text-align: center;
+                    cursor: pointer;
+                }
+                td.details-control:before {
+                    content: '▶';
+                    display: inline-block;
+                    font-size: 12px;
+                    color: #3498db;
+                    transition: transform 0.2s;
+                }
+                tr.shown td.details-control:before {
+                    content: '▼';
+                    transform: rotate(90deg);
+                }
+            `;
+            document.head.appendChild(style);
+        }
     }
 
     // Tabloyu doldur (helper)

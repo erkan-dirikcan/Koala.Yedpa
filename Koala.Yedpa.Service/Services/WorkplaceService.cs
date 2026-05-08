@@ -92,8 +92,8 @@ public class WorkplaceService : IWorkplaceService
                                       WP.DEFINITION_ AS WPADDRESS,
                                       CL.LOGICALREF AS CLREFFERANCE,
                                       CL.CODE AS CLCODE,
-                                      CL.DEFINITION_ AS CLCTITLE,
-                                      CL.EMAILADDR AS EMAILADDR
+                           yine de durum aynı. Wigget penceresi           CL.DEFINITION_ AS CLCTITLE,
+                           Hata yok, ancak kaydedilmiyor, sayfa yenilendiğinde yine aynı wiggetler geliyorç           CL.EMAILADDR AS EMAILADDR
                                FROM LG_{LogoSetting.Firm}_CLCARD AS CL
                                INNER JOIN LG_{LogoSetting.Firm}_CLCARD AS WP ON WP.LOGICALREF = CL.PARENTCLREF
                                WHERE CL.SPECODE NOT IN ('KIRMIZI', 'MAVİ', 'YEŞİL')

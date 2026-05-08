@@ -8,7 +8,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace Koala.Yedpa.WebApi.Controllers;
 
-[Route("api/[controller]/[action]")]
+[Route("api/[controller]")]
 [ApiController]
 [Produces("application/json")]
 [SwaggerTag("Logo Cari & Dükkan Bilgileri API")]
@@ -163,6 +163,68 @@ public class LogoClCardApiController : ControllerBase
         else
         {
             _logger.LogWarning("PendingInvoicesSearch: Search failed, StatusCode: {StatusCode}", result.StatusCode);
+        }
+
+        return StatusCode(result.StatusCode, result);
+    }
+
+    /// <summary>
+    /// Cari hesap detaylı ekstre (fatura satırları dahil)
+    /// </summary>
+    [HttpGet("ClCardStatementDetailed")]
+    [SwaggerOperation(Summary = "Cari hesap detaylı ekstre - fatura kalemleri dahil")]
+    [SwaggerResponse(200, "Başarılı", typeof(ResponseDto<ClCardStatementDetailedViewModel>))]
+    [SwaggerResponse(400, "Geçersiz istek")]
+    [SwaggerResponse(401, "Yetkisiz erişim")]
+    [SwaggerResponse(500, "Sunucu hatası")]
+    public async Task<IActionResult> ClCardStatementDetailed(
+        [FromQuery] string clCode)
+    {
+        _logger.LogInformation("ClCardStatementDetailed called with clCode={ClCode}", clCode);
+        if (string.IsNullOrWhiteSpace(clCode))
+        {
+            _logger.LogWarning("ClCardStatementDetailed: clCode is empty");
+            return BadRequest(ResponseDto<ClCardStatementDetailedViewModel>.FailData(
+                400, "Cari kodu boş olamaz", "clCode parametresi gereklidir", true));
+        }
+
+        var result = await _service.GetClCardStatementDetailedAsync(clCode);
+
+        if (result.IsSuccess)
+        {
+            _logger.LogInformation("ClCardStatementDetailed: Successfully retrieved detailed statement");
+        }
+        else
+        {
+            _logger.LogWarning("ClCardStatementDetailed: Failed, StatusCode: {StatusCode}", result.StatusCode);
+        }
+
+        return StatusCode(result.StatusCode, result);
+    }
+
+    /// <summary>
+    /// Cari hesap listesi - bakiye bilgileri ile
+    /// </summary>
+    [HttpGet("CustomerListWithBalance")]
+    [SwaggerOperation(Summary = "Cari hesap listesi - bakiye, son satış ve ödeme tarihleri ile")]
+    [SwaggerResponse(200, "Başarılı", typeof(ResponseListDto<List<CustomerListWithBalanceViewModel>>))]
+    [SwaggerResponse(401, "Yetkisiz erişim")]
+    [SwaggerResponse(500, "Sunucu hatası")]
+    public async Task<IActionResult> CustomerListWithBalance(
+        [FromQuery] string? specode2,
+        [FromQuery] int perPage = 50,
+        [FromQuery] int pageNo = 1)
+    {
+        _logger.LogInformation("CustomerListWithBalance called with specode2={Specode2}, perPage={PerPage}, pageNo={PageNo}", specode2, perPage, pageNo);
+        var result = await _service.GetCustomerListWithBalanceAsync(specode2, perPage, pageNo);
+
+        if (result.IsSuccess)
+        {
+            _logger.LogInformation("CustomerListWithBalance: Successfully retrieved {Count} records", result.Data?.Count ?? 0);
+        }
+        else
+        {
+            _logger.LogWarning("CustomerListWithBalance: Failed, StatusCode: {StatusCode}", result.StatusCode);
         }
 
         return StatusCode(result.StatusCode, result);

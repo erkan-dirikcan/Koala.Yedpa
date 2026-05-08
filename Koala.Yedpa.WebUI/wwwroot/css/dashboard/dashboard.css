@@ -1,45 +1,4 @@
-.dashboard-grid {
-    min-height: 400px;
-}
-
-.dashboard-grid .grid-stack-item {
-    border: 1px solid #EBEDF3;
-    border-radius: 0.75rem;
-    background: #ffffff;
-    overflow: hidden;
-}
-
-.dashboard-grid .grid-stack-item .grid-stack-item-content {
-    padding: 0;
-    inset: 0;
-}
-
-.widget-card {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    padding: 1.25rem;
-}
-
-.widget-card .widget-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-}
-
-.widget-card .widget-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #3F4254;
-}
-
-.widget-card .widget-body {
-    flex: 1;
-    overflow-y: auto;
-    position: relative;
-}
-
+/* --- KPI Cards --- */
 .kpi-row {
     display: flex;
     gap: 1rem;
@@ -71,6 +30,7 @@
 .kpi-danger  { background: #FFE2E5; color: #F64E60; }
 .kpi-warning { background: #FFF4DE; color: #FFA800; }
 
+/* --- Widget Loading / Error --- */
 .widget-loading {
     display: flex;
     align-items: center;
@@ -90,6 +50,76 @@
     font-size: 0.9rem;
 }
 
+/* --- Drag Handle --- */
+.drag-handle {
+    cursor: grab;
+    padding: 0.5rem;
+    border-radius: 0.35rem;
+    transition: background 0.2s;
+}
+
+.drag-handle:hover {
+    background: #F3F6F9;
+}
+
+.drag-handle:active {
+    cursor: grabbing;
+}
+
+/* --- SortableJS Drag Feedback --- */
+.widget-wrapper.widget-ghost {
+    opacity: 0.4;
+    background: #E1F0FF;
+    border-radius: 0.75rem;
+    border: 2px dashed #3699FF;
+}
+
+.widget-wrapper.widget-chosen .card {
+    box-shadow: 0 0 20px rgba(54, 153, 255, 0.3);
+}
+
+.widget-wrapper.widget-drag {
+    opacity: 0.9;
+}
+
+.widget-wrapper.widget-fallback {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    transform: rotate(1deg);
+}
+
+.widget-wrapper .card {
+    transition: box-shadow 0.2s ease;
+}
+
+.widget-wrapper .card-header {
+    cursor: grab;
+}
+
+.widget-wrapper .card-header:active {
+    cursor: grabbing;
+}
+
+/* --- Widget Table --- */
+.widget-table {
+    width: 100%;
+    font-size: 0.85rem;
+}
+
+.widget-table th {
+    color: #7E8299;
+    font-weight: 500;
+    padding: 0.5rem 0.25rem;
+    border-bottom: 1px solid #EBEDF3;
+    text-align: left;
+}
+
+.widget-table td {
+    padding: 0.5rem 0.25rem;
+    border-bottom: 1px solid #F3F6F9;
+    color: #3F4254;
+}
+
+/* --- Widget Sidebar --- */
 .widget-sidebar {
     position: fixed;
     right: -300px;
@@ -131,25 +161,7 @@
     border-bottom: 1px solid #F3F6F9;
 }
 
-.widget-table {
-    width: 100%;
-    font-size: 0.85rem;
-}
-
-.widget-table th {
-    color: #7E8299;
-    font-weight: 500;
-    padding: 0.5rem 0.25rem;
-    border-bottom: 1px solid #EBEDF3;
-    text-align: left;
-}
-
-.widget-table td {
-    padding: 0.5rem 0.25rem;
-    border-bottom: 1px solid #F3F6F9;
-    color: #3F4254;
-}
-
+/* --- Toolbar --- */
 .dashboard-toolbar {
     display: flex;
     justify-content: space-between;

@@ -1,82 +1,53 @@
-@using Koala.Yedpa.WebUI.Controllers
 @{
     ViewData["Title"] = "Dashboard";
     ViewData["ActivePage"] = "Dashboard";
-    var widgets = ViewBag.Widgets as List<DashboardWidgetViewModel> ?? new List<DashboardWidgetViewModel>();
-    var hiddenWidgets = ViewBag.HiddenWidgets as List<DashboardWidgetViewModel> ?? new List<DashboardWidgetViewModel>();
-    var allWidgets = widgets.Concat(hiddenWidgets).ToList();
 }
 
-<link href="~/css/dashboard/dashboard.css" rel="stylesheet" />
+<div class="d-flex flex-column-fluid">
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10 text-center" style="padding-top:6rem">
 
-<div class="dashboard-toolbar">
-    <h3 class="card-label font-weight-bolder text-dark mb-0">Dashboard</h3>
-    <div class="toolbar-actions">
-        <button type="button" class="btn btn-sm btn-light-primary" id="btnToggleSidebar">
-            <i class="fas fa-th-large mr-1"></i> Widgetlar
-        </button>
-        <button type="button" class="btn btn-sm btn-light-danger" id="btnResetLayout">
-            <i class="fas fa-undo mr-1"></i> Sifirla
-        </button>
-    </div>
-</div>
+                <img src="https://illustrations.popsy.co/amber/crashed-error.svg"
+                     alt="Under Construction"
+                     style="max-width:420px;width:100%;margin-bottom:2rem" />
 
-<div class="grid-stack dashboard-grid" id="dashboardGrid">
-    @foreach (var widget in widgets)
-    {
-        <div class="grid-stack-item"
-             data-gs-id="@widget.Id"
-             data-gs-x="@widget.GridX"
-             data-gs-y="@widget.GridY"
-             data-gs-w="@widget.Width"
-             data-gs-h="@widget.Height"
-             data-gs-min-w="3"
-             data-gs-min-h="2">
-            <div class="grid-stack-item-content">
-                <div class="widget-card" id="widget-@widget.Id">
-                    <div class="widget-header">
-                        <span class="widget-title">@widget.Title</span>
-                        <button type="button" class="btn btn-icon btn-xs btn-light btn-circle widget-remove" data-widget-id="@widget.Id">
-                            <i class="fas fa-times icon-xs"></i>
-                        </button>
+                <h2 class="fw-bolder text-dark mb-4" style="font-size:1.8rem">
+                    Dashboard Hazırlanıyor
+                </h2>
+
+                <p class="text-muted fs-5 mb-6" style="max-width:500px;margin:0 auto">
+                    Yeni dashboard özelleştirilebilir widget'lar, grafikler ve sürükle-bırak özelliği ile çok yakında burada.
+                </p>
+
+                <div class="d-flex justify-content-center gap-4 mt-8">
+                    <div class="text-center">
+                        <span class="svg-icon svg-icon-4x svg-icon-primary">
+                            <i class="fas fa-chart-bar text-primary" style="font-size:2.5rem"></i>
+                        </span>
+                        <p class="text-muted mt-2 fs-7">Grafikler</p>
                     </div>
-                    <div class="widget-body">
-                        <div class="widget-loading">
-                            <i class="fas fa-spinner fa-spin mr-2"></i> Yukleniyor...
-                        </div>
+                    <div class="text-center">Ek bütçe oluşturmak istediğim
+                        <span class="svg-icon svg-icon-4x svg-icon-success">
+                            <i class="fas fa-th-large text-success" style="font-size:2.5rem"></i>
+                        </span>
+                        <p class="text-muted mt-2 fs-7">Widget'lar</p>
+                    </div>
+                    <div class="text-center">
+                        <span class="svg-icon svg-icon-4x svg-icon-warning">
+                            <i class="fas fa-arrows-alt text-warning" style="font-size:2.5rem"></i>
+                        </span>
+                        <p class="text-muted mt-2 fs-7">Sürükle & Bırak</p>
+                    </div>
+                    <div class="text-center">
+                        <span class="svg-icon svg-icon-4x svg-icon-danger">
+                            <i class="fas fa-user-cog text-danger" style="font-size:2.5rem"></i>
+                        </span>
+                        <p class="text-muted mt-2 fs-7">Kişiselleştirme</p>
                     </div>
                 </div>
+
             </div>
         </div>
-    }
-</div>
-
-<!-- Widget Sidebar -->
-<div class="widget-sidebar" id="widgetSidebar">
-    <div class="sidebar-header">
-        <span class="sidebar-title">Widget Yonetimi</span>
-        <button type="button" class="btn btn-icon btn-sm btn-light btn-circle" id="btnCloseSidebar">
-            <i class="fas fa-times"></i>
-        </button>
     </div>
-    @foreach (var widget in allWidgets)
-    {
-        <div class="widget-toggle-item">
-            <span>@widget.Title</span>
-            <div class="switch switch-sm">
-                <label>
-                    <input type="checkbox" class="widget-toggle" data-widget-id="@widget.Id" @(widget.Visible ? "checked" : "") />
-                    <span></span>
-                </label>
-            </div>
-        </div>
-    }
 </div>
-
-<input type="hidden" id="allWidgetsData" value='@Html.Raw(System.Text.Json.JsonSerializer.Serialize(allWidgets.Select(w => new { w.Id, w.Title, w.PartialView, w.GridX, w.GridY, w.Width, w.Height, w.Visible }).ToList()))' />
-
-@section Scripts
-{
-    <script src="~/js/dashboard/widgets.js"></script>
-    <script src="~/js/dashboard/dashboard.js"></script>
-}

@@ -139,8 +139,20 @@ document.addEventListener('DOMContentLoaded', function () {
     console.log('generateBudgetExcelBtn:', generateBudgetExcelBtn);
     if (generateBudgetExcelBtn) {
         console.log('Adding event listener to generateBudgetExcelBtn');
-        generateBudgetExcelBtn.addEventListener('click', function() {
+        generateBudgetExcelBtn.addEventListener('click', async function() {
             console.log('generateBudgetExcelBtn clicked');
+            // Bütçe yıllarını API'den dinamik çek
+            let yearOptions = '<option value="">Seçiniz...</option>';
+            try {
+                const resp = await fetch('/api/DuesStatisticApi/GetDistinctYears');
+                const res = await resp.json();
+                if (resp.ok && res.isSuccess && res.data) {
+                    yearOptions += res.data.map(y => `<option value="${y}">${y}</option>`).join('');
+                }
+            } catch (e) {
+                console.error('Yıllar yüklenemedi:', e);
+            }
+
             // Yıl seçim modalı göster
             Swal.fire({
                 title: 'Bütçe Excel Oluştur',
@@ -148,9 +160,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     <div class="form-group">
                         <label for="budgetYearExcel">Yıl Seçin:</label>
                         <select id="budgetYearExcel" class="swal2-input" style="width: 200px;">
-                            <option value="2025">2025</option>
-                            <option value="2026">2026</option>
-                            <option value="2027">2027</option>
+                            ${yearOptions}
                         </select>
                     </div>
                     <p style="color: #17a2b8; margin-top: 15px;">
@@ -189,7 +199,19 @@ document.addEventListener('DOMContentLoaded', function () {
     // ============================================================
     const sendBulkEmailsBtn = document.getElementById('sendBulkEmailsBtn');
     if (sendBulkEmailsBtn) {
-        sendBulkEmailsBtn.addEventListener('click', function() {
+        sendBulkEmailsBtn.addEventListener('click', async function() {
+            // Bütçe yıllarını API'den dinamik çek
+            let yearOptions = '<option value="">Seçiniz...</option>';
+            try {
+                const resp = await fetch('/api/DuesStatisticApi/GetDistinctYears');
+                const res = await resp.json();
+                if (resp.ok && res.isSuccess && res.data) {
+                    yearOptions += res.data.map(y => `<option value="${y}">${y}</option>`).join('');
+                }
+            } catch (e) {
+                console.error('Yıllar yüklenemedi:', e);
+            }
+
             // Yıl seçim modalı göster
             Swal.fire({
                 title: 'Bütçe Maili Gönder',
@@ -197,9 +219,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     <div class="form-group">
                         <label for="budgetYear">Yıl Seçin:</label>
                         <select id="budgetYear" class="swal2-input" style="width: 200px;">
-                            <option value="2025">2025</option>
-                            <option value="2026">2026</option>
-                            <option value="2027">2027</option>
+                            ${yearOptions}
                         </select>
                     </div>
                     <p style="color: #f56954; margin-top: 15px;">

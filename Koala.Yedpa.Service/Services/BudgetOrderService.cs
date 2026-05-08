@@ -696,9 +696,9 @@ namespace Koala.Yedpa.Service.Services
                         $"Kaynak yıl ({request.SourceYear}) için veri bulunamadı", "Not found", true);
                 }
 
-                // Filter by budget type
+                // Always use regular budget (Budget) as source — extra budget is added on top of existing budget
                 var sourceDuesStatistics = sourceDuesResult.Data
-                    .Where(d => d.BudgetType == request.BudgetType)
+                    .Where(d => d.BudgetType == BuggetTypeEnum.Budget)
                     .Select(d => new DuesStatisticListViewModel
                     {
                         Id = d.Id,
@@ -768,34 +768,44 @@ namespace Koala.Yedpa.Service.Services
                         "Hesaplanan oran 0 veya negatif olamaz", "Validation error", true);
                 }
 
-                // 5. Apply ratio to selected months
-                var calculatedDuesStatistics = new List<DuesStatisticListViewModel>();
-                foreach (var sourceDues in sourceDuesStatistics)
-                {
-                    // Yeni cari bilgilerini Logo'dan çek
-                    string newClientCode = sourceDues.ClientCode; // Varsayılan olarak mevcut kodu kullan
-                    long newClientRef = sourceDues.ClientRef;     // Varsayılan olarak mevcut ref'i kullan
+                // 5. Batch-fetch client info for all unique DivCodes
+                var uniqueDivCodes = sourceDuesStatistics
+                    .Select(d => d.DivCode)
+                    .Where(c => !string.IsNullOrWhiteSpace(c))
+                    .Distinct()
+                    .ToList();
 
+                var clientInfoLookup = new Dictionary<string, (string ClientCode, long ClientRef)>(StringComparer.OrdinalIgnoreCase);
+                if (uniqueDivCodes.Any())
+                {
                     try
                     {
-                        // DivCode (işyeri kodu) ile Logo'dan yeni cari bilgilerini çek
-                        var clientInfoResult = await _apiLogoSqlDataService.GetClientInfoByWorkplaceCodeAsync(sourceDues.DivCode);
-                        if (clientInfoResult.IsSuccess && !string.IsNullOrWhiteSpace(clientInfoResult.Data.ClientCode))
+                        var batchResult = await _apiLogoSqlDataService.GetClientInfoByWorkplaceCodesAsync(uniqueDivCodes);
+                        if (batchResult.IsSuccess && batchResult.Data != null)
                         {
-                            newClientCode = clientInfoResult.Data.ClientCode;
-                            newClientRef = clientInfoResult.Data.ClientRef;
-                            _logger.LogInformation("Yeni cari bilgisi çekildi: {DivCode} -> {NewClientCode} (Ref: {NewClientRef})",
-                                sourceDues.DivCode, newClientCode, newClientRef);
-                        }
-                        else
-                        {
-                            _logger.LogWarning("Yeni cari bilgisi bulunamadı: {DivCode}, mevcut bilgiler kullanılacak: {OldClientCode} (Ref: {OldClientRef})",
-                                sourceDues.DivCode, sourceDues.ClientCode, sourceDues.ClientRef);
+                            clientInfoLookup = batchResult.Data;
+                            _logger.LogInformation("Toplu cari bilgisi çekildi: {Count}/{Total} işyeri",
+                                clientInfoLookup.Count, uniqueDivCodes.Count);
                         }
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError(ex, "Yeni cari bilgisi çekilirken hata oluştu: {DivCode}", sourceDues.DivCode);
+                        _logger.LogError(ex, "Toplu cari bilgisi çekilirken hata oluştu");
+                    }
+                }
+
+                // 6. Apply ratio to selected months
+                var calculatedDuesStatistics = new List<DuesStatisticListViewModel>();
+                foreach (var sourceDues in sourceDuesStatistics)
+                {
+                    string newClientCode = sourceDues.ClientCode;
+                    long newClientRef = sourceDues.ClientRef;
+
+                    if (clientInfoLookup.TryGetValue(sourceDues.DivCode, out var clientInfo)
+                        && !string.IsNullOrWhiteSpace(clientInfo.ClientCode))
+                    {
+                        newClientCode = clientInfo.ClientCode;
+                        newClientRef = clientInfo.ClientRef;
                     }
 
                     var calculatedDues = new DuesStatisticListViewModel
@@ -833,7 +843,7 @@ namespace Koala.Yedpa.Service.Services
                     calculatedDuesStatistics.Add(calculatedDues);
                 }
 
-                // 6. Calculate totals
+                // 7. Calculate totals
                 decimal calculatedTotal = calculatedDuesStatistics.Sum(d => d.Total);
 
                 var result = new BudgetCalculationResultViewModel

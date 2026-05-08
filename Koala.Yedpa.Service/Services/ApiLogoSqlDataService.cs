@@ -600,6 +600,98 @@ namespace Koala.Yedpa.Service.Services
             }
         }
 
+        public async Task<ResponseDto<Dictionary<string, (string ClientCode, long ClientRef)>>> GetClientInfoByWorkplaceCodesAsync(List<string> workplaceCodes)
+        {
+            try
+            {
+                if (workplaceCodes == null || !workplaceCodes.Any())
+                {
+                    return ResponseDto<Dictionary<string, (string, long)>>.FailData(400, "İşyeri kodu listesi boş olamaz", "workplaceCodes parametresi gereklidir", true);
+                }
+
+                var codes = workplaceCodes.Where(c => !string.IsNullOrWhiteSpace(c)).Distinct().ToList();
+                if (!codes.Any())
+                {
+                    return ResponseDto<Dictionary<string, (string, long)>>.SuccessData(200, "Boş liste", new Dictionary<string, (string, long)>());
+                }
+
+                var codeList = string.Join(",", codes.Select(c => $"'{c.Replace("'", "''")}'"));
+                var query = $@"
+                    WITH RankedRecords AS (
+                        SELECT
+                            CL.CODE,
+                            CL.LOGICALREF,
+                            IC.CODE AS IC_CODE,
+                            ROW_NUMBER() OVER (
+                                PARTITION BY IC.CODE
+                                ORDER BY
+                                    CASE
+                                        WHEN RIGHT(CL.CODE, 2) LIKE '[1-9][0-9]'
+                                             AND CAST(RIGHT(CL.CODE, 2) AS INT) BETWEEN 10 AND 99
+                                        THEN 5000 + CAST(RIGHT(CL.CODE, 2) AS INT)
+
+                                        WHEN LEFT(RIGHT(CL.CODE, 2), 1) = 'K'
+                                             AND RIGHT(CL.CODE, 1) LIKE '[0-9]'
+                                        THEN 4000 + CAST(RIGHT(CL.CODE, 1) AS INT)
+
+                                        WHEN RIGHT(CL.CODE, 2) = 'KR' THEN 3000
+
+                                        WHEN RIGHT(CL.CODE, 2) LIKE 'M[0-9]'
+                                        THEN 2000 + CAST(RIGHT(CL.CODE, 1) AS INT)
+
+                                        WHEN RIGHT(CL.CODE, 2) = 'MS' THEN 1000
+
+                                        ELSE 0
+                                    END DESC
+                            ) AS RowNum
+                        FROM LG_{LogoSetting.Firm}_CLCARD AS CL
+                        INNER JOIN LG_{LogoSetting.Firm}_CLCARD AS IC ON IC.LOGICALREF = CL.PARENTCLREF
+                        WHERE
+                            IC.CODE IN ({codeList})
+                            AND CL.CODE NOT LIKE '%DK0%'
+                            AND CL.CODE NOT LIKE '%DK1%'
+                            AND CL.CODE NOT LIKE '%KD%'
+                            AND (CL.SPECODE NOT IN('KIRMIZI','YEŞİL','MAVİ') OR CL.SPECODE IS NULL)
+                            AND LEFT(CL.CODE, 1) = '1'
+                            AND CL.ACTIVE = 0
+                    )
+                    SELECT CODE, LOGICALREF, IC_CODE
+                    FROM RankedRecords
+                    WHERE RowNum = 1";
+
+                var result = _sqlProvider.SqlReader(query);
+                if (!result.IsSuccess)
+                {
+                    _logger.LogError("GetClientInfoByWorkplaceCodesAsync - Sorgu hatası: {Message}", result.Message);
+                    return ResponseDto<Dictionary<string, (string, long)>>.FailData(500, "Cari bilgisi bulunamadı", result.Message, true);
+                }
+
+                var clientInfoDict = new Dictionary<string, (string ClientCode, long ClientRef)>(StringComparer.OrdinalIgnoreCase);
+
+                if (result.Data != null)
+                {
+                    foreach (DataRow row in result.Data.Rows)
+                    {
+                        var icCode = row["IC_CODE"]?.ToString() ?? string.Empty;
+                        var clientCode = row["CODE"]?.ToString() ?? string.Empty;
+                        var clientRef = row["LOGICALREF"] != DBNull.Value ? Convert.ToInt64(row["LOGICALREF"]) : 0L;
+
+                        if (!string.IsNullOrEmpty(icCode))
+                        {
+                            clientInfoDict[icCode] = (clientCode, clientRef);
+                        }
+                    }
+                }
+
+                return ResponseDto<Dictionary<string, (string, long)>>.SuccessData(200, $"Cari bilgisi başarıyla getirildi ({clientInfoDict.Count} kayıt)", clientInfoDict);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GetClientInfoByWorkplaceCodesAsync - Beklenmeyen hata");
+                return ResponseDto<Dictionary<string, (string, long)>>.FailData(500, "Beklenmeyen bir hata oluştu", ex.Message, true);
+            }
+        }
+
         public async Task<ResponseDto<Dictionary<string, List<WorkplaceCurrentAccounts>>>> GetWorkplaceCurrentAccountsAsync()
         {
             try
@@ -872,6 +964,473 @@ namespace Koala.Yedpa.Service.Services
                 RecordsFiltered: recordsFiltered,
                 RecordsShow: list.Count
             );
+        }
+
+        public async Task<ResponseDto<ClCardStatementDetailedViewModel>> GetClCardStatementDetailedAsync(string clCode)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(clCode))
+                {
+                    return ResponseDto<ClCardStatementDetailedViewModel>.FailData(400, "Cari kodu boş olamaz", "clCode parametresi gereklidir", true);
+                }
+
+                var safeCode = clCode.Replace("'", "''");
+                var f = LogoSetting.Firm;
+                var p = LogoSetting.Period;
+
+                var query = $@"
+                    SELECT * FROM (
+                        -- 1) Fatura satırları (KDV hariç)
+                        SELECT
+                            CLC.LOGICALREF AS CL_REF,
+                            CLC.CODE AS CL_CODE,
+                            CLC.DEFINITION_ AS CL_TITLE,
+                            INV.DATE_ AS INVOICE_DATE,
+                            INV.CAPIBLOCK_CREADEDDATE AS CDATE,
+                            INV.FICHENO AS FICHE_NO,
+                            CASE INV.TRCODE
+                                WHEN 1 THEN 'SATINALMA FATURASI'
+                                WHEN 2 THEN 'PERAKENDE SATIŞ İADE FATURASI'
+                                WHEN 3 THEN 'TOPTAN SATIŞ İADE FATURASI'
+                                WHEN 4 THEN 'ALINAN HİZMET FATURASI'
+                                WHEN 6 THEN 'SATINALMA İADE FATURASI'
+                                WHEN 7 THEN 'PERAKENDE SATIŞ FATURASI'
+                                WHEN 8 THEN 'TOPTAN SATIŞ FATURASI'
+                                WHEN 9 THEN 'VERİLEN HİZMET FATURASI'
+                                WHEN 13 THEN 'SATINALMA FİYAT FARKI FATURASI'
+                                WHEN 14 THEN 'SATIŞ FİYAT FARKI FATURASI'
+                                WHEN 26 THEN 'MÜSTAHSİL MAKBUZU'
+                                ELSE 'DİĞER'
+                            END AS FICHE_TYPE,
+                            '' AS CURR_STATUS,
+                            INV.DOCODE AS DONUMBER,
+                            INV.GENEXP1 AS DESCRIPTION,
+                            CASE WHEN STL.LINETYPE NOT IN (4) THEN ITE.CODE
+                                 WHEN STL.LINETYPE IN (4) THEN SRV.CODE
+                            END AS ITEM_CODE,
+                            CASE WHEN STL.LINETYPE NOT IN (4) THEN ITE.NAME
+                                 WHEN STL.LINETYPE IN (4) THEN SRV.DEFINITION_
+                            END AS ITEM_NAME,
+                            STL.AMOUNT AS AMOUNT,
+                            UNI.NAME AS UNIT,
+                            STL.PRICE AS UNIT_PRICE,
+                            INV.TOTALDISCOUNTS AS DISCOUNT_TOTAL,
+                            INV.TOTALVAT AS TAX_TOTAL,
+                            CASE WHEN STL.LINETYPE=1 THEN ((STL.TOTAL - STL.DISTCOST) + (STL.VATAMNT)) - (STL.VATAMNT)
+                                 ELSE CASE WHEN INV.TRCODE IN (6,7,8,9,10) THEN (STL.TOTAL - STL.DISTCOST) + (STL.VATAMNT) ELSE 0 END
+                            END AS DEPT,
+                            CASE WHEN INV.TRCODE IN (1,4,5,2,3) THEN (STL.TOTAL - STL.DISTCOST) + (STL.VATAMNT) ELSE 0 END AS CREDIT,
+                            CASE WHEN INV.TRCODE IN (6,7,8,9,10) THEN (STL.TOTAL - STL.DISTCOST) + (STL.VATAMNT) ELSE 0 END
+                            - CASE WHEN INV.TRCODE IN (1,4,5,2,3) THEN (STL.TOTAL - STL.DISTCOST) + (STL.VATAMNT) ELSE 0 END AS BALANCE_TL,
+                            STL.LINENET AS LINENET,
+                            STL.TOTAL AS LINETOTAL,
+                            STL.LINETYPE AS LINETYPE,
+                            STL.VAT AS VAT,
+                            CLF.TRRATE AS TR_EXP_RATE,
+                            CLF.TRNET AS TR_EX_AMOUNT,
+                            CLF.REPORTRATE AS REP_EX_RATE,
+                            CASE WHEN CLF.SIGN = 0 THEN INV.REPORTNET ELSE 0 END AS REP_EX_DEPT,
+                            CASE WHEN CLF.SIGN = 1 THEN INV.REPORTNET ELSE 0 END AS REP_EX_CREDIT,
+                            (CASE WHEN CLF.SIGN = 0 THEN INV.REPORTNET ELSE 0 END
+                             - CASE WHEN CLF.SIGN = 1 THEN INV.REPORTNET ELSE 0 END) AS REP_BALANCE,
+                            CASE CLF.TRCURR
+                                WHEN 0 THEN 'TL' WHEN 1 THEN 'USD' WHEN 20 THEN 'EURO' WHEN 17 THEN 'GBP' WHEN 160 THEN 'TL' ELSE 'DİĞER'
+                            END AS EXP_TYPE
+                        FROM LG_{f}_{p}_CLFLINE AS CLF
+                            LEFT OUTER JOIN LG_{f}_{p}_INVOICE AS INV ON CLF.SOURCEFREF = INV.LOGICALREF
+                            LEFT OUTER JOIN LG_{f}_CLCARD AS CLC ON CLC.LOGICALREF = CLF.CLIENTREF
+                            LEFT OUTER JOIN LG_{f}_{p}_STLINE AS STL ON STL.INVOICEREF = INV.LOGICALREF
+                            LEFT OUTER JOIN LG_{f}_ITEMS AS ITE ON ITE.LOGICALREF = STL.STOCKREF
+                            LEFT OUTER JOIN LG_{f}_SRVCARD AS SRV ON SRV.LOGICALREF = STL.STOCKREF
+                            LEFT OUTER JOIN LG_{f}_UNITSETL AS UNI ON UNI.LOGICALREF = STL.UOMREF
+                        WHERE CLF.MODULENR = 4 AND INV.CANCELLED = 0 AND CLF.CANCELLED = 0
+                            AND STL.VATINC = 0 AND (STL.CANCELLED = 0 OR STL.CANCELLED IS NULL)
+
+                        UNION ALL
+                        -- 2) Fatura satırları (KDV dahil)
+                        SELECT
+                            CLC.LOGICALREF, CLC.CODE, CLC.DEFINITION_,
+                            INV.DATE_, INV.CAPIBLOCK_CREADEDDATE, INV.FICHENO,
+                            CASE INV.TRCODE
+                                WHEN 1 THEN 'SATINALMA FATURASI' WHEN 2 THEN 'PERAKENDE SATIŞ İADE FATURASI'
+                                WHEN 3 THEN 'TOPTAN SATIŞ İADE FATURASI' WHEN 4 THEN 'ALINAN HİZMET FATURASI'
+                                WHEN 6 THEN 'SATINALMA İADE FATURASI' WHEN 7 THEN 'PERAKENDE SATIŞ FATURASI'
+                                WHEN 8 THEN 'TOPTAN SATIŞ FATURASI' WHEN 9 THEN 'VERİLEN HİZMET FATURASI'
+                                WHEN 13 THEN 'SATINALMA FİYAT FARKI FATURASI' WHEN 14 THEN 'SATIŞ FİYAT FARKI FATURASI'
+                                WHEN 26 THEN 'MÜSTAHSİL MAKBUZU' ELSE 'DİĞER'
+                            END, '',
+                            INV.DOCODE, INV.GENEXP1,
+                            CASE WHEN STL.LINETYPE NOT IN (4) THEN ITE.CODE WHEN STL.LINETYPE IN (4) THEN SRV.CODE END,
+                            CASE WHEN STL.LINETYPE NOT IN (4) THEN ITE.NAME WHEN STL.LINETYPE IN (4) THEN SRV.DEFINITION_ END,
+                            STL.AMOUNT, UNI.NAME, STL.PRICE,
+                            INV.TOTALDISCOUNTS, INV.TOTALVAT,
+                            CASE WHEN INV.TRCODE IN (6,7,8,9,10) THEN (STL.TOTAL - STL.DISTCOST) ELSE 0 END,
+                            CASE WHEN INV.TRCODE IN (1,4,5,2,3) THEN (STL.TOTAL - STL.DISTCOST) ELSE 0 END,
+                            CASE WHEN INV.TRCODE IN (6,7,8,9,10) THEN (STL.TOTAL - STL.DISTCOST) ELSE 0 END
+                            - CASE WHEN INV.TRCODE IN (1,4,5,2,3) THEN (STL.TOTAL - STL.DISTCOST) ELSE 0 END,
+                            STL.LINENET, STL.TOTAL, STL.VAT,
+                            CLF.TRRATE, CLF.TRNET, CLF.REPORTRATE,
+                            CASE WHEN CLF.SIGN = 0 THEN INV.REPORTNET ELSE 0 END,
+                            CASE WHEN CLF.SIGN = 1 THEN INV.REPORTNET ELSE 0 END,
+                            CASE WHEN CLF.SIGN = 0 THEN INV.REPORTNET ELSE 0 END - CASE WHEN CLF.SIGN = 1 THEN INV.REPORTNET ELSE 0 END,
+                            CASE CLF.TRCURR WHEN 0 THEN 'TL' WHEN 1 THEN 'USD' WHEN 20 THEN 'EURO' WHEN 17 THEN 'GBP' WHEN 160 THEN 'TL' ELSE 'DİĞER' END
+                        FROM LG_{f}_{p}_CLFLINE AS CLF
+                            LEFT OUTER JOIN LG_{f}_{p}_INVOICE AS INV ON CLF.SOURCEFREF = INV.LOGICALREF
+                            LEFT OUTER JOIN LG_{f}_CLCARD AS CLC ON CLC.LOGICALREF = CLF.CLIENTREF
+                            LEFT OUTER JOIN LG_{f}_{p}_STLINE AS STL ON STL.INVOICEREF = INV.LOGICALREF
+                            LEFT OUTER JOIN LG_{f}_ITEMS AS ITE ON ITE.LOGICALREF = STL.STOCKREF
+                            LEFT OUTER JOIN LG_{f}_SRVCARD AS SRV ON SRV.LOGICALREF = STL.STOCKREF
+                            LEFT OUTER JOIN LG_{f}_UNITSETL AS UNI ON UNI.LOGICALREF = STL.UOMREF
+                        WHERE CLF.MODULENR = 4 AND INV.CANCELLED = 0 AND CLF.CANCELLED = 0 AND STL.VATINC = 1
+
+                        UNION ALL
+                        -- 3) Cari fişler (tahsilat/ödeme)
+                        SELECT
+                            CLC.LOGICALREF, CLC.CODE, CLC.DEFINITION_,
+                            CHE.DATE_, CHE.CAPIBLOCK_CREADEDDATE, CHE.FICHENO,
+                            CASE CHE.TRCODE
+                                WHEN 1 THEN 'NAKİT TAHSİLAT' WHEN 2 THEN 'NAKİT ÖDEME'
+                                WHEN 3 THEN 'BORÇ DEKONTU' WHEN 4 THEN 'ALACAK DEKONTU'
+                                WHEN 5 THEN 'VİRMAN FİŞİ' WHEN 6 THEN 'KUR FARKI FİŞİ'
+                                WHEN 12 THEN 'ÖZEL FİŞ' WHEN 14 THEN 'AÇILIŞ FİŞİ'
+                                WHEN 41 THEN 'VERİLEN VADE FARKI FATURASI' WHEN 42 THEN 'ALINAN VADE FARKI FATURASI'
+                                WHEN 45 THEN 'VERİLEN SERBEST MESLEK MAKBUZU' WHEN 46 THEN 'ALINAN SERBEST MESLEK MAKBUZU'
+                                WHEN 70 THEN 'KREDİ KARTI FİŞİ' WHEN 71 THEN 'KREDİ KARTI İADE FİŞİ'
+                                WHEN 72 THEN 'FİRMA KREDİ KARTI FİŞİ' ELSE 'DİĞER'
+                            END, '', CHE.DOCODE, CHE.GENEXP1,
+                            '', '', '', '', '',
+                            0, 0,
+                            CASE WHEN CLF.SIGN = 0 THEN CLF.AMOUNT ELSE 0 END AS DEPT,
+                            CASE WHEN CLF.SIGN = 1 THEN CLF.AMOUNT ELSE 0 END AS CREDIT,
+                            CASE WHEN CLF.SIGN = 0 THEN CLF.AMOUNT ELSE 0 END - CASE WHEN CLF.SIGN = 1 THEN CLF.AMOUNT ELSE 0 END,
+                            0, 0, 0,
+                            CLF.TRRATE, CLF.TRNET, CLF.REPORTRATE,
+                            CASE WHEN CLF.SIGN = 0 THEN CLF.REPORTNET ELSE 0 END,
+                            CASE WHEN CLF.SIGN = 1 THEN CLF.REPORTNET ELSE 0 END,
+                            CASE WHEN CLF.SIGN = 0 THEN CLF.REPORTNET ELSE 0 END - CASE WHEN CLF.SIGN = 1 THEN CLF.REPORTNET ELSE 0 END,
+                            CASE CLF.TRCURR WHEN 0 THEN 'TL' WHEN 1 THEN 'USD' WHEN 20 THEN 'EURO' WHEN 17 THEN 'GBP' WHEN 160 THEN 'TL' ELSE 'DİĞER' END
+                        FROM LG_{f}_{p}_CLFLINE AS CLF
+                            LEFT OUTER JOIN LG_{f}_{p}_CLFICHE AS CHE ON CLF.SOURCEFREF = CHE.LOGICALREF
+                            LEFT OUTER JOIN LG_{f}_CLCARD AS CLC ON CLC.LOGICALREF = CLF.CLIENTREF
+                        WHERE CLF.MODULENR = 5 AND CHE.CANCELLED = 0 AND CLF.CANCELLED = 0
+
+                        UNION ALL
+                        -- 4) Banka işlemleri
+                        SELECT
+                            CLC.LOGICALREF, CLC.CODE, CLC.DEFINITION_,
+                            BNF.DATE_, BNF.CAPIBLOCK_CREADEDDATE, BNF.FICHENO,
+                            CASE BNF.TRCODE
+                                WHEN 1 THEN 'BANKA İŞLEM FİŞİ' WHEN 2 THEN 'BANKA VİRMAN FİŞİ'
+                                WHEN 3 THEN 'GELEN HAVALE/EFT' WHEN 4 THEN 'GÖNDERİLEN HAVALE/EFT'
+                                WHEN 5 THEN 'BANKA AÇILIŞ FİŞİ' WHEN 6 THEN 'BANKA KUR FARKI FİŞİ'
+                                WHEN 16 THEN 'BANKA ALINAN HİZMET FATURASI' WHEN 17 THEN 'BANKA VERİLEN HİZMET FATURASI'
+                                WHEN 18 THEN 'BANKADAN ÇEK ÖDEMESİ' WHEN 19 THEN 'BANKADAN SENET ÖDEMESİ'
+                                ELSE 'DİĞER'
+                            END, '', '', BNF.GENEXP1,
+                            '', '', '', '', '',
+                            0, 0,
+                            CASE WHEN CLF.SIGN = 0 THEN CLF.AMOUNT ELSE 0 END,
+                            CASE WHEN CLF.SIGN = 1 THEN CLF.AMOUNT ELSE 0 END,
+                            CASE WHEN CLF.SIGN = 0 THEN CLF.AMOUNT ELSE 0 END - CASE WHEN CLF.SIGN = 1 THEN CLF.AMOUNT ELSE 0 END,
+                            0, 0, 0,
+                            CLF.TRRATE, CLF.TRNET, CLF.REPORTRATE,
+                            CASE WHEN CLF.SIGN = 0 THEN CLF.REPORTNET ELSE 0 END,
+                            CASE WHEN CLF.SIGN = 1 THEN CLF.REPORTNET ELSE 0 END,
+                            CASE WHEN CLF.SIGN = 0 THEN CLF.REPORTNET ELSE 0 END - CASE WHEN CLF.SIGN = 1 THEN CLF.REPORTNET ELSE 0 END,
+                            CASE CLF.TRCURR WHEN 0 THEN 'TL' WHEN 1 THEN 'USD' WHEN 20 THEN 'EURO' WHEN 17 THEN 'GBP' WHEN 160 THEN 'TL' ELSE 'DİĞER' END
+                        FROM LG_{f}_{p}_CLFLINE AS CLF
+                            INNER JOIN LG_{f}_{p}_BNFLINE AS BNL ON CLF.SOURCEFREF = BNL.LOGICALREF
+                            INNER JOIN LG_{f}_CLCARD AS CLC ON CLF.CLIENTREF = CLC.LOGICALREF
+                            INNER JOIN LG_{f}_{p}_BNFICHE AS BNF ON BNL.SOURCEFREF = BNF.LOGICALREF
+                        WHERE CLF.MODULENR = 7 AND BNL.MODULENR = 7 AND BNF.CANCELLED = 0 AND CLF.CANCELLED = 0
+
+                        UNION ALL
+                        -- 5) Çek/Senet işlemleri
+                        SELECT
+                            CLC.LOGICALREF, CLC.CODE, CLC.DEFINITION_,
+                            CLF.DATE_, CLF.CAPIBLOCK_CREADEDDATE, CLF.TRANNO,
+                            CASE CSR.TRCODE
+                                WHEN 1 THEN 'ÇEK GİRİŞİ' WHEN 2 THEN 'SENET GİRİŞİ'
+                                WHEN 3 THEN 'ÇEK ÇIKIŞ (CARİ HESABA)' WHEN 4 THEN 'SENET ÇIKIŞ (CARİ HESABA)'
+                                WHEN 5 THEN 'ÇEK ÇIKIŞ (BANKA TAHSİL)' WHEN 6 THEN 'SENET ÇIKIŞ (BANKA TAHSİL)'
+                                WHEN 7 THEN 'ÇEK ÇIKIŞ (BANKA TEMİNAT)' WHEN 8 THEN 'SENET ÇIKIŞ (BANKA TEMİNAT)'
+                                WHEN 9 THEN 'İŞLEM BORDROSU (MÜŞTERİ ÇEKİ)' WHEN 10 THEN 'İŞLEM BORDROSU (MÜŞTERİ SENEDİ)'
+                                WHEN 11 THEN 'İŞLEM BORDROSU (KENDİ ÇEKİMİZ)' WHEN 12 THEN 'İŞLEM BORDROSU (BORÇ SENEDİMİZ)'
+                                ELSE 'DİĞER'
+                            END,
+                            CASE CSC.CURRSTAT
+                                WHEN 1 THEN 'PORTFÖYDE' WHEN 2 THEN 'CİRO EDİLDİ' WHEN 3 THEN 'TEMİNATA VERİLDİ'
+                                WHEN 4 THEN 'TAHSİLE VERİLDİ' WHEN 5 THEN 'TAHSİLE VERİLDİ (PROTESTOLU)'
+                                WHEN 6 THEN 'İADE EDİLDİ' WHEN 7 THEN 'PROTESTO EDİLDİ' WHEN 8 THEN 'TAHSİL EDİLDİ'
+                                WHEN 9 THEN 'KENDİ ÇEKİMİZ' WHEN 10 THEN 'BORÇ SENEDİMİZ' WHEN 11 THEN 'KARŞILIĞI YOK'
+                                WHEN 12 THEN 'TAHSİL EDİLEMİYOR' WHEN 14 THEN 'PORTFÖYDE PROTESTOLU' ELSE 'DİĞER'
+                            END,
+                            CSR.DOCODE, CSR.GENEXP1,
+                            '', '', '', '', '',
+                            0, 0,
+                            CASE WHEN CSC.DOC IN (3,4) THEN CSC.TRNET ELSE 0 END,
+                            CASE WHEN CSC.DOC IN (1,2) THEN CSC.TRNET ELSE 0 END,
+                            CASE WHEN CSC.DOC IN (3,4) THEN CSC.TRNET ELSE 0 END - CASE WHEN CSC.DOC IN (1,2) THEN CSC.TRNET ELSE 0 END,
+                            0, 0, 0,
+                            CLF.TRRATE, CLF.TRNET, CLF.REPORTRATE,
+                            CASE WHEN CLF.SIGN = 0 THEN CSC.REPORTNET ELSE 0 END,
+                            CASE WHEN CLF.SIGN = 1 THEN CSC.REPORTNET ELSE 0 END,
+                            CASE WHEN CLF.SIGN = 0 THEN CSC.REPORTNET ELSE 0 END - CASE WHEN CLF.SIGN = 1 THEN CSC.REPORTNET ELSE 0 END,
+                            CASE CLF.TRCURR WHEN 0 THEN 'TL' WHEN 1 THEN 'USD' WHEN 20 THEN 'EURO' WHEN 17 THEN 'GBP' WHEN 160 THEN 'TL' ELSE 'DİĞER' END
+                        FROM LG_{f}_{p}_CLFLINE AS CLF
+                            INNER JOIN LG_{f}_CLCARD AS CLC ON CLF.CLIENTREF = CLC.LOGICALREF
+                            INNER JOIN LG_{f}_{p}_CSROLL AS CSR ON CLF.SOURCEFREF = CSR.LOGICALREF
+                            INNER JOIN LG_{f}_{p}_CSTRANS AS CST ON CSR.LOGICALREF = CST.ROLLREF
+                            INNER JOIN LG_{f}_{p}_CSCARD AS CSC ON CST.CSREF = CSC.LOGICALREF
+                        WHERE CLF.MODULENR = 6 AND CLF.CANCELLED = 0 AND CSC.CANCELLED = 0
+
+                        UNION ALL
+                        -- 6) Kasa işlemleri
+                        SELECT
+                            CLC.LOGICALREF, CLC.CODE, CLC.DEFINITION_,
+                            CLF.DATE_, CLF.CAPIBLOCK_CREADEDDATE, CLF.TRANNO,
+                            CASE
+                                WHEN KSL.TRCODE IN (11) THEN 'CARİ HESAP TAHSİLAT'
+                                WHEN KSL.TRCODE IN (12) THEN 'CARİ HESAP ÖDEME'
+                                WHEN KSL.TRCODE IN (21,22) THEN 'BANKA'
+                                WHEN KSL.TRCODE IN (31,32,33,34,35,36,37,38,39) THEN 'FATURA'
+                                WHEN KSL.TRCODE IN (61,62,63,64) THEN 'ÇEK/SENET'
+                                WHEN KSL.TRCODE IN (71,72,73,74) THEN 'KASA'
+                            END, '', KSL.DOCODE, KSL.LINEEXP,
+                            '', '', '', '', '',
+                            0, 0,
+                            CASE WHEN CLF.SIGN = 0 THEN CLF.AMOUNT ELSE 0 END,
+                            CASE WHEN CLF.SIGN = 1 THEN CLF.AMOUNT ELSE 0 END,
+                            CASE WHEN CLF.SIGN = 0 THEN CLF.AMOUNT ELSE 0 END - CASE WHEN CLF.SIGN = 1 THEN CLF.AMOUNT ELSE 0 END,
+                            0, 0, 0,
+                            CLF.TRRATE, CLF.TRNET, CLF.REPORTRATE,
+                            CASE WHEN CLF.SIGN = 0 THEN CLF.REPORTNET ELSE 0 END,
+                            CASE WHEN CLF.SIGN = 1 THEN CLF.REPORTNET ELSE 0 END,
+                            CASE WHEN CLF.SIGN = 0 THEN CLF.REPORTNET ELSE 0 END - CASE WHEN CLF.SIGN = 1 THEN CLF.REPORTNET ELSE 0 END,
+                            CASE CLF.TRCURR WHEN 0 THEN 'TL' WHEN 1 THEN 'USD' WHEN 20 THEN 'EURO' WHEN 17 THEN 'GBP' WHEN 160 THEN 'TL' ELSE 'DİĞER' END
+                        FROM LG_{f}_{p}_CLFLINE AS CLF
+                            INNER JOIN LG_{f}_{p}_KSLINES AS KSL ON CLF.LOGICALREF = KSL.TRANSREF
+                            INNER JOIN LG_{f}_CLCARD AS CLC ON CLF.CLIENTREF = CLC.LOGICALREF
+                        WHERE CLF.MODULENR = 10 AND KSL.CANCELLED = 0 AND CLF.CANCELLED = 0
+
+                        UNION ALL
+                        -- 7) Çek/Senet borç dekontu
+                        SELECT
+                            CLC.LOGICALREF, CLC.CODE, CLC.DEFINITION_,
+                            CLF.DATE_, CLF.CAPIBLOCK_CREADEDDATE, CLF.TRANNO,
+                            'ÇEK/SENET BORÇ DEKONTU', '', '', CLF.LINEEXP,
+                            '', '', '', '', '',
+                            0, 0,
+                            CASE WHEN CLF.SIGN = 0 THEN CLF.AMOUNT ELSE 0 END,
+                            CASE WHEN CLF.SIGN = 1 THEN CLF.AMOUNT ELSE 0 END,
+                            CASE WHEN CLF.SIGN = 0 THEN CLF.AMOUNT ELSE 0 END - CASE WHEN CLF.SIGN = 1 THEN CLF.AMOUNT ELSE 0 END,
+                            0, 0, 0,
+                            CLF.TRRATE, CLF.TRNET, CLF.REPORTRATE,
+                            CASE WHEN CLF.SIGN = 0 THEN CLF.REPORTNET ELSE 0 END,
+                            CASE WHEN CLF.SIGN = 1 THEN CLF.REPORTNET ELSE 0 END,
+                            CASE WHEN CLF.SIGN = 0 THEN CLF.REPORTNET ELSE 0 END - CASE WHEN CLF.SIGN = 1 THEN CLF.REPORTNET ELSE 0 END,
+                            CASE CLF.TRCURR WHEN 0 THEN 'TL' WHEN 1 THEN 'USD' WHEN 20 THEN 'EURO' WHEN 17 THEN 'GBP' WHEN 160 THEN 'TL' ELSE 'DİĞER' END
+                        FROM LG_{f}_{p}_CLFLINE AS CLF
+                            INNER JOIN LG_{f}_CLCARD AS CLC ON CLF.CLIENTREF = CLC.LOGICALREF
+                        WHERE CLF.MODULENR IN (61, 62) AND CLF.CANCELLED = 0
+                    ) AS T
+                    WHERE CL_CODE = '{safeCode}'
+                    ORDER BY INVOICE_DATE, CDATE";
+
+                var result = _sqlProvider.SqlReader(query);
+                if (!result.IsSuccess)
+                {
+                    _logger.LogError("GetClCardStatementDetailedAsync - Sorgu hatası: {Message}", result.Message);
+                    return ResponseDto<ClCardStatementDetailedViewModel>.FailData(500, "Veri çekilemedi", result.Message, true);
+                }
+
+                if (result.Data == null || result.Data.Rows.Count == 0)
+                {
+                    return ResponseDto<ClCardStatementDetailedViewModel>.SuccessData(
+                        200, "Detaylı ekstre bulunamadı", new ClCardStatementDetailedViewModel());
+                }
+
+                // Parse flat rows and group by FICHE_NO
+                var invoiceTypes = new HashSet<string>
+                {
+                    "SATINALMA FATURASI", "PERAKENDE SATIŞ İADE FATURASI", "TOPTAN SATIŞ İADE FATURASI",
+                    "ALINAN HİZMET FATURASI", "SATINALMA İADE FATURASI", "PERAKENDE SATIŞ FATURASI",
+                    "TOPTAN SATIŞ FATURASI", "VERİLEN HİZMET FATURASI", "SATINALMA FİYAT FARKI FATURASI",
+                    "SATIŞ FİYAT FARKI FATURASI", "MÜSTAHSİL MAKBUZU", "AÇILIŞ FİŞİ",
+                    "GELEN HAVALE/EFT"
+                };
+
+                var firstRow = result.Data.Rows[0];
+                var retVal = new ClCardStatementDetailedViewModel
+                {
+                    LogicalRef = Convert.ToInt32(firstRow["CL_REF"]),
+                    ClCode = firstRow["CL_CODE"]?.ToString() ?? string.Empty,
+                    ClTitle = firstRow["CL_TITLE"]?.ToString() ?? string.Empty,
+                };
+
+                decimal cumulativeBalance = 0;
+                var grouped = result.Data.Rows.Cast<DataRow>()
+                    .GroupBy(row => row["FICHE_NO"]?.ToString() ?? string.Empty)
+                    .ToList();
+
+                foreach (var group in grouped)
+                {
+                    var header = group.First();
+                    var ficheType = header["FICHE_TYPE"]?.ToString() ?? string.Empty;
+
+                    var groupModel = new StatementDetailedGroupViewModel
+                    {
+                        Date = header["INVOICE_DATE"] != DBNull.Value ? Convert.ToDateTime(header["INVOICE_DATE"]) : DateTime.MinValue,
+                        FicheNo = group.Key,
+                        FicheType = ficheType,
+                        Description = header["DESCRIPTION"]?.ToString() ?? string.Empty,
+                        Donumber = header["DONUMBER"]?.ToString() ?? string.Empty,
+                        ExpType = header["EXP_TYPE"]?.ToString() ?? string.Empty,
+                        Discount = header["DISCOUNT_TOTAL"] != DBNull.Value ? Convert.ToDecimal(header["DISCOUNT_TOTAL"]) : 0,
+                        TaxTotal = header["TAX_TOTAL"] != DBNull.Value ? Convert.ToDecimal(header["TAX_TOTAL"]) : 0,
+                    };
+
+                    if (invoiceTypes.Contains(ficheType))
+                    {
+                        foreach (var row in group)
+                        {
+                            var itemCode = row["ITEM_CODE"]?.ToString() ?? string.Empty;
+                            if (string.IsNullOrEmpty(itemCode)) continue;
+
+                            groupModel.Debit += row["DEPT"] != DBNull.Value ? Convert.ToDecimal(row["DEPT"]) : 0;
+                            groupModel.Credit += row["CREDIT"] != DBNull.Value ? Convert.ToDecimal(row["CREDIT"]) : 0;
+
+                            groupModel.Lines.Add(new StatementDetailedLineViewModel
+                            {
+                                ItemCode = itemCode,
+                                ItemName = row["ITEM_NAME"]?.ToString() ?? string.Empty,
+                                Amount = row["AMOUNT"] != DBNull.Value ? Convert.ToDecimal(row["AMOUNT"]) : 0,
+                                Unit = row["UNIT"]?.ToString() ?? string.Empty,
+                                UnitPrice = row["UNIT_PRICE"] != DBNull.Value ? Convert.ToDecimal(row["UNIT_PRICE"]) : 0,
+                                LineNet = row["LINENET"] != DBNull.Value ? Convert.ToDecimal(row["LINENET"]) : 0,
+                                LineTotal = row["LINETOTAL"] != DBNull.Value ? Convert.ToDecimal(row["LINETOTAL"]) : 0,
+                                Vat = row["VAT"] != DBNull.Value ? Convert.ToDecimal(row["VAT"]) : 0,
+                                LineType = row["LINETYPE"]?.ToString() ?? string.Empty,
+                            });
+                        }
+                    }
+                    else
+                    {
+                        groupModel.Debit = header["DEPT"] != DBNull.Value ? Convert.ToDecimal(header["DEPT"]) : 0;
+                        groupModel.Credit = header["CREDIT"] != DBNull.Value ? Convert.ToDecimal(header["CREDIT"]) : 0;
+                    }
+
+                    cumulativeBalance += groupModel.Debit - groupModel.Credit;
+                    groupModel.Balance = cumulativeBalance;
+                    retVal.StatementGroups.Add(groupModel);
+                }
+
+                retVal.Balance = cumulativeBalance;
+
+                return ResponseDto<ClCardStatementDetailedViewModel>.SuccessData(
+                    200, "Detaylı cari ekstre başarıyla getirildi", retVal);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GetClCardStatementDetailedAsync - Beklenmeyen hata");
+                return ResponseDto<ClCardStatementDetailedViewModel>.FailData(500, "Beklenmeyen bir hata oluştu", ex.Message, true);
+            }
+        }
+
+        public async Task<ResponseListDto<List<CustomerListWithBalanceViewModel>>> GetCustomerListWithBalanceAsync(string? specode2, int perPage = 50, int pageNo = 1)
+        {
+            try
+            {
+                if (perPage <= 0) perPage = 50;
+                if (pageNo <= 0) pageNo = 1;
+                var offset = (pageNo - 1) * perPage;
+                var f = LogoSetting.Firm;
+                var p = LogoSetting.Period;
+
+                var specode2Filter = !string.IsNullOrWhiteSpace(specode2)
+                    ? $"AND CLC.SPECODE2 = '{specode2.Replace("'", "''")}'"
+                    : "";
+
+                var query = $@"
+                    SELECT
+                        CLC.LOGICALREF AS LogicalRef,
+                        CLC.CODE AS Code,
+                        CLC.DEFINITION_ AS Definition,
+                        ISNULL(CLC.CITY, '') AS City,
+                        ISNULL(CLC.TOWN, '') AS Town,
+                        ISNULL(CLC.DISTRICT, '') AS District,
+                        ISNULL(CLC.ADDR1, '') AS Addr1,
+                        ISNULL(CLC.ADDR2, '') AS Addr2,
+                        CONVERT(DECIMAL(38, 2), SUM(GNCLTOT.DEBIT) - SUM(GNCLTOT.CREDIT)) AS Balance,
+                        LS.LASTSALEDATE AS LastSaleDate,
+                        LP.LASTPAYMENTDATE AS LastPaymentDate
+                    FROM LV_{f}_{p}_GNTOTCL GNCLTOT WITH (NOLOCK)
+                    INNER JOIN LG_{f}_CLCARD CLC WITH (NOLOCK) ON CLC.LOGICALREF = GNCLTOT.CARDREF
+                    LEFT JOIN (
+                        SELECT CLIENTREF, MAX(DATE_) AS LASTSALEDATE
+                        FROM LG_{f}_{p}_STLINE
+                        WHERE TRCODE IN (7, 8)
+                        GROUP BY CLIENTREF
+                    ) LS ON LS.CLIENTREF = CLC.LOGICALREF
+                    LEFT JOIN (
+                        SELECT CLIENTREF, MAX(DATE_) AS LASTPAYMENTDATE
+                        FROM LG_{f}_{p}_CLFLINE
+                        WHERE TRCODE IN (1)
+                        GROUP BY CLIENTREF
+                    ) LP ON LP.CLIENTREF = CLC.LOGICALREF
+                    WHERE GNCLTOT.TOTTYP = 1
+                      AND CLC.CODE IS NOT NULL
+                      AND CLC.ACTIVE = 0
+                      {specode2Filter}
+                    GROUP BY
+                        CLC.LOGICALREF, CLC.CODE, CLC.DEFINITION_,
+                        CLC.CITY, CLC.TOWN, CLC.DISTRICT, CLC.ADDR1, CLC.ADDR2,
+                        LS.LASTSALEDATE, LP.LASTPAYMENTDATE
+                    ORDER BY CLC.DEFINITION_";
+
+                var totalQuery = $@"
+                    SELECT COUNT(*)
+                    FROM LV_{f}_{p}_GNTOTCL GNCLTOT WITH (NOLOCK)
+                    INNER JOIN LG_{f}_CLCARD CLC WITH (NOLOCK) ON CLC.LOGICALREF = GNCLTOT.CARDREF
+                    WHERE GNCLTOT.TOTTYP = 1
+                      AND CLC.CODE IS NOT NULL
+                      AND CLC.ACTIVE = 0
+                      {specode2Filter}";
+
+                var totalResult = _sqlProvider.SqlReader(totalQuery);
+                var recordsTotal = totalResult.IsSuccess ? Convert.ToInt32(totalResult.Data.Rows[0][0]) : 0;
+
+                var pagedQuery = $@"
+                    WITH NumberedCustomers AS (
+                        SELECT *, ROW_NUMBER() OVER (ORDER BY Definition) AS RowNum
+                        FROM ({query}) AS Base
+                    )
+                    SELECT * FROM NumberedCustomers
+                    WHERE RowNum BETWEEN {offset + 1} AND {offset + perPage}
+                    ORDER BY RowNum";
+
+                var result = _sqlProvider.SqlReader(pagedQuery);
+                if (!result.IsSuccess)
+                {
+                    _logger.LogError("GetCustomerListWithBalanceAsync - Sorgu hatası: {Message}", result.Message);
+                    return ResponseListDto<List<CustomerListWithBalanceViewModel>>.FailData(500, "Veri çekilemedi", result.Message, true);
+                }
+
+                var list = result.Data.AsList<CustomerListWithBalanceViewModel>();
+
+                return ResponseListDto<List<CustomerListWithBalanceViewModel>>.SuccessData(
+                    200, "Cari hesap listesi başarıyla getirildi", list,
+                    RecordsTotal: recordsTotal,
+                    RecordsFiltered: recordsTotal,
+                    RecordsShow: list.Count
+                );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GetCustomerListWithBalanceAsync - Beklenmeyen hata");
+                return ResponseListDto<List<CustomerListWithBalanceViewModel>>.FailData(500, "Beklenmeyen bir hata oluştu", ex.Message, true);
+            }
         }
     }
 }

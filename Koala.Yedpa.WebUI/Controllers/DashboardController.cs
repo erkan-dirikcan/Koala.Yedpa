@@ -1,5 +1,8 @@
 using Koala.Yedpa.Core.Constants;
+using Koala.Yedpa.Core.Dtos;
 using Koala.Yedpa.Core.Models;
+using Koala.Yedpa.Core.Models.ViewModels;
+using Koala.Yedpa.Core.Services;
 using Koala.Yedpa.WebUI.Models;
 using Koala.Yedpa.Repositories;
 using Microsoft.AspNetCore.Authorization;
@@ -16,15 +19,21 @@ namespace Koala.Yedpa.WebUI.Controllers
         private readonly ILogger<DashboardController> _logger;
         private readonly AppDbContext _context;
         private readonly UserManager<AppUser> _userManager;
+        private readonly IApiLogoSqlDataService _logoService;
+        private readonly IDuesStatisticService _duesService;
 
         public DashboardController(
             ILogger<DashboardController> logger,
             AppDbContext context,
-            UserManager<AppUser> userManager)
+            UserManager<AppUser> userManager,
+            IApiLogoSqlDataService logoService,
+            IDuesStatisticService duesService)
         {
             _logger = logger;
             _context = context;
             _userManager = userManager;
+            _logoService = logoService;
+            _duesService = duesService;
         }
 
         public async Task<IActionResult> Index()
@@ -32,32 +41,12 @@ namespace Koala.Yedpa.WebUI.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Challenge();
 
-            // Get user's claims from their roles
-            var claimValues = new List<string>();
-            var roles = await _userManager.GetRolesAsync(user);
-            foreach (var roleName in roles)
-            {
-                var role = await _context.Roles.FirstOrDefaultAsync(r => r.Name == roleName);
-                if (role != null)
-                {
-                    var roleClaims = await _context.RoleClaims
-                        .Where(rc => rc.RoleId == role.Id)
-                        .ToListAsync();
-                    claimValues.AddRange(roleClaims.Select(rc => rc.ClaimValue));
-                }
-            }
+            var authorizedWidgets = DashboardWidgets.All.ToList();
 
-            // Filter widgets by user claims
-            var authorizedWidgets = DashboardWidgets.All
-                .Where(w => claimValues.Contains(w.Claim))
-                .ToList();
-
-            // Load user preferences
             var preferences = await _context.DashboardWidgetPreferences
                 .Where(p => p.UserId == user.Id)
                 .ToListAsync();
 
-            // Build widget view models
             var widgetViewModels = new List<DashboardWidgetViewModel>();
             foreach (var widget in authorizedWidgets)
             {
@@ -67,19 +56,113 @@ namespace Koala.Yedpa.WebUI.Controllers
                     Id = widget.Id,
                     Title = widget.Title,
                     PartialView = widget.PartialView,
-                    GridX = pref?.GridX ?? widget.DefaultX,
-                    GridY = pref?.GridY ?? widget.DefaultY,
                     Width = pref?.Width ?? widget.DefaultWidth,
-                    Height = pref?.Height ?? widget.DefaultHeight,
-                    Visible = pref?.Visible ?? widget.DefaultVisible
+                    Visible = pref?.Visible ?? widget.DefaultVisible,
+                    SortOrder = pref?.GridY ?? widget.DefaultY
                 });
             }
+
+            widgetViewModels = widgetViewModels.OrderBy(w => w.SortOrder).ToList();
 
             ViewBag.HiddenWidgets = widgetViewModels.Where(w => !w.Visible).ToList();
             ViewBag.Widgets = widgetViewModels.Where(w => w.Visible).ToList();
             ViewBag.AllWidgets = widgetViewModels.ToList();
 
+            await LoadLogoWidgetDataAsync();
+            await LoadDuesWidgetDataAsync();
+
             return View();
+        }
+
+        private async Task LoadLogoWidgetDataAsync()
+        {
+            try
+            {
+                var balanceResult = await _logoService.GetCustomerListWithBalanceAsync(null, 1, 1000);
+                if (balanceResult.IsSuccess && balanceResult.Data != null)
+                {
+                    var customers = balanceResult.Data;
+                    var totalDebit = customers.Where(c => c.Balance > 0).Sum(c => c.Balance);
+                    var totalCredit = customers.Where(c => c.Balance < 0).Sum(c => Math.Abs(c.Balance));
+
+                    ViewBag.TotalDebit = totalDebit;
+                    ViewBag.TotalCredit = totalCredit;
+                    ViewBag.NetBalance = totalDebit - totalCredit;
+                    ViewBag.TopDebtors = customers
+                        .Where(c => c.Balance > 0)
+                        .OrderByDescending(c => c.Balance)
+                        .Take(10)
+                        .ToList();
+                }
+
+                var pendingResult = await _logoService.GetPendingInvoicesAsync(1, 10);
+                if (pendingResult.IsSuccess && pendingResult.Data != null)
+                {
+                    ViewBag.PendingInvoices = pendingResult.Data;
+                    ViewBag.PendingTotal = pendingResult.Data.Sum(i => i.RemainingAmount);
+                }
+
+                var overdueResult = await _logoService.SearchPendingInvoicesAsync(new PendingInvoiceSearchViewModel(), 1, 100);
+                if (overdueResult.IsSuccess && overdueResult.Data != null)
+                {
+                    var overdue = overdueResult.Data.Where(i => i.RemainingDays < 0).ToList();
+                    ViewBag.OverdueInvoices = overdue;
+                    ViewBag.OverdueTotal = overdue.Sum(i => i.RemainingAmount);
+                }
+
+                var shopResult = await _logoService.GetAllClCardInfoAsync(1, 1);
+                if (shopResult.IsSuccess)
+                {
+                    ViewBag.ShopCount = shopResult.RecordsTotal;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading Logo widget data");
+            }
+        }
+
+        private async Task LoadDuesWidgetDataAsync()
+        {
+            try
+            {
+                var currentYear = DateTime.Now.Year;
+
+                var budgetResult = await _duesService.GetMonthlyBudgetSummaryAsync(currentYear, BuggetTypeEnum.Budget);
+                if (budgetResult.IsSuccess && budgetResult.Data != null)
+                {
+                    ViewBag.MonthlyBudget = budgetResult.Data;
+                    var totalCollected = budgetResult.Data.MonthlyData.Sum(m => m.NewBudget);
+                    ViewBag.BudgetTotalBudget = budgetResult.Data.TotalBudget;
+                    ViewBag.BudgetCollected = totalCollected;
+                    ViewBag.BudgetRemaining = budgetResult.Data.TotalBudget - totalCollected;
+                }
+
+                var yearsResult = await _duesService.GetDistinctYearsAsync();
+                if (yearsResult.IsSuccess && yearsResult.Data != null && yearsResult.Data.Count > 0)
+                {
+                    var last3Years = yearsResult.Data.OrderByDescending(y => y).Take(3).ToList();
+                    var yearlyData = new List<YearlyBudgetItem>();
+                    foreach (var year in last3Years)
+                    {
+                        var yearData = await _duesService.GetMonthlyBudgetSummaryAsync(year, BuggetTypeEnum.Budget);
+                        if (yearData.IsSuccess && yearData.Data != null)
+                        {
+                            yearlyData.Add(new YearlyBudgetItem
+                            {
+                                Year = year,
+                                Budget = yearData.Data.TotalBudget,
+                                Collected = yearData.Data.MonthlyData.Sum(m => m.NewBudget)
+                            });
+                        }
+                    }
+                    ViewBag.YearlyBudgetData = yearlyData;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading Dues widget data");
+            }
         }
 
         [HttpPost]
@@ -88,17 +171,28 @@ namespace Koala.Yedpa.WebUI.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Unauthorized();
 
+            if (layout == null || layout.Count == 0)
+            {
+                _logger.LogWarning("SaveLayout called with empty layout for user {UserId}", user.Id);
+                return Json(new { success = false, error = "Empty layout" });
+            }
+
+            _logger.LogInformation("SaveLayout: Saving {Count} widgets for user {UserId}", layout.Count, user.Id);
+
             foreach (var item in layout)
             {
+                if (string.IsNullOrEmpty(item.WidgetId)) continue;
+
+                _logger.LogDebug("SaveLayout: Widget={WidgetId}, Visible={Visible}, SortOrder={SortOrder}",
+                    item.WidgetId, item.Visible, item.SortOrder);
+
                 var existing = await _context.DashboardWidgetPreferences
                     .FirstOrDefaultAsync(p => p.UserId == user.Id && p.WidgetId == item.WidgetId);
 
                 if (existing != null)
                 {
-                    existing.GridX = item.GridX;
-                    existing.GridY = item.GridY;
+                    existing.GridY = item.SortOrder;
                     existing.Width = item.Width;
-                    existing.Height = item.Height;
                     existing.Visible = item.Visible;
                 }
                 else
@@ -107,16 +201,17 @@ namespace Koala.Yedpa.WebUI.Controllers
                     {
                         UserId = user.Id,
                         WidgetId = item.WidgetId,
-                        GridX = item.GridX,
-                        GridY = item.GridY,
+                        GridX = 0,
+                        GridY = item.SortOrder,
                         Width = item.Width,
-                        Height = item.Height,
+                        Height = 3,
                         Visible = item.Visible
                     });
                 }
             }
 
             await _context.SaveChangesAsync();
+            _logger.LogInformation("SaveLayout: Saved successfully for user {UserId}", user.Id);
             return Json(new { success = true });
         }
 
@@ -146,20 +241,30 @@ namespace Koala.Yedpa.WebUI.Controllers
         public string Id { get; set; } = string.Empty;
         public string Title { get; set; } = string.Empty;
         public string PartialView { get; set; } = string.Empty;
-        public int GridX { get; set; }
-        public int GridY { get; set; }
         public int Width { get; set; }
-        public int Height { get; set; }
         public bool Visible { get; set; }
+        public int SortOrder { get; set; }
     }
 
     public class WidgetLayoutItem
     {
+        [System.Text.Json.Serialization.JsonPropertyName("widgetId")]
         public string WidgetId { get; set; } = string.Empty;
-        public int GridX { get; set; }
-        public int GridY { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("width")]
         public int Width { get; set; }
-        public int Height { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("visible")]
         public bool Visible { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("sortOrder")]
+        public int SortOrder { get; set; }
+    }
+
+    public class YearlyBudgetItem
+    {
+        public int Year { get; set; }
+        public decimal Budget { get; set; }
+        public decimal Collected { get; set; }
     }
 }

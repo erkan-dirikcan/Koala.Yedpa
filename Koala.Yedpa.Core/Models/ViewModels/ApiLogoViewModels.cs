@@ -488,4 +488,127 @@ namespace Koala.Yedpa.Core.Models.ViewModels
         public string? InvoiceNumber { get; set; }
     }
 
+    public class ClCardStatementDetailedViewModel
+    {
+        [SwaggerSchema(Description = "Cari kart referans numarası")]
+        public int LogicalRef { get; set; }
+
+        [SwaggerSchema(Description = "Cari kodu")]
+        public string ClCode { get; set; } = string.Empty;
+
+        [SwaggerSchema(Description = "Cari unvanı")]
+        public string ClTitle { get; set; } = string.Empty;
+
+        [SwaggerSchema(Description = "Toplam bakiye")]
+        public decimal Balance { get; set; }
+
+        [SwaggerSchema(Description = "Detaylı ekstre grupları")]
+        public List<StatementDetailedGroupViewModel> StatementGroups { get; set; } = new();
+    }
+
+    public class StatementDetailedGroupViewModel
+    {
+        [SwaggerSchema(Description = "İşlem tarihi")]
+        public DateTime Date { get; set; }
+
+        [SwaggerSchema(Description = "Fiş numarası")]
+        public string FicheNo { get; set; } = string.Empty;
+
+        [SwaggerSchema(Description = "Fiş türü")]
+        public string FicheType { get; set; } = string.Empty;
+
+        [SwaggerSchema(Description = "Açıklama")]
+        public string Description { get; set; } = string.Empty;
+
+        [SwaggerSchema(Description = "Belge numarası")]
+        public string Donumber { get; set; } = string.Empty;
+
+        [SwaggerSchema(Description = "Borç")]
+        public decimal Debit { get; set; }
+
+        [SwaggerSchema(Description = "Alacak")]
+        public decimal Credit { get; set; }
+
+        [SwaggerSchema(Description = "İndirim toplamı")]
+        public decimal Discount { get; set; }
+
+        [SwaggerSchema(Description = "KDV toplamı")]
+        public decimal TaxTotal { get; set; }
+
+        [SwaggerSchema(Description = "Kümülatif bakiye")]
+        public decimal Balance { get; set; }
+
+        [SwaggerSchema(Description = "Döviz türü")]
+        public string ExpType { get; set; } = string.Empty;
+
+        [SwaggerSchema(Description = "Fiş satırları")]
+        public List<StatementDetailedLineViewModel> Lines { get; set; } = new();
+    }
+
+    public class StatementDetailedLineViewModel
+    {
+        [SwaggerSchema(Description = "Malzeme kodu")]
+        public string ItemCode { get; set; } = string.Empty;
+
+        [SwaggerSchema(Description = "Malzeme adı")]
+        public string ItemName { get; set; } = string.Empty;
+
+        [SwaggerSchema(Description = "Miktar")]
+        public decimal Amount { get; set; }
+
+        [SwaggerSchema(Description = "Birim")]
+        public string Unit { get; set; } = string.Empty;
+
+        [SwaggerSchema(Description = "Birim fiyat")]
+        public decimal UnitPrice { get; set; }
+
+        [SwaggerSchema(Description = "Satır net tutar")]
+        public decimal LineNet { get; set; }
+
+        [SwaggerSchema(Description = "Satır toplam")]
+        public decimal LineTotal { get; set; }
+
+        [SwaggerSchema(Description = "KDV oranı")]
+        public decimal Vat { get; set; }
+
+        [SwaggerSchema(Description = "Satır türü")]
+        public string LineType { get; set; } = string.Empty;
+    }
+
+    public class CustomerListWithBalanceViewModel
+    {
+        [SwaggerSchema(Description = "Cari kart referans numarası")]
+        public int LogicalRef { get; set; }
+
+        [SwaggerSchema(Description = "Cari kodu")]
+        public string Code { get; set; } = string.Empty;
+
+        [SwaggerSchema(Description = "Cari unvanı")]
+        public string Definition { get; set; } = string.Empty;
+
+        [SwaggerSchema(Description = "İl")]
+        public string City { get; set; } = string.Empty;
+
+        [SwaggerSchema(Description = "İlçe")]
+        public string Town { get; set; } = string.Empty;
+
+        [SwaggerSchema(Description = "Mahalle")]
+        public string District { get; set; } = string.Empty;
+
+        [SwaggerSchema(Description = "Adres satırı 1")]
+        public string Addr1 { get; set; } = string.Empty;
+
+        [SwaggerSchema(Description = "Adres satırı 2")]
+        public string Addr2 { get; set; } = string.Empty;
+
+        [SwaggerSchema(Description = "Bakiye")]
+        public decimal Balance { get; set; }
+
+        [SwaggerSchema(Description = "Son satış tarihi")]
+        public DateTime? LastSaleDate { get; set; }
+
+        [SwaggerSchema(Description = "Son ödeme tarihi")]
+        public DateTime? LastPaymentDate { get; set; }
+    }
+
 }
