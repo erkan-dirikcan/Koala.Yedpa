@@ -1,5 +1,7 @@
 using Koala.Yedpa.Core.Dtos;
 using Koala.Yedpa.Core.Extensions;
+using Koala.Yedpa.Core.Helpers;
+using Koala.Yedpa.Core.Models.Filters;
 using Koala.Yedpa.Core.Models.ViewModels;
 using Koala.Yedpa.Core.Providers;
 using Koala.Yedpa.Core.Services;
@@ -14,16 +16,18 @@ namespace Koala.Yedpa.Service.Services
         private readonly AppDbContext _context;
         private readonly ISqlProvider _sqlProvider;
         private readonly ILogger<ApiLogoSqlDataService> _logger;
+        private readonly ICurrentUserService _currentUserService;
 
         public LogoSettingViewModel LogoSetting { get; set; }
         public LogoSqlSettingViewModel LogoSqlSetting { get; set; }
 
 
-        public ApiLogoSqlDataService(ILogger<ApiLogoSqlDataService> logger, ISqlProvider sqlProvider, AppDbContext context, ISettingsService settingsService)
+        public ApiLogoSqlDataService(ILogger<ApiLogoSqlDataService> logger, ISqlProvider sqlProvider, AppDbContext context, ISettingsService settingsService, ICurrentUserService currentUserService)
         {
             _logger = logger;
             _sqlProvider = sqlProvider;
             _context = context;
+            _currentUserService = currentUserService;
             var logoSettingResp = settingsService.GetLogoSettingsAsync().Result;
             if (logoSettingResp.IsSuccess)
             {
@@ -43,13 +47,14 @@ namespace Koala.Yedpa.Service.Services
 
             var offset = (pageNo - 1) * perPage;
 
-            var query = BuildBaseClCardQuery();
+            var specodeClause = GetCurrentUserSpecodeFilter().ToSqlWhere("CLC");
+            var query = BuildBaseClCardQuery(specodeClause);
 
             var totalQuery = $@"
-                                SELECT COUNT(*) 
+                                SELECT COUNT(*)
                                 FROM LG_{LogoSetting.Firm}_CLCARD AS CLC
                                 INNER JOIN LG_{LogoSetting.Firm}_CLCARD AS CLP ON CLP.LOGICALREF = CLC.PARENTCLREF
-                                WHERE CLP.CODE LIKE '%.IS'";
+                                WHERE CLP.CODE LIKE '%.IS'{specodeClause}";
 
             var totalResult = _sqlProvider.SqlReader(totalQuery);
             var recordsTotal = totalResult.IsSuccess ? Convert.ToInt32(totalResult.Data.Rows[0][0]) : 0;
@@ -92,7 +97,8 @@ namespace Koala.Yedpa.Service.Services
             if (perPage <= 0) perPage = 20;
             if (pageNo <= 0) pageNo = 1;
             var offset = (pageNo - 1) * perPage;
-            var query = BuildBaseClCardQuery();
+            var specodeClause = GetCurrentUserSpecodeFilter().ToSqlWhere("CLC");
+            var query = BuildBaseClCardQuery(specodeClause);
 
             var conditions = new List<string>();
 
@@ -148,10 +154,10 @@ namespace Koala.Yedpa.Service.Services
             // 1) Filtresiz toplam kayıt (RecordsTotal)
             var whereClause = conditions.Any() ? " AND " + string.Join(" AND ", conditions) : "";
             var totalQuery = $@"
-                                SELECT COUNT(*) 
+                                SELECT COUNT(*)
                                 FROM LG_{LogoSetting.Firm}_CLCARD AS CLC
                                 INNER JOIN LG_{LogoSetting.Firm}_CLCARD AS CLP ON CLP.LOGICALREF = CLC.PARENTCLREF
-                                WHERE CLP.CODE LIKE '%.IS'";
+                                WHERE CLP.CODE LIKE '%.IS'{specodeClause}";
             var totalResult = _sqlProvider.SqlReader(totalQuery);
             var recordsTotal = totalResult.IsSuccess ? Convert.ToInt32(totalResult.Data.Rows[0][0]) : 0;
 
@@ -453,7 +459,12 @@ namespace Koala.Yedpa.Service.Services
             }
         }
 
-        private string BuildBaseClCardQuery()
+        private ClientSpecodeFilter GetCurrentUserSpecodeFilter()
+        {
+            return ClientSpecodeFilterProvider.GetFilter(_currentUserService.ClientId);
+        }
+
+        private string BuildBaseClCardQuery(string? specodeWhereClause = null)
         {
             return $@"
                 SELECT
@@ -512,7 +523,7 @@ namespace Koala.Yedpa.Service.Services
                 INNER JOIN LG_{LogoSetting.Firm}_CLCARD AS CLP ON CLP.LOGICALREF = CLC.PARENTCLREF
                 WHERE CLP.CODE LIKE '%.IS'
                   AND CLP.DEFINITION_ IS NOT NULL
-                  AND LTRIM(RTRIM(CLP.DEFINITION_)) <> ''";
+                  AND LTRIM(RTRIM(CLP.DEFINITION_)) <> ''{specodeWhereClause ?? ""}";
         }
 
         public async Task<ResponseDto<(string ClientCode, long ClientRef)>> GetClientInfoByWorkplaceCodeAsync(string workplaceCode)
@@ -764,7 +775,7 @@ namespace Koala.Yedpa.Service.Services
             }
         }
 
-        private string BuildBasePendingInvoiceQuery()
+        private string BuildBasePendingInvoiceQuery(string? specodeWhereClause = null)
         {
             return $@"
         SELECT
@@ -835,7 +846,7 @@ namespace Koala.Yedpa.Service.Services
             AND PTRNS.CANCELLED = 0
             AND PTRNS.SIGN = 1
             AND ISNULL(INVFC.FROMKASA, 0) = 0
-            AND (PTRNS.TOTAL - ISNULL(KAPATILAN.KAPANAN_TUTAR, 0)) > 0";
+            AND (PTRNS.TOTAL - ISNULL(KAPATILAN.KAPANAN_TUTAR, 0)) > 0{specodeWhereClause ?? ""}";
         }
 
         public async Task<ResponseListDto<List<PendingInvoiceViewModel>>> GetPendingInvoicesAsync(int perPage = 50, int pageNo = 1)
@@ -844,7 +855,8 @@ namespace Koala.Yedpa.Service.Services
             if (pageNo <= 0) pageNo = 1;
             var offset = (pageNo - 1) * perPage;
 
-            var query = BuildBasePendingInvoiceQuery();
+            var specodeClause = GetCurrentUserSpecodeFilter().ToSqlWhere("CLNTC");
+            var query = BuildBasePendingInvoiceQuery(specodeClause);
 
             var totalQuery = $@"
         SELECT COUNT(*)
@@ -859,7 +871,7 @@ namespace Koala.Yedpa.Service.Services
         ) AS KAPATILAN ON KAPATILAN.CROSSREF = PTRNS.LOGICALREF
         WHERE PTRNS.CROSSREF = 0 AND PTRNS.CANCELLED = 0 AND PTRNS.SIGN = 1
           AND ISNULL(INVFC.FROMKASA, 0) = 0
-          AND (PTRNS.TOTAL - ISNULL(KAPATILAN.KAPANAN_TUTAR, 0)) > 0";
+          AND (PTRNS.TOTAL - ISNULL(KAPATILAN.KAPANAN_TUTAR, 0)) > 0{specodeClause}";
 
             var totalResult = _sqlProvider.SqlReader(totalQuery);
             var recordsTotal = totalResult.IsSuccess ? Convert.ToInt32(totalResult.Data.Rows[0][0]) : 0;
@@ -897,7 +909,8 @@ namespace Koala.Yedpa.Service.Services
             if (pageNo <= 0) pageNo = 1;
             var offset = (pageNo - 1) * perPage;
 
-            var query = BuildBasePendingInvoiceQuery();
+            var specodeClause = GetCurrentUserSpecodeFilter().ToSqlWhere("CLNTC");
+            var query = BuildBasePendingInvoiceQuery(specodeClause);
 
             var conditions = new List<string>();
 
@@ -928,7 +941,7 @@ namespace Koala.Yedpa.Service.Services
         ) AS KAPATILAN ON KAPATILAN.CROSSREF = PTRNS.LOGICALREF
         WHERE PTRNS.CROSSREF = 0 AND PTRNS.CANCELLED = 0 AND PTRNS.SIGN = 1
           AND ISNULL(INVFC.FROMKASA, 0) = 0
-          AND (PTRNS.TOTAL - ISNULL(KAPATILAN.KAPANAN_TUTAR, 0)) > 0";
+          AND (PTRNS.TOTAL - ISNULL(KAPATILAN.KAPANAN_TUTAR, 0)) > 0{specodeClause}";
             var totalResult = _sqlProvider.SqlReader(totalQuery);
             var recordsTotal = totalResult.IsSuccess ? Convert.ToInt32(totalResult.Data.Rows[0][0]) : 0;
 
@@ -978,6 +991,22 @@ namespace Koala.Yedpa.Service.Services
                 var safeCode = clCode.Replace("'", "''");
                 var f = LogoSetting.Firm;
                 var p = LogoSetting.Period;
+
+                // SPECODE access check
+                var filter = GetCurrentUserSpecodeFilter();
+                if (filter.Mode != SpecodeFilterMode.None)
+                {
+                    var specodeCheckQuery = $"SELECT ISNULL(SPECODE,'') FROM LG_{f}_CLCARD WHERE CODE = '{safeCode}'";
+                    var specodeCheckResult = _sqlProvider.SqlReader(specodeCheckQuery);
+                    if (specodeCheckResult.IsSuccess && specodeCheckResult.Data.Rows.Count > 0)
+                    {
+                        var specode = specodeCheckResult.Data.Rows[0][0]?.ToString();
+                        if (!filter.IsAllowed(specode))
+                        {
+                            return ResponseDto<ClCardStatementDetailedViewModel>.FailData(403, "Bu cari hesaba erişim yetkiniz yok", "SPECODE filtresi", true);
+                        }
+                    }
+                }
 
                 var query = $@"
                     SELECT * FROM (
@@ -1352,6 +1381,8 @@ namespace Koala.Yedpa.Service.Services
                     ? $"AND CLC.SPECODE2 = '{specode2.Replace("'", "''")}'"
                     : "";
 
+                var specodeClause = GetCurrentUserSpecodeFilter().ToSqlWhere("CLC");
+
                 var query = $@"
                     SELECT
                         CLC.LOGICALREF AS LogicalRef,
@@ -1382,7 +1413,7 @@ namespace Koala.Yedpa.Service.Services
                     WHERE GNCLTOT.TOTTYP = 1
                       AND CLC.CODE IS NOT NULL
                       AND CLC.ACTIVE = 0
-                      {specode2Filter}
+                      {specode2Filter}{specodeClause}
                     GROUP BY
                         CLC.LOGICALREF, CLC.CODE, CLC.DEFINITION_,
                         CLC.CITY, CLC.TOWN, CLC.DISTRICT, CLC.ADDR1, CLC.ADDR2,
@@ -1396,7 +1427,7 @@ namespace Koala.Yedpa.Service.Services
                     WHERE GNCLTOT.TOTTYP = 1
                       AND CLC.CODE IS NOT NULL
                       AND CLC.ACTIVE = 0
-                      {specode2Filter}";
+                      {specode2Filter}{specodeClause}";
 
                 var totalResult = _sqlProvider.SqlReader(totalQuery);
                 var recordsTotal = totalResult.IsSuccess ? Convert.ToInt32(totalResult.Data.Rows[0][0]) : 0;

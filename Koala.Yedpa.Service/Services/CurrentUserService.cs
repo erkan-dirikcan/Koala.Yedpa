@@ -15,4 +15,6 @@ public class CurrentUserService : ICurrentUserService
     public string? UserId => _httpContextAccessor.HttpContext?.User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
     public bool IsAuthenticated => _httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated ?? false;
+
+    public string? ClientId => _httpContextAccessor.HttpContext?.User?.FindFirst("client_id")?.Value;
 }
