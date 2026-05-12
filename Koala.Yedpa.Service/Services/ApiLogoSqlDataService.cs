@@ -526,6 +526,80 @@ namespace Koala.Yedpa.Service.Services
                   AND LTRIM(RTRIM(CLP.DEFINITION_)) <> ''{specodeWhereClause ?? ""}";
         }
 
+        private string BuildBasePendingInvoiceQuery()
+        {
+            return $@"
+                SELECT
+                    CLNTC.LOGICALREF        AS CustomerReference,
+                    CLNTC.CODE              AS CustomerCode,
+                    CLNTC.DEFINITION_       AS CustomerName,
+                    PTRNS.FICHEREF          AS InvoiceLogicalRef,
+                    INVFC.FICHENO           AS InvoiceNumber,
+                    PTRNS.PROCDATE          AS InvoiceDate,
+                    CASE INVFC.TRCODE
+                        WHEN 1  THEN 'Mal Alım Faturası'
+                        WHEN 2  THEN 'Perakende Satış İade Faturası'
+                        WHEN 3  THEN 'Toptan Satış İade Faturası'
+                        WHEN 4  THEN 'Alınan Hizmet Faturası'
+                        WHEN 5  THEN 'Alınan Proforma Fatura'
+                        WHEN 6  THEN 'Alım İade Faturası'
+                        WHEN 7  THEN 'Alım Fiyat Farkı Faturası'
+                        WHEN 8  THEN 'Perakende Satış Faturası'
+                        WHEN 9  THEN 'Toptan Satış Faturası'
+                        WHEN 10 THEN 'Verilen Hizmet Faturası'
+                        WHEN 11 THEN 'Verilen Proforma Fatura'
+                        WHEN 12 THEN 'Verilen Vade Farkı Faturası'
+                        WHEN 13 THEN 'Satış Fiyat Farkı Faturası'
+                        WHEN 14 THEN 'Satınalma Fiyat Farkı Faturası'
+                        WHEN 26 THEN 'Müstahsil Makbuzu'
+                        WHEN 32 THEN 'Alınan Fiyat Farkı Faturası'
+                        WHEN 33 THEN 'Verilen Fiyat Farkı Faturası'
+                        ELSE 'Diğer'
+                    END                     AS InvoiceType,
+                    INVFC.GENEXP1           AS InvoiceDescription1,
+                    INVFC.GENEXP2           AS InvoiceDescription2,
+                    PTRNS.TOTAL             AS InvoiceDueAmount,
+                    ISNULL(KAPATILAN.KAPANAN_TUTAR, 0) AS PaidAmount,
+                    (PTRNS.TOTAL - ISNULL(KAPATILAN.KAPANAN_TUTAR, 0)) AS RemainingAmount,
+                    PTRNS.DATE_             AS DueDate,
+                    DATEPART(mm, PTRNS.DATE_) AS Month,
+                    DATEPART(wk, PTRNS.DATE_) AS Week,
+                    DATEDIFF(DAY, PTRNS.PROCDATE, PTRNS.DATE_) AS DueDays,
+                    DATEDIFF(DAY, GETDATE(), PTRNS.DATE_)      AS RemainingDays,
+                    CASE PTRNS.TRCURR
+                        WHEN 0  THEN 'TL'
+                        WHEN 1  THEN 'USD'
+                        WHEN 20 THEN 'EUR'
+                        ELSE ''
+                    END                     AS CurrencyType,
+                    CASE
+                        WHEN PTRNS.PAID = 0 THEN 'AÇIK'
+                        WHEN PTRNS.PAID = 1 AND (PTRNS.TOTAL - ISNULL(KAPATILAN.KAPANAN_TUTAR, 0)) > 0 THEN 'KISMİ ÖDEME'
+                        ELSE 'KAPALI'
+                    END                     AS Status
+                FROM LG_{LogoSetting.Firm}_{LogoSetting.Period}_PAYTRANS AS PTRNS
+                INNER JOIN LG_{LogoSetting.Firm}_CLCARD AS CLNTC
+                    ON CLNTC.LOGICALREF = PTRNS.CARDREF
+                LEFT OUTER JOIN LG_{LogoSetting.Firm}_{LogoSetting.Period}_INVOICE AS INVFC
+                    ON INVFC.LOGICALREF = PTRNS.FICHEREF
+                LEFT OUTER JOIN (
+                    SELECT
+                        CROSSREF,
+                        SUM(PAID) AS KAPANAN_TUTAR
+                    FROM LG_{LogoSetting.Firm}_{LogoSetting.Period}_PAYTRANS
+                    WHERE CROSSREF <> 0
+                      AND CANCELLED = 0
+                    GROUP BY CROSSREF
+                ) AS KAPATILAN
+                    ON KAPATILAN.CROSSREF = PTRNS.LOGICALREF
+                WHERE
+                    PTRNS.CROSSREF = 0
+                    AND PTRNS.CANCELLED = 0
+                    AND PTRNS.SIGN = 1
+                    AND ISNULL(INVFC.FROMKASA, 0) = 0
+                    AND (PTRNS.TOTAL - ISNULL(KAPATILAN.KAPANAN_TUTAR, 0)) > 0";
+        }
+
         public async Task<ResponseDto<(string ClientCode, long ClientRef)>> GetClientInfoByWorkplaceCodeAsync(string workplaceCode)
         {
             try
