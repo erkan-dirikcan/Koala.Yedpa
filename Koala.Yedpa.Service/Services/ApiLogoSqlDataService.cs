@@ -849,6 +849,58 @@ namespace Koala.Yedpa.Service.Services
             }
         }
 
+        public async Task<ResponseListDto<List<PendingInvoiceViewModel>>> GetPendingInvoicesAsync(int perPage = 50, int pageNo = 1)
+        {
+            if (perPage <= 0) perPage = 50;
+            if (pageNo <= 0) pageNo = 1;
+            var offset = (pageNo - 1) * perPage;
+
+            var query = BuildBasePendingInvoiceQuery();
+
+            var totalQuery = $@"
+                SELECT COUNT(*)
+                FROM LG_{LogoSetting.Firm}_{LogoSetting.Period}_PAYTRANS AS PTRNS
+                INNER JOIN LG_{LogoSetting.Firm}_CLCARD AS CLNTC ON CLNTC.LOGICALREF = PTRNS.CARDREF
+                LEFT OUTER JOIN LG_{LogoSetting.Firm}_{LogoSetting.Period}_INVOICE AS INVFC ON INVFC.LOGICALREF = PTRNS.FICHEREF
+                LEFT OUTER JOIN (
+                    SELECT CROSSREF, SUM(PAID) AS KAPANAN_TUTAR
+                    FROM LG_{LogoSetting.Firm}_{LogoSetting.Period}_PAYTRANS
+                    WHERE CROSSREF <> 0 AND CANCELLED = 0
+                    GROUP BY CROSSREF
+                ) AS KAPATILAN ON KAPATILAN.CROSSREF = PTRNS.LOGICALREF
+                WHERE PTRNS.CROSSREF = 0 AND PTRNS.CANCELLED = 0 AND PTRNS.SIGN = 1
+                  AND ISNULL(INVFC.FROMKASA, 0) = 0
+                  AND (PTRNS.TOTAL - ISNULL(KAPATILAN.KAPANAN_TUTAR, 0)) > 0";
+
+            var totalResult = _sqlProvider.SqlReader(totalQuery);
+            var recordsTotal = totalResult.IsSuccess ? Convert.ToInt32(totalResult.Data.Rows[0][0]) : 0;
+
+            var pagedQuery = $@"
+                WITH NumberedInvoices AS (
+                    SELECT *, ROW_NUMBER() OVER (ORDER BY DueDate DESC) AS RowNum
+                    FROM ({query}) AS Base
+                )
+                SELECT * FROM NumberedInvoices
+                WHERE RowNum BETWEEN {offset + 1} AND {offset + perPage}
+                ORDER BY RowNum";
+
+            var result = _sqlProvider.SqlReader(pagedQuery);
+            if (!result.IsSuccess)
+            {
+                _logger.LogError("GetPendingInvoicesAsync - Hata: {Message}", result.Message);
+                return ResponseListDto<List<PendingInvoiceViewModel>>.FailData(500, "Veri çekilemedi", result.Message, true);
+            }
+
+            var list = result.Data.AsList<PendingInvoiceViewModel>();
+
+            return ResponseListDto<List<PendingInvoiceViewModel>>.SuccessData(
+                200, "Bekleyen faturalar getirildi", list,
+                RecordsTotal: recordsTotal,
+                RecordsFiltered: recordsTotal,
+                RecordsShow: list.Count
+            );
+        }
+
         private string BuildBasePendingInvoiceQuery(string? specodeWhereClause = null)
         {
             return $@"
