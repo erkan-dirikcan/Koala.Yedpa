@@ -3,7 +3,8 @@
     "ANTHROPIC_AUTH_TOKEN": "5f323b17c20d4e4496a232f28bc37f36.UZb7y2jEsTEXpQvJ",
     "ANTHROPIC_BASE_URL": "https://api.z.ai/api/anthropic",
     "API_TIMEOUT_MS": "300000",
-    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1"
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "0",
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   },
   "permissions": {
     "allow": [
@@ -46,7 +47,9 @@
       "Bash(done)",
       "Bash(dotnet test:*)",
       "Bash(dotnet new:*)",
-      "Bash(dotnet sln add:*)"
+      "Bash(dotnet sln add:*)",
+      "Bash(git checkout *)",
+      "Bash(git status *)"
     ]
   },
   "model": "glm-5.1",
