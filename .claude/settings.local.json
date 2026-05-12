@@ -1,72 +1,8 @@
 {
-  "env": {
-    "ANTHROPIC_AUTH_TOKEN": "5f323b17c20d4e4496a232f28bc37f36.UZb7y2jEsTEXpQvJ",
-    "ANTHROPIC_BASE_URL": "https://api.z.ai/api/anthropic",
-    "API_TIMEOUT_MS": "300000",
-    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "0",
-    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
-  },
   "permissions": {
     "allow": [
-      "Bash(sqlcmd:*)",
-      "Bash(git -C:*)",
-      "Bash(dotnet build:*)",
-      "Bash(dotnet ef migrations add:*)",
-      "Bash(dotnet ef migrations remove:*)",
-      "Bash(git add:*)",
-      "Bash(git commit:*)",
-      "Bash(powershell:*)",
-      "Bash(Select-String:*)",
-      "Bash(Select-Object:*)",
-      "Bash(dotnet clean:*)",
-      "Bash(dotnet run:*)",
-      "Bash(timeout:*)",
-      "Bash(dotnet ef database update:*)",
-      "mcp__web-reader__webReader",
-      "Bash(git push:*)",
-      "Bash(git rm:*)",
-      "Bash(dotnet ef:*)",
-      "Bash(dotnet list:*)",
-      "Bash(dotnet add package:*)",
-      "Bash(tree:*)",
-      "Bash(dotnet add:*)",
-      "Bash(grep:*)",
-      "Bash(ls:*)",
-      "Bash(curl:*)",
-      "Bash(dotnet publish:*)",
-      "Bash(findstr:*)",
-      "Bash(powershell.exe:*)",
-      "Bash(dir:*)",
-      "Bash(git reset:*)",
-      "mcp__zread__get_repo_structure",
-      "Bash(msbuild:*)",
-      "Bash(tasklist:*)",
-      "Bash(for:*)",
-      "Bash(do sed:*)",
-      "Bash(echo:*)",
-      "Bash(done)",
-      "Bash(dotnet test:*)",
-      "Bash(dotnet new:*)",
-      "Bash(dotnet sln add:*)",
-      "Bash(git checkout *)",
-      "Bash(git status *)"
+      "Bash(dotnet build *)",
+      "Bash(git add *)"
     ]
-  },
-  "model": "glm-5.1",
-  "enabledPlugins": {
-    "github@claude-plugins-official": false
-  },
-  "extraKnownMarketplaces": {
-    "superpowers-marketplace": {
-      "source": {
-        "source": "github",
-        "repo": "obra/superpowers-marketplace"
-      }
-    }
-  },
-  "model_mappings": {
-    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "glm-4.7",
-    "ANTHROPIC_DEFAULT_SONNET_MODEL": "glm-5.1",
-    "ANTHROPIC_DEFAULT_OPUS_MODEL": "glm-5.1"
   }
 }
