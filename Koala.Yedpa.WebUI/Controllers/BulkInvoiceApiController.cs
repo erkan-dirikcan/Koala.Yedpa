@@ -3,19 +3,17 @@ using Koala.Yedpa.Core.Dtos.BulkInvoice;
 using Koala.Yedpa.Core.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Swashbuckle.AspNetCore.Annotations;
+using System.Security.Claims;
 
-namespace Koala.Yedpa.WebApi.Controllers;
+namespace Koala.Yedpa.WebUI.Controllers;
 
 /// <summary>
 /// Toplu Faturalandırma API Controller
 /// </summary>
 [Route("api/[controller]")]
 [ApiController]
-[Produces("application/json")]
-[SwaggerTag("Toplu Faturalandırma İşlemleri")]
-[Authorize(Policy = "CurrentAccuant")]
+[Authorize]
+[ApiExplorerSettings(IgnoreApi = true)]
 public class BulkInvoiceApiController : ControllerBase
 {
     private readonly IBulkInvoiceService _service;
@@ -32,10 +30,6 @@ public class BulkInvoiceApiController : ControllerBase
     /// </summary>
     /// <returns>Alert gösterilmeli mi?</returns>
     [HttpGet("check-alert")]
-    [SwaggerOperation(Summary = "Dashboard alert kontrolü yapar", Description = "Ayın 15'inden sonra ve o ay için session yoksa alert gösterilir")]
-    [SwaggerResponse(200, "Başarılı", typeof(ResponseDto<AlertCheckResultDto>))]
-    [SwaggerResponse(401, "Yetkisiz erişim")]
-    [SwaggerResponse(500, "Sunucu hatası")]
     public async Task<IActionResult> CheckAlert()
     {
         _logger.LogInformation("CheckAlert called");
@@ -59,10 +53,6 @@ public class BulkInvoiceApiController : ControllerBase
     /// </summary>
     /// <returns>Faturalandırılmamış satırlar listesi</returns>
     [HttpGet("pending-lines")]
-    [SwaggerOperation(Summary = "Faturalandırılmamış satırları getirir", Description = "ORFLINE'dan faturalandırılmamış aidat sipariş satırlarını çeker")]
-    [SwaggerResponse(200, "Başarılı", typeof(ResponseDto<List<PendingInvoiceLineDto>>))]
-    [SwaggerResponse(401, "Yetkisiz erişim")]
-    [SwaggerResponse(500, "Sunucu hatası")]
     public async Task<IActionResult> GetPendingLines()
     {
         _logger.LogInformation("GetPendingLines called");
@@ -87,11 +77,6 @@ public class BulkInvoiceApiController : ControllerBase
     /// <param name="model">Oturum oluşturma modeli</param>
     /// <returns>Oluşturulan oturum ID'si</returns>
     [HttpPost("create-session")]
-    [SwaggerOperation(Summary = "Toplu fatura oturumu oluşturur", Description = "Seçili satırlar için yeni bir faturalandırma oturumu oluşturur ve queue'ya ekler")]
-    [SwaggerResponse(200, "Başarılı", typeof(ResponseDto<int>))]
-    [SwaggerResponse(400, "Geçersiz istek")]
-    [SwaggerResponse(401, "Yetkisiz erişim")]
-    [SwaggerResponse(500, "Sunucu hatası")]
     public async Task<IActionResult> CreateSession([FromBody] CreateBulkInvoiceSessionDto model)
     {
         _logger.LogInformation("CreateSession called with InvoiceDate={InvoiceDate}, SelectedLinesCount={SelectedLinesCount}",
@@ -109,7 +94,7 @@ public class BulkInvoiceApiController : ControllerBase
             return BadRequest(ResponseDto<int>.Fail(400, "En az bir satır seçilmelidir", "SelectedLines empty", true));
         }
 
-        var username = User.Identity?.Name ?? "Unknown";
+        var username = User.Identity?.Name ?? User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "Unknown";
         var result = await _service.CreateSessionAsync(model, username);
 
         if (result.IsSuccess)
@@ -131,12 +116,6 @@ public class BulkInvoiceApiController : ControllerBase
     /// <param name="id">Oturum ID</param>
     /// <returns>Oturum detayları ve durumu</returns>
     [HttpGet("session-status/{id}")]
-    [SwaggerOperation(Summary = "Oturum durumunu getirir", Description = "Belirtilen oturumun detaylarını ve ilerleme durumunu getirir")]
-    [SwaggerResponse(200, "Başarılı", typeof(ResponseDto<BulkInvoiceSessionDto>))]
-    [SwaggerResponse(400, "Geçersiz istek")]
-    [SwaggerResponse(401, "Yetkisiz erişim")]
-    [SwaggerResponse(404, "Oturum bulunamadı")]
-    [SwaggerResponse(500, "Sunucu hatası")]
     public async Task<IActionResult> GetSessionStatus(int id)
     {
         _logger.LogInformation("GetSessionStatus called with SessionId={SessionId}", id);
