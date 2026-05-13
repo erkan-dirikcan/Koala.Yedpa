@@ -10,7 +10,7 @@ namespace Koala.Yedpa.WebUI.Controllers;
 /// <summary>
 /// Toplu Faturalandırma API Controller
 /// </summary>
-[Route("api/[controller]")]
+[Route("api/BulkInvoice")]
 [ApiController]
 [Authorize]
 [ApiExplorerSettings(IgnoreApi = true)]
