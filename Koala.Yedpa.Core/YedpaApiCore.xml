@@ -4,6 +4,201 @@
         <name>Koala.Yedpa.Core</name>
     </assembly>
     <members>
+        <member name="T:Koala.Yedpa.Core.Dtos.BulkInvoice.AlertCheckResultDto">
+            <summary>
+            Alert kontrol sonucu DTO'su
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.BulkInvoice.AlertCheckResultDto.ShowAlert">
+            <summary>
+            Alert gösterilecek mi?
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.BulkInvoice.AlertCheckResultDto.Message">
+            <summary>
+            Alert mesajı
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.BulkInvoice.AlertCheckResultDto.CurrentMonth">
+            <summary>
+            Mevcut ay
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.BulkInvoice.AlertCheckResultDto.CurrentYear">
+            <summary>
+            Mevcut yıl
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Dtos.BulkInvoice.BulkInvoiceSessionDto">
+            <summary>
+            Toplu fatura oturumu DTO'su
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.BulkInvoice.BulkInvoiceSessionDto.Id">
+            <summary>
+            Oturum ID
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.BulkInvoice.BulkInvoiceSessionDto.InvoiceDate">
+            <summary>
+            Fatura tarihi
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.BulkInvoice.BulkInvoiceSessionDto.Month">
+            <summary>
+            Ay (1-12)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.BulkInvoice.BulkInvoiceSessionDto.Year">
+            <summary>
+            Yıl
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.BulkInvoice.BulkInvoiceSessionDto.Status">
+            <summary>
+            Durum: 0=Pending, 1=Processing, 2=Completed, 3=Failed
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.BulkInvoice.BulkInvoiceSessionDto.StatusText">
+            <summary>
+            Durum metni
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.BulkInvoice.BulkInvoiceSessionDto.CreatedBy">
+            <summary>
+            Oluşturan kullanıcı
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.BulkInvoice.BulkInvoiceSessionDto.CreatedAt">
+            <summary>
+            Oluşturma tarihi
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.BulkInvoice.BulkInvoiceSessionDto.CompletedAt">
+            <summary>
+            Tamamlanma tarihi
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.BulkInvoice.BulkInvoiceSessionDto.TotalItems">
+            <summary>
+            Toplam kayıt sayısı
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.BulkInvoice.BulkInvoiceSessionDto.CompletedItems">
+            <summary>
+            Tamamlanan kayıt sayısı
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.BulkInvoice.BulkInvoiceSessionDto.FailedItems">
+            <summary>
+            Başarısız kayıt sayısı
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.BulkInvoice.BulkInvoiceSessionDto.ProgressPercentage">
+            <summary>
+            İlerleme yüzdesi
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Dtos.BulkInvoice.CreateBulkInvoiceSessionDto">
+            <summary>
+            Toplu fatura oturumu oluşturma DTO'su
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.BulkInvoice.CreateBulkInvoiceSessionDto.InvoiceDate">
+            <summary>
+            Fatura tarihi (hem işlem hem vade tarihi olarak kullanılır)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.BulkInvoice.CreateBulkInvoiceSessionDto.SelectedLines">
+            <summary>
+            Seçili satırlar
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Dtos.BulkInvoice.PendingInvoiceLineDto">
+            <summary>
+            Faturalandırılmamış aidat sipariş satırı DTO'su
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.BulkInvoice.PendingInvoiceLineDto.OrficheRef">
+            <summary>
+            Logo ORFICHE LOGICALREF
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.BulkInvoice.PendingInvoiceLineDto.Orflineref">
+            <summary>
+            Logo ORFLINE LOGICALREF
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.BulkInvoice.PendingInvoiceLineDto.ClientCode">
+            <summary>
+            Cari kod
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.BulkInvoice.PendingInvoiceLineDto.ClientName">
+            <summary>
+            Cari adı
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.BulkInvoice.PendingInvoiceLineDto.Amount">
+            <summary>
+            Tutar
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.BulkInvoice.PendingInvoiceLineDto.MonthName">
+            <summary>
+            Ay adı (HAZIRAN gibi)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.BulkInvoice.PendingInvoiceLineDto.ClosedStatus">
+            <summary>
+            Kapanma durumu (CLOSSED alanı)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.BulkInvoice.PendingInvoiceLineDto.LineNo">
+            <summary>
+            Satır no (LINENO_)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.BulkInvoice.PendingInvoiceLineDto.IsSelected">
+            <summary>
+            Seçili durumu (UI için)
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Dtos.BulkInvoice.SelectedLineDto">
+            <summary>
+            Seçili fatura satırı DTO'su
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.BulkInvoice.SelectedLineDto.OrficheRef">
+            <summary>
+            Logo ORFICHE LOGICALREF
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.BulkInvoice.SelectedLineDto.Orflineref">
+            <summary>
+            Logo ORFLINE LOGICALREF
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.BulkInvoice.SelectedLineDto.ClientCode">
+            <summary>
+            Cari kod
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.BulkInvoice.SelectedLineDto.ClientName">
+            <summary>
+            Cari adı
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.BulkInvoice.SelectedLineDto.Amount">
+            <summary>
+            Tutar
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.BulkInvoice.SelectedLineDto.MonthName">
+            <summary>
+            Ay adı (HAZIRAN gibi)
+            </summary>
+        </member>
         <member name="T:Koala.Yedpa.Core.Dtos.Yonetim.ArizaListDto">
             <summary>
             Arıza listesi DTO'su
@@ -1017,6 +1212,39 @@
             </summary>
             <param name="budgetRatioId">BudgetRatio ID</param>
             <returns>Kilitleme sonucu</returns>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Services.IBulkInvoiceService">
+            <summary>
+            Toplu faturalandırma servisi interface'i
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Services.IBulkInvoiceService.CheckAlertAsync">
+            <summary>
+            Dashboard alert kontrolü yapar
+            Ayın 15'inden sonra ve o ay için session yoksa alert gösterilir
+            </summary>
+            <returns>Alert kontrol sonucu</returns>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Services.IBulkInvoiceService.GetPendingLinesAsync">
+            <summary>
+            Faturalandırılmamış ORFLINE satırlarını getirir
+            </summary>
+            <returns>Faturalandırılmamış satırlar listesi</returns>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Services.IBulkInvoiceService.CreateSessionAsync(Koala.Yedpa.Core.Dtos.BulkInvoice.CreateBulkInvoiceSessionDto,System.String)">
+            <summary>
+            Yeni bir toplu fatura oturumu oluşturur
+            </summary>
+            <param name="dto">Oturum oluşturma DTO'su</param>
+            <param name="username">Kullanıcı adı</param>
+            <returns>Oluşturulan oturum ID'si</returns>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Services.IBulkInvoiceService.GetSessionStatusAsync(System.Int32)">
+            <summary>
+            Oturum durumunu getirir
+            </summary>
+            <param name="sessionId">Oturum ID</param>
+            <returns>Oturum detayları</returns>
         </member>
         <member name="M:Koala.Yedpa.Core.Services.IMessage34EmailService.SendTransactionEmailAsync(Koala.Yedpa.Core.Dtos.EmailDto,System.Collections.Generic.List{System.String})">
             <summary>

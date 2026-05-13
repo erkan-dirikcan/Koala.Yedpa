@@ -120,4 +120,19 @@
         ExtraBudget= 0x02
     }
 
+    public enum BulkInvoiceSessionStatus
+    {
+        Pending = 0x00,
+        Processing = 0x01,
+        Completed = 0x02,
+        Failed = 0x03
+    }
+
+    public enum BulkInvoiceItemStatus
+    {
+        Pending = 0x00,
+        Transferred = 0x01,
+        Failed = 0x02
+    }
+
 }

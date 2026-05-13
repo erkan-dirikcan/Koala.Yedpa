@@ -171,3 +171,68 @@ table.table table td,
 table.table table th {
     padding: 0.25rem 0.4rem !important;
 }
+
+/**
+ * Bulk Invoice Modal Styles
+ */
+#bulkInvoiceAlert {
+    border-left: 4px solid #3699FF !important;
+}
+
+#bulkInvoiceAlert .alert-icon {
+    font-size: 2rem;
+}
+
+#pendingLinesTable .line-checkbox {
+    cursor: pointer;
+}
+
+#pendingLinesTable tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+#selectedTotal {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+}
+
+/* Modal styles for better UX */
+#bulkInvoiceModal .modal-dialog {
+    max-width: 90%;
+}
+
+#bulkInvoiceModal .modal-body {
+    padding: 1.5rem;
+}
+
+#bulkInvoiceModal .table-responsive {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+/* Datepicker styles */
+#invoiceDate {
+    cursor: pointer;
+    background-color: #fff;
+}
+
+/* DataTable checkbox styling */
+#pendingLinesTable .form-check-input:checked {
+    background-color: #3699FF;
+    border-color: #3699FF;
+}
+
+#pendingLinesTable .form-check-input:focus {
+    box-shadow: 0 0 0 0.2rem rgba(54, 153, 255, 0.25);
+}
+
+/* Badge styles for payment status */
+.badge-light-success {
+    background-color: #C9F7F5;
+    color: #1BC5BD;
+}
+
+.badge-light-warning {
+    background-color: #FFF4DE;
+    color: #FFA800;
+}

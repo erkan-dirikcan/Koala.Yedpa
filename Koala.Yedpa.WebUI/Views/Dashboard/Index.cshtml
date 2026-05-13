@@ -29,6 +29,17 @@
         <div class="row">
             <div class="col-lg-12">
 
+                <!-- Bulk Invoicing Alert Banner -->
+                <div id="bulkInvoiceAlert" class="alert alert-custom alert-light-primary fade show mb-6 d-none" role="alert">
+                    <div class="alert-icon">
+                        <i class="fas fa-file-invoice-dollar text-primary"></i>
+                    </div>
+                    <div class="alert-text">
+                        <h4 class="alert-heading">Toplu Faturalandırma Hazır!</h4>
+                        <p>Bu ay için faturalandırılmamış aidat siparişleri bulunuyor. Toplu faturalandırma işlemi başlatmak için <strong><a href="#" id="openBulkInvoiceModal" style="text-decoration: underline;">buraya tıklayın</a></strong>.</p>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
 
                 <div class="card card-custom">
                     <div class="card-header flex-wrap border-0 pt-6 pb-0">
@@ -245,6 +256,69 @@
         </div>
     </div>
 </div>
+
+<!-- Bulk Invoicing Modal -->
+<div class="modal fade" id="bulkInvoiceModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-file-invoice-dollar text-primary me-2"></i>
+                    Toplu Faturalandırma
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Tarih Seçici -->
+                <div class="row mb-6">
+                    <div class="col-md-4">
+                        <label class="form-label required">Fatura Tarihi</label>
+                        <input type="text" class="form-control" id="invoiceDate" placeholder="dd.MM.yyyy" />
+                        <span class="form-text text-muted">Bu tarih hem fatura tarihi hem vade tarihi olarak kullanılacaktır.</span>
+                    </div>
+                </div>
+
+                <!-- DataTable -->
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" id="pendingLinesTable" style="margin-top: 13px !important">
+                        <thead>
+                            <tr>
+                                <th style="width: 40px;" class="text-center">
+                                    <div class="form-check form-check-sm form-check-custom form-check-solid">
+                                        <input class="form-check-input" type="checkbox" id="selectAllLines" />
+                                    </div>
+                                </th>
+                                <th>Cari Kod</th>
+                                <th>Cari Adı</th>
+                                <th class="text-end">Tutar</th>
+                                <th>Ay Adı</th>
+                                <th class="text-center">Durum</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Veriler AJAX ile doldurulacak -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Toplam Tut ve Butonlar -->
+                <div class="d-flex justify-content-between align-items-center mt-6">
+                    <div>
+                        <span class="fw-bolder fs-5">Seçilen Toplam: </span>
+                        <span class="fw-bolder fs-4 text-primary" id="selectedTotal">0.00 ₺</span>
+                    </div>
+                    <div class="d-flex gap-3">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                        <button type="button" class="btn btn-primary" id="btnCreateInvoices" disabled>
+                            <i class="fas fa-file-invoice me-2"></i>Faturalandır
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts
 {
     <script>
@@ -258,4 +332,5 @@
         };
     </script>
     <script src="~/js/dashboard/dashboard.js"></script>
+    <script src="~/js/dashboard/bulk-invoice.js"></script>
 }

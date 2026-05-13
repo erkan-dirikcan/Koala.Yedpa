@@ -32,6 +32,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
     public DbSet<TransactionItem> TransactionItem { get; set; }
     public DbSet<TransactionType> TransactionType { get; set; }
     public DbSet<DashboardWidgetPreference> DashboardWidgetPreferences { get; set; }
+    public DbSet<BulkInvoiceSession> BulkInvoiceSessions { get; set; }
+    public DbSet<BulkInvoiceItem> BulkInvoiceItems { get; set; }
 
     // YONETIM Database Entities
     public DbSet<Raf> Raflar { get; set; }
@@ -61,5 +63,12 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
             .HasDefaultValueSql("GETUTCDATE()");
 
         builder.Entity<DashboardWidgetPreference>();
+
+        // BulkInvoiceSession ve BulkInvoiceItem ilişki konfigürasyonu
+        builder.Entity<BulkInvoiceSession>()
+            .HasMany(s => s.Items)
+            .WithOne(i => i.Session)
+            .HasForeignKey(i => i.SessionId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
