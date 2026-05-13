@@ -241,6 +241,11 @@
 
     // --- Init ---
     document.addEventListener('DOMContentLoaded', function () {
+        // Test butonu (sadece localhost'ta görünür)
+        $('#btnTestBulkInvoice').on('click', function () {
+            openBulkInvoiceModal();
+        });
+
         // Alert kontrolü
         checkBulkInvoiceAlert();
 
