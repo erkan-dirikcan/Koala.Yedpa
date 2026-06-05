@@ -70,6 +70,7 @@ namespace Koala.Yedpa.WebUI.Controllers
 
             await LoadLogoWidgetDataAsync();
             await LoadDuesWidgetDataAsync();
+            await LoadAidatTahsilatWidgetDataAsync();
 
             return View();
         }
@@ -162,6 +163,31 @@ namespace Koala.Yedpa.WebUI.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error loading Dues widget data");
+            }
+        }
+
+        private async Task LoadAidatTahsilatWidgetDataAsync()
+        {
+            try
+            {
+                var currentYear = DateTime.Now.Year;
+                var currentMonth = DateTime.Now.Month;
+
+                var result = await _logoService.GetAidatTahsilatKpiAsync(currentYear, currentMonth);
+                if (result.IsSuccess && result.Data != null)
+                {
+                    ViewBag.AidatTahsilatKpi = result.Data;
+                }
+                else
+                {
+                    _logger.LogWarning("Failed to load Aidat Tahsilat KPI: {Message}", result.Message);
+                    ViewBag.AidatTahsilatKpi = null;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading Aidat Tahsilat widget data");
+                ViewBag.AidatTahsilatKpi = null;
             }
         }
 

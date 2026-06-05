@@ -127,6 +127,37 @@
             <param name="year">Year</param>
             <returns>Bütçe / Ek Bütçe Veri Tabanı Kontrol Sonucu</returns>
         </member>
+        <member name="T:Koala.Yedpa.WebUI.Controllers.BulkInvoiceApiController">
+            <summary>
+            Toplu Faturalandırma API Controller
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.BulkInvoiceApiController.CheckAlert">
+            <summary>
+            Dashboard alert kontrolü - Ayın 15'inden sonra ve o ay için session var mı kontrol eder
+            </summary>
+            <returns>Alert gösterilmeli mi?</returns>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.BulkInvoiceApiController.GetPendingLines">
+            <summary>
+            Faturalandırılmamış ORFLINE satırlarını çeker
+            </summary>
+            <returns>Faturalandırılmamış satırlar listesi</returns>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.BulkInvoiceApiController.CreateSession(Koala.Yedpa.Core.Dtos.BulkInvoice.CreateBulkInvoiceSessionDto)">
+            <summary>
+            Yeni toplu faturalandırma oturumu oluşturur
+            </summary>
+            <param name="model">Oturum oluşturma modeli</param>
+            <returns>Oluşturulan oturum ID'si</returns>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.BulkInvoiceApiController.GetSessionStatus(System.Int32)">
+            <summary>
+            Oturum durumunu getirir (progress tracking için)
+            </summary>
+            <param name="id">Oturum ID</param>
+            <returns>Oturum detayları ve durumu</returns>
+        </member>
         <member name="T:Koala.Yedpa.WebUI.Controllers.ConnectionTestController">
             <summary>
             Bağlantı Testi
@@ -143,6 +174,19 @@
             Bağlantı testi - Detaylı bilgi
             </summary>
             <returns>Detaylı sistem bilgisi</returns>
+        </member>
+        <member name="T:Koala.Yedpa.WebUI.Controllers.DashboardApiController">
+            <summary>
+            Dashboard API Controller
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.DashboardApiController.GetAidatTahsilatKpi(System.Nullable{System.Int32},System.Nullable{System.Int32})">
+            <summary>
+            Aidat tahsilat KPI verilerini getirir
+            </summary>
+            <param name="year">Yıl (opsiyonel, varsayılan: mevcut yıl)</param>
+            <param name="month">Ay (opsiyonel, varsayılan: mevcut ay)</param>
+            <returns>Aidat tahsilat KPI verileri (ToplamAlacak, Odenen, Bekleyen, Ay, Yil)</returns>
         </member>
         <member name="T:Koala.Yedpa.WebUI.Controllers.DuesStatisticApiController">
             <summary>

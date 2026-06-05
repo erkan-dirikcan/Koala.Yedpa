@@ -199,6 +199,600 @@
             Ay adı (HAZIRAN gibi)
             </summary>
         </member>
+        <member name="T:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateArpSlipRequestDto">
+            <summary>
+            Logo Go'ya kredi kartı ödemesi için cari hesap fişi (ARP Slip) oluşturma isteği DTO'su
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateArpSlipRequestDto.Number">
+            <summary>
+            Fiş numarası (boş bırakılırsa Logo otomatik atar)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateArpSlipRequestDto.Date">
+            <summary>
+            Fiş tarihi
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateArpSlipRequestDto.Type">
+            <summary>
+            Fiş tipi (70 = Kredi kartı ödemesi)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateArpSlipRequestDto.Notes1">
+            <summary>
+            Fiş açıklaması 1
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateArpSlipRequestDto.CurrSelTotals">
+            <summary>
+            Para birimi seçimi (1 = Dövizli, 2 = TL)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateArpSlipRequestDto.XmlAttribute">
+            <summary>
+            XML özniteliği (2 = Standart)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateArpSlipRequestDto.Time">
+            <summary>
+            Fiş saati (Logo time formatı - örn: 143000 için 14:30:00)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateArpSlipRequestDto.Transactions">
+            <summary>
+            Cari hesap işlemleri
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Dtos.SalesInvoice.ArpSlipTransactionDto">
+            <summary>
+            Cari hesap fişi kalem DTO'su
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.ArpSlipTransactionDto.ArpCode">
+            <summary>
+            Cari hesap kodu
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.ArpSlipTransactionDto.Date">
+            <summary>
+            Kalem tarihi
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.ArpSlipTransactionDto.ModuleNr">
+            <summary>
+            Modül numarası (5 = Cari hesap)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.ArpSlipTransactionDto.TrCode">
+            <summary>
+            İşlem kodu (70 = Kredi kartı ödemesi)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.ArpSlipTransactionDto.DocNumber">
+            <summary>
+            Belge numarası
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.ArpSlipTransactionDto.Credit">
+            <summary>
+            Alacak tutarı
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.ArpSlipTransactionDto.Sign">
+            <summary>
+            İşaret (1 = Alacak)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.ArpSlipTransactionDto.Amount">
+            <summary>
+            Tutar
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.ArpSlipTransactionDto.TcAmount">
+            <summary>
+            Dövizli tutar
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.ArpSlipTransactionDto.XmlAttribute">
+            <summary>
+            XML özniteliği (2 = Standart)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.ArpSlipTransactionDto.Month">
+            <summary>
+            Ay (kredi kartı ekstresi ayı)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.ArpSlipTransactionDto.Year">
+            <summary>
+            Yıl (kredi kartı ekstresi yılı)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.ArpSlipTransactionDto.BankAccRef">
+            <summary>
+            Banka hesap referansı (1 = Banka hesabı)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.ArpSlipTransactionDto.BankAccCode">
+            <summary>
+            Banka hesap kodu
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateSafeDepositSlipRequestDto">
+            <summary>
+            Logo Go'ya nakit ödemesi için kasa fişi (Safe Deposit Slip) oluşturma isteği DTO'su
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateSafeDepositSlipRequestDto.Type">
+            <summary>
+            Fiş tipi (11 = Kasa girişi)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateSafeDepositSlipRequestDto.SdCode">
+            <summary>
+            Kasa kodu
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateSafeDepositSlipRequestDto.Date">
+            <summary>
+            Fiş tarihi (yyyy-MM-dd formatı)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateSafeDepositSlipRequestDto.Hour">
+            <summary>
+            Fiş saati (saat kısmı)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateSafeDepositSlipRequestDto.Minute">
+            <summary>
+            Fiş saati (dakika kısmı)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateSafeDepositSlipRequestDto.Number">
+            <summary>
+            Fiş numarası (boş bırakılırsa Logo otomatik atar)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateSafeDepositSlipRequestDto.Description">
+            <summary>
+            Fiş açıklaması
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateSafeDepositSlipRequestDto.Amount">
+            <summary>
+            Toplam tutar
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateSafeDepositSlipRequestDto.TcXrate">
+            <summary>
+            Döviz kuru (varsayılan 1)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateSafeDepositSlipRequestDto.DocDate">
+            <summary>
+            Belge tarihi (yyyy-MM-dd formatı)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateSafeDepositSlipRequestDto.Time">
+            <summary>
+            Fiş saati (Logo time formatı)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateSafeDepositSlipRequestDto.AttachmentArp">
+            <summary>
+            Cari hesap ekleri
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Dtos.SalesInvoice.SafeDepositSlipAttachmentArpDto">
+            <summary>
+            Kasa fişi cari hesap eki DTO'su
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.SafeDepositSlipAttachmentArpDto.ArpCode">
+            <summary>
+            Cari hesap kodu
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.SafeDepositSlipAttachmentArpDto.Description">
+            <summary>
+            Ek açıklaması
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.SafeDepositSlipAttachmentArpDto.Credit">
+            <summary>
+            Alacak tutarı
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.SafeDepositSlipAttachmentArpDto.TcXrate">
+            <summary>
+            Döviz kuru (varsayılan 1)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.SafeDepositSlipAttachmentArpDto.TcAmount">
+            <summary>
+            Dövizli tutar
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.SafeDepositSlipAttachmentArpDto.PaymentList">
+            <summary>
+            Ödeme planı
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.SafeDepositSlipAttachmentArpDto.Month">
+            <summary>
+            Ay
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.SafeDepositSlipAttachmentArpDto.Year">
+            <summary>
+            Yıl
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.SafeDepositSlipAttachmentArpDto.DocDate">
+            <summary>
+            Belge tarihi (yyyy-MM-dd formatı)
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Dtos.SalesInvoice.SafeDepositSlipPaymentDto">
+            <summary>
+            Kasa fişi ödeme planı DTO'su
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.SafeDepositSlipPaymentDto.Date">
+            <summary>
+            Ödeme tarihi (yyyy-MM-dd formatı)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.SafeDepositSlipPaymentDto.ModuleNr">
+            <summary>
+            Modül numarası (10 = Kasa)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.SafeDepositSlipPaymentDto.Sign">
+            <summary>
+            İşaret (1 = Borç/Alacak)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.SafeDepositSlipPaymentDto.TrCode">
+            <summary>
+            İşlem kodu (1 = Kasa girişi)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.SafeDepositSlipPaymentDto.Total">
+            <summary>
+            Toplam tutar
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.SafeDepositSlipPaymentDto.ProcDate">
+            <summary>
+            İşlem tarihi (yyyy-MM-dd formatı)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.SafeDepositSlipPaymentDto.TrRate">
+            <summary>
+            İşlem kuru (varsayılan 1)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.SafeDepositSlipPaymentDto.DiscountDuedate">
+            <summary>
+            İskonto vade tarihi (yyyy-MM-dd formatı)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.SafeDepositSlipPaymentDto.PayNo">
+            <summary>
+            Ödeme sırası
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.SafeDepositSlipPaymentDto.LineExp">
+            <summary>
+            Satır açıklaması
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateSalesInvoiceRequestDto">
+            <summary>
+            Logo Go'ya satış faturası oluşturma isteği DTO'su
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateSalesInvoiceRequestDto.GrpCode">
+            <summary>
+            Grup kodu (genellikle 2)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateSalesInvoiceRequestDto.Type">
+            <summary>
+            Fatura tipi (9 = Satış Faturası)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateSalesInvoiceRequestDto.Date">
+            <summary>
+            Fatura tarihi
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateSalesInvoiceRequestDto.DocNumber">
+            <summary>
+            Fatura numarası (boş bırakılırsa Logo otomatik atar)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateSalesInvoiceRequestDto.AuthCode">
+            <summary>
+            Yetki kodu
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateSalesInvoiceRequestDto.ArpCode">
+            <summary>
+            Cari hesap kodu
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateSalesInvoiceRequestDto.GlCode">
+            <summary>
+            Gelir hesabı kodu (muhasebe hesabı)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateSalesInvoiceRequestDto.VatRate">
+            <summary>
+            KDV oranı (varsayılan %20)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateSalesInvoiceRequestDto.Notes1">
+            <summary>
+            Fatura açıklaması 1
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateSalesInvoiceRequestDto.Notes2">
+            <summary>
+            Fatura açıklaması 2
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateSalesInvoiceRequestDto.CurrSelTotals">
+            <summary>
+            Para birimi seçimi (2 = TL)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateSalesInvoiceRequestDto.DeductionPart1">
+            <summary>
+            İndirim bölümü 1
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateSalesInvoiceRequestDto.DeductionPart2">
+            <summary>
+            İndirim bölümü 2
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateSalesInvoiceRequestDto.EInvoice">
+            <summary>
+            E-fatura mı? (2 = Hayır)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateSalesInvoiceRequestDto.ProfileId">
+            <summary>
+            Profil ID
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateSalesInvoiceRequestDto.EdtCurrGlobalCode">
+            <summary>
+            Döviz kodu (TL, USD, EUR vb.)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateSalesInvoiceRequestDto.Transactions">
+            <summary>
+            Fatura kalemleri
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateSalesInvoiceRequestDto.PaymentList">
+            <summary>
+            Ödeme planı
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateSalesInvoiceRequestDto.PaymentType">
+            <summary>
+            Ödeme tipi
+            </summary>
+            <remarks>
+            Geçerli değerler:
+            - "CreditCard": Kredi kartı ödemesi (ARP Slip oluşturur)
+            - "Cash": Nakit ödeme (Kasa fişi oluşturur)
+            - "Check": Çek ödemesi
+            - "Bill": Senet ödemesi
+            - "BankTransfer": Banka havalesi/EFT
+            - null: Varsayılan davranış (sadece fatura)
+            </remarks>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateSalesInvoiceRequestDto.BankCode">
+            <summary>
+            Banka kodu (kredi kartı ödemeleri için)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateSalesInvoiceRequestDto.BankAccountCode">
+            <summary>
+            Banka hesap kodu (kredi kartı ödemeleri için)
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Dtos.SalesInvoice.SalesInvoiceTransactionDto">
+            <summary>
+            Satış faturası kalem DTO'su
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.SalesInvoiceTransactionDto.Type">
+            <summary>
+            Kalem tipi (4 = Hizmet satışı)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.SalesInvoiceTransactionDto.MasterCode">
+            <summary>
+            Stok/hizmet kodu
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.SalesInvoiceTransactionDto.TrCode">
+            <summary>
+            İşlem kodu (9 = Satış)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.SalesInvoiceTransactionDto.Date">
+            <summary>
+            Kalem tarihi
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.SalesInvoiceTransactionDto.Quantity">
+            <summary>
+            Miktar
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.SalesInvoiceTransactionDto.Price">
+            <summary>
+            Birim fiyat
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.SalesInvoiceTransactionDto.Total">
+            <summary>
+            Kalem toplamı
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.SalesInvoiceTransactionDto.VatRate">
+            <summary>
+            KDV oranı
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.SalesInvoiceTransactionDto.VatAmount">
+            <summary>
+            KDV tutarı
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.SalesInvoiceTransactionDto.VatBase">
+            <summary>
+            KDV matrahı
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.SalesInvoiceTransactionDto.TotalNet">
+            <summary>
+            KDV hariç toplam
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.SalesInvoiceTransactionDto.UnitCode">
+            <summary>
+            Birim kodu (ADET, SAAT vb.)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.SalesInvoiceTransactionDto.UnitConv1">
+            <summary>
+            Birim çevrim katsayısı 1
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.SalesInvoiceTransactionDto.UnitConv2">
+            <summary>
+            Birim çevrim katsayısı 2
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.SalesInvoiceTransactionDto.GlCode1">
+            <summary>
+            Gelir hesabı kodu 1
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.SalesInvoiceTransactionDto.GlCode2">
+            <summary>
+            Gelir hesabı kodu 2 (KDV hesabı)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.SalesInvoiceTransactionDto.EdtCurrGlobalCode">
+            <summary>
+            Döviz kodu
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.SalesInvoiceTransactionDto.Billed">
+            <summary>
+            Faturalandı mı? (1 = Evet)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.SalesInvoiceTransactionDto.RcXrate">
+            <summary>
+            Döviz kuru
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Dtos.SalesInvoice.SalesInvoicePaymentDto">
+            <summary>
+            Satış faturası ödeme planı DTO'su
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.SalesInvoicePaymentDto.Date">
+            <summary>
+            Ödeme tarihi
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.SalesInvoicePaymentDto.ModuleNr">
+            <summary>
+            Modül numarası (4 = Fatura)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.SalesInvoicePaymentDto.TrCode">
+            <summary>
+            İşlem kodu (9 = Satış)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.SalesInvoicePaymentDto.Total">
+            <summary>
+            Ödeme tutarı
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.SalesInvoicePaymentDto.ProcDate">
+            <summary>
+            İşlem tarihi
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.SalesInvoicePaymentDto.ReportRate">
+            <summary>
+            Raporlama kuru
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.SalesInvoicePaymentDto.PayNo">
+            <summary>
+            Ödeme sırası
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.SalesInvoicePaymentDto.DiscountDueDate">
+            <summary>
+            İskonto vade tarihi
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateSalesInvoiceResponseDto">
+            <summary>
+            Logo Go satış faturası oluşturma yanıtı DTO'su
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateSalesInvoiceResponseDto.InvoiceRef">
+            <summary>
+            Logo'daki fatura referans numarası (LogicalRef)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateSalesInvoiceResponseDto.InvoiceNumber">
+            <summary>
+            Fatura numarası (Logo tarafından atanan)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateSalesInvoiceResponseDto.IsSuccess">
+            <summary>
+            İşlem başarılı mı?
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateSalesInvoiceResponseDto.Message">
+            <summary>
+            İşlem mesajı
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateSalesInvoiceResponseDto.RawResponse">
+            <summary>
+            Logo Go'dan gelen ham yanıt (debugging için)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateSalesInvoiceResponseDto.ProcessedAt">
+            <summary>
+            İşlem zamanı
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateSalesInvoiceResponseDto.ErrorDetail">
+            <summary>
+            Hata varsa hata detayı
+            </summary>
+        </member>
         <member name="T:Koala.Yedpa.Core.Dtos.Yonetim.ArizaListDto">
             <summary>
             Arıza listesi DTO'su
@@ -707,6 +1301,25 @@
         <member name="P:Koala.Yedpa.Core.Models.ViewModels.StatementSummeryViewModel.Balance">
             <summary>
             Bakiye
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.StatementDetailedGroupViewModel.DueDate">
+            <summary>
+            Vade tarihi — fatura tipi hareketlerde dolu, diğerlerinde null.
+            PAYTRANS.DATE_ yerine şimdilik NULL döner (CLFLINE'da vade alanı yok).
+            Aging hesabı için DueDate null ise InvoiceDate kullanılabilir.
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Models.ViewModels.CustomerListWithBalanceSearchViewModel">
+            <summary>
+            CustomerListWithBalance endpoint'i için arama/filtreleme modeli.
+            Mevcut filtre: SPECODE2 (yeni dükkan numarası).
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.CustomerListWithBalanceSearchViewModel.Specode2">
+            <summary>
+            Yeni dükkan numarası (Logo CLCARD.SPECODE2 alanı).
+            Boş geçilirse tüm dükkanlar (kullanıcı yetki alanı içindeki) döner.
             </summary>
         </member>
         <member name="T:Koala.Yedpa.Core.Models.ViewModels.CreateBudgetOrderViewModel">
@@ -1266,6 +1879,32 @@
             <summary>
             Authentication - token yeniler
             </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Services.ISalesInvoiceService">
+            <summary>
+            Satış faturası servisi arayüzü
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Services.ISalesInvoiceService.CreateSalesInvoiceAsync(Koala.Yedpa.Core.Dtos.SalesInvoice.CreateSalesInvoiceRequestDto)">
+            <summary>
+            Logo Tiger REST API üzerinden satış faturası oluşturur
+            </summary>
+            <param name="request">Fatura oluşturma isteği</param>
+            <returns>Fatura oluşturma yanıtı</returns>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Services.ISalesInvoiceService.CreateArpSlipAsync(Koala.Yedpa.Core.Dtos.SalesInvoice.CreateArpSlipRequestDto)">
+            <summary>
+            Logo Tiger REST API üzerinden kredi kartı cari hesap fişi (ARP Slip) oluşturur
+            </summary>
+            <param name="request">ARP Slip oluşturma isteği</param>
+            <returns>ARP Slip oluşturma yanıtı (fiş referansı)</returns>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Services.ISalesInvoiceService.CreateSafeDepositSlipAsync(Koala.Yedpa.Core.Dtos.SalesInvoice.CreateSafeDepositSlipRequestDto)">
+            <summary>
+            Logo Tiger REST API üzerinden nakit/online kasa fişi (Safe Deposit Slip) oluşturur
+            </summary>
+            <param name="request">Kasa fişi oluşturma isteği</param>
+            <returns>Kasa fişi oluşturma yanıtı (fiş referansı)</returns>
         </member>
         <member name="T:Koala.Yedpa.Core.Services.IArsivService">
             <summary>

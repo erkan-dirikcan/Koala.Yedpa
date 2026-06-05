@@ -21,6 +21,7 @@
     var budgetCollected = ViewBag.BudgetCollected as decimal? ?? 0;
     var budgetRemaining = ViewBag.BudgetRemaining as decimal? ?? 0;
     var yearlyBudgetData = ViewBag.YearlyBudgetData as List<YearlyBudgetItem> ?? new List<YearlyBudgetItem>();
+    var aidatTahsilatKpi = ViewBag.AidatTahsilatKpi as Koala.Yedpa.Core.Dtos.AidatTahsilatKpiDto;
 }
 
 <link href="~/css/dashboard/dashboard.css" rel="stylesheet" />
@@ -210,6 +211,45 @@
                                                                 <div class="kpi-value" style="font-size:2.5rem">@shopCount</div>
                                                                 <div class="kpi-label">Aktif Dükkan</div>
                                                             </div>
+                                                        </div>
+                                                        break;
+
+                                                    case "W11":
+                                                        <div id="aidatTahsilatWidget">
+                                                            @if (aidatTahsilatKpi != null)
+                                                            {
+                                                                var odenenYuzde = aidatTahsilatKpi.ToplamAlacak > 0
+                                                                    ? (aidatTahsilatKpi.Odenen / aidatTahsilatKpi.ToplamAlacak) * 100
+                                                                    : 0m;
+                                                                var bekleyenYuzde = aidatTahsilatKpi.ToplamAlacak > 0
+                                                                    ? (aidatTahsilatKpi.Bekleyen / aidatTahsilatKpi.ToplamAlacak) * 100
+                                                                    : 0m;
+
+                                                                <div class="kpi-row">
+                                                                    <div class="kpi-item kpi-primary">
+                                                                        <div class="kpi-value">@aidatTahsilatKpi.ToplamAlacak.ToString("N2") ₺</div>
+                                                                        <div class="kpi-label">Toplam Alacak</div>
+                                                                        <div class="kpi-sublabel">@aidatTahsilatKpi.Ay @aidatTahsilatKpi.Yil</div>
+                                                                    </div>
+                                                                    <div class="kpi-item kpi-success">
+                                                                        <div class="kpi-value">@aidatTahsilatKpi.Odenen.ToString("N2") ₺</div>
+                                                                        <div class="kpi-label">Ödenen</div>
+                                                                        <div class="kpi-sublabel">%@odenenYuzde.ToString("F1")</div>
+                                                                    </div>
+                                                                    <div class="kpi-item kpi-warning">
+                                                                        <div class="kpi-value">@aidatTahsilatKpi.Bekleyen.ToString("N2") ₺</div>
+                                                                        <div class="kpi-label">Bekleyen</div>
+                                                                        <div class="kpi-sublabel">%@bekleyenYuzde.ToString("F1")</div>
+                                                                    </div>
+                                                                </div>
+                                                            }
+                                                            else
+                                                            {
+                                                                <div class="widget-error">
+                                                                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                                                                    Veri yüklenemedi
+                                                                </div>
+                                                            }
                                                         </div>
                                                         break;
                                                 }

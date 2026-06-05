@@ -1,6 +1,7 @@
 using Koala.Yedpa.Core.Dtos;
 using Koala.Yedpa.Core.Dtos.BulkInvoice;
 using Koala.Yedpa.Core.Models;
+using Koala.Yedpa.Core.Providers;
 using Koala.Yedpa.Core.Services;
 using Koala.Yedpa.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -16,17 +17,20 @@ namespace Koala.Yedpa.Service.Services
         private readonly AppDbContext _context;
         private readonly IApiLogoSqlDataService _apiLogoSqlDataService;
         private readonly ISettingsService _settingsService;
+        private readonly ISqlProvider _sqlProvider;
         private readonly ILogger<BulkInvoiceService> _logger;
 
         public BulkInvoiceService(
             AppDbContext context,
             IApiLogoSqlDataService apiLogoSqlDataService,
             ISettingsService settingsService,
+            ISqlProvider sqlProvider,
             ILogger<BulkInvoiceService> logger)
         {
             _context = context;
             _apiLogoSqlDataService = apiLogoSqlDataService;
             _settingsService = settingsService;
+            _sqlProvider = sqlProvider;
             _logger = logger;
         }
 
@@ -122,11 +126,7 @@ namespace Koala.Yedpa.Service.Services
                     ORDER BY ORF.CODE, ORL.LOGICALREF";
 
                 // Logo SQL servisi ile sorgu çalıştır
-                // Not: IApiLogoSqlDataService'de genel bir SQL çalıştırma methodu yok,
-                // bu yüzden doğrudan SQL Provider kullanacağız
-                var sqlProvider = new Koala.Yedpa.Service.Providers.SqlProvider(_settingsService);
-
-                var result = sqlProvider.SqlReader(query);
+                var result = _sqlProvider.SqlReader(query);
 
                 if (!result.IsSuccess)
                 {

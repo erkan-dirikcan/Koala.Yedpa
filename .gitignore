@@ -66,3 +66,7 @@ secrets.json
 # Database
 *.db
 *.sqlite
+
+# Working artifacts / API sample dumps
+INV*.json
+feedback.txt

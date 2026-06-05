@@ -66,9 +66,12 @@ namespace Koala.Yedpa.WebApi
                     License = new OpenApiLicense { Name = "Sistem Bilgisayar Tarafından Geliştirilmiştir", Url = new Uri("Https://sistem-bilgi.com") },
 
                 });
-                var filePath = Path.Combine(AppContext.BaseDirectory, "YedpaApiCore.xml");
+                var coreXml = Path.Combine(AppContext.BaseDirectory, "YedpaApiCore.xml");
+                var apiXml = Path.Combine(AppContext.BaseDirectory, "Koala.Yedpa.WebApi.xml");
 
-                c.IncludeXmlComments(filePath);
+                c.IncludeXmlComments(coreXml);
+                c.IncludeXmlComments(apiXml);
+                c.EnableAnnotations();
             });
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

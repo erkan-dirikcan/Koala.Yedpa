@@ -1,8 +1,29 @@
 {
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
   "permissions": {
     "allow": [
       "Bash(dotnet build *)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(git push *)",
+      "Bash(rm *)",
+      "Bash(xxd)",
+      "Bash(python3 -c ' *)",
+      "Bash(curl -s \"http://localhost:5000/api/BulkInvoice/check-alert\" -H \"Accept: application/json\")",
+      "Bash(curl *)",
+      "Bash(taskkill //F //IM dotnet.exe)",
+      "Bash(dotnet *)",
+      "Bash(dir docs\\\\team\\\\*.md)",
+      "Bash(Get-ChildItem *)",
+      "Bash(Select-String -Pattern \"error|warning\" -Context 2)",
+      "Bash(python -c \"import sys,base64,json; data=sys.stdin.read\\(\\).strip\\(\\); padded=data+'='*\\(4-len\\(data\\)%4\\); print\\(json.dumps\\(json.loads\\(base64.urlsafe_b64decode\\(padded\\)\\),indent=2\\)\\)\")",
+      "Bash(python *)",
+      "Bash(Select-String \"Error|Warning\\\\\\(s\\\\\\)\")",
+      "Bash(Select-String -Pattern \"error|warning|Build succeeded|FAILED\")",
+      "Bash(Select-Object -Last 20)",
+      "Bash(Select-String -Pattern \"error|Build succeeded|Hata|hata\")",
+      "Bash(Select-Object -First 20)"
     ]
   }
 }

@@ -528,76 +528,9 @@ namespace Koala.Yedpa.Service.Services
 
         private string BuildBasePendingInvoiceQuery()
         {
-            return $@"
-                SELECT
-                    CLNTC.LOGICALREF        AS CustomerReference,
-                    CLNTC.CODE              AS CustomerCode,
-                    CLNTC.DEFINITION_       AS CustomerName,
-                    PTRNS.FICHEREF          AS InvoiceLogicalRef,
-                    INVFC.FICHENO           AS InvoiceNumber,
-                    PTRNS.PROCDATE          AS InvoiceDate,
-                    CASE INVFC.TRCODE
-                        WHEN 1  THEN 'Mal Alım Faturası'
-                        WHEN 2  THEN 'Perakende Satış İade Faturası'
-                        WHEN 3  THEN 'Toptan Satış İade Faturası'
-                        WHEN 4  THEN 'Alınan Hizmet Faturası'
-                        WHEN 5  THEN 'Alınan Proforma Fatura'
-                        WHEN 6  THEN 'Alım İade Faturası'
-                        WHEN 7  THEN 'Alım Fiyat Farkı Faturası'
-                        WHEN 8  THEN 'Perakende Satış Faturası'
-                        WHEN 9  THEN 'Toptan Satış Faturası'
-                        WHEN 10 THEN 'Verilen Hizmet Faturası'
-                        WHEN 11 THEN 'Verilen Proforma Fatura'
-                        WHEN 12 THEN 'Verilen Vade Farkı Faturası'
-                        WHEN 13 THEN 'Satış Fiyat Farkı Faturası'
-                        WHEN 14 THEN 'Satınalma Fiyat Farkı Faturası'
-                        WHEN 26 THEN 'Müstahsil Makbuzu'
-                        WHEN 32 THEN 'Alınan Fiyat Farkı Faturası'
-                        WHEN 33 THEN 'Verilen Fiyat Farkı Faturası'
-                        ELSE 'Diğer'
-                    END                     AS InvoiceType,
-                    INVFC.GENEXP1           AS InvoiceDescription1,
-                    INVFC.GENEXP2           AS InvoiceDescription2,
-                    PTRNS.TOTAL             AS InvoiceDueAmount,
-                    ISNULL(KAPATILAN.KAPANAN_TUTAR, 0) AS PaidAmount,
-                    (PTRNS.TOTAL - ISNULL(KAPATILAN.KAPANAN_TUTAR, 0)) AS RemainingAmount,
-                    PTRNS.DATE_             AS DueDate,
-                    DATEPART(mm, PTRNS.DATE_) AS Month,
-                    DATEPART(wk, PTRNS.DATE_) AS Week,
-                    DATEDIFF(DAY, PTRNS.PROCDATE, PTRNS.DATE_) AS DueDays,
-                    DATEDIFF(DAY, GETDATE(), PTRNS.DATE_)      AS RemainingDays,
-                    CASE PTRNS.TRCURR
-                        WHEN 0  THEN 'TL'
-                        WHEN 1  THEN 'USD'
-                        WHEN 20 THEN 'EUR'
-                        ELSE ''
-                    END                     AS CurrencyType,
-                    CASE
-                        WHEN PTRNS.PAID = 0 THEN 'AÇIK'
-                        WHEN PTRNS.PAID = 1 AND (PTRNS.TOTAL - ISNULL(KAPATILAN.KAPANAN_TUTAR, 0)) > 0 THEN 'KISMİ ÖDEME'
-                        ELSE 'KAPALI'
-                    END                     AS Status
-                FROM LG_{LogoSetting.Firm}_{LogoSetting.Period}_PAYTRANS AS PTRNS
-                INNER JOIN LG_{LogoSetting.Firm}_CLCARD AS CLNTC
-                    ON CLNTC.LOGICALREF = PTRNS.CARDREF
-                LEFT OUTER JOIN LG_{LogoSetting.Firm}_{LogoSetting.Period}_INVOICE AS INVFC
-                    ON INVFC.LOGICALREF = PTRNS.FICHEREF
-                LEFT OUTER JOIN (
-                    SELECT
-                        CROSSREF,
-                        SUM(PAID) AS KAPANAN_TUTAR
-                    FROM LG_{LogoSetting.Firm}_{LogoSetting.Period}_PAYTRANS
-                    WHERE CROSSREF <> 0
-                      AND CANCELLED = 0
-                    GROUP BY CROSSREF
-                ) AS KAPATILAN
-                    ON KAPATILAN.CROSSREF = PTRNS.LOGICALREF
-                WHERE
-                    PTRNS.CROSSREF = 0
-                    AND PTRNS.CANCELLED = 0
-                    AND PTRNS.SIGN = 1
-                    AND ISNULL(INVFC.FROMKASA, 0) = 0
-                    AND (PTRNS.TOTAL - ISNULL(KAPATILAN.KAPANAN_TUTAR, 0)) > 0";
+            // Bu overload GetPendingInvoicesAsync (parametresiz GET) tarafından kullanılır.
+            // Geriye dönük uyumluluk: varsayılan davranış "open" (remaining > 0).
+            return BuildBasePendingInvoiceQuery(specodeWhereClause: null, remainingFilter: "open");
         }
 
         public async Task<ResponseDto<(string ClientCode, long ClientRef)>> GetClientInfoByWorkplaceCodeAsync(string workplaceCode)
@@ -857,20 +790,7 @@ namespace Koala.Yedpa.Service.Services
 
             var query = BuildBasePendingInvoiceQuery();
 
-            var totalQuery = $@"
-                SELECT COUNT(*)
-                FROM LG_{LogoSetting.Firm}_{LogoSetting.Period}_PAYTRANS AS PTRNS
-                INNER JOIN LG_{LogoSetting.Firm}_CLCARD AS CLNTC ON CLNTC.LOGICALREF = PTRNS.CARDREF
-                LEFT OUTER JOIN LG_{LogoSetting.Firm}_{LogoSetting.Period}_INVOICE AS INVFC ON INVFC.LOGICALREF = PTRNS.FICHEREF
-                LEFT OUTER JOIN (
-                    SELECT CROSSREF, SUM(PAID) AS KAPANAN_TUTAR
-                    FROM LG_{LogoSetting.Firm}_{LogoSetting.Period}_PAYTRANS
-                    WHERE CROSSREF <> 0 AND CANCELLED = 0
-                    GROUP BY CROSSREF
-                ) AS KAPATILAN ON KAPATILAN.CROSSREF = PTRNS.LOGICALREF
-                WHERE PTRNS.CROSSREF = 0 AND PTRNS.CANCELLED = 0 AND PTRNS.SIGN = 1
-                  AND ISNULL(INVFC.FROMKASA, 0) = 0
-                  AND (PTRNS.TOTAL - ISNULL(KAPATILAN.KAPANAN_TUTAR, 0)) > 0";
+            var totalQuery = $"SELECT COUNT(*) FROM ({query}) AS TotalBase";
 
             var totalResult = _sqlProvider.SqlReader(totalQuery);
             var recordsTotal = totalResult.IsSuccess ? Convert.ToInt32(totalResult.Data.Rows[0][0]) : 0;
@@ -908,14 +828,23 @@ namespace Koala.Yedpa.Service.Services
             if (pageNo <= 0) pageNo = 1;
             var offset = (pageNo - 1) * perPage;
 
-            var query = BuildBasePendingInvoiceQuery();
+            // Status whitelist — "open" / "closed" / "all"; bilinmeyen → "open" (güvenli varsayılan)
+            var statusFilter = searchModel.Status?.ToLowerInvariant() switch
+            {
+                "closed" => "closed",
+                "all"    => "all",
+                _        => "open"
+            };
+
+            var query = BuildBasePendingInvoiceQuery(remainingFilter: statusFilter);
 
             var conditions = new List<string>();
 
+            // Madde 1 fix: CustomerCode araması gerçek cari kodu (INVCL, öncelikli) veya PAYTRANS kartını kapsar
             if (!string.IsNullOrWhiteSpace(searchModel.CustomerCode))
-                conditions.Add($"CLNTC.CODE LIKE '%{searchModel.CustomerCode.Replace("'", "''")}%'");
+                conditions.Add($"ISNULL(INVCL.CODE, CLNTC.CODE) LIKE '%{searchModel.CustomerCode.Replace("'", "''")}%'");
             if (!string.IsNullOrWhiteSpace(searchModel.CustomerName))
-                conditions.Add($"CLNTC.DEFINITION_ LIKE '%{searchModel.CustomerName.Replace("'", "''")}%'");
+                conditions.Add($"ISNULL(INVCL.DEFINITION_, CLNTC.DEFINITION_) LIKE '%{searchModel.CustomerName.Replace("'", "''")}%'");
             if (searchModel.DueDateStart.HasValue)
                 conditions.Add($"PTRNS.DATE_ >= '{searchModel.DueDateStart.Value:yyyy-MM-dd}'");
             if (searchModel.DueDateEnd.HasValue)
@@ -925,21 +854,8 @@ namespace Koala.Yedpa.Service.Services
 
             var whereClause = conditions.Any() ? " AND " + string.Join(" AND ", conditions) : "";
 
-            // Filtresiz toplam
-            var totalQuery = $@"
-                SELECT COUNT(*)
-                FROM LG_{LogoSetting.Firm}_{LogoSetting.Period}_PAYTRANS AS PTRNS
-                INNER JOIN LG_{LogoSetting.Firm}_CLCARD AS CLNTC ON CLNTC.LOGICALREF = PTRNS.CARDREF
-                LEFT OUTER JOIN LG_{LogoSetting.Firm}_{LogoSetting.Period}_INVOICE AS INVFC ON INVFC.LOGICALREF = PTRNS.FICHEREF
-                LEFT OUTER JOIN (
-                    SELECT CROSSREF, SUM(PAID) AS KAPANAN_TUTAR
-                    FROM LG_{LogoSetting.Firm}_{LogoSetting.Period}_PAYTRANS
-                    WHERE CROSSREF <> 0 AND CANCELLED = 0
-                    GROUP BY CROSSREF
-                ) AS KAPATILAN ON KAPATILAN.CROSSREF = PTRNS.LOGICALREF
-                WHERE PTRNS.CROSSREF = 0 AND PTRNS.CANCELLED = 0 AND PTRNS.SIGN = 1
-                  AND ISNULL(INVFC.FROMKASA, 0) = 0
-                  AND (PTRNS.TOTAL - ISNULL(KAPATILAN.KAPANAN_TUTAR, 0)) > 0";
+            // Filtresiz toplam — tek kaynak: BuildBasePendingInvoiceQuery
+            var totalQuery = $"SELECT COUNT(*) FROM ({query}) AS TotalBase";
             var totalResult = _sqlProvider.SqlReader(totalQuery);
             var recordsTotal = totalResult.IsSuccess ? Convert.ToInt32(totalResult.Data.Rows[0][0]) : 0;
 
@@ -977,38 +893,78 @@ namespace Koala.Yedpa.Service.Services
             );
         }
 
-        private string BuildBasePendingInvoiceQuery(string? specodeWhereClause = null)
+        /// <param name="specodeWhereClause">Specode yetki filtresi (başında AND içerir)</param>
+        /// <param name="remainingFilter">"open" → kalan>0 | "closed" → kalan=0 | "all" → filtre yok (whitelist)</param>
+        private string BuildBasePendingInvoiceQuery(string? specodeWhereClause = null, string remainingFilter = "open")
         {
+            // Whitelist — SQL injection koruması; bilinmeyen değer "open" olarak davranır
+            var normalizedFilter = remainingFilter?.ToLowerInvariant() switch
+            {
+                "closed" => "closed",
+                "all"    => "all",
+                _        => "open"
+            };
+
+            var remainingCondition = normalizedFilter switch
+            {
+                "closed" => "\n            AND (PTRNS.TOTAL - ISNULL(KAPATILAN.KAPANAN_TUTAR, 0)) = 0",
+                "all"    => "",
+                _        => "\n            AND (PTRNS.TOTAL - ISNULL(KAPATILAN.KAPANAN_TUTAR, 0)) > 0"
+            };
+
             return $@"
         SELECT
             CLNTC.LOGICALREF        AS CustomerReference,
-            CLNTC.CODE              AS CustomerCode,
-            CLNTC.DEFINITION_       AS CustomerName,
+            -- Madde 1 fix: INVFC.CLIENTREF → gerçek cari kart kodu (1.A000.x formatı, ClCardInfoAll ile uyumlu).
+            -- PTRNS.CARDREF → CLNTC.CODE bazen muhasebe/gelir hesabı kodu (679.01.x) döndürebilir.
+            -- INVFC.CLIENTREF faturanın INVOICE tablosundaki gerçek cari kart referansıdır.
+            ISNULL(INVCL.CODE, CLNTC.CODE) AS CustomerCode,
+            ISNULL(INVCL.DEFINITION_, CLNTC.DEFINITION_) AS CustomerName,
             PTRNS.FICHEREF          AS InvoiceLogicalRef,
             INVFC.FICHENO           AS InvoiceNumber,
             PTRNS.PROCDATE          AS InvoiceDate,
             CASE INVFC.TRCODE
-                WHEN 1  THEN 'Mal Alım Faturası'
+                WHEN 1  THEN 'Satınalma Faturası'
                 WHEN 2  THEN 'Perakende Satış İade Faturası'
                 WHEN 3  THEN 'Toptan Satış İade Faturası'
                 WHEN 4  THEN 'Alınan Hizmet Faturası'
-                WHEN 5  THEN 'Alınan Proforma Fatura'
-                WHEN 6  THEN 'Alım İade Faturası'
-                WHEN 7  THEN 'Alım Fiyat Farkı Faturası'
-                WHEN 8  THEN 'Perakende Satış Faturası'
-                WHEN 9  THEN 'Toptan Satış Faturası'
-                WHEN 10 THEN 'Verilen Hizmet Faturası'
-                WHEN 11 THEN 'Verilen Proforma Fatura'
-                WHEN 12 THEN 'Verilen Vade Farkı Faturası'
-                WHEN 13 THEN 'Satış Fiyat Farkı Faturası'
-                WHEN 14 THEN 'Satınalma Fiyat Farkı Faturası'
+                WHEN 5  THEN 'Alınan Proforma Faturası'
+                WHEN 6  THEN 'Satınalma İade Faturası'
+                WHEN 7  THEN 'Perakende Satış Faturası'
+                WHEN 8  THEN 'Toptan Satış Faturası'
+                WHEN 9  THEN 'Verilen Hizmet Faturası'
+                WHEN 10 THEN 'Verilen Proforma Faturası'
+                WHEN 11 THEN 'Verilen Vade Farkı Faturası'
+                WHEN 12 THEN 'Alınan Vade Farkı Faturası'
+                WHEN 13 THEN 'Satınalma Fiyat Farkı Faturası'
+                WHEN 14 THEN 'Satış Fiyat Farkı Faturası'
                 WHEN 26 THEN 'Müstahsil Makbuzu'
-                WHEN 32 THEN 'Alınan Fiyat Farkı Faturası'
-                WHEN 33 THEN 'Verilen Fiyat Farkı Faturası'
                 ELSE 'Diğer'
             END                     AS InvoiceType,
+            CASE INVFC.TRCODE
+                WHEN 1  THEN 'Satınalma'
+                WHEN 2  THEN 'Satış'
+                WHEN 3  THEN 'Satış'
+                WHEN 4  THEN 'Satınalma'
+                WHEN 5  THEN 'Satınalma'
+                WHEN 6  THEN 'Satınalma'
+                WHEN 7  THEN 'Satış'
+                WHEN 8  THEN 'Satış'
+                WHEN 9  THEN 'Satış'
+                WHEN 10 THEN 'Satış'
+                WHEN 11 THEN 'Satış'
+                WHEN 12 THEN 'Satınalma'
+                WHEN 13 THEN 'Satınalma'
+                WHEN 14 THEN 'Satış'
+                WHEN 26 THEN 'Satınalma'
+                ELSE 'Diğer'
+            END                     AS InvoiceCategory,
             INVFC.GENEXP1           AS InvoiceDescription1,
             INVFC.GENEXP2           AS InvoiceDescription2,
+            ISNULL(INVFC.GROSSTOTAL, 0)  AS GrossAmount,
+            ISNULL(INVFC.NETTOTAL, 0)    AS NetAmount,
+            ISNULL(INVFC.TOTALVAT, 0)    AS VatAmount,
+            ISNULL(INVFC.TOTALDISCOUNTS, 0) AS DiscountAmount,
             PTRNS.TOTAL             AS InvoiceDueAmount,
             ISNULL(KAPATILAN.KAPANAN_TUTAR, 0) AS PaidAmount,
             (PTRNS.TOTAL - ISNULL(KAPATILAN.KAPANAN_TUTAR, 0)) AS RemainingAmount,
@@ -1027,12 +983,27 @@ namespace Koala.Yedpa.Service.Services
                 WHEN PTRNS.PAID = 0 THEN 'AÇIK'
                 WHEN PTRNS.PAID = 1 AND (PTRNS.TOTAL - ISNULL(KAPATILAN.KAPANAN_TUTAR, 0)) > 0 THEN 'KISMİ ÖDEME'
                 ELSE 'KAPALI'
-            END                     AS Status
+            END                     AS Status,
+            INVFC.NETTOTAL          AS InvoiceNetTotal,
+            (
+                SELECT SUM(PT2.TOTAL)
+                FROM LG_{LogoSetting.Firm}_{LogoSetting.Period}_PAYTRANS PT2
+                WHERE PT2.FICHEREF = PTRNS.FICHEREF
+                  AND PT2.MODULENR = 4
+                  AND PT2.SIGN = 0
+                  AND PT2.CROSSREF = 0
+                  AND PT2.CANCELLED = 0
+            )                       AS TotalPayTransForInvoice
         FROM LG_{LogoSetting.Firm}_{LogoSetting.Period}_PAYTRANS AS PTRNS
         INNER JOIN LG_{LogoSetting.Firm}_CLCARD AS CLNTC
             ON CLNTC.LOGICALREF = PTRNS.CARDREF
-        LEFT OUTER JOIN LG_{LogoSetting.Firm}_{LogoSetting.Period}_INVOICE AS INVFC
+        INNER JOIN LG_{LogoSetting.Firm}_{LogoSetting.Period}_INVOICE AS INVFC
             ON INVFC.LOGICALREF = PTRNS.FICHEREF
+        -- Madde 1 fix: INVOICE.CLIENTREF → gerçek cari kart (1.A000.x formatı).
+        -- PAYTRANS.CARDREF bazen muhasebe grubu kartını (679.01.x) işaret edebilir;
+        -- INVOICE.CLIENTREF daima faturanın kesildiği gerçek cari kartı gösterir.
+        LEFT JOIN LG_{LogoSetting.Firm}_CLCARD AS INVCL
+            ON INVCL.LOGICALREF = INVFC.CLIENTREF
         LEFT OUTER JOIN (
             SELECT
                 CROSSREF,
@@ -1044,11 +1015,96 @@ namespace Koala.Yedpa.Service.Services
         ) AS KAPATILAN
             ON KAPATILAN.CROSSREF = PTRNS.LOGICALREF
         WHERE
-            PTRNS.CROSSREF = 0
+            PTRNS.MODULENR = 4
+            AND PTRNS.SIGN = 0
+            AND PTRNS.CROSSREF = 0
             AND PTRNS.CANCELLED = 0
-            AND PTRNS.SIGN = 1
-            AND ISNULL(INVFC.FROMKASA, 0) = 0
-            AND (PTRNS.TOTAL - ISNULL(KAPATILAN.KAPANAN_TUTAR, 0)) > 0{specodeWhereClause ?? ""}";
+            AND INVFC.TRCODE IN (7, 8, 9, 11, 14)
+            AND INVFC.CANCELLED = 0{remainingCondition}{specodeWhereClause ?? ""}";
+        }
+
+        public async Task<ResponseDto<AidatTahsilatKpiDto>> GetAidatTahsilatKpiAsync(int year, int month)
+        {
+            try
+            {
+                if (year < 2000 || year > 2100)
+                {
+                    return ResponseDto<AidatTahsilatKpiDto>.FailData(400, "Geçersiz yıl", "Yıl 2000-2100 arasında olmalıdır", true);
+                }
+
+                if (month < 1 || month > 12)
+                {
+                    return ResponseDto<AidatTahsilatKpiDto>.FailData(400, "Geçersiz ay", "Ay 1-12 arasında olmalıdır", true);
+                }
+
+                var f = LogoSetting.Firm;
+                var p = LogoSetting.Period;
+
+                // Türkçe ay isimleri
+                var ayAdlari = new[] { "", "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
+                                      "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık" };
+                var ayAdi = ayAdlari[month];
+
+                var query = $@"
+                    WITH AidatFaturalari AS (
+                        SELECT
+                            INV.NETTOTAL,
+                            INV.DATE_,
+                            STL.BILLED
+                        FROM LG_{f}_{p}_INVOICE AS INV
+                        INNER JOIN LG_{f}_{p}_STLINE AS STL ON STL.INVOICEREF = INV.LOGICALREF
+                        WHERE INV.DOCODE = 'AIDAT'
+                          AND YEAR(INV.DATE_) = {year}
+                          AND MONTH(INV.DATE_) = {month}
+                          AND INV.CANCELLED = 0
+                    )
+                    SELECT
+                        SUM(NETTOTAL) AS ToplamAlacak,
+                        SUM(CASE WHEN BILLED = 1 THEN NETTOTAL ELSE 0 END) AS Odenen,
+                        SUM(CASE WHEN BILLED = 0 THEN NETTOTAL ELSE 0 END) AS Bekleyen
+                    FROM AidatFaturalari";
+
+                var result = _sqlProvider.SqlReader(query);
+                if (!result.IsSuccess)
+                {
+                    _logger.LogError("GetAidatTahsilatKpiAsync - Sorgu hatası: {Message}, Year: {Year}, Month: {Month}",
+                        result.Message, year, month);
+                    return ResponseDto<AidatTahsilatKpiDto>.FailData(500, "Veri çekilemedi", result.Message, true);
+                }
+
+                if (result.Data == null || result.Data.Rows.Count == 0)
+                {
+                    // Hiç kayıt yoksa sıfırla döndür
+                    return ResponseDto<AidatTahsilatKpiDto>.SuccessData(
+                        200, "Aidat tahsilat KPI bilgisi başarıyla getirildi",
+                        new AidatTahsilatKpiDto
+                        {
+                            ToplamAlacak = 0,
+                            Odenen = 0,
+                            Bekleyen = 0,
+                            Ay = ayAdi,
+                            Yil = year
+                        });
+                }
+
+                var row = result.Data.Rows[0];
+                var kpiDto = new AidatTahsilatKpiDto
+                {
+                    ToplamAlacak = row["ToplamAlacak"] != DBNull.Value ? Convert.ToDecimal(row["ToplamAlacak"]) : 0,
+                    Odenen = row["Odenen"] != DBNull.Value ? Convert.ToDecimal(row["Odenen"]) : 0,
+                    Bekleyen = row["Bekleyen"] != DBNull.Value ? Convert.ToDecimal(row["Bekleyen"]) : 0,
+                    Ay = ayAdi,
+                    Yil = year
+                };
+
+                return ResponseDto<AidatTahsilatKpiDto>.SuccessData(
+                    200, "Aidat tahsilat KPI bilgisi başarıyla getirildi", kpiDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GetAidatTahsilatKpiAsync - Beklenmeyen hata: Year: {Year}, Month: {Month}", year, month);
+                return ResponseDto<AidatTahsilatKpiDto>.FailData(500, "Beklenmeyen bir hata oluştu", ex.Message, true);
+            }
         }
 
         public async Task<ResponseDto<ClCardStatementDetailedViewModel>> GetClCardStatementDetailedAsync(string clCode)
@@ -1095,10 +1151,14 @@ namespace Koala.Yedpa.Service.Services
                                 WHEN 2 THEN 'PERAKENDE SATIŞ İADE FATURASI'
                                 WHEN 3 THEN 'TOPTAN SATIŞ İADE FATURASI'
                                 WHEN 4 THEN 'ALINAN HİZMET FATURASI'
+                                WHEN 5 THEN 'ALINAN PROFORMA FATURASI'
                                 WHEN 6 THEN 'SATINALMA İADE FATURASI'
                                 WHEN 7 THEN 'PERAKENDE SATIŞ FATURASI'
                                 WHEN 8 THEN 'TOPTAN SATIŞ FATURASI'
                                 WHEN 9 THEN 'VERİLEN HİZMET FATURASI'
+                                WHEN 10 THEN 'VERİLEN PROFORMA FATURASI'
+                                WHEN 11 THEN 'VERİLEN VADE FARKI FATURASI'
+                                WHEN 12 THEN 'ALINAN VADE FARKI FATURASI'
                                 WHEN 13 THEN 'SATINALMA FİYAT FARKI FATURASI'
                                 WHEN 14 THEN 'SATIŞ FİYAT FARKI FATURASI'
                                 WHEN 26 THEN 'MÜSTAHSİL MAKBUZU'
@@ -1137,7 +1197,10 @@ namespace Koala.Yedpa.Service.Services
                              - CASE WHEN CLF.SIGN = 1 THEN INV.REPORTNET ELSE 0 END) AS REP_BALANCE,
                             CASE CLF.TRCURR
                                 WHEN 0 THEN 'TL' WHEN 1 THEN 'USD' WHEN 20 THEN 'EURO' WHEN 17 THEN 'GBP' WHEN 160 THEN 'TL' ELSE 'DİĞER'
-                            END AS EXP_TYPE
+                            END AS EXP_TYPE,
+                            -- Madde 4: vade tarihi — fatura satırlarında PTRNS.DATE_ yok;
+                            -- INV.DATE_ fatura tarihi, gerçek vade PAYTRANS'ta. NULL döndür.
+                            CAST(NULL AS DATETIME) AS DUE_DATE
                         FROM LG_{f}_{p}_CLFLINE AS CLF
                             LEFT OUTER JOIN LG_{f}_{p}_INVOICE AS INV ON CLF.SOURCEFREF = INV.LOGICALREF
                             LEFT OUTER JOIN LG_{f}_CLCARD AS CLC ON CLC.LOGICALREF = CLF.CLIENTREF
@@ -1156,8 +1219,11 @@ namespace Koala.Yedpa.Service.Services
                             CASE INV.TRCODE
                                 WHEN 1 THEN 'SATINALMA FATURASI' WHEN 2 THEN 'PERAKENDE SATIŞ İADE FATURASI'
                                 WHEN 3 THEN 'TOPTAN SATIŞ İADE FATURASI' WHEN 4 THEN 'ALINAN HİZMET FATURASI'
+                                WHEN 5 THEN 'ALINAN PROFORMA FATURASI'
                                 WHEN 6 THEN 'SATINALMA İADE FATURASI' WHEN 7 THEN 'PERAKENDE SATIŞ FATURASI'
                                 WHEN 8 THEN 'TOPTAN SATIŞ FATURASI' WHEN 9 THEN 'VERİLEN HİZMET FATURASI'
+                                WHEN 10 THEN 'VERİLEN PROFORMA FATURASI' WHEN 11 THEN 'VERİLEN VADE FARKI FATURASI'
+                                WHEN 12 THEN 'ALINAN VADE FARKI FATURASI'
                                 WHEN 13 THEN 'SATINALMA FİYAT FARKI FATURASI' WHEN 14 THEN 'SATIŞ FİYAT FARKI FATURASI'
                                 WHEN 26 THEN 'MÜSTAHSİL MAKBUZU' ELSE 'DİĞER'
                             END, '',
@@ -1170,12 +1236,13 @@ namespace Koala.Yedpa.Service.Services
                             CASE WHEN INV.TRCODE IN (1,4,5,2,3) THEN (STL.TOTAL - STL.DISTCOST) ELSE 0 END,
                             CASE WHEN INV.TRCODE IN (6,7,8,9,10) THEN (STL.TOTAL - STL.DISTCOST) ELSE 0 END
                             - CASE WHEN INV.TRCODE IN (1,4,5,2,3) THEN (STL.TOTAL - STL.DISTCOST) ELSE 0 END,
-                            STL.LINENET, STL.TOTAL, STL.VAT,
+                            STL.LINENET, STL.TOTAL, STL.LINETYPE, STL.VAT,
                             CLF.TRRATE, CLF.TRNET, CLF.REPORTRATE,
                             CASE WHEN CLF.SIGN = 0 THEN INV.REPORTNET ELSE 0 END,
                             CASE WHEN CLF.SIGN = 1 THEN INV.REPORTNET ELSE 0 END,
                             CASE WHEN CLF.SIGN = 0 THEN INV.REPORTNET ELSE 0 END - CASE WHEN CLF.SIGN = 1 THEN INV.REPORTNET ELSE 0 END,
-                            CASE CLF.TRCURR WHEN 0 THEN 'TL' WHEN 1 THEN 'USD' WHEN 20 THEN 'EURO' WHEN 17 THEN 'GBP' WHEN 160 THEN 'TL' ELSE 'DİĞER' END
+                            CASE CLF.TRCURR WHEN 0 THEN 'TL' WHEN 1 THEN 'USD' WHEN 20 THEN 'EURO' WHEN 17 THEN 'GBP' WHEN 160 THEN 'TL' ELSE 'DİĞER' END,
+                            CAST(NULL AS DATETIME)
                         FROM LG_{f}_{p}_CLFLINE AS CLF
                             LEFT OUTER JOIN LG_{f}_{p}_INVOICE AS INV ON CLF.SOURCEFREF = INV.LOGICALREF
                             LEFT OUTER JOIN LG_{f}_CLCARD AS CLC ON CLC.LOGICALREF = CLF.CLIENTREF
@@ -1205,12 +1272,13 @@ namespace Koala.Yedpa.Service.Services
                             CASE WHEN CLF.SIGN = 0 THEN CLF.AMOUNT ELSE 0 END AS DEPT,
                             CASE WHEN CLF.SIGN = 1 THEN CLF.AMOUNT ELSE 0 END AS CREDIT,
                             CASE WHEN CLF.SIGN = 0 THEN CLF.AMOUNT ELSE 0 END - CASE WHEN CLF.SIGN = 1 THEN CLF.AMOUNT ELSE 0 END,
-                            0, 0, 0,
+                            0, 0, 0, 0,
                             CLF.TRRATE, CLF.TRNET, CLF.REPORTRATE,
                             CASE WHEN CLF.SIGN = 0 THEN CLF.REPORTNET ELSE 0 END,
                             CASE WHEN CLF.SIGN = 1 THEN CLF.REPORTNET ELSE 0 END,
                             CASE WHEN CLF.SIGN = 0 THEN CLF.REPORTNET ELSE 0 END - CASE WHEN CLF.SIGN = 1 THEN CLF.REPORTNET ELSE 0 END,
-                            CASE CLF.TRCURR WHEN 0 THEN 'TL' WHEN 1 THEN 'USD' WHEN 20 THEN 'EURO' WHEN 17 THEN 'GBP' WHEN 160 THEN 'TL' ELSE 'DİĞER' END
+                            CASE CLF.TRCURR WHEN 0 THEN 'TL' WHEN 1 THEN 'USD' WHEN 20 THEN 'EURO' WHEN 17 THEN 'GBP' WHEN 160 THEN 'TL' ELSE 'DİĞER' END,
+                            CAST(NULL AS DATETIME)
                         FROM LG_{f}_{p}_CLFLINE AS CLF
                             LEFT OUTER JOIN LG_{f}_{p}_CLFICHE AS CHE ON CLF.SOURCEFREF = CHE.LOGICALREF
                             LEFT OUTER JOIN LG_{f}_CLCARD AS CLC ON CLC.LOGICALREF = CLF.CLIENTREF
@@ -1234,12 +1302,13 @@ namespace Koala.Yedpa.Service.Services
                             CASE WHEN CLF.SIGN = 0 THEN CLF.AMOUNT ELSE 0 END,
                             CASE WHEN CLF.SIGN = 1 THEN CLF.AMOUNT ELSE 0 END,
                             CASE WHEN CLF.SIGN = 0 THEN CLF.AMOUNT ELSE 0 END - CASE WHEN CLF.SIGN = 1 THEN CLF.AMOUNT ELSE 0 END,
-                            0, 0, 0,
+                            0, 0, 0, 0,
                             CLF.TRRATE, CLF.TRNET, CLF.REPORTRATE,
                             CASE WHEN CLF.SIGN = 0 THEN CLF.REPORTNET ELSE 0 END,
                             CASE WHEN CLF.SIGN = 1 THEN CLF.REPORTNET ELSE 0 END,
                             CASE WHEN CLF.SIGN = 0 THEN CLF.REPORTNET ELSE 0 END - CASE WHEN CLF.SIGN = 1 THEN CLF.REPORTNET ELSE 0 END,
-                            CASE CLF.TRCURR WHEN 0 THEN 'TL' WHEN 1 THEN 'USD' WHEN 20 THEN 'EURO' WHEN 17 THEN 'GBP' WHEN 160 THEN 'TL' ELSE 'DİĞER' END
+                            CASE CLF.TRCURR WHEN 0 THEN 'TL' WHEN 1 THEN 'USD' WHEN 20 THEN 'EURO' WHEN 17 THEN 'GBP' WHEN 160 THEN 'TL' ELSE 'DİĞER' END,
+                            CAST(NULL AS DATETIME)
                         FROM LG_{f}_{p}_CLFLINE AS CLF
                             INNER JOIN LG_{f}_{p}_BNFLINE AS BNL ON CLF.SOURCEFREF = BNL.LOGICALREF
                             INNER JOIN LG_{f}_CLCARD AS CLC ON CLF.CLIENTREF = CLC.LOGICALREF
@@ -1273,12 +1342,13 @@ namespace Koala.Yedpa.Service.Services
                             CASE WHEN CSC.DOC IN (3,4) THEN CSC.TRNET ELSE 0 END,
                             CASE WHEN CSC.DOC IN (1,2) THEN CSC.TRNET ELSE 0 END,
                             CASE WHEN CSC.DOC IN (3,4) THEN CSC.TRNET ELSE 0 END - CASE WHEN CSC.DOC IN (1,2) THEN CSC.TRNET ELSE 0 END,
-                            0, 0, 0,
+                            0, 0, 0, 0,
                             CLF.TRRATE, CLF.TRNET, CLF.REPORTRATE,
                             CASE WHEN CLF.SIGN = 0 THEN CSC.REPORTNET ELSE 0 END,
                             CASE WHEN CLF.SIGN = 1 THEN CSC.REPORTNET ELSE 0 END,
                             CASE WHEN CLF.SIGN = 0 THEN CSC.REPORTNET ELSE 0 END - CASE WHEN CLF.SIGN = 1 THEN CSC.REPORTNET ELSE 0 END,
-                            CASE CLF.TRCURR WHEN 0 THEN 'TL' WHEN 1 THEN 'USD' WHEN 20 THEN 'EURO' WHEN 17 THEN 'GBP' WHEN 160 THEN 'TL' ELSE 'DİĞER' END
+                            CASE CLF.TRCURR WHEN 0 THEN 'TL' WHEN 1 THEN 'USD' WHEN 20 THEN 'EURO' WHEN 17 THEN 'GBP' WHEN 160 THEN 'TL' ELSE 'DİĞER' END,
+                            CAST(NULL AS DATETIME)
                         FROM LG_{f}_{p}_CLFLINE AS CLF
                             INNER JOIN LG_{f}_CLCARD AS CLC ON CLF.CLIENTREF = CLC.LOGICALREF
                             INNER JOIN LG_{f}_{p}_CSROLL AS CSR ON CLF.SOURCEFREF = CSR.LOGICALREF
@@ -1304,12 +1374,13 @@ namespace Koala.Yedpa.Service.Services
                             CASE WHEN CLF.SIGN = 0 THEN CLF.AMOUNT ELSE 0 END,
                             CASE WHEN CLF.SIGN = 1 THEN CLF.AMOUNT ELSE 0 END,
                             CASE WHEN CLF.SIGN = 0 THEN CLF.AMOUNT ELSE 0 END - CASE WHEN CLF.SIGN = 1 THEN CLF.AMOUNT ELSE 0 END,
-                            0, 0, 0,
+                            0, 0, 0, 0,
                             CLF.TRRATE, CLF.TRNET, CLF.REPORTRATE,
                             CASE WHEN CLF.SIGN = 0 THEN CLF.REPORTNET ELSE 0 END,
                             CASE WHEN CLF.SIGN = 1 THEN CLF.REPORTNET ELSE 0 END,
                             CASE WHEN CLF.SIGN = 0 THEN CLF.REPORTNET ELSE 0 END - CASE WHEN CLF.SIGN = 1 THEN CLF.REPORTNET ELSE 0 END,
-                            CASE CLF.TRCURR WHEN 0 THEN 'TL' WHEN 1 THEN 'USD' WHEN 20 THEN 'EURO' WHEN 17 THEN 'GBP' WHEN 160 THEN 'TL' ELSE 'DİĞER' END
+                            CASE CLF.TRCURR WHEN 0 THEN 'TL' WHEN 1 THEN 'USD' WHEN 20 THEN 'EURO' WHEN 17 THEN 'GBP' WHEN 160 THEN 'TL' ELSE 'DİĞER' END,
+                            CAST(NULL AS DATETIME)
                         FROM LG_{f}_{p}_CLFLINE AS CLF
                             INNER JOIN LG_{f}_{p}_KSLINES AS KSL ON CLF.LOGICALREF = KSL.TRANSREF
                             INNER JOIN LG_{f}_CLCARD AS CLC ON CLF.CLIENTREF = CLC.LOGICALREF
@@ -1326,12 +1397,13 @@ namespace Koala.Yedpa.Service.Services
                             CASE WHEN CLF.SIGN = 0 THEN CLF.AMOUNT ELSE 0 END,
                             CASE WHEN CLF.SIGN = 1 THEN CLF.AMOUNT ELSE 0 END,
                             CASE WHEN CLF.SIGN = 0 THEN CLF.AMOUNT ELSE 0 END - CASE WHEN CLF.SIGN = 1 THEN CLF.AMOUNT ELSE 0 END,
-                            0, 0, 0,
+                            0, 0, 0, 0,
                             CLF.TRRATE, CLF.TRNET, CLF.REPORTRATE,
                             CASE WHEN CLF.SIGN = 0 THEN CLF.REPORTNET ELSE 0 END,
                             CASE WHEN CLF.SIGN = 1 THEN CLF.REPORTNET ELSE 0 END,
                             CASE WHEN CLF.SIGN = 0 THEN CLF.REPORTNET ELSE 0 END - CASE WHEN CLF.SIGN = 1 THEN CLF.REPORTNET ELSE 0 END,
-                            CASE CLF.TRCURR WHEN 0 THEN 'TL' WHEN 1 THEN 'USD' WHEN 20 THEN 'EURO' WHEN 17 THEN 'GBP' WHEN 160 THEN 'TL' ELSE 'DİĞER' END
+                            CASE CLF.TRCURR WHEN 0 THEN 'TL' WHEN 1 THEN 'USD' WHEN 20 THEN 'EURO' WHEN 17 THEN 'GBP' WHEN 160 THEN 'TL' ELSE 'DİĞER' END,
+                            CAST(NULL AS DATETIME)
                         FROM LG_{f}_{p}_CLFLINE AS CLF
                             INNER JOIN LG_{f}_CLCARD AS CLC ON CLF.CLIENTREF = CLC.LOGICALREF
                         WHERE CLF.MODULENR IN (61, 62) AND CLF.CANCELLED = 0
@@ -1390,6 +1462,9 @@ namespace Koala.Yedpa.Service.Services
                         ExpType = header["EXP_TYPE"]?.ToString() ?? string.Empty,
                         Discount = header["DISCOUNT_TOTAL"] != DBNull.Value ? Convert.ToDecimal(header["DISCOUNT_TOTAL"]) : 0,
                         TaxTotal = header["TAX_TOTAL"] != DBNull.Value ? Convert.ToDecimal(header["TAX_TOTAL"]) : 0,
+                        // Madde 4: vade tarihi — CLFLINE tablosunda doğrudan vade alanı olmadığından NULL.
+                        // Gerçek vade PAYTRANS.DATE_ üzerinden PendingInvoices.DueDate alanındadır.
+                        DueDate = header["DUE_DATE"] != DBNull.Value ? (DateTime?)Convert.ToDateTime(header["DUE_DATE"]) : null,
                     };
 
                     if (invoiceTypes.Contains(ficheType))
@@ -1439,23 +1514,60 @@ namespace Koala.Yedpa.Service.Services
             }
         }
 
-        public async Task<ResponseListDto<List<CustomerListWithBalanceViewModel>>> GetCustomerListWithBalanceAsync(string? specode2, int perPage = 50, int pageNo = 1)
+        public async Task<ResponseListDto<List<CustomerListWithBalanceViewModel>>> GetCustomerListWithBalanceAsync(ClCardInfoSearchViewModel searchModel, int perPage = 50, int pageNo = 1)
         {
             try
             {
+                if (searchModel == null) searchModel = new ClCardInfoSearchViewModel();
                 if (perPage <= 0) perPage = 50;
                 if (pageNo <= 0) pageNo = 1;
                 var offset = (pageNo - 1) * perPage;
                 var f = LogoSetting.Firm;
                 var p = LogoSetting.Period;
 
-                var specode2Filter = !string.IsNullOrWhiteSpace(specode2)
-                    ? $"AND CLC.SPECODE2 = '{specode2.Replace("'", "''")}'"
-                    : "";
-
                 var specodeClause = GetCurrentUserSpecodeFilter().ToSqlWhere("CLC");
 
-                var query = $@"
+                // Dinamik filtre koşulları — WhereClCardInfoAsync ile aynı mantık
+                var conditions = new List<string>();
+
+                if (!string.IsNullOrWhiteSpace(searchModel.CariKodu))
+                    conditions.Add($"CLC.CODE LIKE '%{searchModel.CariKodu.Replace("'", "''")}%'");
+                if (!string.IsNullOrWhiteSpace(searchModel.CariUnvan))
+                    conditions.Add($"CLC.DEFINITION_ LIKE '%{searchModel.CariUnvan.Replace("'", "''")}%'");
+                if (!string.IsNullOrWhiteSpace(searchModel.VergiDairesi))
+                    conditions.Add($"CLC.TAXOFFICE LIKE '%{searchModel.VergiDairesi.Replace("'", "''")}%'");
+                if (!string.IsNullOrWhiteSpace(searchModel.VergiNumarasi))
+                    conditions.Add($"CLC.TAXNR LIKE '%{searchModel.VergiNumarasi.Replace("'", "''")}%'");
+                if (!string.IsNullOrWhiteSpace(searchModel.Tckn))
+                    conditions.Add($"CLC.TCKNO LIKE '%{searchModel.Tckn.Replace("'", "''")}%'");
+                if (!string.IsNullOrWhiteSpace(searchModel.Il))
+                    conditions.Add($"CLC.CITY LIKE '%{searchModel.Il.Replace("'", "''")}%'");
+                if (!string.IsNullOrWhiteSpace(searchModel.Ilce))
+                    conditions.Add($"CLC.TOWN LIKE '%{searchModel.Ilce.Replace("'", "''")}%'");
+                if (!string.IsNullOrWhiteSpace(searchModel.Mahalle))
+                    conditions.Add($"CLC.DISTRICT LIKE '%{searchModel.Mahalle.Replace("'", "''")}%'");
+                if (!string.IsNullOrWhiteSpace(searchModel.Adres1))
+                    conditions.Add($"CLC.ADDR1 LIKE '%{searchModel.Adres1.Replace("'", "''")}%'");
+                if (!string.IsNullOrWhiteSpace(searchModel.Adres2))
+                    conditions.Add($"CLC.ADDR2 LIKE '%{searchModel.Adres2.Replace("'", "''")}%'");
+                if (!string.IsNullOrWhiteSpace(searchModel.OzelKod))
+                    conditions.Add($"CLC.SPECODE LIKE '%{searchModel.OzelKod.Replace("'", "''")}%'");
+                if (!string.IsNullOrWhiteSpace(searchModel.OzelKod2))
+                    conditions.Add($"CLC.SPECODE2 LIKE '%{searchModel.OzelKod2.Replace("'", "''")}%'");
+                if (!string.IsNullOrWhiteSpace(searchModel.OzelKod3))
+                    conditions.Add($"CLC.SPECODE3 LIKE '%{searchModel.OzelKod3.Replace("'", "''")}%'");
+                if (!string.IsNullOrWhiteSpace(searchModel.OzelKod4))
+                    conditions.Add($"CLC.SPECODE4 LIKE '%{searchModel.OzelKod4.Replace("'", "''")}%'");
+                if (!string.IsNullOrWhiteSpace(searchModel.OzelKod5))
+                    conditions.Add($"CLC.SPECODE5 LIKE '%{searchModel.OzelKod5.Replace("'", "''")}%'");
+                if (!string.IsNullOrWhiteSpace(searchModel.Yetkili1AdSoyad))
+                    conditions.Add($"CLC.INCHARGE LIKE '%{searchModel.Yetkili1AdSoyad.Replace("'", "''")}%'");
+                if (!string.IsNullOrWhiteSpace(searchModel.Yetkili2AdSoyad))
+                    conditions.Add($"CLC.INCHARGE2 LIKE '%{searchModel.Yetkili2AdSoyad.Replace("'", "''")}%'");
+
+                var whereClause = conditions.Any() ? " AND " + string.Join(" AND ", conditions) : "";
+
+                var baseQuery = $@"
                     SELECT
                         CLC.LOGICALREF AS LogicalRef,
                         CLC.CODE AS Code,
@@ -1485,29 +1597,33 @@ namespace Koala.Yedpa.Service.Services
                     WHERE GNCLTOT.TOTTYP = 1
                       AND CLC.CODE IS NOT NULL
                       AND CLC.ACTIVE = 0
-                      {specode2Filter}{specodeClause}
+                      {specodeClause}{whereClause}
                     GROUP BY
                         CLC.LOGICALREF, CLC.CODE, CLC.DEFINITION_,
                         CLC.CITY, CLC.TOWN, CLC.DISTRICT, CLC.ADDR1, CLC.ADDR2,
-                        LS.LASTSALEDATE, LP.LASTPAYMENTDATE
-                    ORDER BY CLC.DEFINITION_";
+                        LS.LASTSALEDATE, LP.LASTPAYMENTDATE";
 
+                // Filtresiz toplam
                 var totalQuery = $@"
-                    SELECT COUNT(*)
+                    SELECT COUNT(DISTINCT CLC.LOGICALREF)
                     FROM LV_{f}_{p}_GNTOTCL GNCLTOT WITH (NOLOCK)
                     INNER JOIN LG_{f}_CLCARD CLC WITH (NOLOCK) ON CLC.LOGICALREF = GNCLTOT.CARDREF
                     WHERE GNCLTOT.TOTTYP = 1
                       AND CLC.CODE IS NOT NULL
                       AND CLC.ACTIVE = 0
-                      {specode2Filter}{specodeClause}";
-
+                      {specodeClause}";
                 var totalResult = _sqlProvider.SqlReader(totalQuery);
                 var recordsTotal = totalResult.IsSuccess ? Convert.ToInt32(totalResult.Data.Rows[0][0]) : 0;
+
+                // Filtreli toplam
+                var filteredQuery = "SELECT COUNT(*) FROM (" + baseQuery + ") AS T";
+                var filteredResult = _sqlProvider.SqlReader(filteredQuery);
+                var recordsFiltered = filteredResult.IsSuccess ? Convert.ToInt32(filteredResult.Data.Rows[0][0]) : 0;
 
                 var pagedQuery = $@"
                     WITH NumberedCustomers AS (
                         SELECT *, ROW_NUMBER() OVER (ORDER BY Definition) AS RowNum
-                        FROM ({query}) AS Base
+                        FROM ({baseQuery}) AS Base
                     )
                     SELECT * FROM NumberedCustomers
                     WHERE RowNum BETWEEN {offset + 1} AND {offset + perPage}
@@ -1525,7 +1641,7 @@ namespace Koala.Yedpa.Service.Services
                 return ResponseListDto<List<CustomerListWithBalanceViewModel>>.SuccessData(
                     200, "Cari hesap listesi başarıyla getirildi", list,
                     RecordsTotal: recordsTotal,
-                    RecordsFiltered: recordsTotal,
+                    RecordsFiltered: recordsFiltered,
                     RecordsShow: list.Count
                 );
             }
@@ -1533,6 +1649,117 @@ namespace Koala.Yedpa.Service.Services
             {
                 _logger.LogError(ex, "GetCustomerListWithBalanceAsync - Beklenmeyen hata");
                 return ResponseListDto<List<CustomerListWithBalanceViewModel>>.FailData(500, "Beklenmeyen bir hata oluştu", ex.Message, true);
+            }
+        }
+
+        public async Task<ResponseListDto<List<BankViewModel>>> GetBanksAsync()
+        {
+            try
+            {
+                var f = LogoSetting.Firm;
+                var query = $@"
+                    SELECT
+                        LOGICALREF,
+                        CODE,
+                        DEFINITION_
+                    FROM LG_{f}_BANKCARD WITH (NOLOCK)
+                    WHERE ACTIVE = 0
+                    ORDER BY CODE";
+
+                var result = _sqlProvider.SqlReader(query);
+                if (!result.IsSuccess)
+                {
+                    _logger.LogError("GetBanksAsync - Sorgu hatası: {Message}", result.Message);
+                    return ResponseListDto<List<BankViewModel>>.FailData(500, "Banka listesi çekilemedi", result.Message, true);
+                }
+
+                var list = result.Data.AsList<BankViewModel>();
+                return ResponseListDto<List<BankViewModel>>.SuccessData(
+                    200, "Banka listesi başarıyla getirildi", list,
+                    RecordsTotal: list.Count,
+                    RecordsFiltered: list.Count,
+                    RecordsShow: list.Count
+                );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GetBanksAsync - Beklenmeyen hata");
+                return ResponseListDto<List<BankViewModel>>.FailData(500, "Beklenmeyen bir hata oluştu", ex.Message, true);
+            }
+        }
+
+        public async Task<ResponseListDto<List<BankAccountViewModel>>> GetBankAccountsAsync()
+        {
+            try
+            {
+                var f = LogoSetting.Firm;
+                var query = $@"
+                    SELECT
+                        BNC.DEFINITION_  AS BankName,
+                        BNC.BRANCH       AS Branch,
+                        BNC.BRANCHNO     AS BranchCode,
+                        BAN.CODE         AS AccountCode,
+                        BAN.DEFINITION_  AS AccountDescription
+                    FROM LG_{f}_BNCARD AS BNC WITH (NOLOCK)
+                    INNER JOIN LG_{f}_BANKACC AS BAN WITH (NOLOCK) ON BAN.BANKREF = BNC.LOGICALREF
+                    WHERE BAN.KKUSAGE = 1 AND BAN.ACTIVE = 0
+                    ORDER BY BNC.DEFINITION_, BAN.CODE";
+
+                var result = _sqlProvider.SqlReader(query);
+                if (!result.IsSuccess)
+                {
+                    _logger.LogError("GetBankAccountsAsync - Sorgu hatası: {Message}", result.Message);
+                    return ResponseListDto<List<BankAccountViewModel>>.FailData(500, "Banka hesap listesi çekilemedi", result.Message, true);
+                }
+
+                var list = result.Data.AsList<BankAccountViewModel>();
+                return ResponseListDto<List<BankAccountViewModel>>.SuccessData(
+                    200, "KK banka hesapları başarıyla getirildi", list,
+                    RecordsTotal: list.Count,
+                    RecordsFiltered: list.Count,
+                    RecordsShow: list.Count
+                );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GetBankAccountsAsync - Beklenmeyen hata");
+                return ResponseListDto<List<BankAccountViewModel>>.FailData(500, "Beklenmeyen bir hata oluştu", ex.Message, true);
+            }
+        }
+
+        public async Task<ResponseListDto<List<ServiceListViewModel>>> GetServicesAsync()
+        {
+            try
+            {
+                var f = LogoSetting.Firm;
+                var query = $@"
+                    SELECT
+                        LOGICALREF,
+                        CODE,
+                        DEFINITION_
+                    FROM LG_{f}_SRVCARD WITH (NOLOCK)
+                    WHERE ACTIVE = 0 AND CARDTYPE = 2
+                    ORDER BY CODE";
+
+                var result = _sqlProvider.SqlReader(query);
+                if (!result.IsSuccess)
+                {
+                    _logger.LogError("GetServicesAsync - Sorgu hatası: {Message}", result.Message);
+                    return ResponseListDto<List<ServiceListViewModel>>.FailData(500, "Hizmet listesi çekilemedi", result.Message, true);
+                }
+
+                var list = result.Data.AsList<ServiceListViewModel>();
+                return ResponseListDto<List<ServiceListViewModel>>.SuccessData(
+                    200, "Hizmet listesi başarıyla getirildi", list,
+                    RecordsTotal: list.Count,
+                    RecordsFiltered: list.Count,
+                    RecordsShow: list.Count
+                );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GetServicesAsync - Beklenmeyen hata");
+                return ResponseListDto<List<ServiceListViewModel>>.FailData(500, "Beklenmeyen bir hata oluştu", ex.Message, true);
             }
         }
     }

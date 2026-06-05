@@ -203,20 +203,36 @@ public class LogoClCardApiController : ControllerBase
     }
 
     /// <summary>
-    /// Cari hesap listesi - bakiye bilgileri ile
+    /// Cari hesap listesi - bakiye, son satış ve ödeme tarihleri ile.
+    /// ClCardInfoSearchViewModel ile filtreleme yapar (cari kodu, unvan, adres, özel kodlar vb.).
+    /// Boş model gönderilirse kullanıcının yetki alanındaki tüm carileri döner.
     /// </summary>
-    [HttpGet("CustomerListWithBalance")]
-    [SwaggerOperation(Summary = "Cari hesap listesi - bakiye, son satış ve ödeme tarihleri ile")]
+    [HttpPost("CustomerListWithBalance")]
+    [SwaggerOperation(
+        Summary = "Cari hesap listesi - bakiye, son satış ve ödeme tarihleri ile",
+        Description = "ClCardInfoSearchViewModel ile filtreleme yapar. " +
+                      "Boş model gönderilirse kullanıcının yetki alanındaki tüm carileri döner.")]
     [SwaggerResponse(200, "Başarılı", typeof(ResponseListDto<List<CustomerListWithBalanceViewModel>>))]
+    [SwaggerResponse(400, "Geçersiz istek - arama modeli boş olamaz")]
     [SwaggerResponse(401, "Yetkisiz erişim")]
     [SwaggerResponse(500, "Sunucu hatası")]
     public async Task<IActionResult> CustomerListWithBalance(
-        [FromQuery] string? specode2,
+        [FromBody] ClCardInfoSearchViewModel searchModel,
         [FromQuery] int perPage = 50,
         [FromQuery] int pageNo = 1)
     {
-        _logger.LogInformation("CustomerListWithBalance called with specode2={Specode2}, perPage={PerPage}, pageNo={PageNo}", specode2, perPage, pageNo);
-        var result = await _service.GetCustomerListWithBalanceAsync(specode2, perPage, pageNo);
+        _logger.LogInformation(
+            "CustomerListWithBalance called with perPage={PerPage}, pageNo={PageNo}",
+            perPage, pageNo);
+
+        if (searchModel == null)
+        {
+            _logger.LogWarning("CustomerListWithBalance: Search model is null");
+            return BadRequest(ResponseListDto<List<CustomerListWithBalanceViewModel>>.FailData(
+                400, "Arama modeli boş olamaz", "Model null", true));
+        }
+
+        var result = await _service.GetCustomerListWithBalanceAsync(searchModel, perPage, pageNo);
 
         if (result.IsSuccess)
         {

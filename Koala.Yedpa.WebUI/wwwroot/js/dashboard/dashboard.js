@@ -195,11 +195,90 @@
         }
     }
 
+    // --- Load Aidat Tahsilat Widget Data ---
+    function loadAidatTahsilatWidget() {
+        var widgetContainer = document.getElementById('aidatTahsilatWidget');
+        if (!widgetContainer) return;
+
+        var cardBody = widgetContainer.closest('.card-body');
+        if (!cardBody) return;
+
+        var currentYear = new Date().getFullYear();
+        var currentMonth = new Date().getMonth() + 1;
+
+        // Show loading
+        widgetContainer.innerHTML = '<div class="widget-loading"><i class="fas fa-spinner fa-spin mr-2"></i> Yükleniyor...</div>';
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/api/Dashboard/aidat-tahsilat?year=' + currentYear + '&month=' + currentMonth, true);
+        xhr.onload = function () {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                try {
+                    var response = JSON.parse(xhr.responseText);
+                    if (response.isSuccess && response.data) {
+                        var data = response.data;
+                        var toplamAlacak = data.toplamAlacak || 0;
+                        var odenen = data.odenen || 0;
+                        var bekleyen = data.bekleyen || 0;
+
+                        var odenenYuzde = toplamAlacak > 0 ? ((odenen / toplamAlacak) * 100).toFixed(1) : 0;
+                        var bekleyenYuzde = toplamAlacak > 0 ? ((bekleyen / toplamAlacak) * 100).toFixed(1) : 0;
+
+                        var html = '<div class="kpi-row">' +
+                            '<div class="kpi-item kpi-primary">' +
+                            '<div class="kpi-value">' + formatCurrency(toplamAlacak) + ' ₺</div>' +
+                            '<div class="kpi-label">Toplam Alacak</div>' +
+                            '<div class="kpi-sublabel">' + data.ay + ' ' + data.yil + '</div>' +
+                            '</div>' +
+                            '<div class="kpi-item kpi-success">' +
+                            '<div class="kpi-value">' + formatCurrency(odenen) + ' ₺</div>' +
+                            '<div class="kpi-label">Ödenen</div>' +
+                            '<div class="kpi-sublabel">%' + odenenYuzde + '</div>' +
+                            '</div>' +
+                            '<div class="kpi-item kpi-warning">' +
+                            '<div class="kpi-value">' + formatCurrency(bekleyen) + ' ₺</div>' +
+                            '<div class="kpi-label">Bekleyen</div>' +
+                            '<div class="kpi-sublabel">%' + bekleyenYuzde + '</div>' +
+                            '</div>' +
+                            '</div>';
+
+                        widgetContainer.innerHTML = html;
+                    } else {
+                        showError(widgetContainer, response.message || 'Veri alınamadı');
+                    }
+                } catch (e) {
+                    console.error('Error parsing response:', e);
+                    showError(widgetContainer, 'Veri işleme hatası');
+                }
+            } else {
+                showError(widgetContainer, 'Sunucu hatası');
+            }
+        };
+        xhr.onerror = function () {
+            showError(widgetContainer, 'Bağlantı hatası');
+        };
+        xhr.send();
+    }
+
+    // Format currency helper
+    function formatCurrency(value) {
+        return parseFloat(value).toLocaleString('tr-TR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    }
+
+    // Show error helper
+    function showError(container, message) {
+        container.innerHTML = '<div class="widget-error"><i class="fas fa-exclamation-triangle mr-2"></i>' + message + '</div>';
+    }
+
     // --- Init ---
     document.addEventListener('DOMContentLoaded', function () {
         initSortable();
         initSidebar();
         initResetLayout();
         initCharts();
+        loadAidatTahsilatWidget();
     });
 })();

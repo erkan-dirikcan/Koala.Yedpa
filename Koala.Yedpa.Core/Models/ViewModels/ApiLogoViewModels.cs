@@ -433,11 +433,26 @@ namespace Koala.Yedpa.Core.Models.ViewModels
         [SwaggerSchema(Description = "Fatura türü")]
         public string InvoiceType { get; set; } = string.Empty;
 
+        [SwaggerSchema(Description = "Fatura kategorisi (Satış / Satınalma)")]
+        public string InvoiceCategory { get; set; } = string.Empty;
+
         [SwaggerSchema(Description = "Fatura açıklama 1")]
         public string InvoiceDescription1 { get; set; } = string.Empty;
 
         [SwaggerSchema(Description = "Fatura açıklama 2")]
         public string InvoiceDescription2 { get; set; } = string.Empty;
+
+        [SwaggerSchema(Description = "Brüt tutar (KDV hariç matrah)")]
+        public decimal GrossAmount { get; set; }
+
+        [SwaggerSchema(Description = "Net tutar (KDV dahil)")]
+        public decimal NetAmount { get; set; }
+
+        [SwaggerSchema(Description = "KDV tutarı")]
+        public decimal VatAmount { get; set; }
+
+        [SwaggerSchema(Description = "İndirim toplamı")]
+        public decimal DiscountAmount { get; set; }
 
         [SwaggerSchema(Description = "Fatura vade tutarı")]
         public decimal InvoiceDueAmount { get; set; }
@@ -468,6 +483,12 @@ namespace Koala.Yedpa.Core.Models.ViewModels
 
         [SwaggerSchema(Description = "Ödeme durumu")]
         public string Status { get; set; } = string.Empty;
+
+        [SwaggerSchema(Description = "Faturanın INVOICE tablosundaki NETTOTAL değeri (kuruş farkı analizi için)")]
+        public decimal? InvoiceNetTotal { get; set; }
+
+        [SwaggerSchema(Description = "Aynı fatura için tüm PAYTRANS satırlarının TOTAL toplamı (kuruş farkı analizi için)")]
+        public decimal? TotalPayTransForInvoice { get; set; }
     }
 
     public class PendingInvoiceSearchViewModel
@@ -478,14 +499,17 @@ namespace Koala.Yedpa.Core.Models.ViewModels
         [SwaggerSchema(Description = "Müşteri adı ile arama")]
         public string? CustomerName { get; set; }
 
-        [SwaggerSchema(Description = "Vade tarihi başlangıç")]
+        [SwaggerSchema(Description = "Vade tarihi başlangıç (PTRNS.DATE_ üzerinden)")]
         public DateTime? DueDateStart { get; set; }
 
-        [SwaggerSchema(Description = "Vade tarihi bitiş")]
+        [SwaggerSchema(Description = "Vade tarihi bitiş (PTRNS.DATE_ üzerinden)")]
         public DateTime? DueDateEnd { get; set; }
 
         [SwaggerSchema(Description = "Fatura numarası ile arama")]
         public string? InvoiceNumber { get; set; }
+
+        [SwaggerSchema(Description = "Durum filtresi: 'open' (varsayılan, sadece açık), 'closed' (sadece kapalı/tahsil edilmiş), 'all' (tümü). Null veya boş = open.")]
+        public string? Status { get; set; }
     }
 
     public class ClCardStatementDetailedViewModel
@@ -540,6 +564,14 @@ namespace Koala.Yedpa.Core.Models.ViewModels
 
         [SwaggerSchema(Description = "Döviz türü")]
         public string ExpType { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Vade tarihi — fatura tipi hareketlerde dolu, diğerlerinde null.
+        /// PAYTRANS.DATE_ yerine şimdilik NULL döner (CLFLINE'da vade alanı yok).
+        /// Aging hesabı için DueDate null ise InvoiceDate kullanılabilir.
+        /// </summary>
+        [SwaggerSchema(Description = "Vade tarihi (fatura hareketi için; diğer hareket türlerinde null)")]
+        public DateTime? DueDate { get; set; }
 
         [SwaggerSchema(Description = "Fiş satırları")]
         public List<StatementDetailedLineViewModel> Lines { get; set; } = new();
@@ -609,6 +641,71 @@ namespace Koala.Yedpa.Core.Models.ViewModels
 
         [SwaggerSchema(Description = "Son ödeme tarihi")]
         public DateTime? LastPaymentDate { get; set; }
+    }
+
+    /// <summary>
+    /// CustomerListWithBalance endpoint'i için arama/filtreleme modeli.
+    /// Mevcut filtre: SPECODE2 (yeni dükkan numarası).
+    /// </summary>
+    public class CustomerListWithBalanceSearchViewModel
+    {
+        /// <summary>
+        /// Yeni dükkan numarası (Logo CLCARD.SPECODE2 alanı).
+        /// Boş geçilirse tüm dükkanlar (kullanıcı yetki alanı içindeki) döner.
+        /// </summary>
+        [SwaggerSchema(Description = "Yeni dükkan numarası (Logo CLCARD.SPECODE2). Boş geçilirse tüm dükkanlar döner.")]
+        public string? Specode2 { get; set; }
+    }
+
+    public class PaymentTypeViewModel
+    {
+        [SwaggerSchema(Description = "Ödeme tipi kodu")]
+        public string Code { get; set; } = string.Empty;
+
+        [SwaggerSchema(Description = "Ödeme tipi açıklaması")]
+        public string Description { get; set; } = string.Empty;
+    }
+
+    public class BankViewModel
+    {
+        [SwaggerSchema(Description = "Banka LogicalRef")]
+        public int LogicalRef { get; set; }
+
+        [SwaggerSchema(Description = "Banka kodu")]
+        public string Code { get; set; } = string.Empty;
+
+        [SwaggerSchema(Description = "Banka adı")]
+        public string Name { get; set; } = string.Empty;
+    }
+
+    public class BankAccountViewModel
+    {
+        [SwaggerSchema(Description = "Banka adı")]
+        public string BankName { get; set; } = string.Empty;
+
+        [SwaggerSchema(Description = "Şube adı")]
+        public string Branch { get; set; } = string.Empty;
+
+        [SwaggerSchema(Description = "Şube kodu")]
+        public string BranchCode { get; set; } = string.Empty;
+
+        [SwaggerSchema(Description = "Hesap kodu")]
+        public string AccountCode { get; set; } = string.Empty;
+
+        [SwaggerSchema(Description = "Hesap açıklaması")]
+        public string AccountDescription { get; set; } = string.Empty;
+    }
+
+    public class ServiceListViewModel
+    {
+        [SwaggerSchema(Description = "Hizmet LogicalRef")]
+        public int LogicalRef { get; set; }
+
+        [SwaggerSchema(Description = "Hizmet kodu")]
+        public string Code { get; set; } = string.Empty;
+
+        [SwaggerSchema(Description = "Hizmet adı")]
+        public string Definition { get; set; } = string.Empty;
     }
 
 }

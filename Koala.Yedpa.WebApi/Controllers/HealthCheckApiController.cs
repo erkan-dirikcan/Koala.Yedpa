@@ -84,4 +84,33 @@ public class HealthCheckApiController : ControllerBase
             osVersion = Environment.OSVersion.ToString()
         });
     }
+
+    /// <summary>
+    /// Token claim'lerini debug için listeler (sadece authenticated kullanıcı)
+    /// </summary>
+    [HttpGet("debug/claims")]
+    [Authorize]  // Herhangi bir policy gerektirmez, sadece authentication yeterli
+    public IActionResult DebugClaims()
+    {
+        var claims = User.Claims.Select(c => new
+        {
+            type = c.Type,
+            value = c.Value,
+            issuer = c.Issuer
+        }).ToList();
+
+        return Ok(new
+        {
+            isAuthenticated = User.Identity?.IsAuthenticated,
+            name = User.Identity?.Name,
+            authenticationType = User.Identity?.AuthenticationType,
+            claimsCount = claims.Count,
+            claims = claims,
+            // CurrentAccuant policy kontrolü
+            hasScopeClaim = claims.Any(c => c.type == "scope"),
+            scopeValues = claims.Where(c => c.type == "scope").Select(c => c.value).ToList(),
+            hasScpClaim = claims.Any(c => c.type == "scp"),
+            scpValues = claims.Where(c => c.type == "scp").Select(c => c.value).ToList(),
+        });
+    }
 }

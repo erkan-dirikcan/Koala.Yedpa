@@ -25,6 +25,13 @@
     margin-top: 0.25rem;
 }
 
+.kpi-item .kpi-sublabel {
+    font-size: 0.75rem;
+    color: #B5B5C3;
+    margin-top: 0.15rem;
+    font-weight: 500;
+}
+
 .kpi-primary { background: #E1F0FF; color: #3699FF; }
 .kpi-success { background: #C9F7F5; color: #1BC5BD; }
 .kpi-danger  { background: #FFE2E5; color: #F64E60; }
