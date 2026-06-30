@@ -99,6 +99,15 @@ namespace Koala.Yedpa.WebUI.Controllers
             return Json(await _service.GetSessionItemsAsync(sessionId));
         }
 
+        /// <summary>Aktarılacak satırları (önizleme) o anki bekleyenlere göre oluşturur/günceller — gün içi kullanım.</summary>
+        [HttpPost]
+        public async Task<IActionResult> PrepareItems([FromQuery] int sessionId)
+        {
+            if (sessionId <= 0)
+                return Json(ResponseDto<int>.FailData(400, "Geçersiz oturum ID", "sessionId", true));
+            return Json(await _service.SyncSessionItemsAsync(sessionId));
+        }
+
         /// <summary>Oturumun başarısız satırlarını arka planda yeniden aktarır.</summary>
         [HttpPost]
         public IActionResult RetryFailed([FromQuery] int sessionId)

@@ -34,13 +34,16 @@ namespace Koala.Yedpa.Service.Tests.BulkInvoice
             db.BulkInvoiceSessions.Add(session);
             await db.SaveChangesAsync();
 
+            // Aktarılacak satırlar önceden hazır (gün içi "Aktarılacak Verileri Oluştur" / Sync sonucu)
+            db.BulkInvoiceItems.AddRange(
+                new BulkInvoiceItem { SessionId = session.Id, OrficheRef = 10, Orflineref = 100, ClientCode = "A", ClientName = "CA", Amount = 10m, MonthName = "TEMMUZ", Status = BulkInvoiceItemStatus.Pending },
+                new BulkInvoiceItem { SessionId = session.Id, OrficheRef = 20, Orflineref = 200, ClientCode = "B", ClientName = "CB", Amount = 20m, MonthName = "TEMMUZ", Status = BulkInvoiceItemStatus.Pending });
+            await db.SaveChangesAsync();
+
             var bulk = new Mock<IBulkInvoiceService>();
-            bulk.Setup(b => b.GetPendingLinesAsync("TEMMUZ")).ReturnsAsync(
-                ResponseDto<List<PendingInvoiceLineDto>>.SuccessData(200, "ok", new List<PendingInvoiceLineDto>
-                {
-                    new() { OrficheRef = 10, Orflineref = 100, ClientCode = "A", ClientName = "CA", Amount = 10m, MonthName = "TEMMUZ" },
-                    new() { OrficheRef = 20, Orflineref = 200, ClientCode = "B", ClientName = "CB", Amount = 20m, MonthName = "TEMMUZ" }
-                }));
+            // RunTransferAsync önce Sync çağırır (burada item'lar zaten hazır → no-op success)
+            bulk.Setup(b => b.SyncSessionItemsAsync(It.IsAny<int>()))
+                .ReturnsAsync(ResponseDto<int>.SuccessData(200, "ok", 2));
             bulk.Setup(b => b.MarkLinesAsTransferredAsync(It.IsAny<IReadOnlyList<int>>()))
                 .ReturnsAsync(ResponseDto<int>.SuccessData(200, "ok", 1));
 

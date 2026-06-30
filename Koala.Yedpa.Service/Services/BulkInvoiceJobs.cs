@@ -49,35 +49,18 @@ namespace Koala.Yedpa.Service.Services
             session.Status = BulkInvoiceSessionStatus.Processing;
             await _db.SaveChangesAsync();
 
-            // 1) Bekleyenleri çek (o ayın tüm bekleyen AIDAT satırları)
-            var monthName = BulkInvoiceMonths.ToLogoName(session.Month);
-            var pending = await _bulk.GetPendingLinesAsync(monthName);
-            var lines = pending.Data ?? new List<PendingInvoiceLineDto>();
+            // 1+2) Aktarılacak satırları güncelle/oluştur — gün içi "Aktarılacak Verileri Oluştur"
+            // ile AYNI snapshot. Mevcut Pending'ler korunur/güncellenir, çift kayıt olmaz.
+            await _bulk.SyncSessionItemsAsync(sessionId);
 
-            // 2) Tümünü ÖNCE "gönderilmedi" yaz (kalıcılık)
-            foreach (var line in lines)
-            {
-                _db.BulkInvoiceItems.Add(new BulkInvoiceItem
-                {
-                    SessionId = session.Id,
-                    OrficheRef = line.OrficheRef,
-                    Orflineref = line.Orflineref,
-                    ClientCode = line.ClientCode,
-                    ClientName = line.ClientName,
-                    Amount = line.Amount,
-                    MonthName = line.MonthName,
-                    Status = BulkInvoiceItemStatus.Pending
-                });
-            }
-            await _db.SaveChangesAsync();
-
+            // Yalnızca "gönderilmedi" (Pending) satırları işle
             var items = await _db.BulkInvoiceItems
-                .Where(i => i.SessionId == session.Id)
+                .Where(i => i.SessionId == session.Id && i.Status == BulkInvoiceItemStatus.Pending)
                 .ToListAsync();
 
             // 3) İlk geçiş — her sonucu ANINDA kaydet
             foreach (var item in items)
-                await TryTransferItemAsync(item, session.InvoiceDate, lines);
+                await TryTransferItemAsync(item, session.InvoiceDate);
 
             // 4) Kuyruk sonrası retry — token/geçici hatalılar (CanRetry), 3 tura kadar
             for (var round = 0; round < MaxRetryRounds; round++)
@@ -89,7 +72,7 @@ namespace Koala.Yedpa.Service.Services
 
                 await Task.Delay(5000);
                 foreach (var item in retryables)
-                    await TryTransferItemAsync(item, session.InvoiceDate, lines);
+                    await TryTransferItemAsync(item, session.InvoiceDate);
             }
 
             // 3 denemeden sonra hâlâ başarısız → artık denenmez
@@ -130,35 +113,7 @@ namespace Koala.Yedpa.Service.Services
             if (failed.Count == 0) { _logger.LogInformation("Yeniden aktarım: başarısız satır yok {Id}", sessionId); return; }
 
             foreach (var item in failed)
-            {
-                var line = new PendingInvoiceLineDto
-                {
-                    OrficheRef = item.OrficheRef,
-                    Orflineref = item.Orflineref,
-                    ClientCode = item.ClientCode,
-                    ClientName = item.ClientName,
-                    Amount = item.Amount,
-                    MonthName = item.MonthName
-                };
-
-                var r = await _transfer.TransferLineAsync(line, session.InvoiceDate);
-                item.RetryCount++;
-                if (r.Success)
-                {
-                    item.Status = BulkInvoiceItemStatus.Transferred;
-                    item.LogoInvoiceRef = r.LogoInvoiceRef;
-                    item.Note = null;
-                    item.RestError = null;
-                    item.CanRetry = false;
-                }
-                else
-                {
-                    item.Note = r.Note;
-                    item.RestError = r.RestError;
-                    item.CanRetry = r.IsTransient;
-                }
-                await _db.SaveChangesAsync(); // per-item kalıcılık
-            }
+                await TryTransferItemAsync(item, session.InvoiceDate);
 
             var newlyTransferred = failed
                 .Where(i => i.Status == BulkInvoiceItemStatus.Transferred)
@@ -169,10 +124,19 @@ namespace Koala.Yedpa.Service.Services
             await _email.SendReportMailAsync(sessionId);
         }
 
-        /// <summary>Tek item'ı dener; sonucu o satıra yazar ve ANINDA persist eder.</summary>
-        private async Task TryTransferItemAsync(BulkInvoiceItem item, DateTime invoiceDate, List<PendingInvoiceLineDto> lines)
+        /// <summary>Tek item'ı dener (satır verisini item'dan kurar); sonucu yazar ve ANINDA persist eder.</summary>
+        private async Task TryTransferItemAsync(BulkInvoiceItem item, DateTime invoiceDate)
         {
-            var line = lines.First(l => l.Orflineref == item.Orflineref);
+            var line = new PendingInvoiceLineDto
+            {
+                OrficheRef = item.OrficheRef,
+                Orflineref = item.Orflineref,
+                ClientCode = item.ClientCode,
+                ClientName = item.ClientName,
+                Amount = item.Amount,
+                MonthName = item.MonthName
+            };
+
             var r = await _transfer.TransferLineAsync(line, invoiceDate);
             item.RetryCount++;
 

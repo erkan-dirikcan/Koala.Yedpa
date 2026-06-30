@@ -50,6 +50,9 @@
                     </h3>
                 </div>
                 <div class="card-toolbar">
+                    <button type="button" class="btn btn-sm btn-light-success me-2" id="btnPrepareItems">
+                        <i class="fas fa-sync-alt"></i> Aktarılacak Verileri Oluştur / Güncelle
+                    </button>
                     <button type="button" class="btn btn-sm btn-light-danger" id="btnRetryFailed">
                         <i class="fas fa-redo"></i> Başarısızları Yeniden Aktar
                     </button>
@@ -194,6 +197,23 @@
                         }
                     },
                     error: function () { toastr.error('Yeniden aktarım başlatılamadı'); }
+                });
+            });
+
+            $('#btnPrepareItems').on('click', function () {
+                if (!selectedSessionId) { toastr.info('Önce bir oturum seçin'); return; }
+                $.ajax({
+                    url: '/BulkInvoice/PrepareItems?sessionId=' + selectedSessionId, method: 'POST',
+                    success: function (res) {
+                        if (res && res.isSuccess) {
+                            toastr.success((res.data || 0) + ' satır aktarıma hazır.');
+                            loadItems(selectedSessionId);
+                            loadSessions();
+                        } else {
+                            toastr.error((res && res.message) || 'Aktarılacak veriler oluşturulamadı');
+                        }
+                    },
+                    error: function () { toastr.error('Aktarılacak veriler oluşturulamadı'); }
                 });
             });
 

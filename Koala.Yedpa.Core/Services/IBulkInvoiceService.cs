@@ -55,5 +55,13 @@ namespace Koala.Yedpa.Core.Services
 
         /// <summary>Yönetim sayfası: bir oturumun aktarım satırlarını getirir.</summary>
         Task<ResponseDto<List<BulkInvoiceItemDto>>> GetSessionItemsAsync(int sessionId);
+
+        /// <summary>
+        /// Oturumun "aktarılacak" satırlarını (BulkInvoiceItem, Pending) o anki bekleyen AIDAT
+        /// satırlarına göre oluşturur/senkronize eder: yenileri ekler, mevcut Pending'leri günceller,
+        /// artık beklemeyen Pending'leri kaldırır. Transferred/Failed satırlara DOKUNMAZ.
+        /// </summary>
+        /// <returns>Aktarılacak (Pending) satır sayısı</returns>
+        Task<ResponseDto<int>> SyncSessionItemsAsync(int sessionId);
     }
 }

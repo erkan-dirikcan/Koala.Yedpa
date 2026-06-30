@@ -267,6 +267,75 @@ namespace Koala.Yedpa.Service.Services
             }
         }
 
+        public async Task<ResponseDto<int>> SyncSessionItemsAsync(int sessionId)
+        {
+            try
+            {
+                var session = await _context.BulkInvoiceSessions.FindAsync(sessionId);
+                if (session == null)
+                    return ResponseDto<int>.FailData(404, "Oturum bulunamadı", $"Session {sessionId}", true);
+
+                var monthName = BulkInvoiceMonths.ToLogoName(session.Month);
+                var pending = await GetPendingLinesAsync(monthName);
+                if (!pending.IsSuccess)
+                    return ResponseDto<int>.FailData(500, "Bekleyen satırlar alınamadı", pending.Message, true);
+
+                var lines = pending.Data ?? new List<PendingInvoiceLineDto>();
+                var pendingRefs = lines.Select(l => l.Orflineref).ToHashSet();
+
+                var existing = await _context.BulkInvoiceItems
+                    .Where(i => i.SessionId == sessionId)
+                    .ToListAsync();
+                var existingByRef = existing.ToDictionary(i => i.Orflineref);
+
+                // Yeni bekleyenleri ekle / mevcut Pending'leri güncelle
+                foreach (var line in lines)
+                {
+                    if (existingByRef.TryGetValue(line.Orflineref, out var ex))
+                    {
+                        if (ex.Status == BulkInvoiceItemStatus.Pending)
+                        {
+                            ex.OrficheRef = line.OrficheRef;
+                            ex.ClientCode = line.ClientCode;
+                            ex.ClientName = line.ClientName;
+                            ex.Amount = line.Amount;
+                            ex.MonthName = line.MonthName;
+                        }
+                    }
+                    else
+                    {
+                        _context.BulkInvoiceItems.Add(new BulkInvoiceItem
+                        {
+                            SessionId = sessionId,
+                            OrficheRef = line.OrficheRef,
+                            Orflineref = line.Orflineref,
+                            ClientCode = line.ClientCode,
+                            ClientName = line.ClientName,
+                            Amount = line.Amount,
+                            MonthName = line.MonthName,
+                            Status = BulkInvoiceItemStatus.Pending
+                        });
+                    }
+                }
+
+                // Artık beklemeyen (örn. elle faturalanmış/iptal) Pending satırları kaldır
+                foreach (var ex in existing.Where(i => i.Status == BulkInvoiceItemStatus.Pending && !pendingRefs.Contains(i.Orflineref)))
+                    _context.BulkInvoiceItems.Remove(ex);
+
+                await _context.SaveChangesAsync();
+
+                var count = await _context.BulkInvoiceItems
+                    .CountAsync(i => i.SessionId == sessionId && i.Status == BulkInvoiceItemStatus.Pending);
+
+                return ResponseDto<int>.SuccessData(200, $"{count} satır aktarıma hazır", count);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Aktarılacak satır senkronizasyon hatası. Session {Id}", sessionId);
+                return ResponseDto<int>.FailData(500, "Aktarılacak satırlar oluşturulamadı", ex.Message, true);
+            }
+        }
+
         /// <summary>Türkiye saat dilimini çözer (Windows "Turkey Standard Time" / Linux "Europe/Istanbul"); bulunamazsa sabit +3.</summary>
         private static TimeZoneInfo ResolveTurkeyTimeZone()
         {
