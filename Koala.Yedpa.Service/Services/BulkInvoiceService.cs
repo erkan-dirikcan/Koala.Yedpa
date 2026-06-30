@@ -202,6 +202,17 @@ namespace Koala.Yedpa.Service.Services
             return ResponseDto<int>.SuccessData(200, $"{affected} satır transferli işaretlendi", affected);
         }
 
+        /// <summary>Türkiye saat dilimini çözer (Windows "Turkey Standard Time" / Linux "Europe/Istanbul"); bulunamazsa sabit +3.</summary>
+        private static TimeZoneInfo ResolveTurkeyTimeZone()
+        {
+            foreach (var id in new[] { "Turkey Standard Time", "Europe/Istanbul" })
+            {
+                try { return TimeZoneInfo.FindSystemTimeZoneById(id); }
+                catch { /* sıradaki id'yi dene */ }
+            }
+            return TimeZoneInfo.CreateCustomTimeZone("TR", TimeSpan.FromHours(3), "Turkey", "Turkey");
+        }
+
         public async Task<ResponseDto<int>> CreateSessionAsync(CreateBulkInvoiceSessionDto dto, string username)
         {
             try
@@ -230,10 +241,14 @@ namespace Koala.Yedpa.Service.Services
                 await _context.SaveChangesAsync();
 
                 // Hangfire ile 2 job zamanla: T-1 gün 08:00 bilgi maili, T günü 00:01 aktarım.
-                var infoAt = session.InvoiceDate.Date.AddDays(-1).AddHours(8);
-                var transferAt = session.InvoiceDate.Date.AddMinutes(1);
-                session.InfoJobId = BackgroundJob.Schedule<BulkInvoiceJobs>(j => j.SendInfoMailAsync(session.Id), infoAt);
-                session.TransferJobId = BackgroundJob.Schedule<BulkInvoiceJobs>(j => j.RunTransferAsync(session.Id), transferAt);
+                // Saatleri Türkiye saatine sabitle (sunucu UTC olsa bile job doğru anda tetiklensin).
+                var infoAt = session.InvoiceDate.Date.AddDays(-1).AddHours(8);  // T-1 08:00
+                var transferAt = session.InvoiceDate.Date.AddMinutes(1);        // T 00:01
+                var tz = ResolveTurkeyTimeZone();
+                var infoOffset = new DateTimeOffset(DateTime.SpecifyKind(infoAt, DateTimeKind.Unspecified), tz.GetUtcOffset(infoAt));
+                var transferOffset = new DateTimeOffset(DateTime.SpecifyKind(transferAt, DateTimeKind.Unspecified), tz.GetUtcOffset(transferAt));
+                session.InfoJobId = BackgroundJob.Schedule<BulkInvoiceJobs>(j => j.SendInfoMailAsync(session.Id), infoOffset);
+                session.TransferJobId = BackgroundJob.Schedule<BulkInvoiceJobs>(j => j.RunTransferAsync(session.Id), transferOffset);
                 await _context.SaveChangesAsync();
 
                 _logger.LogInformation("Oturum oluşturuldu. Session ID: {SessionId}, Bilgi: {InfoAt}, Aktarım: {TransferAt}",
