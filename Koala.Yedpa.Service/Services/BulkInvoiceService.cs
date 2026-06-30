@@ -5,6 +5,7 @@ using Koala.Yedpa.Core.Models;
 using Koala.Yedpa.Core.Providers;
 using Koala.Yedpa.Core.Services;
 using Koala.Yedpa.Repositories;
+using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -210,15 +211,11 @@ namespace Koala.Yedpa.Service.Services
                     return ResponseDto<int>.FailData(400, "DTO boş olamaz", "Geçersiz istek", true);
                 }
 
-                if (dto.SelectedLines == null || !dto.SelectedLines.Any())
-                {
-                    return ResponseDto<int>.FailData(400, "Seçili satır yok", "En az bir satır seçmelisiniz", true);
-                }
+                _logger.LogInformation("Toplu fatura oturumu oluşturuluyor. Kullanıcı: {Username}, Tarih: {Date}",
+                    username, dto.InvoiceDate.ToShortDateString());
 
-                _logger.LogInformation("Toplu fatura oturumu oluşturuluyor. Kullanıcı: {Username}, Satır sayısı: {Count}",
-                    username, dto.SelectedLines.Count);
-
-                // Session oluştur
+                // Session oluştur. Aktarılacak satırlar AKTARIM ANINDA (o ayın tüm bekleyen AIDAT
+                // satırları) çekilir — bu nedenle burada item oluşturulmaz, job oluşturur.
                 var session = new BulkInvoiceSession
                 {
                     InvoiceDate = dto.InvoiceDate,
@@ -232,30 +229,19 @@ namespace Koala.Yedpa.Service.Services
                 await _context.BulkInvoiceSessions.AddAsync(session);
                 await _context.SaveChangesAsync();
 
-                // Items oluştur
-                foreach (var selectedLine in dto.SelectedLines)
-                {
-                    var item = new BulkInvoiceItem
-                    {
-                        SessionId = session.Id,
-                        OrficheRef = selectedLine.OrficheRef,
-                        Orflineref = selectedLine.Orflineref,
-                        ClientCode = selectedLine.ClientCode,
-                        ClientName = selectedLine.ClientName,
-                        Amount = selectedLine.Amount,
-                        MonthName = selectedLine.MonthName,
-                        Status = BulkInvoiceItemStatus.Pending
-                    };
-
-                    await _context.BulkInvoiceItems.AddAsync(item);
-                }
-
+                // Hangfire ile 2 job zamanla: T-1 gün 08:00 bilgi maili, T günü 00:01 aktarım.
+                var infoAt = session.InvoiceDate.Date.AddDays(-1).AddHours(8);
+                var transferAt = session.InvoiceDate.Date.AddMinutes(1);
+                session.InfoJobId = BackgroundJob.Schedule<BulkInvoiceJobs>(j => j.SendInfoMailAsync(session.Id), infoAt);
+                session.TransferJobId = BackgroundJob.Schedule<BulkInvoiceJobs>(j => j.RunTransferAsync(session.Id), transferAt);
                 await _context.SaveChangesAsync();
 
-                _logger.LogInformation("Toplu fatura oturumu başarıyla oluşturuldu. Session ID: {SessionId}, Item sayısı: {ItemCount}",
-                    session.Id, dto.SelectedLines.Count);
+                _logger.LogInformation("Oturum oluşturuldu. Session ID: {SessionId}, Bilgi: {InfoAt}, Aktarım: {TransferAt}",
+                    session.Id, infoAt, transferAt);
 
-                return ResponseDto<int>.SuccessData(200, $"Oturum başarıyla oluşturuldu. {dto.SelectedLines.Count} satır kuyruğa alındı.", session.Id);
+                return ResponseDto<int>.SuccessData(200,
+                    $"Oturum oluşturuldu. Bilgi maili {infoAt:dd.MM.yyyy HH:mm}, aktarım {transferAt:dd.MM.yyyy HH:mm} olarak zamanlandı.",
+                    session.Id);
             }
             catch (Exception ex)
             {
