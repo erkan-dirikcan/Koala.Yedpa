@@ -16,10 +16,16 @@ namespace Koala.Yedpa.Core.Services
         Task<ResponseDto<AlertCheckResultDto>> CheckAlertAsync();
 
         /// <summary>
-        /// Faturalandırılmamış ORFLINE satırlarını getirir
+        /// Faturalandırılmamış ORFLINE satırlarını getirir (parametresiz = gelecek ay)
         /// </summary>
         /// <returns>Faturalandırılmamış satırlar listesi</returns>
         Task<ResponseDto<List<PendingInvoiceLineDto>>> GetPendingLinesAsync();
+
+        /// <summary>
+        /// Verilen Logo ay adı (LINEEXP, örn. "TEMMUZ") için faturalandırılmamış satırları getirir
+        /// </summary>
+        /// <param name="logoMonthName">Büyük harf ASCII ay adı (BulkInvoiceMonths.ToLogoName)</param>
+        Task<ResponseDto<List<PendingInvoiceLineDto>>> GetPendingLinesAsync(string logoMonthName);
 
         /// <summary>
         /// Yeni bir toplu fatura oturumu oluşturur

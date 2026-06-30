@@ -1,5 +1,6 @@
 using Koala.Yedpa.Core.Dtos;
 using Koala.Yedpa.Core.Dtos.BulkInvoice;
+using Koala.Yedpa.Core.Helpers;
 using Koala.Yedpa.Core.Models;
 using Koala.Yedpa.Core.Providers;
 using Koala.Yedpa.Core.Services;
@@ -89,7 +90,10 @@ namespace Koala.Yedpa.Service.Services
             }
         }
 
-        public async Task<ResponseDto<List<PendingInvoiceLineDto>>> GetPendingLinesAsync()
+        public Task<ResponseDto<List<PendingInvoiceLineDto>>> GetPendingLinesAsync()
+            => GetPendingLinesAsync(BulkInvoiceMonths.ToLogoName(DateTime.Now.AddMonths(1).Month));
+
+        public async Task<ResponseDto<List<PendingInvoiceLineDto>>> GetPendingLinesAsync(string logoMonthName)
         {
             try
             {
@@ -103,27 +107,33 @@ namespace Koala.Yedpa.Service.Services
                 var firm = logoSettingResult.Data.Firm;
                 var period = logoSettingResult.Data.Period;
 
-                // Şu anki ayı al
-                var currentMonth = DateTime.Now.Month;
+                // Ay eşleşmesi LINEEXP (ay adı) ile yapılır; çağıran tarafın verdiği ay kullanılır.
+                // Parametresiz overload gelecek ayı verir (modülün amacı: bir sonraki ayı faturalamak).
+                var hedefAyAdi = logoMonthName;
 
-                // Design spec'teki SQL query'sini kullan
+                // Cari kod/ad CLCARD'dan join ile gelir (ORF.CLIENTREF -> LG_{firm}_CLCARD).
+                // ORFICHE'de CODE/CLIENTREFNAME kolonları YOKTUR (canlı şemada doğrulandı) — kullanılmaz.
+                // Tutar: ORL.AMOUNT = miktar (1), ORL.TOTAL = satır tutarı (KDV dahil) → Amount = ORL.TOTAL.
+                // Ay eşleşmesi: ORL.LINENO_ takvim ayıyla GÜVENİLİR DEĞİL (kiracı değişiminde kayıyor);
+                // gerçek ay ORL.LINEEXP'tedir (canlı veride doğrulandı) → LINEEXP ile filtreleniyor.
                 var query = $@"
                     SELECT
                         ORF.LOGICALREF AS OrficheRef,
                         ORL.LOGICALREF AS Orflineref,
-                        ORF.CODE AS ClientCode,
-                        ORF.CLIENTREFNAME AS ClientName,
-                        ORL.AMOUNT AS Amount,
+                        CLC.CODE AS ClientCode,
+                        CLC.DEFINITION_ AS ClientName,
+                        ORL.TOTAL AS Amount,
                         ORL.LINEEXP AS MonthName,
                         ORL.CLOSED AS ClosedStatus,
                         ORL.LINENO_ AS LineNo
                     FROM LG_{firm}_{period}_ORFICHE ORF
                     INNER JOIN LG_{firm}_{period}_ORFLINE AS ORL ON ORL.ORDFICHEREF=ORF.LOGICALREF
+                    LEFT JOIN LG_{firm}_CLCARD CLC ON ORF.CLIENTREF=CLC.LOGICALREF
                     WHERE ORF.DOCODE='AIDAT'
                       AND ORL.TRGFLAG=0
-                      AND ORL.LINENO_ = {currentMonth}
+                      AND ORL.LINEEXP = '{hedefAyAdi}'
                       AND ORF.CANCELLED=0
-                    ORDER BY ORF.CODE, ORL.LOGICALREF";
+                    ORDER BY CLC.CODE, ORL.LOGICALREF";
 
                 // Logo SQL servisi ile sorgu çalıştır
                 var result = _sqlProvider.SqlReader(query);
