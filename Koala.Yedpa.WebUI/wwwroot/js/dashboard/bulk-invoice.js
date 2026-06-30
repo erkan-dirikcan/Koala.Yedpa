@@ -6,7 +6,7 @@
     // --- Alert Kontrolü ---
     function checkBulkInvoiceAlert() {
         $.ajax({
-            url: '/api/BulkInvoice/check-alert',
+            url: '/BulkInvoice/CheckAlert',
             method: 'GET',
             success: function (response) {
                 if (response.isSuccess && response.data && response.data.showAlert) {
@@ -28,7 +28,7 @@
     // --- Pending Lines Yükleme ---
     function loadPendingLines() {
         $.ajax({
-            url: '/api/BulkInvoice/pending-lines',
+            url: '/BulkInvoice/GetPendingLines',
             method: 'GET',
             success: function (response) {
                 if (response.isSuccess) {
@@ -145,10 +145,10 @@
 
         $('#selectedTotal').text(total.toFixed(2) + ' ₺');
 
-        // Faturalandır butonu durumunu güncelle
-        const hasSelection = selectedLineIds.size > 0;
+        // Faturalandır butonu durumunu güncelle — sadece tarih yeterli.
+        // (Aktarım o ayın TÜM bekleyen AIDAT satırlarını işler; tablo önizleme amaçlıdır.)
         const hasDate = $('#invoiceDate').val().trim() !== '';
-        $('#btnCreateInvoices').prop('disabled', !(hasSelection && hasDate));
+        $('#btnCreateInvoices').prop('disabled', !hasDate);
     }
 
     // --- Datepicker Başlatma ---
@@ -172,11 +172,6 @@
             return;
         }
 
-        if (selectedLineIds.size === 0) {
-            toastr.error('Lütfen en az bir satır seçin');
-            return;
-        }
-
         // Tarih formatını kontrol et
         const dateParts = invoiceDate.split('.');
         if (dateParts.length !== 3) {
@@ -186,38 +181,23 @@
 
         const formattedDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`; // yyyy-MM-dd
 
-        // Seçili satırları hazırla
-        const selectedLines = pendingLinesData.filter(function (line) {
-            return selectedLineIds.has(line.orflineref);
-        });
-
+        // Yeni akış: yalnızca fatura tarihi gönderilir; aktarım job'ı o ayın
+        // tüm bekleyen AIDAT satırlarını çalışma anında çeker.
         const requestData = {
-            invoiceDate: formattedDate,
-            selectedLines: selectedLines.map(function (line) {
-                return {
-                    orficheRef: line.orficheRef,
-                    orflineref: line.orflineref,
-                    clientCode: line.clientCode,
-                    clientName: line.clientName,
-                    amount: line.amount,
-                    monthName: line.monthName,
-                    closedStatus: line.closedStatus,
-                    lineNo: line.lineNo
-                };
-            })
+            invoiceDate: formattedDate
         };
 
         console.log('Creating bulk invoice session:', requestData);
 
         // AJAX call
         $.ajax({
-            url: '/api/BulkInvoice/create-session',
+            url: '/BulkInvoice/CreateSession',
             method: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(requestData),
             success: function (response) {
                 if (response.isSuccess) {
-                    toastr.success('Faturalandırma işlemi başarıyla başlatıldı! Tamamlandığında e-posta ile bilgilendirileceksiniz.');
+                    toastr.success(response.message || 'Faturalandırma zamanlandı! Seçilen tarihte otomatik çalışacak ve e-posta ile bilgilendirileceksiniz.', '', { timeOut: 8000 });
                     $('#bulkInvoiceModal').modal('hide');
                     $('#bulkInvoiceAlert').addClass('d-none');
 
