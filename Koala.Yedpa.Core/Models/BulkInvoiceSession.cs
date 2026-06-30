@@ -38,6 +38,14 @@ namespace Koala.Yedpa.Core.Models
         [Column(TypeName = "datetime2")]
         public DateTime? CompletedAt { get; set; }
 
+        /// <summary>Hangfire bilgi-maili job id (T-1 08:00). İptal/güncelleme için saklanır.</summary>
+        [StringLength(100)]
+        public string? InfoJobId { get; set; }
+
+        /// <summary>Hangfire aktarım job id (T 00:01).</summary>
+        [StringLength(100)]
+        public string? TransferJobId { get; set; }
+
         public virtual ICollection<BulkInvoiceItem> Items { get; set; } = new HashSet<BulkInvoiceItem>();
     }
 }

@@ -44,6 +44,20 @@ namespace Koala.Yedpa.Core.Models
         [StringLength(1000)]
         public string? ErrorMessage { get; set; }
 
+        /// <summary>Kaç kez aktarım denendi.</summary>
+        public int RetryCount { get; set; } = 0;
+
+        /// <summary>"Tekrar dene" — token/geçici hatada true; kuyruk sonrası yeniden denenir.</summary>
+        public bool CanRetry { get; set; } = false;
+
+        /// <summary>Neden aktarılmadığına dair iş açıklaması.</summary>
+        [StringLength(500)]
+        public string? Note { get; set; }
+
+        /// <summary>REST service'ten dönen ham hata.</summary>
+        [StringLength(2000)]
+        public string? RestError { get; set; }
+
         [ForeignKey("SessionId")]
         public virtual BulkInvoiceSession Session { get; set; }
     }
