@@ -176,6 +176,31 @@ namespace Koala.Yedpa.Service.Services
             }
         }
 
+        public async Task<ResponseDto<int>> MarkLinesAsTransferredAsync(IReadOnlyList<int> orflinerefs)
+        {
+            if (orflinerefs == null || orflinerefs.Count == 0)
+                return ResponseDto<int>.SuccessData(200, "Güncellenecek satır yok", 0);
+
+            var logo = await _settingsService.GetLogoSettingsAsync();
+            if (!logo.IsSuccess || logo.Data == null)
+                return ResponseDto<int>.FailData(500, "Logo ayarları alınamadı", "Logo ayarları bulunamadı", true);
+
+            // orflinerefs int listesi → IN(...) doğrudan güvenli (SQL injection riski yok).
+            var inClause = string.Join(",", orflinerefs);
+            var sql = $"UPDATE LG_{logo.Data.Firm}_{logo.Data.Period}_ORFLINE SET TRGFLAG=1 WHERE LOGICALREF IN ({inClause})";
+
+            var res = _sqlProvider.WriteToSql(sql);
+            if (!res.IsSuccess)
+            {
+                _logger.LogError("TRGFLAG güncelleme hatası: {Message}", res.Message);
+                return ResponseDto<int>.FailData(500, "TRGFLAG güncellenemedi", res.Message, true);
+            }
+
+            int.TryParse(res.Data, out var affected);
+            _logger.LogInformation("{Count} sipariş satırı TRGFLAG=1 yapıldı", affected);
+            return ResponseDto<int>.SuccessData(200, $"{affected} satır transferli işaretlendi", affected);
+        }
+
         public async Task<ResponseDto<int>> CreateSessionAsync(CreateBulkInvoiceSessionDto dto, string username)
         {
             try

@@ -41,5 +41,13 @@ namespace Koala.Yedpa.Core.Services
         /// <param name="sessionId">Oturum ID</param>
         /// <returns>Oturum detayları</returns>
         Task<ResponseDto<BulkInvoiceSessionDto>> GetSessionStatusAsync(int sessionId);
+
+        /// <summary>
+        /// Başarıyla faturalanan sipariş satırlarını Logo'da TRGFLAG=1 (faturalandı) yapar.
+        /// Logo, REST ile bağımsız fatura kesince TRGFLAG'ı otomatik yapmaz (doğrulandı) — bu adım zorunlu.
+        /// </summary>
+        /// <param name="orflinerefs">Faturalanmış ORFLINE LOGICALREF listesi</param>
+        /// <returns>Güncellenen satır sayısı</returns>
+        Task<ResponseDto<int>> MarkLinesAsTransferredAsync(IReadOnlyList<int> orflinerefs);
     }
 }
