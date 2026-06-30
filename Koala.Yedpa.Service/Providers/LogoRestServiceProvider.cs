@@ -1,4 +1,5 @@
 using Koala.Yedpa.Core.Dtos;
+using Koala.Yedpa.Core.Helpers;
 using Koala.Yedpa.Core.Models.LogoJsonModels;
 using Koala.Yedpa.Core.Providers;
 using Koala.Yedpa.Core.Services;
@@ -181,7 +182,7 @@ public class LogoRestServiceProvider : ILogoRestServiceProvider
         });
     }
 
-    private async Task<ResponseDto<string>> GetAccessTokenAsync()
+    private async Task<ResponseDto<string>> RequestTokenOnceAsync()
     {
         try
         {
@@ -282,6 +283,30 @@ public class LogoRestServiceProvider : ILogoRestServiceProvider
             _logger.LogError(ex, "GetAccessTokenAsync genel hata: {Message}", ex.Message);
             return ResponseDto<string>.FailData(500, "Token hatası", ex.Message, true);
         }
+    }
+
+    /// <summary>
+    /// Token alımı: LogoRestService token talebine bazen geçici "kullanıcı bulunamadı" benzeri
+    /// hatalarla dönebiliyor. Birkaç saniye bekleyip 3 kez denenir.
+    /// </summary>
+    private Task<ResponseDto<string>> GetAccessTokenAsync()
+        => RetryTokenAsync(RequestTokenOnceAsync, maxAttempts: 3, delay: () => Task.Delay(3000));
+
+    /// <summary>
+    /// request başarılı olana (veya maxAttempts dolana) kadar çağırır; her başarısızlıkta delay() bekler.
+    /// Saf, test edilebilir retry mantığı (delay enjekte edilebilir).
+    /// </summary>
+    public static async Task<ResponseDto<string>> RetryTokenAsync(
+        Func<Task<ResponseDto<string>>> request, int maxAttempts, Func<Task> delay)
+    {
+        ResponseDto<string> last = ResponseDto<string>.FailData(500, "Token alınamadı", "deneme yapılmadı", true);
+        for (var attempt = 1; attempt <= maxAttempts; attempt++)
+        {
+            last = await request();
+            if (last.IsSuccess) return last;
+            if (attempt < maxAttempts) await delay();
+        }
+        return last;
     }
 
     private async Task<ResponseDto<bool>> RevokeTokenAsync(string accessToken)
@@ -457,6 +482,76 @@ public class LogoRestServiceProvider : ILogoRestServiceProvider
         }
     }
 
+    public async Task<ResponseDto<string>> PingAsync()
+    {
+        try
+        {
+            // Logo REST ayarlarını al
+            var settings = await _settingsService.GetLogoRestServiceSettingsAsync();
+            if (!settings.IsSuccess || settings.Data == null)
+            {
+                return ResponseDto<string>.FailData(500, "Ayarlar alınamadı", "Logo REST ayarları bulunamadı", true);
+            }
+
+            // UriBuilder kullanarak güvenli URL oluştur - Ping endpoint'i
+            var serverUri = new Uri(settings.Data.Server);
+            var uriBuilder = new UriBuilder(serverUri)
+            {
+                Port = settings.Data.Port,
+                Path = "api/v1/ping"
+            };
+            var pingUrl = uriBuilder.ToString();
+
+            var client = _httpClientFactory.CreateClient();
+            // Token EKLEME - Ping endpoint'i authentication gerektirmez
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            _logger.LogInformation("Logo REST API ping atılıyor: {PingUrl}", pingUrl);
+
+            var response = await client.GetAsync(pingUrl);
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
+            {
+                _logger.LogInformation("Logo REST API ping başarılı: {Response}", responseContent);
+                return ResponseDto<string>.SuccessData(200, "Ping başarılı", responseContent);
+            }
+            else
+            {
+                var statusCode = (int)response.StatusCode;
+                _logger.LogWarning("Logo REST API ping başarısız. StatusCode: {StatusCode}, Response: {Response}", statusCode, responseContent);
+                return ResponseDto<string>.FailData(statusCode, "Ping başarısız", responseContent, true);
+            }
+        }
+        catch (HttpRequestException httpEx)
+        {
+            _logger.LogError(httpEx, "PingAsync HTTP hatası: {Message}", httpEx.Message);
+            return ResponseDto<string>.FailData(500, "Ping bağlantı hatası", httpEx.Message, true);
+        }
+        catch (WebException webEx)
+        {
+            var errorResponse = ((HttpWebResponse)webEx.Response);
+            string result = string.Empty;
+
+            if (errorResponse != null)
+            {
+                using (var stream = errorResponse.GetResponseStream())
+                using (var reader = new StreamReader(stream))
+                {
+                    result = reader.ReadToEnd();
+                }
+            }
+
+            _logger.LogError(webEx, "PingAsync WebException: {Message}, Response: {Response}", webEx.Message, result);
+            return ResponseDto<string>.FailData(500, "Ping web hatası", result, true);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "PingAsync genel hata: {Message}", ex.Message);
+            return ResponseDto<string>.FailData(500, "Ping hatası", ex.Message, true);
+        }
+    }
+
     public async Task<ResponseDto<string>> PostSalesOrderAsync(SalesOrderJsonViewModel salesOrder)
     {
         try
@@ -464,6 +559,10 @@ public class LogoRestServiceProvider : ILogoRestServiceProvider
             // SalesOrder'u JSON'a çevir
             var json = JsonConvert.SerializeObject(salesOrder, Formatting.Indented);
             _logger.LogInformation("SalesOrder gönderiliyor: {Json}", json);
+
+            // DataObjectParameter inject et
+            json = LogoJsonHelper.InjectDataObjectParameter(json);
+            _logger.LogDebug("DataObjectParameter ile enrich edilmiş JSON: {Json}", json);
 
             // salesOrders endpoint'ine gönder
             var response = await HttpPost("salesOrders", json);
