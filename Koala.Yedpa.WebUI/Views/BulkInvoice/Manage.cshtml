@@ -1,0 +1,204 @@
+@{
+    ViewData["Title"] = "Toplu Faturalandırma Yönetimi";
+    ViewData["ActivePage"] = "BulkInvoiceManage";
+}
+
+<div class="d-flex flex-column-fluid">
+    <div class="container-fluid">
+
+        <!-- Oturumlar -->
+        <div class="card card-custom mb-6">
+            <div class="card-header border-0 pt-6">
+                <div class="card-title">
+                    <h3 class="card-label">Toplu Faturalandırma Oturumları
+                        <span class="d-block text-muted pt-2 font-size-sm">Aktarım oturumları ve sonuçları</span>
+                    </h3>
+                </div>
+                <div class="card-toolbar">
+                    <button type="button" class="btn btn-sm btn-light-primary" id="btnRefreshSessions">
+                        <i class="fas fa-sync"></i> Yenile
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" id="sessionsTable" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Fatura Tarihi</th>
+                                <th>Durum</th>
+                                <th class="text-end">Toplam</th>
+                                <th class="text-end">Aktarılan</th>
+                                <th class="text-end">Başarısız</th>
+                                <th>Oluşturan</th>
+                                <th>Oluşturma</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Satırlar -->
+        <div class="card card-custom" id="itemsCard" style="display:none">
+            <div class="card-header border-0 pt-6">
+                <div class="card-title">
+                    <h3 class="card-label">Aktarım Satırları
+                        <span class="d-block text-muted pt-2 font-size-sm" id="itemsSubtitle"></span>
+                    </h3>
+                </div>
+                <div class="card-toolbar">
+                    <button type="button" class="btn btn-sm btn-light-danger" id="btnRetryFailed">
+                        <i class="fas fa-redo"></i> Başarısızları Yeniden Aktar
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" id="itemsTable" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Cari Kod</th>
+                                <th>Cari Ad</th>
+                                <th>Ay</th>
+                                <th class="text-end">Tutar</th>
+                                <th class="text-center">Durum</th>
+                                <th class="text-center">Deneme</th>
+                                <th>Fiş Ref</th>
+                                <th>Not</th>
+                                <th>REST Hata</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            var sessionsTable = null, itemsTable = null, selectedSessionId = null;
+
+            function fmtDate(s) {
+                if (!s) return '';
+                var d = new Date(s);
+                if (isNaN(d)) return s;
+                var p = function (n) { return ('0' + n).slice(-2); };
+                return p(d.getDate()) + '.' + p(d.getMonth() + 1) + '.' + d.getFullYear();
+            }
+            function fmtDateTime(s) {
+                if (!s) return '';
+                var d = new Date(s);
+                if (isNaN(d)) return s;
+                var p = function (n) { return ('0' + n).slice(-2); };
+                return p(d.getDate()) + '.' + p(d.getMonth() + 1) + '.' + d.getFullYear() + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+            }
+            function money(v) { return (parseFloat(v) || 0).toFixed(2) + ' ₺'; }
+
+            function sessionStatusBadge(s) {
+                switch (s) {
+                    case 0: return '<span class="badge badge-light-warning">Bekliyor</span>';
+                    case 1: return '<span class="badge badge-light-primary">İşleniyor</span>';
+                    case 2: return '<span class="badge badge-light-success">Tamamlandı</span>';
+                    case 3: return '<span class="badge badge-light-danger">Hatalı</span>';
+                    default: return s;
+                }
+            }
+            function itemStatusBadge(s) {
+                switch (s) {
+                    case 0: return '<span class="badge badge-light-warning">Gönderilmedi</span>';
+                    case 1: return '<span class="badge badge-light-success">Aktarıldı</span>';
+                    case 2: return '<span class="badge badge-light-danger">Başarısız</span>';
+                    default: return s;
+                }
+            }
+
+            function loadSessions() {
+                $.ajax({
+                    url: '/BulkInvoice/Sessions', method: 'GET',
+                    success: function (res) {
+                        var data = (res && res.isSuccess && res.data) ? res.data : [];
+                        if (sessionsTable) sessionsTable.destroy();
+                        sessionsTable = $('#sessionsTable').DataTable({
+                            data: data, pageLength: 10,
+                            order: [[0, 'desc']],
+                            language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/tr.json' },
+                            columns: [
+                                { data: 'id' },
+                                { data: 'invoiceDate', render: fmtDate },
+                                { data: 'status', render: sessionStatusBadge },
+                                { data: 'totalItems', className: 'text-end' },
+                                { data: 'completedItems', className: 'text-end' },
+                                { data: 'failedItems', className: 'text-end' },
+                                { data: 'createdBy' },
+                                { data: 'createdAt', render: fmtDateTime }
+                            ]
+                        });
+                    },
+                    error: function () { toastr.error('Oturumlar yüklenemedi'); }
+                });
+            }
+
+            function loadItems(sessionId) {
+                $.ajax({
+                    url: '/BulkInvoice/Items?sessionId=' + sessionId, method: 'GET',
+                    success: function (res) {
+                        var data = (res && res.isSuccess && res.data) ? res.data : [];
+                        if (itemsTable) itemsTable.destroy();
+                        itemsTable = $('#itemsTable').DataTable({
+                            data: data, pageLength: 25,
+                            language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/tr.json' },
+                            columns: [
+                                { data: 'clientCode' },
+                                { data: 'clientName' },
+                                { data: 'monthName' },
+                                { data: 'amount', className: 'text-end', render: money },
+                                { data: 'status', className: 'text-center', render: itemStatusBadge },
+                                { data: 'retryCount', className: 'text-center' },
+                                { data: 'logoInvoiceRef', render: function (v) { return v || ''; } },
+                                { data: 'note', render: function (v) { return v || ''; } },
+                                { data: 'restError', render: function (v) { return v ? $('<div>').text(v).html() : ''; } }
+                            ]
+                        });
+                        $('#itemsCard').show();
+                        $('#itemsSubtitle').text('Oturum #' + sessionId + ' — ' + data.length + ' satır');
+                    },
+                    error: function () { toastr.error('Satırlar yüklenemedi'); }
+                });
+            }
+
+            $(document).on('click', '#sessionsTable tbody tr', function () {
+                var row = sessionsTable.row(this).data();
+                if (!row) return;
+                selectedSessionId = row.id;
+                loadItems(selectedSessionId);
+                $('html, body').animate({ scrollTop: $('#itemsCard').offset().top - 80 }, 300);
+            });
+
+            $('#btnRetryFailed').on('click', function () {
+                if (!selectedSessionId) return;
+                if (!confirm('Bu oturumdaki başarısız satırlar yeniden aktarılacak. Onaylıyor musunuz?')) return;
+                $.ajax({
+                    url: '/BulkInvoice/RetryFailed?sessionId=' + selectedSessionId, method: 'POST',
+                    success: function (res) {
+                        if (res && res.isSuccess) {
+                            toastr.success('Yeniden aktarım başlatıldı. Tamamlanınca rapor maili gelecek.');
+                        } else {
+                            toastr.error((res && res.message) || 'Yeniden aktarım başlatılamadı');
+                        }
+                    },
+                    error: function () { toastr.error('Yeniden aktarım başlatılamadı'); }
+                });
+            });
+
+            $('#btnRefreshSessions').on('click', loadSessions);
+            $(document).ready(loadSessions);
+        })();
+    </script>
+}

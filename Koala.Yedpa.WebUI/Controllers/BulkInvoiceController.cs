@@ -1,6 +1,8 @@
 using Koala.Yedpa.Core.Dtos;
 using Koala.Yedpa.Core.Dtos.BulkInvoice;
 using Koala.Yedpa.Core.Services;
+using Koala.Yedpa.Service.Services;
+using Hangfire;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -75,6 +77,37 @@ namespace Koala.Yedpa.WebUI.Controllers
 
             var result = await _service.GetSessionStatusAsync(id);
             return Json(result);
+        }
+
+        /// <summary>
+        /// Toplu Faturalandırma Yönetimi sayfası — oturumlar + aktarım satırları + yeniden aktarım.
+        /// </summary>
+        [HttpGet]
+        public IActionResult Manage() => View();
+
+        /// <summary>Tüm oturumları (özet sayılarla) JSON döner.</summary>
+        [HttpGet]
+        public async Task<IActionResult> Sessions()
+            => Json(await _service.GetSessionsAsync());
+
+        /// <summary>Bir oturumun aktarım satırlarını JSON döner.</summary>
+        [HttpGet]
+        public async Task<IActionResult> Items([FromQuery] int sessionId)
+        {
+            if (sessionId <= 0)
+                return Json(ResponseDto<List<BulkInvoiceItemDto>>.FailData(400, "Geçersiz oturum ID", "sessionId", true));
+            return Json(await _service.GetSessionItemsAsync(sessionId));
+        }
+
+        /// <summary>Oturumun başarısız satırlarını arka planda yeniden aktarır.</summary>
+        [HttpPost]
+        public IActionResult RetryFailed([FromQuery] int sessionId)
+        {
+            if (sessionId <= 0)
+                return Json(ResponseDto<string>.FailData(400, "Geçersiz oturum ID", "sessionId", true));
+
+            BackgroundJob.Enqueue<BulkInvoiceJobs>(j => j.RetryFailedAsync(sessionId));
+            return Json(ResponseDto<string>.SuccessData(200, "Yeniden aktarım kuyruğa alındı", "queued"));
         }
     }
 }

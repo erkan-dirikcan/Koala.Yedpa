@@ -49,5 +49,11 @@ namespace Koala.Yedpa.Core.Services
         /// <param name="orflinerefs">Faturalanmış ORFLINE LOGICALREF listesi</param>
         /// <returns>Güncellenen satır sayısı</returns>
         Task<ResponseDto<int>> MarkLinesAsTransferredAsync(IReadOnlyList<int> orflinerefs);
+
+        /// <summary>Yönetim sayfası: tüm oturumları (özet sayılarla) getirir.</summary>
+        Task<ResponseDto<List<BulkInvoiceSessionDto>>> GetSessionsAsync();
+
+        /// <summary>Yönetim sayfası: bir oturumun aktarım satırlarını getirir.</summary>
+        Task<ResponseDto<List<BulkInvoiceItemDto>>> GetSessionItemsAsync(int sessionId);
     }
 }

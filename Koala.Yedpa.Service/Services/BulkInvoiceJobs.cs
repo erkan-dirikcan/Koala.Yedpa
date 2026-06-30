@@ -115,6 +115,60 @@ namespace Koala.Yedpa.Service.Services
             await _email.SendReportMailAsync(session.Id);
         }
 
+        /// <summary>
+        /// Yönetim sayfasından manuel tetiklenen yeniden aktarım: oturumun başarısız (Failed)
+        /// satırlarını tekrar dener (3-deneme limitini gözetmeden, manuel istek olduğundan).
+        /// </summary>
+        public async Task RetryFailedAsync(int sessionId)
+        {
+            var session = await _db.BulkInvoiceSessions.FindAsync(sessionId);
+            if (session == null) { _logger.LogWarning("Yeniden aktarım: session yok {Id}", sessionId); return; }
+
+            var failed = await _db.BulkInvoiceItems
+                .Where(i => i.SessionId == sessionId && i.Status == BulkInvoiceItemStatus.Failed)
+                .ToListAsync();
+            if (failed.Count == 0) { _logger.LogInformation("Yeniden aktarım: başarısız satır yok {Id}", sessionId); return; }
+
+            foreach (var item in failed)
+            {
+                var line = new PendingInvoiceLineDto
+                {
+                    OrficheRef = item.OrficheRef,
+                    Orflineref = item.Orflineref,
+                    ClientCode = item.ClientCode,
+                    ClientName = item.ClientName,
+                    Amount = item.Amount,
+                    MonthName = item.MonthName
+                };
+
+                var r = await _transfer.TransferLineAsync(line, session.InvoiceDate);
+                item.RetryCount++;
+                if (r.Success)
+                {
+                    item.Status = BulkInvoiceItemStatus.Transferred;
+                    item.LogoInvoiceRef = r.LogoInvoiceRef;
+                    item.Note = null;
+                    item.RestError = null;
+                    item.CanRetry = false;
+                }
+                else
+                {
+                    item.Note = r.Note;
+                    item.RestError = r.RestError;
+                    item.CanRetry = r.IsTransient;
+                }
+                await _db.SaveChangesAsync(); // per-item kalıcılık
+            }
+
+            var newlyTransferred = failed
+                .Where(i => i.Status == BulkInvoiceItemStatus.Transferred)
+                .Select(i => i.Orflineref)
+                .ToList();
+            await _bulk.MarkLinesAsTransferredAsync(newlyTransferred);
+
+            await _email.SendReportMailAsync(sessionId);
+        }
+
         /// <summary>Tek item'ı dener; sonucu o satıra yazar ve ANINDA persist eder.</summary>
         private async Task TryTransferItemAsync(BulkInvoiceItem item, DateTime invoiceDate, List<PendingInvoiceLineDto> lines)
         {

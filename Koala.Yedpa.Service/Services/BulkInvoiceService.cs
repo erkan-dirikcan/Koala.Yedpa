@@ -202,6 +202,71 @@ namespace Koala.Yedpa.Service.Services
             return ResponseDto<int>.SuccessData(200, $"{affected} satır transferli işaretlendi", affected);
         }
 
+        public async Task<ResponseDto<List<BulkInvoiceSessionDto>>> GetSessionsAsync()
+        {
+            try
+            {
+                var sessions = await _context.BulkInvoiceSessions
+                    .Include(s => s.Items)
+                    .OrderByDescending(s => s.Id)
+                    .ToListAsync();
+
+                var dtos = sessions.Select(s => new BulkInvoiceSessionDto
+                {
+                    Id = s.Id,
+                    InvoiceDate = s.InvoiceDate,
+                    Month = s.Month,
+                    Year = s.Year,
+                    Status = (int)s.Status,
+                    CreatedBy = s.CreatedBy,
+                    CreatedAt = s.CreatedAt,
+                    CompletedAt = s.CompletedAt,
+                    TotalItems = s.Items.Count,
+                    CompletedItems = s.Items.Count(i => i.Status == BulkInvoiceItemStatus.Transferred),
+                    FailedItems = s.Items.Count(i => i.Status == BulkInvoiceItemStatus.Failed)
+                }).ToList();
+
+                return ResponseDto<List<BulkInvoiceSessionDto>>.SuccessData(200, $"{dtos.Count} oturum", dtos);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Oturum listesi getirme hatası");
+                return ResponseDto<List<BulkInvoiceSessionDto>>.FailData(500, "Oturumlar getirilemedi", ex.Message, true);
+            }
+        }
+
+        public async Task<ResponseDto<List<BulkInvoiceItemDto>>> GetSessionItemsAsync(int sessionId)
+        {
+            try
+            {
+                var items = await _context.BulkInvoiceItems
+                    .Where(i => i.SessionId == sessionId)
+                    .OrderBy(i => i.ClientCode)
+                    .Select(i => new BulkInvoiceItemDto
+                    {
+                        Id = i.Id,
+                        ClientCode = i.ClientCode,
+                        ClientName = i.ClientName,
+                        Amount = i.Amount,
+                        MonthName = i.MonthName,
+                        Status = (int)i.Status,
+                        LogoInvoiceRef = i.LogoInvoiceRef,
+                        RetryCount = i.RetryCount,
+                        CanRetry = i.CanRetry,
+                        Note = i.Note,
+                        RestError = i.RestError
+                    })
+                    .ToListAsync();
+
+                return ResponseDto<List<BulkInvoiceItemDto>>.SuccessData(200, $"{items.Count} satır", items);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Oturum satırları getirme hatası. Session {Id}", sessionId);
+                return ResponseDto<List<BulkInvoiceItemDto>>.FailData(500, "Satırlar getirilemedi", ex.Message, true);
+            }
+        }
+
         /// <summary>Türkiye saat dilimini çözer (Windows "Turkey Standard Time" / Linux "Europe/Istanbul"); bulunamazsa sabit +3.</summary>
         private static TimeZoneInfo ResolveTurkeyTimeZone()
         {
