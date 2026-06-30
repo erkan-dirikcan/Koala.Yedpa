@@ -66,7 +66,12 @@ namespace Koala.Yedpa.Service.Extentions
             services.AddScoped<IBudgetRatioService, BudgetRatioService>();
             services.AddScoped<IBudgetOrderService, BudgetOrderService>();
             services.AddScoped<IBulkInvoiceService, BulkInvoiceService>();
+            services.AddScoped<IBulkInvoiceTransferService, BulkInvoiceTransferService>();
+            services.AddScoped<IBulkInvoiceExcelService, BulkInvoiceExcelService>();
+            services.AddScoped<IBulkInvoiceEmailService, BulkInvoiceEmailService>();
+            services.AddScoped<BulkInvoiceJobs>();
             services.AddScoped<ISalesInvoiceService, SalesInvoiceService>();
+            services.AddScoped<IKrediKartTahsilatService, KrediKartTahsilatService>();
             services.AddScoped<IApiLogoSqlDataService, ApiLogoSqlDataService>();
             services.AddScoped<IAppUserService, AppUserService>();
             services.AddScoped<IBackgroundServices, BackgroundServices>();

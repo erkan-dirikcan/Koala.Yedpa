@@ -98,8 +98,8 @@ namespace Koala.Yedpa.WebUI.Extentions
             //services.AddScoped<, >();
             //services.AddScoped<, >();
 
-            // Hangfire kaldırıldı, BackgroundService kullanılıyor
-            // services.AddHangfireServer();
+            // Hangfire server — Toplu Faturalandırma zamanlanmış job'larını (bilgi maili / aktarım) işler.
+            services.AddHangfireServer();
 
             // DuesStatistic Transfer BackgroundService ve Queue (Singleton)
             services.AddSingleton<DuesStatisticTransferQueue>();
