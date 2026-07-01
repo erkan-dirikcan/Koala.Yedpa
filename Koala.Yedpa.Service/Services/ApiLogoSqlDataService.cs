@@ -152,6 +152,12 @@ namespace Koala.Yedpa.Service.Services
                 conditions.Add($"CLC.INCHARGE2 LIKE '%{searchModel.Yetkili2AdSoyad.Replace("'", "''")}%'");
 
             // 1) Filtresiz toplam kayıt (RecordsTotal)
+            // Tarih filtreleri (büyüktür — strict >) — CreatedDate/ModifiedDate
+            if (searchModel.CreatedDateGreaterThan.HasValue)
+                conditions.Add($"CLC.CAPIBLOCK_CREADEDDATE > '{searchModel.CreatedDateGreaterThan.Value:yyyy-MM-dd}'");
+            if (searchModel.ModifiedDateGreaterThan.HasValue)
+                conditions.Add($"CLC.CAPIBLOCK_MODIFIEDDATE > '{searchModel.ModifiedDateGreaterThan.Value:yyyy-MM-dd}'");
+
             var whereClause = conditions.Any() ? " AND " + string.Join(" AND ", conditions) : "";
             var totalQuery = $@"
                                 SELECT COUNT(*)
@@ -518,7 +524,9 @@ namespace Koala.Yedpa.Service.Services
                         WHEN UPPER(CLP.DEFINITION_) LIKE '%KİRALIK DEPO%' THEN 'KİRALIK DEPO'
                         WHEN UPPER(CLP.DEFINITION_) LIKE '%BODRUM%' THEN 'BODRUM KAT'
                         ELSE NULL
-                    END, ''), '') AS KAT
+                    END, ''), '') AS KAT,
+                    CLC.CAPIBLOCK_CREADEDDATE AS CreatedDate,
+                    CLC.CAPIBLOCK_MODIFIEDDATE AS ModifiedDate
                 FROM LG_{LogoSetting.Firm}_CLCARD AS CLC
                 INNER JOIN LG_{LogoSetting.Firm}_CLCARD AS CLP ON CLP.LOGICALREF = CLC.PARENTCLREF
                 WHERE CLP.CODE LIKE '%.IS'
@@ -1120,19 +1128,42 @@ namespace Koala.Yedpa.Service.Services
                 var f = LogoSetting.Firm;
                 var p = LogoSetting.Period;
 
-                // SPECODE access check
+                // SPECODE access check + CreatedDate/ModifiedDate retrieval
                 var filter = GetCurrentUserSpecodeFilter();
+                DateTime? createdDate = null;
+                DateTime? modifiedDate = null;
+
                 if (filter.Mode != SpecodeFilterMode.None)
                 {
-                    var specodeCheckQuery = $"SELECT ISNULL(SPECODE,'') FROM LG_{f}_CLCARD WHERE CODE = '{safeCode}'";
+                    var specodeCheckQuery = $"SELECT ISNULL(SPECODE,''), CAPIBLOCK_CREADEDDATE, CAPIBLOCK_MODIFIEDDATE FROM LG_{f}_CLCARD WHERE CODE = '{safeCode}'";
                     var specodeCheckResult = _sqlProvider.SqlReader(specodeCheckQuery);
                     if (specodeCheckResult.IsSuccess && specodeCheckResult.Data.Rows.Count > 0)
                     {
-                        var specode = specodeCheckResult.Data.Rows[0][0]?.ToString();
+                        var row = specodeCheckResult.Data.Rows[0];
+                        var specode = row[0]?.ToString();
                         if (!filter.IsAllowed(specode))
                         {
                             return ResponseDto<ClCardStatementDetailedViewModel>.FailData(403, "Bu cari hesaba erişim yetkiniz yok", "SPECODE filtresi", true);
                         }
+                        // Get dates from same query
+                        if (row["CAPIBLOCK_CREADEDDATE"] != DBNull.Value)
+                            createdDate = Convert.ToDateTime(row["CAPIBLOCK_CREADEDDATE"]);
+                        if (row["CAPIBLOCK_MODIFIEDDATE"] != DBNull.Value)
+                            modifiedDate = Convert.ToDateTime(row["CAPIBLOCK_MODIFIEDDATE"]);
+                    }
+                }
+                else
+                {
+                    // Even if no specode filter, get the dates
+                    var dateQuery = $"SELECT CAPIBLOCK_CREADEDDATE, CAPIBLOCK_MODIFIEDDATE FROM LG_{f}_CLCARD WHERE CODE = '{safeCode}'";
+                    var dateResult = _sqlProvider.SqlReader(dateQuery);
+                    if (dateResult.IsSuccess && dateResult.Data.Rows.Count > 0)
+                    {
+                        var row = dateResult.Data.Rows[0];
+                        if (row["CAPIBLOCK_CREADEDDATE"] != DBNull.Value)
+                            createdDate = Convert.ToDateTime(row["CAPIBLOCK_CREADEDDATE"]);
+                        if (row["CAPIBLOCK_MODIFIEDDATE"] != DBNull.Value)
+                            modifiedDate = Convert.ToDateTime(row["CAPIBLOCK_MODIFIEDDATE"]);
                     }
                 }
 
@@ -1440,6 +1471,8 @@ namespace Koala.Yedpa.Service.Services
                     LogicalRef = Convert.ToInt32(firstRow["CL_REF"]),
                     ClCode = firstRow["CL_CODE"]?.ToString() ?? string.Empty,
                     ClTitle = firstRow["CL_TITLE"]?.ToString() ?? string.Empty,
+                    CreatedDate = createdDate,
+                    ModifiedDate = modifiedDate
                 };
 
                 decimal cumulativeBalance = 0;
@@ -1565,7 +1598,13 @@ namespace Koala.Yedpa.Service.Services
                 if (!string.IsNullOrWhiteSpace(searchModel.Yetkili2AdSoyad))
                     conditions.Add($"CLC.INCHARGE2 LIKE '%{searchModel.Yetkili2AdSoyad.Replace("'", "''")}%'");
 
-                var whereClause = conditions.Any() ? " AND " + string.Join(" AND ", conditions) : "";
+                // Tarih filtreleri (büyüktür — strict >) — CreatedDate/ModifiedDate
+            if (searchModel.CreatedDateGreaterThan.HasValue)
+                conditions.Add($"CLC.CAPIBLOCK_CREADEDDATE > '{searchModel.CreatedDateGreaterThan.Value:yyyy-MM-dd}'");
+            if (searchModel.ModifiedDateGreaterThan.HasValue)
+                conditions.Add($"CLC.CAPIBLOCK_MODIFIEDDATE > '{searchModel.ModifiedDateGreaterThan.Value:yyyy-MM-dd}'");
+
+            var whereClause = conditions.Any() ? " AND " + string.Join(" AND ", conditions) : "";
 
                 var baseQuery = $@"
                     SELECT
@@ -1579,7 +1618,9 @@ namespace Koala.Yedpa.Service.Services
                         ISNULL(CLC.ADDR2, '') AS Addr2,
                         CONVERT(DECIMAL(38, 2), SUM(GNCLTOT.DEBIT) - SUM(GNCLTOT.CREDIT)) AS Balance,
                         LS.LASTSALEDATE AS LastSaleDate,
-                        LP.LASTPAYMENTDATE AS LastPaymentDate
+                        LP.LASTPAYMENTDATE AS LastPaymentDate,
+                        CLC.CAPIBLOCK_CREADEDDATE AS CreatedDate,
+                        CLC.CAPIBLOCK_MODIFIEDDATE AS ModifiedDate
                     FROM LV_{f}_{p}_GNTOTCL GNCLTOT WITH (NOLOCK)
                     INNER JOIN LG_{f}_CLCARD CLC WITH (NOLOCK) ON CLC.LOGICALREF = GNCLTOT.CARDREF
                     LEFT JOIN (
@@ -1601,7 +1642,8 @@ namespace Koala.Yedpa.Service.Services
                     GROUP BY
                         CLC.LOGICALREF, CLC.CODE, CLC.DEFINITION_,
                         CLC.CITY, CLC.TOWN, CLC.DISTRICT, CLC.ADDR1, CLC.ADDR2,
-                        LS.LASTSALEDATE, LP.LASTPAYMENTDATE";
+                        LS.LASTSALEDATE, LP.LASTPAYMENTDATE,
+                        CLC.CAPIBLOCK_CREADEDDATE, CLC.CAPIBLOCK_MODIFIEDDATE";
 
                 // Filtresiz toplam
                 var totalQuery = $@"
@@ -1702,7 +1744,7 @@ namespace Koala.Yedpa.Service.Services
                         BAN.DEFINITION_  AS AccountDescription
                     FROM LG_{f}_BNCARD AS BNC WITH (NOLOCK)
                     INNER JOIN LG_{f}_BANKACC AS BAN WITH (NOLOCK) ON BAN.BANKREF = BNC.LOGICALREF
-                    WHERE BAN.KKUSAGE = 1 AND BAN.ACTIVE = 0
+                    WHERE BAN.CARDTYPE = 5 AND BAN.ACTIVE = 0
                     ORDER BY BNC.DEFINITION_, BAN.CODE";
 
                 var result = _sqlProvider.SqlReader(query);
@@ -1724,6 +1766,45 @@ namespace Koala.Yedpa.Service.Services
             {
                 _logger.LogError(ex, "GetBankAccountsAsync - Beklenmeyen hata");
                 return ResponseListDto<List<BankAccountViewModel>>.FailData(500, "Beklenmeyen bir hata oluştu", ex.Message, true);
+            }
+        }
+
+        public async Task<ResponseListDto<List<CreditCardAccountViewModel>>> GetCreditCardAccountsAsync()
+        {
+            try
+            {
+                var f = LogoSetting.Firm;
+                var query = $@"
+                    SELECT
+                        BNC.LOGICALREF  AS CardRef,
+                        BNC.DEFINITION_ AS BankName,
+                        BNC.BRANCH      AS Branch,
+                        BAN.CODE        AS AccountCode,
+                        BAN.DEFINITION_ AS AccountDescription
+                    FROM LG_{f}_BNCARD AS BNC WITH (NOLOCK)
+                    INNER JOIN LG_{f}_BANKACC AS BAN WITH (NOLOCK) ON BAN.BANKREF = BNC.LOGICALREF
+                    WHERE BAN.CARDTYPE = 5 AND BAN.ACTIVE = 0
+                    ORDER BY BNC.DEFINITION_, BAN.CODE";
+
+                var result = _sqlProvider.SqlReader(query);
+                if (!result.IsSuccess)
+                {
+                    _logger.LogError("GetCreditCardAccountsAsync - Sorgu hatasi: {Message}", result.Message);
+                    return ResponseListDto<List<CreditCardAccountViewModel>>.FailData(500, "Kredi karti hesap listesi cekilemedi", result.Message, true);
+                }
+
+                var list = result.Data.AsList<CreditCardAccountViewModel>();
+                return ResponseListDto<List<CreditCardAccountViewModel>>.SuccessData(
+                    200, "KK banka hesaplari basariyla getirildi", list,
+                    RecordsTotal: list.Count,
+                    RecordsFiltered: list.Count,
+                    RecordsShow: list.Count
+                );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GetCreditCardAccountsAsync - Beklenmeyen hata");
+                return ResponseListDto<List<CreditCardAccountViewModel>>.FailData(500, "Beklenmeyen bir hata olustu", ex.Message, true);
             }
         }
 

@@ -99,27 +99,42 @@ namespace Koala.Yedpa.Service.Services
         }
 
         /// <summary>
-        /// Yönetim sayfasından manuel tetiklenen yeniden aktarım: oturumun başarısız (Failed)
-        /// satırlarını tekrar dener (3-deneme limitini gözetmeden, manuel istek olduğundan).
+        /// Yönetim sayfasından manuel tetiklenen yeniden aktarım: oturumun EKSİK KALAN tüm
+        /// satırlarını (Failed + hiç denenmemiş Pending) tekrar dener. Böylece yarıda kalan
+        /// bir koşu (ör. makine kapandı, token gece reddedildi) baştan değil kaldığı yerden
+        /// tamamlanır. 3-deneme limiti gözetilmez (manuel istek).
         /// </summary>
         public async Task RetryFailedAsync(int sessionId)
         {
             var session = await _db.BulkInvoiceSessions.FindAsync(sessionId);
             if (session == null) { _logger.LogWarning("Yeniden aktarım: session yok {Id}", sessionId); return; }
 
-            var failed = await _db.BulkInvoiceItems
-                .Where(i => i.SessionId == sessionId && i.Status == BulkInvoiceItemStatus.Failed)
+            // Transferred olmayan = eksik kalan (Failed VEYA Pending) tüm satırlar.
+            var incomplete = await _db.BulkInvoiceItems
+                .Where(i => i.SessionId == sessionId && i.Status != BulkInvoiceItemStatus.Transferred)
                 .ToListAsync();
-            if (failed.Count == 0) { _logger.LogInformation("Yeniden aktarım: başarısız satır yok {Id}", sessionId); return; }
+            if (incomplete.Count == 0) { _logger.LogInformation("Yeniden aktarım: eksik satır yok {Id}", sessionId); return; }
 
-            foreach (var item in failed)
+            _logger.LogInformation("Yeniden aktarım: {Count} eksik satır (Failed+Pending) deneniyor {Id}", incomplete.Count, sessionId);
+
+            foreach (var item in incomplete)
                 await TryTransferItemAsync(item, session.InvoiceDate);
 
-            var newlyTransferred = failed
+            var newlyTransferred = incomplete
                 .Where(i => i.Status == BulkInvoiceItemStatus.Transferred)
                 .Select(i => i.Orflineref)
                 .ToList();
             await _bulk.MarkLinesAsTransferredAsync(newlyTransferred);
+
+            // Oturum tümüyle tamamlandıysa durumu güncelle.
+            var kalan = await _db.BulkInvoiceItems
+                .CountAsync(i => i.SessionId == sessionId && i.Status != BulkInvoiceItemStatus.Transferred);
+            if (kalan == 0)
+            {
+                session.Status = BulkInvoiceSessionStatus.Completed;
+                session.CompletedAt = DateTime.UtcNow;
+                await _db.SaveChangesAsync();
+            }
 
             await _email.SendReportMailAsync(sessionId);
         }

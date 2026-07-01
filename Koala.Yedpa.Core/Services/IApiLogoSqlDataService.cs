@@ -19,5 +19,6 @@ public interface IApiLogoSqlDataService
     Task<ResponseListDto<List<CustomerListWithBalanceViewModel>>> GetCustomerListWithBalanceAsync(ClCardInfoSearchViewModel searchModel, int perPage, int pageNo);
     Task<ResponseListDto<List<BankViewModel>>> GetBanksAsync();
     Task<ResponseListDto<List<BankAccountViewModel>>> GetBankAccountsAsync();
+    Task<ResponseListDto<List<CreditCardAccountViewModel>>> GetCreditCardAccountsAsync();
     Task<ResponseListDto<List<ServiceListViewModel>>> GetServicesAsync();
 }

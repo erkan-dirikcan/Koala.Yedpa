@@ -2,7 +2,65 @@
 
 > Bu dosyayı sadece Katya (team-lead) günceller. Teammate'ler buraya yazamaz.
 
-## Son Güncelleme: 2026-06-05 — Feedback Madde 1 ve 4 TAMAMLANDI
+## Son Güncelleme: 2026-06-25 — Health Check Ping Implementasyonu TAMAMLANDI
+
+### Health Check Authentication Failed Hatası Düzeltildi
+
+**Tarih:** 2026-06-25
+**Durum:** Implementasyon tamamlandı, test bekliyor
+**Teammate:** nastya
+
+#### Sorun
+`GET api/HealthCheckApi/restservice` çağrıldığında "Authentication failed" hatası dönüyordu. Sağlık kontrolü kimlik doğrulama yapmamalıydı.
+
+#### Kök Neden
+`HealthCheckApiController.RestServiceCheck()` → `_logoRestServiceProvider.HttpGet("")` çağırıyordu. Bu method `ExecuteWithAuthAsync` kullanarak önce `/api/v1/token`'a gidip token almaya çalışıyordu. Token alınamazsa 401 dönüyordu.
+
+#### Çözüm
+Logo REST API'nin token gerektirmeyen `/api/v1/ping` endpoint'ini kullanacak şekilde değiştirildi.
+
+#### Yapılan Değişiklikler
+
+**Dosya 1:** `Koala.Yedpa.Core/Providers/ILogoRestServiceProvider.cs`
+- `Task<ResponseDto<string>> PingAsync();` metodu eklendi
+
+**Dosya 2:** `Koala.Yedpa.Service/Providers/LogoRestServiceProvider.cs`
+- `PingAsync()` implement edildi (~527. satır)
+- Token almaya çalışmıyor (`ExecuteWithAuthAsync` KULLANILMIYOR)
+- Doğrudan `/api/v1/ping` endpoint'ine gidiyor
+- UriBuilder pattern'ı mevcut `HttpGet` metodundan kopyalandı
+- Bearer header eklenmiyor (ping endpoint'i authentication gerektirmez)
+
+**Dosya 3:** `Koala.Yedpa.WebApi/Controllers/HealthCheckApiController.cs`
+- `RestServiceCheck()` metodunda (~141. satır)
+- `_logoRestServiceProvider.HttpGet("")` → `_logoRestServiceProvider.PingAsync()`
+
+#### Test TAMAMLANDI ✅
+**Teammate:** gonca
+**Test Dosyası:** `Koala.Yedpa.Service.Tests/LogoRestServiceProviderTests.cs`
+
+**Test Sonuçları:**
+- Toplam: 17 test
+- Geçen: 17 ✅
+- Başarısız: 0
+
+**Kapsanan Senaryolar:**
+- Başarılı senaryolar (pong, JSON, farklı port, HTTPS)
+- Hata senaryoları (settings bulunamadı, HTTP exception, web exception, genel exception)
+- HTTP status kodları (401, 404, 500, 503)
+- Logging verification
+
+**Kullanılan Teknikler:**
+- Moq (IHttpClientFactory, ISettingsService, ILogger mock)
+- FluentAssertions
+- xUnit
+- HttpMessageHandler Mock
+
+Testler Service.Tests projesine entegre edildi, tüm test suite (95 test) sorunsuz çalışıyor.
+
+---
+
+## Son Güncelleme (önceki): 2026-06-05 — Feedback Madde 1 ve 4 TAMAMLANDI
 
 ### Feedback Madde 1: PendingInvoices.customerCode Düzeltmesi
 

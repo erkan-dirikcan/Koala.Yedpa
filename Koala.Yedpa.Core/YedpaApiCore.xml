@@ -4,6 +4,30 @@
         <name>Koala.Yedpa.Core</name>
     </assembly>
     <members>
+        <member name="T:Koala.Yedpa.Core.Configuration.RabbitMqSettings">
+            <summary>
+            RabbitMQ (Coolify VPS) bağlantı ayarları. Parola secret'ten gelir (appsettings'e gömülmez).
+            Uygulama yalnızca outbound consumer olarak bağlanır; N8N'in attığı "aktarımı başlat" tetiğini dinler.
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Dtos.BulkInvoice.AidatInvoicePayload">
+            <summary>
+            Logo REST <c>salesInvoices</c> AIDAT fatura payload'ı.
+            Yapı, repo kökündeki <c>test-aidat-fatura-temmuz.json</c> ile manuel doğrulandı (başarılı POST).
+            Toplamlar/VAT kırılımı (TOTAL, VAT_AMOUNT, VAT_BASE, TOTAL_NET) GÖNDERİLMEZ — REST hesaplar.
+            GL kodları DataObjectParameter.FillAccCodesOnPreSave ile otomatik dolar.
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Dtos.BulkInvoice.AidatInvoiceTransactions">
+            <summary>
+            Logo, satırları düz dizi değil <c>{ "items": [ ... ] }</c> sarmalı içinde bekler (doğrulandı).
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Dtos.BulkInvoice.AidatInvoiceTransaction">
+            <summary>
+            AIDAT fatura kalemi. Tek satır: sabit hizmet kartı + ayın tutarı (KDV dahil).
+            </summary>
+        </member>
         <member name="T:Koala.Yedpa.Core.Dtos.BulkInvoice.AlertCheckResultDto">
             <summary>
             Alert kontrol sonucu DTO'su
@@ -28,6 +52,14 @@
             <summary>
             Mevcut yıl
             </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Dtos.BulkInvoice.BulkInvoiceItemDto">
+            <summary>
+            Yönetim sayfası için tek aktarım satırı (crosstable kaydı).
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.BulkInvoice.BulkInvoiceItemDto.Status">
+            <summary>0=Bekliyor, 1=Aktarıldı, 2=Başarısız</summary>
         </member>
         <member name="T:Koala.Yedpa.Core.Dtos.BulkInvoice.BulkInvoiceSessionDto">
             <summary>
@@ -197,6 +229,86 @@
         <member name="P:Koala.Yedpa.Core.Dtos.BulkInvoice.SelectedLineDto.MonthName">
             <summary>
             Ay adı (HAZIRAN gibi)
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Dtos.KrediKartTahsilat.CreateKrediKartTahsilatRequestDto">
+            <summary>
+            Kredi karti tahsilati icin dis katmandan alinan slim input modeli (Model 1).
+            Geri kalan tum degerler (TIME, sabitler) serviste uretilir.
+            NUMBER ve GUID opsiyonel olarak kalici tanimlanabilir; bos gelirse servis uretir.
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.KrediKartTahsilat.CreateKrediKartTahsilatRequestDto.CollectionDate">
+            <summary>Tahsilat tarihi (faturanin degil, tahsilatin tarihi)</summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.KrediKartTahsilat.CreateKrediKartTahsilatRequestDto.BankAccCode">
+            <summary>
+            Banka hesap kodu — GET api/KrediKartTahsilat/cards endpoint'inin AccountCode alanından gelir.
+            Logo REST kodu ile ilgili GL kodlarını FillAccCodesOnPreSave ile otomatik bulur.
+            Örnek: "11    0015"
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.KrediKartTahsilat.CreateKrediKartTahsilatRequestDto.Number">
+            <summary>
+            Fiş numarası (opsiyonel). Boş/null gelirse servis "~" kullanır (Logo otomatik sıralı no üretir).
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.KrediKartTahsilat.CreateKrediKartTahsilatRequestDto.Guid">
+            <summary>
+            İdempotency GUID (opsiyonel). Boş/null gelirse servis Guid.NewGuid() ile üretir.
+            Tekrar gönderimlerde aynı GUID verilirse Logo çift kayıt oluşturmaz.
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.KrediKartTahsilat.CreateKrediKartTahsilatRequestDto.Notes1">
+            <summary>Fis aciklamasi (opsiyonel)</summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.KrediKartTahsilat.CreateKrediKartTahsilatRequestDto.Items">
+            <summary>Tahsilat kalemleri — her kalem bir cari (CustomerCode = ARP_CODE)</summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Dtos.KrediKartTahsilat.KrediKartTahsilatItemDto">
+            <summary>
+            Tek bir cari icin tahsilat kalemi.
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.KrediKartTahsilat.KrediKartTahsilatItemDto.CustomerCode">
+            <summary>Cari kodu (PendingInvoices.CustomerCode = ARP_CODE)</summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.KrediKartTahsilat.KrediKartTahsilatItemDto.Amount">
+            <summary>Tahsilat tutari (PendingInvoices.RemainingAmount'a esit)</summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.KrediKartTahsilat.KrediKartTahsilatItemDto.CustomerName">
+            <summary>Cari adi (opsiyonel — tek cari oldugunda NOTES1 fallback olarak kullanilabilir)</summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Dtos.KrediKartTahsilat.KrediKartTahsilatLogoDto">
+            <summary>
+            Logo REST ArpSlips endpoint'ine gönderilen payload modeli (Model 2).
+            Servis Newtonsoft.Json ile serialize ettiği için [JsonProperty] (Newtonsoft) kullanılır.
+            TRANSACTIONS ve PAYMENT_LIST Logo formatında { "items": [...] } objesi olarak serialize edilir.
+            Sabit (constant) alanlar default değerlerle gömülüdür; mapping sırasında tekrar set edilir.
+            GL kodları (BANK_GL_CODE) Logo tarafında FillAccCodesOnPreSave ile otomatik doldurulur —
+            payload'a eklenmez.
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Dtos.KrediKartTahsilat.KrediKartTahsilatLogoTransactionsDto">
+            <summary>
+            Cari hesap işlemleri wrapper'ı — Logo formatında { "items": [...] }.
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Dtos.KrediKartTahsilat.KrediKartTahsilatLogoTransactionDto">
+            <summary>
+            Kredi kartı tahsilat işlemi (Logo payload).
+            BANK_GL_CODE gönderilmez; Logo FillAccCodesOnPreSave ile save sonrası otomatik doldurur.
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Dtos.KrediKartTahsilat.KrediKartTahsilatLogoPaymentListDto">
+            <summary>
+            Ödeme listesi wrapper'ı — { "items": [...] }.
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Dtos.KrediKartTahsilat.KrediKartTahsilatLogoPaymentDto">
+            <summary>
+            Kredi kartı ödemesi kalemi (Logo payload).
+            CARDREF artık payload'a dahil edilmez (null iken serialize olmaz).
             </summary>
         </member>
         <member name="T:Koala.Yedpa.Core.Dtos.SalesInvoice.CreateArpSlipRequestDto">
@@ -913,7 +1025,41 @@
             Crypto API lisans hatası için özel exception
             </summary>
         </member>
+        <member name="T:Koala.Yedpa.Core.Helpers.BulkInvoiceMonths">
+            <summary>
+            AIDAT sipariş satırlarının ay eşleşmesi Logo'da ORL.LINEEXP (büyük harf, ASCII)
+            üzerinden yapılır — LINENO_ takvim ayıyla güvenilir değildir (canlı veride doğrulandı).
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Helpers.BulkInvoiceMonths.ToLogoName(System.Int32)">
+            <summary>1..12 ay numarasını Logo LINEEXP ay adına çevirir (1=OCAK .. 12=ARALIK).</summary>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Helpers.LogoJsonHelper.InjectDataObjectParameter(System.String)">
+            <summary>
+            JSON string'e DataObjectParameter ekler
+            </summary>
+            <param name="json">JSON string</param>
+            <returns>DataObjectParameter eklenmiş JSON string</returns>
+        </member>
         <!-- Badly formed XML comment ignored for member "M:Koala.Yedpa.Core.Extensions.DataTableExtensions.AsList``1(System.Data.DataTable)" -->
+        <member name="P:Koala.Yedpa.Core.Models.BulkInvoiceItem.RetryCount">
+            <summary>Kaç kez aktarım denendi.</summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.BulkInvoiceItem.CanRetry">
+            <summary>"Tekrar dene" — token/geçici hatada true; kuyruk sonrası yeniden denenir.</summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.BulkInvoiceItem.Note">
+            <summary>Neden aktarılmadığına dair iş açıklaması.</summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.BulkInvoiceItem.RestError">
+            <summary>REST service'ten dönen ham hata.</summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.BulkInvoiceSession.InfoJobId">
+            <summary>Hangfire bilgi-maili job id (T-1 08:00). İptal/güncelleme için saklanır.</summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.BulkInvoiceSession.TransferJobId">
+            <summary>Hangfire aktarım job id (T 00:01).</summary>
+        </member>
         <member name="T:Koala.Yedpa.Core.Models.LogoJsonModels.SalesOrderTransactionItem">
             <summary>
             Logo SalesOrder Transaction Item
@@ -1153,6 +1299,16 @@
             2. yetkili telefon numarası
             </summary>
         </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoViewModel.CreatedDate">
+            <summary>
+            Cari kartının oluşturulma tarihi (Logo CLCARD.CAPIBLOCK_CREADEDDATE)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoViewModel.ModifiedDate">
+            <summary>
+            Cari kartının son değiştirilme tarihi (Logo CLCARD.CAPIBLOCK_MODIFIEDDATE)
+            </summary>
+        </member>
         <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoSearchViewModel.CariKodu">
             <summary>
             Cari kart kodu (Ana cari kodu)
@@ -1273,6 +1429,18 @@
             2. yetkili ad soyad
             </summary>
         </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoSearchViewModel.CreatedDateGreaterThan">
+            <summary>
+            Cari kartı oluşturma tarihi "büyüktür" filtresi (Logo CLCARD.CAPIBLOCK_CREADEDDATE).
+            Bu tarihten sonraki oluşturma tarihli carileri getirir.
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardInfoSearchViewModel.ModifiedDateGreaterThan">
+            <summary>
+            Cari kartı değiştirme tarihi "büyüktür" filtresi (Logo CLCARD.CAPIBLOCK_MODIFIEDDATE).
+            Bu tarihten sonraki değiştirme tarihli carileri getirir.
+            </summary>
+        </member>
         <member name="P:Koala.Yedpa.Core.Models.ViewModels.StatementSummeryViewModel.LogicalRef">
             <summary>
             Cari kart Referansı (LogicalRef)
@@ -1303,11 +1471,31 @@
             Bakiye
             </summary>
         </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardStatementDetailedViewModel.CreatedDate">
+            <summary>
+            Cari kartının oluşturulma tarihi (Logo CLCARD.CAPIBLOCK_CREADEDDATE)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardStatementDetailedViewModel.ModifiedDate">
+            <summary>
+            Cari kartının son değiştirilme tarihi (Logo CLCARD.CAPIBLOCK_MODIFIEDDATE)
+            </summary>
+        </member>
         <member name="P:Koala.Yedpa.Core.Models.ViewModels.StatementDetailedGroupViewModel.DueDate">
             <summary>
             Vade tarihi — fatura tipi hareketlerde dolu, diğerlerinde null.
             PAYTRANS.DATE_ yerine şimdilik NULL döner (CLFLINE'da vade alanı yok).
             Aging hesabı için DueDate null ise InvoiceDate kullanılabilir.
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.CustomerListWithBalanceViewModel.CreatedDate">
+            <summary>
+            Cari kartının oluşturulma tarihi (Logo CLCARD.CAPIBLOCK_CREADEDDATE)
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.CustomerListWithBalanceViewModel.ModifiedDate">
+            <summary>
+            Cari kartının son değiştirilme tarihi (Logo CLCARD.CAPIBLOCK_MODIFIEDDATE)
             </summary>
         </member>
         <member name="T:Koala.Yedpa.Core.Models.ViewModels.CustomerListWithBalanceSearchViewModel">
@@ -1637,6 +1825,11 @@
             Logo'ya SalesOrder gönder
             </summary>
         </member>
+        <member name="M:Koala.Yedpa.Core.Providers.ILogoRestServiceProvider.PingAsync">
+            <summary>
+            Logo REST API servisini kontrol et (token gerektirmez)
+            </summary>
+        </member>
         <member name="M:Koala.Yedpa.Core.Repositories.IQRCodeRepository.GetAllAsync">
             <summary>
             Tüm QR kodlarını getirir
@@ -1826,6 +2019,18 @@
             <param name="budgetRatioId">BudgetRatio ID</param>
             <returns>Kilitleme sonucu</returns>
         </member>
+        <member name="T:Koala.Yedpa.Core.Services.IBulkInvoiceEmailService">
+            <summary>
+            Toplu faturalandırma e-postaları:
+            - SendInfoMailAsync: T-1 gün, oluşturulacak faturaların Excel listesiyle bilgilendirme.
+            - SendReportMailAsync: aktarım tamamlanınca başarılı/başarısız raporu.
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Services.IBulkInvoiceExcelService">
+            <summary>
+            Bilgilendirme maili için önizleme Excel'i üretir (oluşturulacak AIDAT faturaları).
+            </summary>
+        </member>
         <member name="T:Koala.Yedpa.Core.Services.IBulkInvoiceService">
             <summary>
             Toplu faturalandırma servisi interface'i
@@ -1840,9 +2045,15 @@
         </member>
         <member name="M:Koala.Yedpa.Core.Services.IBulkInvoiceService.GetPendingLinesAsync">
             <summary>
-            Faturalandırılmamış ORFLINE satırlarını getirir
+            Faturalandırılmamış ORFLINE satırlarını getirir (parametresiz = gelecek ay)
             </summary>
             <returns>Faturalandırılmamış satırlar listesi</returns>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Services.IBulkInvoiceService.GetPendingLinesAsync(System.String)">
+            <summary>
+            Verilen Logo ay adı (LINEEXP, örn. "TEMMUZ") için faturalandırılmamış satırları getirir
+            </summary>
+            <param name="logoMonthName">Büyük harf ASCII ay adı (BulkInvoiceMonths.ToLogoName)</param>
         </member>
         <member name="M:Koala.Yedpa.Core.Services.IBulkInvoiceService.CreateSessionAsync(Koala.Yedpa.Core.Dtos.BulkInvoice.CreateBulkInvoiceSessionDto,System.String)">
             <summary>
@@ -1858,6 +2069,61 @@
             </summary>
             <param name="sessionId">Oturum ID</param>
             <returns>Oturum detayları</returns>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Services.IBulkInvoiceService.MarkLinesAsTransferredAsync(System.Collections.Generic.IReadOnlyList{System.Int32})">
+            <summary>
+            Başarıyla faturalanan sipariş satırlarını Logo'da TRGFLAG=1 (faturalandı) yapar.
+            Logo, REST ile bağımsız fatura kesince TRGFLAG'ı otomatik yapmaz (doğrulandı) — bu adım zorunlu.
+            </summary>
+            <param name="orflinerefs">Faturalanmış ORFLINE LOGICALREF listesi</param>
+            <returns>Güncellenen satır sayısı</returns>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Services.IBulkInvoiceService.GetSessionsAsync">
+            <summary>Yönetim sayfası: tüm oturumları (özet sayılarla) getirir.</summary>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Services.IBulkInvoiceService.GetSessionItemsAsync(System.Int32)">
+            <summary>Yönetim sayfası: bir oturumun aktarım satırlarını getirir.</summary>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Services.IBulkInvoiceService.SyncSessionItemsAsync(System.Int32)">
+            <summary>
+            Oturumun "aktarılacak" satırlarını (BulkInvoiceItem, Pending) o anki bekleyen AIDAT
+            satırlarına göre oluşturur/senkronize eder: yenileri ekler, mevcut Pending'leri günceller,
+            artık beklemeyen Pending'leri kaldırır. Transferred/Failed satırlara DOKUNMAZ.
+            </summary>
+            <returns>Aktarılacak (Pending) satır sayısı</returns>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Services.IBulkInvoiceTransferService">
+            <summary>
+            Tek bir bekleyen AIDAT satırını Logo REST salesInvoices ile faturaya çevirir.
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Services.TransferLineResult">
+            <summary>
+            Tek satır aktarım sonucu.
+            IsTransient=true → token/geçici hata (kuyruk sonrası tekrar denenebilir).
+            IsTransient=false → kalıcı iş hatası (tekrar denemeye gerek yok).
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Services.TransferLineResult.#ctor(System.Boolean,System.Int32,System.String,System.Nullable{System.Int32},System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            Tek satır aktarım sonucu.
+            IsTransient=true → token/geçici hata (kuyruk sonrası tekrar denenebilir).
+            IsTransient=false → kalıcı iş hatası (tekrar denemeye gerek yok).
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Services.IKrediKartTahsilatService">
+            <summary>
+            Kredi kartı tahsilatları servisi arayüzü.
+            Logo Tiger REST API ArpSlips endpoint'ine kredi kartı tahsilat fişi (TYPE=70) oluşturur.
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Services.IKrediKartTahsilatService.CreateKrediKartTahsilatAsync(Koala.Yedpa.Core.Dtos.KrediKartTahsilat.CreateKrediKartTahsilatRequestDto)">
+            <summary>
+            Dışarıdan alınan input modelini (Model1) Logo ArpSlips payload'ına (Model2) mapleyip
+            Logo Tiger REST API üzerinden kredi kartı tahsilat fişi oluşturur.
+            </summary>
+            <param name="request">Kredi kartı tahsilat input modeli</param>
+            <returns>Logo'dan dönen ham response</returns>
         </member>
         <member name="M:Koala.Yedpa.Core.Services.IMessage34EmailService.SendTransactionEmailAsync(Koala.Yedpa.Core.Dtos.EmailDto,System.Collections.Generic.List{System.String})">
             <summary>
@@ -1905,6 +2171,13 @@
             </summary>
             <param name="request">Kasa fişi oluşturma isteği</param>
             <returns>Kasa fişi oluşturma yanıtı (fiş referansı)</returns>
+        </member>
+        <member name="T:Koala.Yedpa.Core.Services.IScheduleStore">
+            <summary>
+            N8N'in okuyacağı "sıradaki aktarım tarihi"ni tutan dış depo (Coolify PostgreSQL).
+            Uygulama, tarih seçildiğinde tek satırı upsert eder (yoksa insert, varsa update).
+            Yalnızca kontrol verisi (tarih) taşınır — iş verisi VPS'e gitmez.
+            </summary>
         </member>
         <member name="T:Koala.Yedpa.Core.Services.IArsivService">
             <summary>

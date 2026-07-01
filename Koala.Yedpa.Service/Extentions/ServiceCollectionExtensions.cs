@@ -1,4 +1,3 @@
-using Hangfire;
 using Koala.Yedpa.Core.Configuration;
 using Koala.Yedpa.Core.Helpers;
 using Koala.Yedpa.Core.Models;

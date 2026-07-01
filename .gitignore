@@ -70,3 +70,15 @@ secrets.json
 # Working artifacts / API sample dumps
 INV*.json
 feedback.txt
+feedback2.txt
+INVFC_*.XML
+ORFIC_*.XML
+test-aidat-*.json
+rabbitinfo.txt
+check_*.sql
+
+# Test / coverage output
+TestResults/
+**/TestResults/
+CoverageReport/
+TestResults_last/

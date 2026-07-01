@@ -1,8 +1,6 @@
-using Hangfire;
 using Koala.Yedpa.Core.Configuration;
 using Koala.Yedpa.Core.Services;
 using Koala.Yedpa.Repositories;
-using Koala.Yedpa.Service.HangfireDashboard;
 using Koala.Yedpa.Service.Services;
 using Koala.Yedpa.WebUI.Extentions;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -96,11 +94,9 @@ namespace Koala.Yedpa.WebUI
             builder.Services.Configure<QRCodeSettings>(
                 builder.Configuration.GetSection(QRCodeSettings.SectionName));
 
-            builder.Services.AddHangfire(config => config
-                .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
-                .UseSimpleAssemblyNameTypeSerializer()
-                .UseRecommendedSerializerSettings()
-                .UseSqlServerStorage(builder.Configuration.GetConnectionString("YedpaYonetim")));
+            // RabbitMQ (N8N → tetik) ayarları
+            builder.Services.Configure<RabbitMqSettings>(
+                builder.Configuration.GetSection(RabbitMqSettings.SectionName));
 
             builder.Services.AddHttpClient();
             builder.Services.AddDataProtection();
@@ -244,7 +240,6 @@ namespace Koala.Yedpa.WebUI
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseKoalaHangfireDashboard();
             app.MapStaticAssets();
             app.MapControllers();
 

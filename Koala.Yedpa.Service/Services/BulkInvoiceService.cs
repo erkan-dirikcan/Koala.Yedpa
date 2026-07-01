@@ -5,7 +5,6 @@ using Koala.Yedpa.Core.Models;
 using Koala.Yedpa.Core.Providers;
 using Koala.Yedpa.Core.Services;
 using Koala.Yedpa.Repositories;
-using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -126,7 +125,7 @@ namespace Koala.Yedpa.Service.Services
                         ORL.TOTAL AS Amount,
                         ORL.LINEEXP AS MonthName,
                         ORL.CLOSED AS ClosedStatus,
-                        ORL.LINENO_ AS LineNo
+                        ORL.LINENO_ AS [LineNo]
                     FROM LG_{firm}_{period}_ORFICHE ORF
                     INNER JOIN LG_{firm}_{period}_ORFLINE AS ORL ON ORL.ORDFICHEREF=ORF.LOGICALREF
                     LEFT JOIN LG_{firm}_CLCARD CLC ON ORF.CLIENTREF=CLC.LOGICALREF
@@ -134,6 +133,9 @@ namespace Koala.Yedpa.Service.Services
                       AND ORL.TRGFLAG=0
                       AND ORL.LINEEXP = '{hedefAyAdi}'
                       AND ORF.CANCELLED=0
+                      -- Cari kirmizi/pasif (Kullanimda Degil = CLC.ACTIVE=1) olmamali; pasif cariye fatura kesilmez.
+                      -- ISNULL: cari bulunamayan satir (LEFT JOIN NULL) onizlemede kaybolmasin diye aktif sayilir.
+                      AND ISNULL(CLC.ACTIVE, 0) = 0
                     ORDER BY CLC.CODE, ORL.LOGICALREF";
 
                 // Logo SQL servisi ile sorgu çalıştır
@@ -141,8 +143,11 @@ namespace Koala.Yedpa.Service.Services
 
                 if (!result.IsSuccess)
                 {
-                    _logger.LogError("ORFLINE sorgusu hatası: {Message}", result.Message);
-                    return ResponseDto<List<PendingInvoiceLineDto>>.FailData(500, "Faturalandırılmamış satırlar alınamadı", result.Message, true);
+                    // result.Message = genel metin; result.Errors.Errors[0] = SqlProvider'ın yakaladığı GERÇEK SQL hatası.
+                    var sqlError = result.Errors?.Errors?.FirstOrDefault() ?? result.Message;
+                    _logger.LogError("ORFLINE sorgusu hatası. Firm=[{Firm}] Period=[{Period}] GERÇEK HATA={Error} | Sorgu={Query}",
+                        firm, period, sqlError, query);
+                    return ResponseDto<List<PendingInvoiceLineDto>>.FailData(500, "Faturalandırılmamış satırlar alınamadı", sqlError, true);
                 }
 
                 // Sonuçları DTO'ya çevir
@@ -336,17 +341,6 @@ namespace Koala.Yedpa.Service.Services
             }
         }
 
-        /// <summary>Türkiye saat dilimini çözer (Windows "Turkey Standard Time" / Linux "Europe/Istanbul"); bulunamazsa sabit +3.</summary>
-        private static TimeZoneInfo ResolveTurkeyTimeZone()
-        {
-            foreach (var id in new[] { "Turkey Standard Time", "Europe/Istanbul" })
-            {
-                try { return TimeZoneInfo.FindSystemTimeZoneById(id); }
-                catch { /* sıradaki id'yi dene */ }
-            }
-            return TimeZoneInfo.CreateCustomTimeZone("TR", TimeSpan.FromHours(3), "Turkey", "Turkey");
-        }
-
         public async Task<ResponseDto<int>> CreateSessionAsync(CreateBulkInvoiceSessionDto dto, string username)
         {
             try
@@ -374,22 +368,14 @@ namespace Koala.Yedpa.Service.Services
                 await _context.BulkInvoiceSessions.AddAsync(session);
                 await _context.SaveChangesAsync();
 
-                // Hangfire ile 2 job zamanla: T-1 gün 08:00 bilgi maili, T günü 00:01 aktarım.
-                // Saatleri Türkiye saatine sabitle (sunucu UTC olsa bile job doğru anda tetiklensin).
-                var infoAt = session.InvoiceDate.Date.AddDays(-1).AddHours(8);  // T-1 08:00
-                var transferAt = session.InvoiceDate.Date.AddMinutes(1);        // T 00:01
-                var tz = ResolveTurkeyTimeZone();
-                var infoOffset = new DateTimeOffset(DateTime.SpecifyKind(infoAt, DateTimeKind.Unspecified), tz.GetUtcOffset(infoAt));
-                var transferOffset = new DateTimeOffset(DateTime.SpecifyKind(transferAt, DateTimeKind.Unspecified), tz.GetUtcOffset(transferAt));
-                session.InfoJobId = BackgroundJob.Schedule<BulkInvoiceJobs>(j => j.SendInfoMailAsync(session.Id), infoOffset);
-                session.TransferJobId = BackgroundJob.Schedule<BulkInvoiceJobs>(j => j.RunTransferAsync(session.Id), transferOffset);
-                await _context.SaveChangesAsync();
-
-                _logger.LogInformation("Oturum oluşturuldu. Session ID: {SessionId}, Bilgi: {InfoAt}, Aktarım: {TransferAt}",
-                    session.Id, infoAt, transferAt);
+                // Zamanlama/tetik artık uygulama içinde DEĞİL (Hangfire kaldırıldı). Seçilen tarih
+                // N8N'e bildirilecek; aktarım ve bilgi maili N8N'in RabbitMQ'ya attığı mesajla tetiklenir.
+                // Burada yalnızca oturum (tarih) DB'ye kaydedilir; alert mantığı bu kaydı kullanır.
+                _logger.LogInformation("Oturum kaydedildi. Session ID: {SessionId}, Fatura tarihi: {Date:dd.MM.yyyy}",
+                    session.Id, session.InvoiceDate);
 
                 return ResponseDto<int>.SuccessData(200,
-                    $"Oturum oluşturuldu. Bilgi maili {infoAt:dd.MM.yyyy HH:mm}, aktarım {transferAt:dd.MM.yyyy HH:mm} olarak zamanlandı.",
+                    $"Oturum kaydedildi. Aktarım tarihi: {session.InvoiceDate:dd.MM.yyyy}.",
                     session.Id);
             }
             catch (Exception ex)

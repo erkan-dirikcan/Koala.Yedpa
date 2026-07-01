@@ -1,5 +1,6 @@
 using ClosedXML.Excel;
 using Koala.Yedpa.Core.Dtos;
+using Koala.Yedpa.Core.Helpers;
 using Koala.Yedpa.Core.Models;
 using Koala.Yedpa.Core.Models.LogoJsonModels;
 using Koala.Yedpa.Core.Models.ViewModels;
@@ -425,6 +426,10 @@ namespace Koala.Yedpa.Service.Services
 
                     // JSON oluştur
                     var json = JsonConvert.SerializeObject(salesOrder, Formatting.Indented);
+
+                    // DataObjectParameter inject et
+                    json = LogoJsonHelper.InjectDataObjectParameter(json);
+                    _logger.LogDebug("DataObjectParameter ile enrich edilmiş JSON: {Json}", json);
 
                     // POST /salesOrders
                     var response = await _logoRestService.HttpPost("salesOrders", json);

@@ -9,6 +9,7 @@
     <DocumentationFile>YedpaApi.xml</DocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>
     <DocumentationFileEncoding>UTF-8</DocumentationFileEncoding>
+    <UserSecretsId>67cf2b9a-09db-443c-a943-4563e9c7eedf</UserSecretsId>
   </PropertyGroup>
   
   <PropertyGroup>

@@ -1,4 +1,3 @@
-using Hangfire;
 using Koala.Yedpa.Repositories;
 using Koala.Yedpa.Service.Extentions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -94,13 +93,6 @@ namespace Koala.Yedpa.WebApi
                 options.UseSqlServer(builder.Configuration.GetConnectionString("YedpaYonetim"),
                     x => x.UseCompatibilityLevel(150));
             });
-
-            // Hangfire
-            builder.Services.AddHangfire(config => config
-                .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
-                .UseSimpleAssemblyNameTypeSerializer()
-                .UseRecommendedSerializerSettings()
-                .UseSqlServerStorage(builder.Configuration.GetConnectionString("YedpaYonetim")));
 
             builder.Services.AddHttpClient();
             builder.Services.AddHttpContextAccessor();

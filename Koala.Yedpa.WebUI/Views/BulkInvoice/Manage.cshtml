@@ -54,7 +54,7 @@
                         <i class="fas fa-sync-alt"></i> Aktarılacak Verileri Oluştur / Güncelle
                     </button>
                     <button type="button" class="btn btn-sm btn-light-danger" id="btnRetryFailed">
-                        <i class="fas fa-redo"></i> Başarısızları Yeniden Aktar
+                        <i class="fas fa-redo"></i> Eksik Kalanları Yeniden Aktar
                     </button>
                 </div>
             </div>
@@ -186,7 +186,7 @@
 
             $('#btnRetryFailed').on('click', function () {
                 if (!selectedSessionId) return;
-                if (!confirm('Bu oturumdaki başarısız satırlar yeniden aktarılacak. Onaylıyor musunuz?')) return;
+                if (!confirm('Bu oturumda eksik kalan (başarısız + hiç denenmemiş) tüm satırlar yeniden aktarılacak. Onaylıyor musunuz?')) return;
                 $.ajax({
                     url: '/BulkInvoice/RetryFailed?sessionId=' + selectedSessionId, method: 'POST',
                     success: function (res) {

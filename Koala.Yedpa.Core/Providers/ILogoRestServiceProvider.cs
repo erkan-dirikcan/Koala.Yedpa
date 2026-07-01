@@ -14,4 +14,9 @@ public interface ILogoRestServiceProvider
     /// Logo'ya SalesOrder gönder
     /// </summary>
     Task<ResponseDto<string>> PostSalesOrderAsync(SalesOrderJsonViewModel salesOrder);
+
+    /// <summary>
+    /// Logo REST API servisini kontrol et (token gerektirmez)
+    /// </summary>
+    Task<ResponseDto<string>> PingAsync();
 }

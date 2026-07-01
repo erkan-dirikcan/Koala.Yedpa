@@ -244,6 +244,8 @@ public class LogoRestServiceProvider : ILogoRestServiceProvider
 
                 if (string.IsNullOrEmpty(accessToken))
                 {
+                    _logger.LogError("Token alınamadı: yanıtta access_token yok. URL={Url} Firm={Firm} User={User} Yanıt={Body}",
+                        tokenUrl, settings.Firm, settings.UserName, responseContent);
                     return ResponseDto<string>.FailData(400, "Token alınamadı", "Sunucudan dönen yanıtta access_token bulunamadı", true);
                 }
 
@@ -253,6 +255,9 @@ public class LogoRestServiceProvider : ILogoRestServiceProvider
             else
             {
                 var statusCode = (int)response.StatusCode;
+                // GERÇEK red sebebi responseContent'te (ör. invalid_grant / kullanıcı bulunamadı / lisans).
+                _logger.LogError("Token alınamadı. HTTP={Status} URL={Url} Firm={Firm} User={User} Yanıt={Body}",
+                    statusCode, tokenUrl, settings.Firm, settings.UserName, responseContent);
                 return ResponseDto<string>.FailData(statusCode, "Token alınamadı", responseContent, true);
             }
         }
@@ -391,7 +396,11 @@ public class LogoRestServiceProvider : ILogoRestServiceProvider
             var authResponse = await GetAccessTokenAsync();
             if (!authResponse.IsSuccess)
             {
-                return ResponseDto<string>.FailData(401, "Authentication failed", authResponse.Message, true);
+                // Logo'nun döndürdüğü GERÇEK red sebebini yukarı taşı (Errors), genel mesajı değil.
+                var realReason = authResponse.Errors?.Errors is { Count: > 0 } e
+                    ? string.Join("; ", e)
+                    : authResponse.Message;
+                return ResponseDto<string>.FailData(401, "Authentication failed", realReason, true);
             }
 
             token = authResponse.Data;

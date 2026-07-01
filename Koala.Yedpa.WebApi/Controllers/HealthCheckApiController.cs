@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Koala.Yedpa.Core.Providers;
+using System.Diagnostics;
 
 namespace Koala.Yedpa.WebApi.Controllers;
 
@@ -11,6 +13,12 @@ namespace Koala.Yedpa.WebApi.Controllers;
 //[ApiExplorerSettings(IgnoreApi = true)]
 public class HealthCheckApiController : ControllerBase
 {
+    private readonly ILogoRestServiceProvider _logoRestServiceProvider;
+
+    public HealthCheckApiController(ILogoRestServiceProvider logoRestServiceProvider)
+    {
+        _logoRestServiceProvider = logoRestServiceProvider;
+    }
     /// <summary>
     /// API Sağlık Kontrolü - Basit GET isteği (Authentication gerektirmez)
     /// </summary>
@@ -112,5 +120,104 @@ public class HealthCheckApiController : ControllerBase
             hasScpClaim = claims.Any(c => c.type == "scp"),
             scpValues = claims.Where(c => c.type == "scp").Select(c => c.value).ToList(),
         });
+    }
+
+    /// <summary>
+    /// Logo REST Servisi Sağlık Kontrolü - Logo REST servisinin erişilebilirliğini kontrol eder (Authentication gerektirmez)
+    /// </summary>
+    /// <returns>Logo REST servisinin durum bilgisi</returns>
+    [HttpGet("restservice")]
+    [AllowAnonymous]
+    public async Task<IActionResult> RestServiceCheck()
+    {
+        var stopwatch = Stopwatch.StartNew();
+        bool isHealthy = false;
+        string errorMessage = string.Empty;
+
+        try
+        {
+            // Logo REST servisine ping at (token gerektirmez)
+            var response = await _logoRestServiceProvider.PingAsync();
+
+            stopwatch.Stop();
+
+            if (response.IsSuccess)
+            {
+                isHealthy = true;
+                return Ok(new
+                {
+                    status = "Healthy",
+                    service = "Logo REST Service",
+                    message = "Servis erişilebilir",
+                    timestamp = DateTime.Now,
+                    responseTimeMs = stopwatch.ElapsedMilliseconds,
+                    details = "Success",
+                    httpStatusCode = response.StatusCode
+                });
+            }
+            else
+            {
+                isHealthy = false;
+                errorMessage = response.Message ?? "Bilinmeyen hata";
+                return Ok(new
+                {
+                    status = "Unhealthy",
+                    service = "Logo REST Service",
+                    message = "Servis erişilemez veya hata döndürdü",
+                    timestamp = DateTime.Now,
+                    responseTimeMs = stopwatch.ElapsedMilliseconds,
+                    details = errorMessage,
+                    httpStatusCode = response.StatusCode
+                });
+            }
+        }
+        catch (HttpRequestException httpEx)
+        {
+            stopwatch.Stop();
+            isHealthy = false;
+            errorMessage = $"HTTP bağlantı hatası: {httpEx.Message}";
+            return Ok(new
+            {
+                status = "Unhealthy",
+                service = "Logo REST Service",
+                message = "Servis erişilemez",
+                timestamp = DateTime.Now,
+                responseTimeMs = stopwatch.ElapsedMilliseconds,
+                details = errorMessage,
+                exceptionType = "HttpRequestException"
+            });
+        }
+        catch (TaskCanceledException taskEx) when (taskEx.CancellationToken.IsCancellationRequested)
+        {
+            stopwatch.Stop();
+            isHealthy = false;
+            errorMessage = $"İstek zaman aşımına uğradı (Timeout)";
+            return Ok(new
+            {
+                status = "Unhealthy",
+                service = "Logo REST Service",
+                message = "Servis erişilemez veya timeout",
+                timestamp = DateTime.Now,
+                responseTimeMs = stopwatch.ElapsedMilliseconds,
+                details = errorMessage,
+                exceptionType = "Timeout"
+            });
+        }
+        catch (Exception ex)
+        {
+            stopwatch.Stop();
+            isHealthy = false;
+            errorMessage = $"Genel hata: {ex.Message}";
+            return Ok(new
+            {
+                status = "Unhealthy",
+                service = "Logo REST Service",
+                message = "Servis erişilemez",
+                timestamp = DateTime.Now,
+                responseTimeMs = stopwatch.ElapsedMilliseconds,
+                details = errorMessage,
+                exceptionType = ex.GetType().Name
+            });
+        }
     }
 }

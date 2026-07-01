@@ -158,6 +158,50 @@
             <param name="id">Oturum ID</param>
             <returns>Oturum detayları ve durumu</returns>
         </member>
+        <member name="T:Koala.Yedpa.WebUI.Controllers.BulkInvoiceController">
+            <summary>
+            Toplu Faturalandırma — WebUI MVC controller (JsonResult).
+            Ön yüz AJAX çağrıları buraya gelir: cookie auth geçerli, API token gerekmez.
+            (ApiController token bekler; ön yüz onu doğrudan çağıramaz.)
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.BulkInvoiceController.CheckAlert">
+            <summary>
+            Dashboard alert kontrolü - ayın 15'inden sonra ve o ay için session var mı.
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.BulkInvoiceController.GetPendingLines">
+            <summary>
+            Faturalandırılmamış ORFLINE satırlarını çeker.
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.BulkInvoiceController.CreateSession(Koala.Yedpa.Core.Dtos.BulkInvoice.CreateBulkInvoiceSessionDto)">
+            <summary>
+            Yeni toplu faturalandırma oturumu oluşturur ve kuyruğa alır.
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.BulkInvoiceController.GetSessionStatus(System.Int32)">
+            <summary>
+            Oturum durumunu getirir (progress tracking için).
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.BulkInvoiceController.Manage">
+            <summary>
+            Toplu Faturalandırma Yönetimi sayfası — oturumlar + aktarım satırları + yeniden aktarım.
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.BulkInvoiceController.Sessions">
+            <summary>Tüm oturumları (özet sayılarla) JSON döner.</summary>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.BulkInvoiceController.Items(System.Int32)">
+            <summary>Bir oturumun aktarım satırlarını JSON döner.</summary>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.BulkInvoiceController.PrepareItems(System.Int32)">
+            <summary>Aktarılacak satırları (önizleme) o anki bekleyenlere göre oluşturur/günceller — gün içi kullanım.</summary>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.BulkInvoiceController.RetryFailed(System.Int32)">
+            <summary>Oturumun başarısız satırlarını arka planda yeniden aktarır.</summary>
+        </member>
         <member name="T:Koala.Yedpa.WebUI.Controllers.ConnectionTestController">
             <summary>
             Bağlantı Testi

@@ -199,6 +199,18 @@ namespace Koala.Yedpa.Core.Models.ViewModels
         /// </summary>
         [SwaggerSchema(Description = "2. Yetkili telefon")]
         public string YETKILI2_TELEFON { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Cari kartının oluşturulma tarihi (Logo CLCARD.CAPIBLOCK_CREADEDDATE)
+        /// </summary>
+        [SwaggerSchema(Description = "Cari kartının oluşturulma tarihi")]
+        public DateTime? CreatedDate { get; set; }
+
+        /// <summary>
+        /// Cari kartının son değiştirilme tarihi (Logo CLCARD.CAPIBLOCK_MODIFIEDDATE)
+        /// </summary>
+        [SwaggerSchema(Description = "Cari kartının son değiştirilme tarihi")]
+        public DateTime? ModifiedDate { get; set; }
     }
 
     public class ClCardInfoSearchViewModel
@@ -351,6 +363,20 @@ namespace Koala.Yedpa.Core.Models.ViewModels
         [SwaggerSchema(Description = "2. Yetkili ad soyad")]
         public string? Yetkili2AdSoyad { get; set; } = string.Empty;
 
+        // Tarih filtreleri (büyüktür — strict >)
+        /// <summary>
+        /// Cari kartı oluşturma tarihi "büyüktür" filtresi (Logo CLCARD.CAPIBLOCK_CREADEDDATE).
+        /// Bu tarihten sonraki oluşturma tarihli carileri getirir.
+        /// </summary>
+        [SwaggerSchema(Description = "Oluşturma tarihi büyüktür filtresi (bu tarihten sonraki cariler)")]
+        public DateTime? CreatedDateGreaterThan { get; set; }
+
+        /// <summary>
+        /// Cari kartı değiştirme tarihi "büyüktür" filtresi (Logo CLCARD.CAPIBLOCK_MODIFIEDDATE).
+        /// Bu tarihten sonraki değiştirme tarihli carileri getirir.
+        /// </summary>
+        [SwaggerSchema(Description = "Değiştirme tarihi büyüktür filtresi (bu tarihten sonraki cariler)")]
+        public DateTime? ModifiedDateGreaterThan { get; set; }
     }
 
     public class StatementSummeryViewModel
@@ -528,6 +554,18 @@ namespace Koala.Yedpa.Core.Models.ViewModels
 
         [SwaggerSchema(Description = "Detaylı ekstre grupları")]
         public List<StatementDetailedGroupViewModel> StatementGroups { get; set; } = new();
+
+        /// <summary>
+        /// Cari kartının oluşturulma tarihi (Logo CLCARD.CAPIBLOCK_CREADEDDATE)
+        /// </summary>
+        [SwaggerSchema(Description = "Cari kartının oluşturulma tarihi")]
+        public DateTime? CreatedDate { get; set; }
+
+        /// <summary>
+        /// Cari kartının son değiştirilme tarihi (Logo CLCARD.CAPIBLOCK_MODIFIEDDATE)
+        /// </summary>
+        [SwaggerSchema(Description = "Cari kartının son değiştirilme tarihi")]
+        public DateTime? ModifiedDate { get; set; }
     }
 
     public class StatementDetailedGroupViewModel
@@ -641,6 +679,18 @@ namespace Koala.Yedpa.Core.Models.ViewModels
 
         [SwaggerSchema(Description = "Son ödeme tarihi")]
         public DateTime? LastPaymentDate { get; set; }
+
+        /// <summary>
+        /// Cari kartının oluşturulma tarihi (Logo CLCARD.CAPIBLOCK_CREADEDDATE)
+        /// </summary>
+        [SwaggerSchema(Description = "Cari kartının oluşturulma tarihi")]
+        public DateTime? CreatedDate { get; set; }
+
+        /// <summary>
+        /// Cari kartının son değiştirilme tarihi (Logo CLCARD.CAPIBLOCK_MODIFIEDDATE)
+        /// </summary>
+        [SwaggerSchema(Description = "Cari kartının son değiştirilme tarihi")]
+        public DateTime? ModifiedDate { get; set; }
     }
 
     /// <summary>
@@ -693,6 +743,24 @@ namespace Koala.Yedpa.Core.Models.ViewModels
         public string AccountCode { get; set; } = string.Empty;
 
         [SwaggerSchema(Description = "Hesap açıklaması")]
+        public string AccountDescription { get; set; } = string.Empty;
+    }
+
+    public class CreditCardAccountViewModel
+    {
+        [SwaggerSchema(Description = "Kredi karti LOGICALREF — PAYMENT.CARDREF olarak kullanilir")]
+        public int CardRef { get; set; }
+
+        [SwaggerSchema(Description = "Banka adi")]
+        public string BankName { get; set; } = string.Empty;
+
+        [SwaggerSchema(Description = "Sube adi")]
+        public string Branch { get; set; } = string.Empty;
+
+        [SwaggerSchema(Description = "Hesap kodu (BANKACC_CODE)")]
+        public string AccountCode { get; set; } = string.Empty;
+
+        [SwaggerSchema(Description = "Hesap aciklamasi")]
         public string AccountDescription { get; set; } = string.Empty;
     }
 

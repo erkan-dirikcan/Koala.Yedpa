@@ -1,44 +1,46 @@
 # Koala.Yedpa Proje Talimatları
 
-## Otomatik Takım Koordinasyonu
+## Takım Koordinasyonu
 
-Bu projede 6 kisilik bir agent team tanimlidir. Kullanici bir gorev verdiginde asagidaki akisi izle:
+Bu projede uzman agent'lardan oluşan bir takım tanımlıdır. Görev geldiğinde ilgili uzman teammate'e **DOĞRUDAN** delege edilir; ara koordinasyon katmanı yoktur. Orkestrasyonu (delegasyon, bekleme, doğrulama, raporlama) ana asistan yürütür.
 
-### Akis
+### Akış
 
-1. **Gorev analiz et** — Kullanicinin istegini anlamlandir ve kapsamini belirle
-2. **Katya'ya (team-lead) delegasyon** — `Agent` araci ile `katya` subagent_type'ini kullanarak gorevi ilet
-3. **Katya gorevi dagitir** — Katya uygun teammate'(lere) SendMessage ile ulasir
-4. **Sonucu raporla** — Katya'dan gelen sonucu kullaniciya ozetle
+1. **Görev analiz et** — Kullanıcının isteğini anlamlandır ve kapsamını belirle
+2. **Doğrudan delege et** — `Agent` aracı ile ilgili teammate'in `subagent_type`'ini kullanarak görevi ilet (Türkçe, açıklayıcı, dosya yollarını içeren prompt). Bağımsız işler için birden fazla teammate'i paralel başlat.
+3. **Bekle ve doğrula** — Teammate(ler) bitene kadar bekle; sonucu `dotnet build` / `dotnet test` / `git` ile DOĞRULA (teammate'in "bitti" demesine güvenme).
+4. **Raporla** — Yalnızca build/test yeşil olduğunda sonucu kullanıcıya özetle.
 
-### Takim Uyeleri
+### Takım Üyeleri
 
-| Teammate | Subagent Type | Uzmanlik Alani |
+| Teammate | Subagent Type | Uzmanlık Alanı |
 |----------|--------------|----------------|
-| **katya** | `katya` | Takim lideri — gorev dagitimi, koordinasyon |
-| **natasa** | `natasa` | Veritabani, EF Core, migration, MSSQL |
-| **olga** | `olga` | Service layer, DTO, is mantigi, hesaplamalar |
+| **natasa** | `natasa` | Veritabanı, EF Core, migration, MSSQL |
+| **olga** | `olga` | Service layer, DTO, iş mantığı, hesaplamalar |
 | **nastya** | `nastya` | Logo REST API, Message34, Hangfire, WebAPI |
 | **mahmut** | `mahmut` | Metronic tema, Razor Views, DataTables, JS |
 | **gonca** | `gonca` | Unit test, entegrasyon testi, coverage |
+| **katya** | `katya` | (Opsiyonel) Koordinatör — yalnızca çok-teammate'li, uzun süren büyük paralel işlerde |
 
-### Gorev Turune Gore Yonlendirme
+### Görev Türüne Göre Yönlendirme
 
-| Gorev Turu | Teammate |
+| Görev Türü | Teammate |
 |-------------|----------|
 | Entity, migration, repository, DB sorgu | natasa |
-| Service, DTO, is mantigi, hesaplama | olga |
+| Service, DTO, iş mantığı, hesaplama | olga |
 | API endpoint, Logo, Message34, Hangfire | nastya |
 | View, JS, CSS, DataTables, Chart.js | mahmut |
 | Test yazma, test coverage, bug tespiti | gonca |
-| Birden fazla katman veya belirsiz | katya (o dagitir) |
+| Birden fazla katman | Ana asistan koordine eder; ilgili teammate'lere paralel delege eder |
 
-### Onemli Kurallar
+### Önemli Kurallar
 
-- **Basit sorular** (tek satirlik aciklama, dosya okuma) icin takimi kullanma — direkt yanitla
-- **Kod yazma gerektiren gorevlerde** mutlaka katya'ya delege et
-- **Tek dosyalik basit duzeltmeler** icin takimi kullanma — direkt yap
-- Katya'ya gorev iletirken Turkce ve aciklayici bir prompt ver
+- **Basit sorular** (tek satırlık açıklama, dosya okuma) için takımı kullanma — direkt yanıtla
+- **Tek/iki dosyalık basit düzeltmeler** için takımı kullanma — direkt yap
+- **Kod yazma gerektiren çok katmanlı görevlerde** ilgili uzman teammate'lere **doğrudan** delege et; orkestrasyonu (bekleme + build/test doğrulama + raporlama) ana asistan yürütür
+- **Katya opsiyoneldir**: çok sayıda teammate'in uzun süre paralel çalıştığı, bağlam tamponlaması gereken büyük işlerde koordinatör olarak çağrılabilir — varsayılan değildir
+- "Tamamlandı" demeden önce mutlaka `dotnet build` (0 error) + ilgili `dotnet test` (yeşil) çalıştır
+- Delegasyon prompt'unu Türkçe, açıklayıcı ve dosya yollarını içerecek şekilde yaz
 
 ## Proje Yapisi
 

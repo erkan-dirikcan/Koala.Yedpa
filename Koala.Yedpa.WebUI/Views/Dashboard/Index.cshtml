@@ -53,17 +53,19 @@
 
 
                         <div class="card-toolbar">
+                            @* Sadece localhost'ta görünür yan etkisiz önizleme/test butonu:
+                               bekleyen AIDAT satırlarını listeler, fatura/mail göndermez. Canlıda çıkmaz. *@
                             @if (Context.Request.Host.Value.Contains("localhost"))
                             {
-                                <button type="button" class="btn btn-sm btn-light-warning me-2" id="btnTestBulkInvoice" title="Toplu Fatura Test">
-                                    <i class="fas fa-vial mr-1"></i> Toplu Fatura Test
+                                <button type="button" class="btn btn-sm btn-light-warning me-2 mr-1" id="btnTestBulkInvoice" title="Toplu Fatura Test">
+                                    <i class="fas fa-vial"></i> Toplu Fatura Test
                                 </button>
                             }
-                            <button type="button" class="btn btn-sm btn-light-primary" id="btnToggleSidebar">
-                                <i class="fas fa-th-large mr-1"></i> Widgetlar
+                            <button type="button" class="btn btn-sm btn-light-primary mr-1" id="btnToggleSidebar">
+                                <i class="fas fa-th-large"></i> Widgetlar
                             </button>
-                            <button type="button" class="btn btn-sm btn-light-danger" id="btnResetLayout">
-                                <i class="fas fa-undo mr-1"></i> Sıfırla
+                            <button type="button" class="btn btn-sm btn-light-danger mr-1" id="btnResetLayout">
+                                <i class="fas fa-undo"></i> Sıfırla
                             </button>
                         </div>
 

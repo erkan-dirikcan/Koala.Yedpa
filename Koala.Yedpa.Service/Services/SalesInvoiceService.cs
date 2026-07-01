@@ -1,5 +1,6 @@
 using Koala.Yedpa.Core.Dtos;
 using Koala.Yedpa.Core.Dtos.SalesInvoice;
+using Koala.Yedpa.Core.Helpers;
 using Koala.Yedpa.Core.Providers;
 using Koala.Yedpa.Core.Services;
 using Microsoft.Extensions.Logging;
@@ -36,6 +37,10 @@ public class SalesInvoiceService : ISalesInvoiceService
             // 1. DTO'yu JSON'a serialize et
             var json = JsonConvert.SerializeObject(request, Formatting.Indented);
             _logger.LogDebug("Gönderilen JSON: {Json}", json);
+
+            // DataObjectParameter inject et
+            json = LogoJsonHelper.InjectDataObjectParameter(json);
+            _logger.LogDebug("DataObjectParameter ile enrich edilmiş JSON: {Json}", json);
 
             // 2. Logo Tiger REST API'ye gönder
             // salesInvoices endpoint'ine POST isteği atıyoruz
@@ -162,6 +167,10 @@ public class SalesInvoiceService : ISalesInvoiceService
             var json = JsonConvert.SerializeObject(request, Formatting.Indented);
             _logger.LogDebug("Gönderilen JSON: {Json}", json);
 
+            // DataObjectParameter inject et
+            json = LogoJsonHelper.InjectDataObjectParameter(json);
+            _logger.LogDebug("DataObjectParameter ile enrich edilmiş JSON: {Json}", json);
+
             // 2. Logo Tiger REST API'ye gönder
             // ArpSlips endpoint'ine POST isteği atıyoruz
             var response = await _logoRestServiceProvider.HttpPost("ArpSlips", json);
@@ -210,6 +219,10 @@ public class SalesInvoiceService : ISalesInvoiceService
             // 1. DTO'yu JSON'a serialize et
             var json = JsonConvert.SerializeObject(request, Formatting.Indented);
             _logger.LogDebug("Gönderilen JSON: {Json}", json);
+
+            // DataObjectParameter inject et
+            json = LogoJsonHelper.InjectDataObjectParameter(json);
+            _logger.LogDebug("DataObjectParameter ile enrich edilmiş JSON: {Json}", json);
 
             // 2. Logo Tiger REST API'ye gönder
             // safeDepositSlips endpoint'ine POST isteği atıyoruz

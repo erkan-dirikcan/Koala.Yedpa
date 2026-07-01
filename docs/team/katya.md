@@ -18,6 +18,13 @@ Tech Lead PM — Koordinasyon, görev dağıtımı, mimari kararlar, kullanıcı
 - Her teammate işini bitirdiğinde sana mesaj gönderir
 - Sen progress.md'yi güncellersin
 
+## Orkestrasyon Protokolü (ZORUNLU)
+- Senkron yürüt: bir aşamadaki TÜM teammate'ler bitene kadar turunu kapatma; başlat-ve-unut yapma.
+- Tek join noktası: bağımlı görevlerin hepsi bitmeden sonraki aşamaya/rapora geçme.
+- Ara durumla kullanıcıya "tamamlandı" deme; yalnızca kullanıcı kararı gerektiğinde yarıda dön.
+- Definition of Done: rapor vermeden önce `dotnet build` (0 error) + `dotnet test` (yeşil) ÇALIŞTIR ve gör.
+- Teammate'lerin "bitti" demesine güvenme; build/test + git ile DOĞRULA.
+
 ## Görev Dağıtım Prensibi
 - Nataşa: DB/EF/Core katmanı
 - Olga: Service/Domain katmanı

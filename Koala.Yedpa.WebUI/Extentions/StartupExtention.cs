@@ -1,4 +1,3 @@
-using Hangfire;
 using Koala.Yedpa.Core.Configuration;
 using Koala.Yedpa.Core.Models;
 using Koala.Yedpa.Core.Providers;
@@ -98,9 +97,6 @@ namespace Koala.Yedpa.WebUI.Extentions
             //services.AddScoped<, >();
             //services.AddScoped<, >();
 
-            // Hangfire server — Toplu Faturalandırma zamanlanmış job'larını (bilgi maili / aktarım) işler.
-            services.AddHangfireServer();
-
             // DuesStatistic Transfer BackgroundService ve Queue (Singleton)
             services.AddSingleton<DuesStatisticTransferQueue>();
             services.AddHostedService<DuesStatisticTransferBackgroundService>();
@@ -111,6 +107,15 @@ namespace Koala.Yedpa.WebUI.Extentions
         {
             services.AddScoped<IBudgetRatioService, BudgetRatioService>();
             services.AddScoped<IBudgetOrderService, BudgetOrderService>();
+            // Toplu Faturalandırma (Bulk Invoice) — bu metot WebUI Program.cs'in ÇAĞIRDIĞI metottur.
+            // Service projesindeki ServiceCollectionExtensions.AddApplicationServices WebUI tarafından kullanılmaz.
+            services.AddScoped<IBulkInvoiceService, BulkInvoiceService>();
+            services.AddScoped<IBulkInvoiceTransferService, BulkInvoiceTransferService>();
+            services.AddScoped<IBulkInvoiceExcelService, BulkInvoiceExcelService>();
+            services.AddScoped<IBulkInvoiceEmailService, BulkInvoiceEmailService>();
+            services.AddScoped<BulkInvoiceJobs>();
+            services.AddScoped<IScheduleStore, PgScheduleStore>();          // tarih → Coolify PostgreSQL (N8N okur)
+            services.AddHostedService<BulkInvoiceTriggerConsumer>();        // N8N → RabbitMQ → uygulama tetik dinleyici
             services.AddScoped<IApiLogoSqlDataService, ApiLogoSqlDataService>();
             services.AddScoped<IAppUserService, AppUserService>();
             services.AddScoped<IBackgroundServices, BackgroundServices>();
