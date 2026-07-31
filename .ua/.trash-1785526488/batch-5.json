@@ -1,0 +1,152 @@
+{
+  "nodes": [
+    {
+      "id": "batch5-node-001",
+      "type": "docs",
+      "name": "CLAUDE.md",
+      "filePath": "D:\\cSource\\repos\\Koala.Yedpa_cursor\\CLAUDE.md",
+      "summary": "Proje talimatları ve takım koordinasyon rehberi. Uzman agent takımı (natasa, olga, nastya, mahmut, gonca, katya) tanımları, görev yönlendirme kuralları, katmanlı proje yapısı (Core/Repositories/Service/WebApi/WebUI), ASP.NET Core 10.0 + EF Core + MSSQL + Metronic 7 teknik yığını ve Bootstrap 4 uyumluluk tablosu. Tüm delegasyon prompt'ları Türkçe yazılır.",
+      "tags": ["proje-yapılandırması", "takım-koordinasyonu", "bootstrap-4", "metronic-7", "aspnet-core-10", "ef-core", "mssql", "agent-sistemi"],
+      "complexity": "medium",
+      "language": "markdown"
+    },
+    {
+      "id": "batch5-node-002",
+      "type": "config",
+      "name": "Koala.Yedpa.sln",
+      "filePath": "D:\\cSource\\repos\\Koala.Yedpa_cursor\\Koala.Yedpa.sln",
+      "summary": "Visual Studio 17 çözüm dosyası. 7 proje içerir: Koala.Yedpa.Core, Koala.Yedpa.Repositories, Koala.Yedpa.Service, Koala.Yedpa.WebUI, Koala.Yedpa.WebApi, Koala.Yedpa.Repositories.Tests, Koala.Yedpa.Service.Tests. Çözüm klasörleri altında gruplanmıştır. Debug/Release, Any CPU/x64/x86 yapılandırmaları tanımlıdır.",
+      "tags": ["solution", "visual-studio-17", "proje-yapısı", "çoklu-proje", "test-projeleri"],
+      "complexity": "medium",
+      "language": "sln"
+    },
+    {
+      "id": "batch5-node-003",
+      "type": "docs",
+      "name": "KoalaYedpa_Api_Dokumantasyon_v01.md",
+      "filePath": "D:\\cSource\\repos\\Koala.Yedpa_cursor\\KoalaYedpa_Api_Dokumantasyon_v01.md",
+      "summary": "Sistem Koala YEDPA REST API dokümantasyonu v1.0 (Mayıs 2026). JWT Bearer token kimlik doğrulama, standart yanıt yapısı (isSuccess, statusCode, message, data), hata kodları, Health Check endpoint'leri, Logo entegrasyonlu cari kart modülü: müşteri listeleme/arama, bekleyen faturalar, detaylı ekstre, bakiyeli müşteri listesi. 6 ViewModel tanımı: ClCardInfo, PendingInvoice, ClCardStatementDetailed, CustomerListWithBalance, arama kriterleri.",
+      "tags": ["api-dokümantasyon", "rest-api", "jwt", "logo-entegrasyon", "cari-kart", "fatura", "ekstre", "swagger", "sağlık-kontrolü"],
+      "complexity": "high",
+      "language": "markdown"
+    },
+    {
+      "id": "batch5-node-004",
+      "type": "data",
+      "name": "build_output.txt",
+      "filePath": "D:\\cSource\\repos\\Koala.Yedpa_cursor\\build_output.txt",
+      "summary": "Başarısız dotnet build çıktısı. Koala.Yedpa.Core, Repositories ve Service projeleri başarıyla derlenmiş ancak WebUI projesinde MSB3027/3021 hataları oluşmuş: WebUI süreci (PID 59500) Core.dll, Repositories.dll ve Service.dll dosyalarını kilitlediği için 10 yeniden deneme sonrası kopyalama başarısız. 30 uyarı, 6 hata, toplam süre 15.04 saniye. .NET SDK 10.0.102 kullanılıyor.",
+      "tags": ["build-hatası", "dosya-kilidi", "msb3027", "msb3021", "dotnet-sdk-10.0.102", "webui-kilidi", "debug"],
+      "complexity": "low",
+      "language": "txt"
+    },
+    {
+      "id": "batch5-node-005",
+      "type": "sql",
+      "name": "check_migration.sql",
+      "filePath": "D:\\cSource\\repos\\Koala.Yedpa_cursor\\check_migration.sql",
+      "summary": "EF Core migration kontrol SQL'i. __EFMigrationsHistory tablosundan BulkInvoice içeren migration kayıtlarını MigrationId ve ProductVersion ile birlikte, MigrationId'ye göre azalan sırada listeler.",
+      "tags": ["migration-kontrol", "ef-core", "bulk-invoice", "veritabanı-denetim", "__efmigrationshistory"],
+      "complexity": "low",
+      "language": "sql"
+    },
+    {
+      "id": "batch5-node-006",
+      "type": "sql",
+      "name": "check_tables.sql",
+      "filePath": "D:\\cSource\\repos\\Koala.Yedpa_cursor\\check_tables.sql",
+      "summary": "Veritabanı tablo kontrol SQL'i. INFORMATION_SCHEMA.TABLES üzerinden BulkInvoice ile başlayan tüm tablo adlarını ve tiplerini (BASE TABLE/VIEW) alfabetik sırada listeler.",
+      "tags": ["tablo-kontrol", "bulk-invoice", "veritabanı-denetim", "information-schema", "sql-server"],
+      "complexity": "low",
+      "language": "sql"
+    },
+    {
+      "id": "batch5-node-007",
+      "type": "docs",
+      "name": "handoff.md",
+      "filePath": "D:\\cSource\\repos\\Koala.Yedpa_cursor\\handoff.md",
+      "summary": "Toplu faturalandırma (Bulk Invoice) yeniden yazımı handoff dokümanı (güncelleme: 2026-07-28). Hangfire'dan N8N+RabbitMQ+PostgreSQL mimarisine geçişi belgeler. İş kuralları (Firm=211, Period=16, AIDAT, LINEEXP, TRGFLAG, TOTAL), iki aşamalı N8N workflow (12:01 bilgilendirme + 00:01 aktarım), BulkInvoiceTriggerConsumer (arka plan servisi), güvenlik kuralı (iş verisi VPS'e taşınmaz), 182/182 test yeşil durumu, çalışılan dosya envanteri (Core/Service/WebUI), boş catch blokları envanteri, git/deploy durumu ve üretime hazırlık için kalan operasyonel adımlar.",
+      "tags": ["bulk-invoice", "n8n", "rabbitmq", "postgresql", "logo-rest", "handoff", "mimari-geçiş", "hangfire-kaldırma", "coolify", "toplu-faturalandırma"],
+      "complexity": "high",
+      "language": "markdown"
+    }
+  ],
+  "edges": [
+    {
+      "source": "batch5-node-001",
+      "target": "batch5-node-002",
+      "type": "configures",
+      "label": "Proje katmanlarını ve yapısını tanımlar"
+    },
+    {
+      "source": "batch5-node-001",
+      "target": "batch5-node-003",
+      "type": "references",
+      "label": "Teknik yığın (ASP.NET Core 10.0, EF Core, MSSQL) API dokümantasyonu ile tutarlıdır"
+    },
+    {
+      "source": "batch5-node-001",
+      "target": "batch5-node-007",
+      "type": "governs",
+      "label": "Takım kuralları, Bootstrap 4 standardı ve delegasyon akışı handoff'taki iş kurallarını yönetir"
+    },
+    {
+      "source": "batch5-node-007",
+      "target": "batch5-node-002",
+      "type": "references",
+      "label": "Proje çözüm yapısı ve katman mimarisine atıf yapar"
+    },
+    {
+      "source": "batch5-node-007",
+      "target": "batch5-node-003",
+      "type": "documents",
+      "label": "Logo REST API entegrasyonu ve fatura endpoint'lerini kullanır"
+    },
+    {
+      "source": "batch5-node-007",
+      "target": "batch5-node-004",
+      "type": "references",
+      "label": "Build durumu ve hata geçmişini kaydeder (0 hata hedefi)"
+    },
+    {
+      "source": "batch5-node-007",
+      "target": "batch5-node-005",
+      "type": "references",
+      "label": "BulkInvoice EF migration'larının varlığını doğrulamak için kullanılır"
+    },
+    {
+      "source": "batch5-node-007",
+      "target": "batch5-node-006",
+      "type": "references",
+      "label": "BulkInvoice veritabanı tablolarının varlığını doğrulamak için kullanılır"
+    },
+    {
+      "source": "batch5-node-005",
+      "target": "batch5-node-006",
+      "type": "related",
+      "label": "Aynı veritabanı denetim setinin parçası — migration ve tablo kontrolleri birlikte çalışır"
+    },
+    {
+      "source": "batch5-node-003",
+      "target": "batch5-node-002",
+      "type": "documents",
+      "label": "Çözüm içindeki WebApi projesinin REST endpoint'lerini belgeler"
+    },
+    {
+      "source": "batch5-node-004",
+      "target": "batch5-node-002",
+      "type": "builds",
+      "label": "Çözümün başarısız build sonucu — WebUI DLL kilitlenmesi"
+    }
+  ],
+  "missingFiles": [
+    {
+      "fileName": "rabbitinfo.txt",
+      "reason": "Dosya proje kök dizininde mevcut değil. handoff.md içinde .gitignore kapsamında olduğu belirtilmiş."
+    },
+    {
+      "fileName": "Yedpa.code-workspace",
+      "reason": "Dosya proje kök dizininde mevcut değil. .code-workspace uzantılı hiçbir dosya bulunamadı."
+    }
+  ]
+}

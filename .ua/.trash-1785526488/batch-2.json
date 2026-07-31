@@ -1,0 +1,188 @@
+{
+  "nodes": [
+    {
+      "id": "document:.claude/skills/Asp-Identity/assets/controllers/AccountController.txt",
+      "type": "document",
+      "name": "Account Controller Şablonu",
+      "filePath": ".claude/skills/Asp-Identity/assets/controllers/AccountController.txt",
+      "summary": "Oturum açmış kullanıcının profil görüntüleme/düzenleme, şifre değiştirme, iki faktörlü kimlik doğrulama (2FA) etkinleştirme/devre dışı bırakma/doğrulama, avatar yükleme/silme işlemlerini yöneten ASP.NET Identity controller şablonu. IAccountService, IIdentityService ve UserManager<AppUser> bağımlılıklarına sahiptir.",
+      "tags": ["asp-identity", "controller", "hesap-yönetimi", "profil", "iki-faktörlü-kimlik-doğrulama", "avatar", "şifre-değiştirme"],
+      "complexity": "moderate",
+      "language": "csharp"
+    },
+    {
+      "id": "document:.claude/skills/Asp-Identity/assets/controllers/AdminUserController.txt",
+      "type": "document",
+      "name": "Admin Kullanıcı Yönetimi Controller Şablonu",
+      "filePath": ".claude/skills/Asp-Identity/assets/controllers/AdminUserController.txt",
+      "summary": "Admin yetkisiyle kullanıcı oluşturma, düzenleme, silme, şifre değiştirme, rol atama ve claim yönetimi işlemlerini yöneten controller şablonu. DataTables entegrasyonu için GetUsersJson ve GetUserDetailsJson JSON endpoint'leri içerir. IIdentityService, UserManager<AppUser> ve IClaimManagementService bağımlılıklarına sahiptir. [Authorize(Policy = \"Admin.User.View\")] ile yetkilendirme kontrolü yapılır.",
+      "tags": ["asp-identity", "controller", "admin", "kullanıcı-yönetimi", "rol-atama", "claim-yönetimi", "json-api", "datatables"],
+      "complexity": "high",
+      "language": "csharp"
+    },
+    {
+      "id": "document:.claude/skills/Asp-Identity/assets/controllers/AuthController.txt",
+      "type": "document",
+      "name": "Kimlik Doğrulama Controller Şablonu",
+      "filePath": ".claude/skills/Asp-Identity/assets/controllers/AuthController.txt",
+      "summary": "Anonim erişime açık (AllowAnonymous) giriş, kayıt, şifremi unuttum, şifre sıfırlama, çıkış ve erişim reddi sayfalarını yöneten ASP.NET Identity kimlik doğrulama controller şablonu. ReturnUrl yönlendirmesi ve kullanıcı enumerasyonunu engelleme (şifremi unuttum her zaman başarılı gösterir) desenlerini içerir. Sadece IAccountService bağımlılığına sahiptir.",
+      "tags": ["asp-identity", "controller", "kimlik-doğrulama", "giriş", "kayıt", "şifre-sıfırlama", "oturum-yönetimi"],
+      "complexity": "moderate",
+      "language": "csharp"
+    },
+    {
+      "id": "document:.claude/skills/Asp-Identity/assets/controllers/RoleController.txt",
+      "type": "document",
+      "name": "Rol Yönetimi Controller Şablonu",
+      "filePath": ".claude/skills/Asp-Identity/assets/controllers/RoleController.txt",
+      "summary": "Admin yetkisiyle rol oluşturma, düzenleme, silme ve rol bazlı claim yönetimi işlemlerini yöneten controller şablonu. DataTables entegrasyonu için GetRolesJson ve GetRoleClaimsJson JSON endpoint'leri içerir. IIdentityService ve IClaimManagementService bağımlılıklarına sahiptir. [Authorize(Policy = \"Admin.Role.View\")] ile yetkilendirme kontrolü yapılır.",
+      "tags": ["asp-identity", "controller", "rol-yönetimi", "claim-yönetimi", "json-api", "datatables"],
+      "complexity": "moderate",
+      "language": "csharp"
+    },
+    {
+      "id": "concept:.claude/skills/Asp-Identity/services/IAccountService",
+      "type": "concept",
+      "name": "IAccountService Arayüzü",
+      "summary": "Hesap işlemleri (giriş, kayıt, profil güncelleme, şifre değiştirme, iki faktörlü kimlik doğrulama, şifre sıfırlama) için servis arayüzü. AccountController ve AuthController tarafından kullanılır.",
+      "tags": ["asp-identity", "service", "arayüz", "hesap-yönetimi"],
+      "complexity": "low",
+      "language": "csharp"
+    },
+    {
+      "id": "concept:.claude/skills/Asp-Identity/services/IIdentityService",
+      "type": "concept",
+      "name": "IIdentityService Arayüzü",
+      "summary": "Kimlik yönetimi (kullanıcı/rol CRUD, kullanıcı-rol atama, claim yönetimi, avatar işlemleri, 2FA token doğrulama) için kapsamlı servis arayüzü. AccountController, AdminUserController ve RoleController tarafından kullanılır.",
+      "tags": ["asp-identity", "service", "arayüz", "kimlik-yönetimi"],
+      "complexity": "moderate",
+      "language": "csharp"
+    },
+    {
+      "id": "concept:.claude/skills/Asp-Identity/services/IClaimManagementService",
+      "type": "concept",
+      "name": "IClaimManagementService Arayüzü",
+      "summary": "Kullanıcı ve rol bazlı claim yönetimi (grup bazlı claim listeleme, toplu güncelleme) için servis arayüzü. AdminUserController (kullanıcı claim'leri) ve RoleController (rol claim'leri) tarafından kullanılır.",
+      "tags": ["asp-identity", "service", "arayüz", "claim-yönetimi"],
+      "complexity": "low",
+      "language": "csharp"
+    },
+    {
+      "id": "skill:asp-identity",
+      "type": "skill",
+      "name": "Asp-Identity Becerisi",
+      "summary": "ASP.NET Core Identity tabanlı kimlik doğrulama, yetkilendirme, kullanıcı/rol/claim yönetimi için controller ve view şablonları sunan Claude Code becerisi. Controller şablonları Account, AdminUser, Auth, Role, Module ve Claim yönetimini kapsar.",
+      "tags": ["asp-identity", "skill", "kimlik-doğrulama", "yetkilendirme", "şablon", "asp-net-core"],
+      "complexity": "high",
+      "language": "multi"
+    }
+  ],
+  "edges": [
+    {
+      "source": "skill:asp-identity",
+      "target": "document:.claude/skills/Asp-Identity/assets/controllers/AccountController.txt",
+      "type": "documents",
+      "label": "Controller şablonunu içerir"
+    },
+    {
+      "source": "skill:asp-identity",
+      "target": "document:.claude/skills/Asp-Identity/assets/controllers/AdminUserController.txt",
+      "type": "documents",
+      "label": "Controller şablonunu içerir"
+    },
+    {
+      "source": "skill:asp-identity",
+      "target": "document:.claude/skills/Asp-Identity/assets/controllers/AuthController.txt",
+      "type": "documents",
+      "label": "Controller şablonunu içerir"
+    },
+    {
+      "source": "skill:asp-identity",
+      "target": "document:.claude/skills/Asp-Identity/assets/controllers/RoleController.txt",
+      "type": "documents",
+      "label": "Controller şablonunu içerir"
+    },
+    {
+      "source": "document:.claude/skills/Asp-Identity/assets/controllers/AccountController.txt",
+      "target": "concept:.claude/skills/Asp-Identity/services/IAccountService",
+      "type": "depends_on",
+      "label": "Profil, şifre değiştirme ve 2FA işlemleri için kullanır"
+    },
+    {
+      "source": "document:.claude/skills/Asp-Identity/assets/controllers/AccountController.txt",
+      "target": "concept:.claude/skills/Asp-Identity/services/IIdentityService",
+      "type": "depends_on",
+      "label": "2FA token doğrulama ve avatar işlemleri için kullanır"
+    },
+    {
+      "source": "document:.claude/skills/Asp-Identity/assets/controllers/AuthController.txt",
+      "target": "concept:.claude/skills/Asp-Identity/services/IAccountService",
+      "type": "depends_on",
+      "label": "Giriş, kayıt ve şifre sıfırlama işlemleri için kullanır"
+    },
+    {
+      "source": "document:.claude/skills/Asp-Identity/assets/controllers/AdminUserController.txt",
+      "target": "concept:.claude/skills/Asp-Identity/services/IIdentityService",
+      "type": "depends_on",
+      "label": "Kullanıcı CRUD, rol atama ve şifre değiştirme için kullanır"
+    },
+    {
+      "source": "document:.claude/skills/Asp-Identity/assets/controllers/AdminUserController.txt",
+      "target": "concept:.claude/skills/Asp-Identity/services/IClaimManagementService",
+      "type": "depends_on",
+      "label": "Kullanıcı claim listeleme ve güncelleme için kullanır"
+    },
+    {
+      "source": "document:.claude/skills/Asp-Identity/assets/controllers/RoleController.txt",
+      "target": "concept:.claude/skills/Asp-Identity/services/IIdentityService",
+      "type": "depends_on",
+      "label": "Rol CRUD işlemleri için kullanır"
+    },
+    {
+      "source": "document:.claude/skills/Asp-Identity/assets/controllers/RoleController.txt",
+      "target": "concept:.claude/skills/Asp-Identity/services/IClaimManagementService",
+      "type": "depends_on",
+      "label": "Rol claim listeleme ve güncelleme için kullanır"
+    },
+    {
+      "source": "document:.claude/skills/Asp-Identity/assets/controllers/AccountController.txt",
+      "target": "document:.claude/skills/Asp-Identity/assets/controllers/AuthController.txt",
+      "type": "related",
+      "label": "Aynı IAccountService bağımlılığını paylaşır, hesap yaşam döngüsünü birlikte yönetir"
+    },
+    {
+      "source": "document:.claude/skills/Asp-Identity/assets/controllers/AdminUserController.txt",
+      "target": "document:.claude/skills/Asp-Identity/assets/controllers/RoleController.txt",
+      "type": "related",
+      "label": "Claim yönetimi desenini paylaşır, her ikisi de IClaimManagementService kullanır"
+    },
+    {
+      "source": "document:.claude/skills/Asp-Identity/assets/controllers/AdminUserController.txt",
+      "target": "document:.claude/skills/Asp-Identity/assets/controllers/AccountController.txt",
+      "type": "related",
+      "label": "Her ikisi de IIdentityService kullanır, AdminUserController admin perspektifinden kullanıcı yönetirken AccountController kullanıcının kendi hesabını yönetir"
+    },
+    {
+      "source": "document:.claude/skills/Asp-Identity/assets/controllers/AdminUserController.txt",
+      "target": "document:.claude/skills/Asp-Identity/assets/controllers/AuthController.txt",
+      "type": "related",
+      "label": "AuthController kullanıcı oluşturur (Register), AdminUserController admin olarak kullanıcı yönetir"
+    },
+    {
+      "source": "document:.claude/skills/Asp-Identity/assets/controllers/RoleController.txt",
+      "target": "document:.claude/skills/Asp-Identity/assets/controllers/AdminUserController.txt",
+      "type": "related",
+      "label": "RoleController rolleri tanımlar, AdminUserController bu rolleri kullanıcılara atar"
+    }
+  ],
+  "missingFiles": [
+    {
+      "filePath": ".claude/skills/Asp-Identity/assets/controllers/HomeController.txt",
+      "reason": "Dosya mevcut değil. Dizinde bu isimde bir dosya bulunamadı."
+    },
+    {
+      "filePath": ".claude/skills/Asp-Identity/assets/controllers/UserController.txt",
+      "reason": "Dosya mevcut değil. Dizinde bu isimde bir dosya bulunamadı. İşlevselliği AdminUserController kapsıyor olabilir."
+    }
+  ]
+}

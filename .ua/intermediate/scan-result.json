@@ -1,0 +1,5693 @@
+{
+  "scriptCompleted": true,
+  "contentDigest": "f5d1b21c8800cee30bd4b8c2a8220ea193ce0c404ce19d0425044334780b3a44",
+  "files": [
+    {
+      "path": ".Message34/MailApi.Json",
+      "language": "json",
+      "sizeLines": 2183,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".claude/agents/gonca.md",
+      "language": "markdown",
+      "sizeLines": 40,
+      "fileCategory": "docs"
+    },
+    {
+      "path": ".claude/agents/katya.md",
+      "language": "markdown",
+      "sizeLines": 60,
+      "fileCategory": "docs"
+    },
+    {
+      "path": ".claude/agents/mahmut.md",
+      "language": "markdown",
+      "sizeLines": 46,
+      "fileCategory": "docs"
+    },
+    {
+      "path": ".claude/agents/nastya.md",
+      "language": "markdown",
+      "sizeLines": 43,
+      "fileCategory": "docs"
+    },
+    {
+      "path": ".claude/agents/natasa.md",
+      "language": "markdown",
+      "sizeLines": 41,
+      "fileCategory": "docs"
+    },
+    {
+      "path": ".claude/agents/olga.md",
+      "language": "markdown",
+      "sizeLines": 44,
+      "fileCategory": "docs"
+    },
+    {
+      "path": ".claude/settings.json",
+      "language": "json",
+      "sizeLines": 6,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".claude/settings.local.json",
+      "language": "json",
+      "sizeLines": 97,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".claude/skills/Asp-Identity.skill",
+      "language": "skill",
+      "sizeLines": 85,
+      "fileCategory": "code"
+    },
+    {
+      "path": ".claude/skills/Asp-Identity/SKILL.md",
+      "language": "markdown",
+      "sizeLines": 348,
+      "fileCategory": "docs"
+    },
+    {
+      "path": ".claude/skills/Asp-Identity/assets/controllers/AccountController.txt",
+      "language": "txt",
+      "sizeLines": 254,
+      "fileCategory": "docs"
+    },
+    {
+      "path": ".claude/skills/Asp-Identity/assets/controllers/AdminUserController.txt",
+      "language": "txt",
+      "sizeLines": 327,
+      "fileCategory": "docs"
+    },
+    {
+      "path": ".claude/skills/Asp-Identity/assets/controllers/AuthController.txt",
+      "language": "txt",
+      "sizeLines": 154,
+      "fileCategory": "docs"
+    },
+    {
+      "path": ".claude/skills/Asp-Identity/assets/controllers/ClaimController.txt",
+      "language": "txt",
+      "sizeLines": 195,
+      "fileCategory": "docs"
+    },
+    {
+      "path": ".claude/skills/Asp-Identity/assets/controllers/ModuleController.txt",
+      "language": "txt",
+      "sizeLines": 167,
+      "fileCategory": "docs"
+    },
+    {
+      "path": ".claude/skills/Asp-Identity/assets/controllers/RoleController.txt",
+      "language": "txt",
+      "sizeLines": 188,
+      "fileCategory": "docs"
+    },
+    {
+      "path": ".claude/skills/Asp-Identity/assets/views/_UserActivityPartial.txt",
+      "language": "txt",
+      "sizeLines": 33,
+      "fileCategory": "docs"
+    },
+    {
+      "path": ".claude/skills/Asp-Identity/assets/views/_UserInfoPartial.txt",
+      "language": "txt",
+      "sizeLines": 99,
+      "fileCategory": "docs"
+    },
+    {
+      "path": ".claude/skills/Asp-Identity/assets/views/_UserPartial.txt",
+      "language": "txt",
+      "sizeLines": 28,
+      "fileCategory": "docs"
+    },
+    {
+      "path": ".claude/skills/Asp-Identity/assets/views/view-structure.txt",
+      "language": "txt",
+      "sizeLines": 100,
+      "fileCategory": "docs"
+    },
+    {
+      "path": ".claude/skills/Asp-Identity/references/entities.md",
+      "language": "markdown",
+      "sizeLines": 325,
+      "fileCategory": "docs"
+    },
+    {
+      "path": ".claude/skills/Asp-Identity/references/patterns.md",
+      "language": "markdown",
+      "sizeLines": 788,
+      "fileCategory": "docs"
+    },
+    {
+      "path": ".claude/skills/Asp-Identity/references/workflows.md",
+      "language": "markdown",
+      "sizeLines": 315,
+      "fileCategory": "docs"
+    },
+    {
+      "path": ".claude/skills/dotnet-backend-patterns/dotnet-backend-patterns/SKILL.md",
+      "language": "markdown",
+      "sizeLines": 817,
+      "fileCategory": "docs"
+    },
+    {
+      "path": ".claude/skills/dotnet-backend-patterns/dotnet-backend-patterns/assets/repository-template.cs",
+      "language": "csharp",
+      "sizeLines": 523,
+      "fileCategory": "code"
+    },
+    {
+      "path": ".claude/skills/dotnet-backend-patterns/dotnet-backend-patterns/assets/service-template.cs",
+      "language": "csharp",
+      "sizeLines": 336,
+      "fileCategory": "code"
+    },
+    {
+      "path": ".claude/skills/dotnet-backend-patterns/dotnet-backend-patterns/references/dapper-patterns.md",
+      "language": "markdown",
+      "sizeLines": 546,
+      "fileCategory": "docs"
+    },
+    {
+      "path": ".claude/skills/dotnet-backend-patterns/dotnet-backend-patterns/references/ef-core-best-practices.md",
+      "language": "markdown",
+      "sizeLines": 355,
+      "fileCategory": "docs"
+    },
+    {
+      "path": ".claude/skills/dotnet-backend/SKILL.md",
+      "language": "markdown",
+      "sizeLines": 266,
+      "fileCategory": "docs"
+    },
+    {
+      "path": ".claude/skills/metronic-7-frontend-designer.skill",
+      "language": "skill",
+      "sizeLines": 23,
+      "fileCategory": "code"
+    },
+    {
+      "path": ".claude/skills/metronic-7-frontend-designer/SKILL.md",
+      "language": "markdown",
+      "sizeLines": 174,
+      "fileCategory": "docs"
+    },
+    {
+      "path": ".claude/skills/metronic-7-frontend-designer/assets/templates/ManageNavPages.cs.txt",
+      "language": "txt",
+      "sizeLines": 37,
+      "fileCategory": "docs"
+    },
+    {
+      "path": ".claude/skills/metronic-7-frontend-designer/assets/templates/_MainMenuPartial.cshtml.txt",
+      "language": "txt",
+      "sizeLines": 72,
+      "fileCategory": "docs"
+    },
+    {
+      "path": ".claude/skills/metronic-7-frontend-designer/assets/templates/javascript-template.js",
+      "language": "javascript",
+      "sizeLines": 22,
+      "fileCategory": "code"
+    },
+    {
+      "path": ".claude/skills/metronic-7-frontend-designer/references/structure.md",
+      "language": "markdown",
+      "sizeLines": 106,
+      "fileCategory": "docs"
+    },
+    {
+      "path": ".ua/.understandignore",
+      "language": "unknown",
+      "sizeLines": 116,
+      "fileCategory": "code"
+    },
+    {
+      "path": ".ua/config.json",
+      "language": "json",
+      "sizeLines": 0,
+      "fileCategory": "config"
+    },
+    {
+      "path": "CLAUDE.md",
+      "language": "markdown",
+      "sizeLines": 81,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Configuration/RabbitMqSettings.cs",
+      "language": "csharp",
+      "sizeLines": 19,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Constants/DashboardWidgets.cs",
+      "language": "csharp",
+      "sizeLines": 33,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Dtos/AidatTahsilatKpiDto.cs",
+      "language": "csharp",
+      "sizeLines": 11,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Dtos/BulkInvoice/AidatInvoicePayload.cs",
+      "language": "csharp",
+      "sizeLines": 54,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Dtos/BulkInvoice/AlertCheckResultDto.cs",
+      "language": "csharp",
+      "sizeLines": 47,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Dtos/BulkInvoice/BulkInvoiceItemDto.cs",
+      "language": "csharp",
+      "sizeLines": 22,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Dtos/BulkInvoice/BulkInvoiceSessionDto.cs",
+      "language": "csharp",
+      "sizeLines": 80,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Dtos/BulkInvoice/CreateBulkInvoiceSessionDto.cs",
+      "language": "csharp",
+      "sizeLines": 18,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Dtos/BulkInvoice/PendingInvoiceLineDto.cs",
+      "language": "csharp",
+      "sizeLines": 53,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Dtos/BulkInvoice/SelectedLineDto.cs",
+      "language": "csharp",
+      "sizeLines": 38,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Dtos/CryptResponse.cs",
+      "language": "csharp",
+      "sizeLines": 33,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Dtos/EmailDto.cs",
+      "language": "csharp",
+      "sizeLines": 71,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Dtos/EnumDto.cs",
+      "language": "csharp",
+      "sizeLines": 138,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Dtos/ErrorDto.cs",
+      "language": "csharp",
+      "sizeLines": 23,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Dtos/KrediKartTahsilat/CreateKrediKartTahsilatRequestDto.cs",
+      "language": "csharp",
+      "sizeLines": 60,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Dtos/KrediKartTahsilat/KrediKartTahsilatLogoDto.cs",
+      "language": "csharp",
+      "sizeLines": 86,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Dtos/MailSettingsDto.cs",
+      "language": "csharp",
+      "sizeLines": 12,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Dtos/Message34/Message34Models.cs",
+      "language": "csharp",
+      "sizeLines": 261,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Dtos/QRCodeCreateViewModel.cs",
+      "language": "csharp",
+      "sizeLines": 19,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Dtos/QRCodeDto.cs",
+      "language": "csharp",
+      "sizeLines": 10,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Dtos/ResponseDto.cs",
+      "language": "csharp",
+      "sizeLines": 80,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Dtos/SalesInvoice/CreateArpSlipRequestDto.cs",
+      "language": "csharp",
+      "sizeLines": 167,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Dtos/SalesInvoice/CreateSafeDepositSlipRequestDto.cs",
+      "language": "csharp",
+      "sizeLines": 229,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Dtos/SalesInvoice/CreateSalesInvoiceRequestDto.cs",
+      "language": "csharp",
+      "sizeLines": 353,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Dtos/SalesInvoice/CreateSalesInvoiceResponseDto.cs",
+      "language": "csharp",
+      "sizeLines": 51,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Dtos/SelectListDto.cs",
+      "language": "csharp",
+      "sizeLines": 11,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Dtos/Yonetim/ArizaDto.cs",
+      "language": "csharp",
+      "sizeLines": 93,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Dtos/Yonetim/ArsivDto.cs",
+      "language": "csharp",
+      "sizeLines": 46,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Dtos/Yonetim/OtoparkDto.cs",
+      "language": "csharp",
+      "sizeLines": 85,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Dtos/Yonetim/SozlesmeDto.cs",
+      "language": "csharp",
+      "sizeLines": 87,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Exceptions/CryptoLicenseException.cs",
+      "language": "csharp",
+      "sizeLines": 15,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Helpers/BulkInvoiceMonths.cs",
+      "language": "csharp",
+      "sizeLines": 16,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Helpers/ClientSpecodeFilterProvider.cs",
+      "language": "csharp",
+      "sizeLines": 31,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Helpers/DataTableExtensionsHelper.cs",
+      "language": "csharp",
+      "sizeLines": 66,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Helpers/LicenseFileHelper.cs",
+      "language": "csharp",
+      "sizeLines": 85,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Helpers/LogoJsonHelper.cs",
+      "language": "csharp",
+      "sizeLines": 39,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Helpers/PredicateBuilder.cs",
+      "language": "csharp",
+      "sizeLines": 24,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Helpers/Tools.cs",
+      "language": "csharp",
+      "sizeLines": 152,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Koala.Yedpa.Core.csproj",
+      "language": "csproj",
+      "sizeLines": 46,
+      "fileCategory": "config"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/AppRole.cs",
+      "language": "csharp",
+      "sizeLines": 12,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/AppUser.cs",
+      "language": "csharp",
+      "sizeLines": 44,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/BudgetRatio.cs",
+      "language": "csharp",
+      "sizeLines": 19,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/BulkInvoiceItem.cs",
+      "language": "csharp",
+      "sizeLines": 64,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/BulkInvoiceSession.cs",
+      "language": "csharp",
+      "sizeLines": 51,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/Claims.cs",
+      "language": "csharp",
+      "sizeLines": 14,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/CommonProperties.cs",
+      "language": "csharp",
+      "sizeLines": 13,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/DashboardWidgetPreference.cs",
+      "language": "csharp",
+      "sizeLines": 14,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/DuesStatistic.cs",
+      "language": "csharp",
+      "sizeLines": 97,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/EmailTemplate.cs",
+      "language": "csharp",
+      "sizeLines": 12,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/ExtendedProperties.cs",
+      "language": "csharp",
+      "sizeLines": 25,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/ExtendedPropertyRecordValues.cs",
+      "language": "csharp",
+      "sizeLines": 11,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/ExtendedPropertyValues.cs",
+      "language": "csharp",
+      "sizeLines": 13,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/Filters/ClientSpecodeFilter.cs",
+      "language": "csharp",
+      "sizeLines": 38,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/GeneratedIds.cs",
+      "language": "csharp",
+      "sizeLines": 18,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/LogoJsonModels/LogoSalesOrdersJsonViewModels.cs",
+      "language": "csharp",
+      "sizeLines": 49,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/LogoJsonModels/SalesOrderJsonViewModels.cs",
+      "language": "csharp",
+      "sizeLines": 59,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/Module.cs",
+      "language": "csharp",
+      "sizeLines": 26,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/QRCode.cs",
+      "language": "csharp",
+      "sizeLines": 47,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/QRCodeBatch.cs",
+      "language": "csharp",
+      "sizeLines": 34,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/Settings.cs",
+      "language": "csharp",
+      "sizeLines": 15,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/Transaction.cs",
+      "language": "csharp",
+      "sizeLines": 26,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/TransactionItem.cs",
+      "language": "csharp",
+      "sizeLines": 15,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/TransactionType.cs",
+      "language": "csharp",
+      "sizeLines": 25,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/ViewModels/ApiLogoViewModels.cs",
+      "language": "csharp",
+      "sizeLines": 779,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/ViewModels/AppRoleViewModel.cs",
+      "language": "csharp",
+      "sizeLines": 44,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/ViewModels/AppUserViewModels.cs",
+      "language": "csharp",
+      "sizeLines": 228,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/ViewModels/BudgetOrderViewModels.cs",
+      "language": "csharp",
+      "sizeLines": 258,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/ViewModels/BudgetRatioViewModels.cs",
+      "language": "csharp",
+      "sizeLines": 172,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/ViewModels/ClaimsViewModel.cs",
+      "language": "csharp",
+      "sizeLines": 44,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/ViewModels/DataTableRequest.cs",
+      "language": "csharp",
+      "sizeLines": 42,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/ViewModels/DuesStatisticViewModels.cs",
+      "language": "csharp",
+      "sizeLines": 99,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/ViewModels/EmailTemplateViewModel.cs",
+      "language": "csharp",
+      "sizeLines": 39,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/ViewModels/ExtendedPropertiesViewModel.cs",
+      "language": "csharp",
+      "sizeLines": 63,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/ViewModels/ExtendedPropertyRecordValuesViewModels.cs",
+      "language": "csharp",
+      "sizeLines": 20,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/ViewModels/ExtendedPropertyValuesViewModel.cs",
+      "language": "csharp",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/ViewModels/GeneratedIdsViewModels.cs",
+      "language": "csharp",
+      "sizeLines": 39,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/ViewModels/ModuleViewModels.cs",
+      "language": "csharp",
+      "sizeLines": 38,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/ViewModels/SendMailViewModel.cs",
+      "language": "csharp",
+      "sizeLines": 17,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/ViewModels/SettingViewModels.cs",
+      "language": "csharp",
+      "sizeLines": 202,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/ViewModels/TransactionItemViewModels.cs",
+      "language": "csharp",
+      "sizeLines": 28,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/ViewModels/TransactionTypeViewModels.cs",
+      "language": "csharp",
+      "sizeLines": 45,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/ViewModels/TransactionViewModels.cs",
+      "language": "csharp",
+      "sizeLines": 60,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/ViewModels/WorkplaceViewModels.cs",
+      "language": "csharp",
+      "sizeLines": 130,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/Workplace.cs",
+      "language": "csharp",
+      "sizeLines": 155,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/Yonetim/Ariza.cs",
+      "language": "csharp",
+      "sizeLines": 102,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/Yonetim/Arsiv.cs",
+      "language": "csharp",
+      "sizeLines": 70,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/Yonetim/Ortak.cs",
+      "language": "csharp",
+      "sizeLines": 66,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/Yonetim/Otopark.cs",
+      "language": "csharp",
+      "sizeLines": 37,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Models/Yonetim/Sozlesme.cs",
+      "language": "csharp",
+      "sizeLines": 85,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Providers/IDapperProvider.cs",
+      "language": "csharp",
+      "sizeLines": 25,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Providers/IEmailProvider.cs",
+      "language": "csharp",
+      "sizeLines": 7,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Providers/ILogoRestServiceProvider.cs",
+      "language": "csharp",
+      "sizeLines": 22,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Providers/IRestServiceProvider.cs",
+      "language": "csharp",
+      "sizeLines": 11,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Providers/ISqlProvider.cs",
+      "language": "csharp",
+      "sizeLines": 14,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Repositories/IAppRoleRepository.cs",
+      "language": "csharp",
+      "sizeLines": 16,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Repositories/IAppUserRepository.cs",
+      "language": "csharp",
+      "sizeLines": 34,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Repositories/IBudgetRatioRepository.cs",
+      "language": "csharp",
+      "sizeLines": 22,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Repositories/IClaimsRepository.cs",
+      "language": "csharp",
+      "sizeLines": 14,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Repositories/IDuesStatisticRepository.cs",
+      "language": "csharp",
+      "sizeLines": 22,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Repositories/IEmailTemplateRepository.cs",
+      "language": "csharp",
+      "sizeLines": 17,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Repositories/IExtendedPropertiesRepository.cs",
+      "language": "csharp",
+      "sizeLines": 15,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Repositories/IExtendedPropertyRecordValuesRepository.cs",
+      "language": "csharp",
+      "sizeLines": 11,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Repositories/IExtendedPropertyValuesRepository.cs",
+      "language": "csharp",
+      "sizeLines": 5,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Repositories/IGeneratedIdsRepository.cs",
+      "language": "csharp",
+      "sizeLines": 13,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Repositories/IModuleRepository.cs",
+      "language": "csharp",
+      "sizeLines": 14,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Repositories/IQRCodeBatchRepository.cs",
+      "language": "csharp",
+      "sizeLines": 15,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Repositories/IQRCodeRepository.cs",
+      "language": "csharp",
+      "sizeLines": 68,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Repositories/ISettingsRepository.cs",
+      "language": "csharp",
+      "sizeLines": 16,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Repositories/ITransactionItemRepository.cs",
+      "language": "csharp",
+      "sizeLines": 26,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Repositories/ITransactionRepository.cs",
+      "language": "csharp",
+      "sizeLines": 30,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Repositories/ITransactionTypeRepository.cs",
+      "language": "csharp",
+      "sizeLines": 24,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Repositories/IWorkplaceRepository.cs",
+      "language": "csharp",
+      "sizeLines": 20,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Repositories/IYonetimRepositories.cs",
+      "language": "csharp",
+      "sizeLines": 105,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Services/IApiLogoSqlDataService.cs",
+      "language": "csharp",
+      "sizeLines": 23,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Services/IAppUserService.cs",
+      "language": "csharp",
+      "sizeLines": 9,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Services/IBackgroundServices.cs",
+      "language": "csharp",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Services/IBudgetOrderService.cs",
+      "language": "csharp",
+      "sizeLines": 111,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Services/IBudgetRatioService.cs",
+      "language": "csharp",
+      "sizeLines": 20,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Services/IBulkInvoiceEmailService.cs",
+      "language": "csharp",
+      "sizeLines": 13,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Services/IBulkInvoiceExcelService.cs",
+      "language": "csharp",
+      "sizeLines": 12,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Services/IBulkInvoiceService.cs",
+      "language": "csharp",
+      "sizeLines": 67,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Services/IBulkInvoiceTransferService.cs",
+      "language": "csharp",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Services/IClaimsService.cs",
+      "language": "csharp",
+      "sizeLines": 17,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Services/ICryptoService.cs",
+      "language": "csharp",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Services/ICurrentUserService.cs",
+      "language": "csharp",
+      "sizeLines": 7,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Services/IDuesStatisticService.cs",
+      "language": "csharp",
+      "sizeLines": 23,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Services/IEmailService.cs",
+      "language": "csharp",
+      "sizeLines": 12,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Services/IEmailTemplateService.cs",
+      "language": "csharp",
+      "sizeLines": 16,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Services/IExtendedPropertiesService.cs",
+      "language": "csharp",
+      "sizeLines": 16,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Services/IKrediKartTahsilatService.cs",
+      "language": "csharp",
+      "sizeLines": 19,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Services/ILicenseReader.cs",
+      "language": "csharp",
+      "sizeLines": 8,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Services/ILicenseValidator.cs",
+      "language": "csharp",
+      "sizeLines": 11,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Services/IMessage34EmailService.cs",
+      "language": "csharp",
+      "sizeLines": 33,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Services/IModuleService.cs",
+      "language": "csharp",
+      "sizeLines": 15,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Services/IQRCodeService.cs",
+      "language": "csharp",
+      "sizeLines": 28,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Services/ISalesInvoiceService.cs",
+      "language": "csharp",
+      "sizeLines": 31,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Services/IScheduleStore.cs",
+      "language": "csharp",
+      "sizeLines": 12,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Services/ISeedService.cs",
+      "language": "csharp",
+      "sizeLines": 5,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Services/ISettingsService.cs",
+      "language": "csharp",
+      "sizeLines": 33,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Services/ITransactionItemService.cs",
+      "language": "csharp",
+      "sizeLines": 24,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Services/ITransactionService.cs",
+      "language": "csharp",
+      "sizeLines": 34,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Services/ITransactionTypeService.cs",
+      "language": "csharp",
+      "sizeLines": 26,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Services/IWorkplaceService.cs",
+      "language": "csharp",
+      "sizeLines": 36,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Services/IYonetimServices.cs",
+      "language": "csharp",
+      "sizeLines": 77,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/Settings/QRCodeSettings.cs",
+      "language": "csharp",
+      "sizeLines": 12,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/UnitOfWorks/IUnitOfWork.cs",
+      "language": "csharp",
+      "sizeLines": 25,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Core/YedpaApiCore.xml",
+      "language": "xml",
+      "sizeLines": 2227,
+      "fileCategory": "config"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories.Tests/Koala.Yedpa.Repositories.Tests.csproj",
+      "language": "csproj",
+      "sizeLines": 31,
+      "fileCategory": "config"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories.Tests/Yonetim/ArizaRepositoryTests.cs",
+      "language": "csharp",
+      "sizeLines": 473,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories.Tests/Yonetim/ArsivRepositoryTests.cs",
+      "language": "csharp",
+      "sizeLines": 353,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories.Tests/Yonetim/OrtakRepositoryTests.cs",
+      "language": "csharp",
+      "sizeLines": 276,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories.Tests/Yonetim/OtoparkRepositoryTests.cs",
+      "language": "csharp",
+      "sizeLines": 350,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories.Tests/Yonetim/SozlesmeRepositoryTests.cs",
+      "language": "csharp",
+      "sizeLines": 390,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories.Tests/YonetimTestFixture.cs",
+      "language": "csharp",
+      "sizeLines": 72,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/AppDbContext.cs",
+      "language": "csharp",
+      "sizeLines": 73,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Configurations/AppUserConfiguration.cs",
+      "language": "csharp",
+      "sizeLines": 18,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Configurations/BudgetRatioConfiguration.cs",
+      "language": "csharp",
+      "sizeLines": 41,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Configurations/ClaimsConfiguration.cs",
+      "language": "csharp",
+      "sizeLines": 19,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Configurations/ExtendedPropertiesConfiguration.cs",
+      "language": "csharp",
+      "sizeLines": 24,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Configurations/ExtendedPropertyRecordValuesConfiguration.cs",
+      "language": "csharp",
+      "sizeLines": 17,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Configurations/ExtendedPropertyValuesConfiguration.cs",
+      "language": "csharp",
+      "sizeLines": 20,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Configurations/GeneratedIdsConfiguration.cs",
+      "language": "csharp",
+      "sizeLines": 15,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Configurations/ModuleConfiguration.cs",
+      "language": "csharp",
+      "sizeLines": 26,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Configurations/QRCodeBatchConfiguration.cs",
+      "language": "csharp",
+      "sizeLines": 51,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Configurations/QRCodeConfiguration.cs",
+      "language": "csharp",
+      "sizeLines": 71,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Configurations/TransactionConfiguration.cs",
+      "language": "csharp",
+      "sizeLines": 29,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Configurations/TransactionItemConfiguration.cs",
+      "language": "csharp",
+      "sizeLines": 16,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Configurations/TransactionTypeConfiguration.cs",
+      "language": "csharp",
+      "sizeLines": 17,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Configurations/WorkplaceConfiguration.cs",
+      "language": "csharp",
+      "sizeLines": 66,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Koala.Yedpa.Repositories.csproj",
+      "language": "csproj",
+      "sizeLines": 21,
+      "fileCategory": "config"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Migrations/20250730082432_Init.Designer.cs",
+      "language": "csharp",
+      "sizeLines": 813,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Migrations/20250730082432_Init.cs",
+      "language": "csharp",
+      "sizeLines": 557,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Migrations/20251113085701_001.Designer.cs",
+      "language": "csharp",
+      "sizeLines": 1066,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Migrations/20251113085701_001.cs",
+      "language": "csharp",
+      "sizeLines": 373,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Migrations/20251113121910_002.Designer.cs",
+      "language": "csharp",
+      "sizeLines": 1082,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Migrations/20251113121910_002.cs",
+      "language": "csharp",
+      "sizeLines": 58,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Migrations/20251217145355_003.Designer.cs",
+      "language": "csharp",
+      "sizeLines": 1193,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Migrations/20251217145355_003.cs",
+      "language": "csharp",
+      "sizeLines": 105,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Migrations/20251224072511_004.Designer.cs",
+      "language": "csharp",
+      "sizeLines": 1262,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Migrations/20251224072511_004.cs",
+      "language": "csharp",
+      "sizeLines": 94,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Migrations/20251224093742_005.Designer.cs",
+      "language": "csharp",
+      "sizeLines": 1268,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Migrations/20251224093742_005.cs",
+      "language": "csharp",
+      "sizeLines": 43,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Migrations/20260106125715_AddWorkplaceTable.Designer.cs",
+      "language": "csharp",
+      "sizeLines": 1218,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Migrations/20260106125715_AddWorkplaceTable.cs",
+      "language": "csharp",
+      "sizeLines": 196,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Migrations/20260106130503_RemoveAuditFieldsFromWorkplace.Designer.cs",
+      "language": "csharp",
+      "sizeLines": 1197,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Migrations/20260106130503_RemoveAuditFieldsFromWorkplace.cs",
+      "language": "csharp",
+      "sizeLines": 73,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Migrations/20260206121056_AddQRCodeBatchAndQRCodes.Designer.cs",
+      "language": "csharp",
+      "sizeLines": 1360,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Migrations/20260206121056_AddQRCodeBatchAndQRCodes.cs",
+      "language": "csharp",
+      "sizeLines": 154,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Migrations/20260505070648_AddDashboardWidgetPreference.Designer.cs",
+      "language": "csharp",
+      "sizeLines": 1975,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Migrations/20260505070648_AddDashboardWidgetPreference.cs",
+      "language": "csharp",
+      "sizeLines": 45,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Migrations/20260513074638_AddBulkInvoiceTables.Designer.cs",
+      "language": "csharp",
+      "sizeLines": 2079,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Migrations/20260513074638_AddBulkInvoiceTables.cs",
+      "language": "csharp",
+      "sizeLines": 83,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Migrations/20260630131604_AddBulkInvoiceJobIdsAndRetry.Designer.cs",
+      "language": "csharp",
+      "sizeLines": 2101,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Migrations/20260630131604_AddBulkInvoiceJobIdsAndRetry.cs",
+      "language": "csharp",
+      "sizeLines": 96,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Migrations/AppDbContextModelSnapshot.cs",
+      "language": "csharp",
+      "sizeLines": 2098,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Repositories/AppRoleRepository.cs",
+      "language": "csharp",
+      "sizeLines": 86,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Repositories/AppUserRepository.cs",
+      "language": "csharp",
+      "sizeLines": 233,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Repositories/BudgetRatioRepository.cs",
+      "language": "csharp",
+      "sizeLines": 102,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Repositories/ClaimsRepository.cs",
+      "language": "csharp",
+      "sizeLines": 89,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Repositories/DuesStatisticRepository.cs",
+      "language": "csharp",
+      "sizeLines": 150,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Repositories/EmailTemplateRepository.cs",
+      "language": "csharp",
+      "sizeLines": 64,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Repositories/ExtendedPropertiesRepository.cs",
+      "language": "csharp",
+      "sizeLines": 55,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Repositories/ExtendedPropertyRecordValuesRepository.cs",
+      "language": "csharp",
+      "sizeLines": 31,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Repositories/ExtendedPropertyValuesRepository.cs",
+      "language": "csharp",
+      "sizeLines": 7,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Repositories/GeneratedIdsRepository.cs",
+      "language": "csharp",
+      "sizeLines": 42,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Repositories/ModuleRepository.cs",
+      "language": "csharp",
+      "sizeLines": 54,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Repositories/QRCodeBatchRepository.cs",
+      "language": "csharp",
+      "sizeLines": 69,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Repositories/QRCodeRepository.cs",
+      "language": "csharp",
+      "sizeLines": 111,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Repositories/SettingsRepository.cs",
+      "language": "csharp",
+      "sizeLines": 53,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Repositories/TransactionItemRepository.cs",
+      "language": "csharp",
+      "sizeLines": 75,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Repositories/TransactionRepository.cs",
+      "language": "csharp",
+      "sizeLines": 116,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Repositories/TransactionTypeRepository.cs",
+      "language": "csharp",
+      "sizeLines": 73,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Repositories/WorkplaceRepository.cs",
+      "language": "csharp",
+      "sizeLines": 106,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Repositories/Yonetim/ArizaRepository.cs",
+      "language": "csharp",
+      "sizeLines": 173,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Repositories/Yonetim/ArsivRepository.cs",
+      "language": "csharp",
+      "sizeLines": 220,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Repositories/Yonetim/OtoparkRepository.cs",
+      "language": "csharp",
+      "sizeLines": 203,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/Repositories/Yonetim/SozlesmeRepository.cs",
+      "language": "csharp",
+      "sizeLines": 152,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Repositories/UnitOfWork/UnitOfWork.cs",
+      "language": "csharp",
+      "sizeLines": 56,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service.Tests/BulkInvoice/AidatInvoicePayloadTests.cs",
+      "language": "csharp",
+      "sizeLines": 52,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service.Tests/BulkInvoice/AlertCheckTests.cs",
+      "language": "csharp",
+      "sizeLines": 138,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service.Tests/BulkInvoice/ExcelServiceTests.cs",
+      "language": "csharp",
+      "sizeLines": 30,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service.Tests/BulkInvoice/MarkTransferredTests.cs",
+      "language": "csharp",
+      "sizeLines": 62,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service.Tests/BulkInvoice/PendingLinesMonthTests.cs",
+      "language": "csharp",
+      "sizeLines": 19,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service.Tests/BulkInvoice/TransferJobTests.cs",
+      "language": "csharp",
+      "sizeLines": 218,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service.Tests/BulkInvoice/TransferServiceTests.cs",
+      "language": "csharp",
+      "sizeLines": 70,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service.Tests/Koala.Yedpa.Service.Tests.csproj",
+      "language": "csproj",
+      "sizeLines": 31,
+      "fileCategory": "config"
+    },
+    {
+      "path": "Koala.Yedpa.Service.Tests/LogoJsonHelperTests.cs",
+      "language": "csharp",
+      "sizeLines": 300,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service.Tests/LogoRestServiceProviderTests.cs",
+      "language": "csharp",
+      "sizeLines": 589,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service.Tests/Providers/TokenRetryTests.cs",
+      "language": "csharp",
+      "sizeLines": 52,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service.Tests/ServiceTestBase.cs",
+      "language": "csharp",
+      "sizeLines": 78,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service.Tests/Services/KrediKartTahsilatServiceTests.cs",
+      "language": "csharp",
+      "sizeLines": 264,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service.Tests/Yonetim/ArizaServiceTests.cs",
+      "language": "csharp",
+      "sizeLines": 291,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service.Tests/Yonetim/ArsivServiceTests.cs",
+      "language": "csharp",
+      "sizeLines": 233,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service.Tests/Yonetim/OrtakServiceTests.cs",
+      "language": "csharp",
+      "sizeLines": 211,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service.Tests/Yonetim/OtoparkServiceTests.cs",
+      "language": "csharp",
+      "sizeLines": 288,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service.Tests/Yonetim/SozlesmeServiceTests.cs",
+      "language": "csharp",
+      "sizeLines": 311,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Extentions/ServiceCollectionExtensions.cs",
+      "language": "csharp",
+      "sizeLines": 177,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Koala.Yedpa.Service.csproj",
+      "language": "csproj",
+      "sizeLines": 29,
+      "fileCategory": "config"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Mapping/BudgetRatioProfile.cs",
+      "language": "csharp",
+      "sizeLines": 39,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Mapping/ClaimsProfile.cs",
+      "language": "csharp",
+      "sizeLines": 21,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Mapping/DuesStatisticProfile.cs",
+      "language": "csharp",
+      "sizeLines": 43,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Mapping/EmailTemplateProfile.cs",
+      "language": "csharp",
+      "sizeLines": 22,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Mapping/ExtendedPropertiesProfile.cs",
+      "language": "csharp",
+      "sizeLines": 32,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Mapping/ExtendedPropertyRecordValuesProfile.cs",
+      "language": "csharp",
+      "sizeLines": 21,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Mapping/ExtendedPropertyValuesProfile.cs",
+      "language": "csharp",
+      "sizeLines": 19,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Mapping/GeneratedIdsProfile.cs",
+      "language": "csharp",
+      "sizeLines": 15,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Mapping/ModuleProfile.cs",
+      "language": "csharp",
+      "sizeLines": 16,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Mapping/SettingsProfile.cs",
+      "language": "csharp",
+      "sizeLines": 14,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Mapping/UserProfile.cs",
+      "language": "csharp",
+      "sizeLines": 38,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Mapping/WorkplaceProfile.cs",
+      "language": "csharp",
+      "sizeLines": 17,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Providers/DapperProvider.cs",
+      "language": "csharp",
+      "sizeLines": 381,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Providers/EmailProvider.cs",
+      "language": "csharp",
+      "sizeLines": 51,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Providers/LogoRestServiceProvider.cs",
+      "language": "csharp",
+      "sizeLines": 643,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Providers/RestServiceProvider.cs",
+      "language": "csharp",
+      "sizeLines": 211,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Providers/SqlProvider.cs",
+      "language": "csharp",
+      "sizeLines": 176,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Services/ApiLogoSqlDataService.cs",
+      "language": "csharp",
+      "sizeLines": 1847,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Services/AppUserService.cs",
+      "language": "csharp",
+      "sizeLines": 72,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Services/BackgroundServices/DuesStatisticTransferBackgroundService.cs",
+      "language": "csharp",
+      "sizeLines": 144,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Services/BudgetOrderService.cs",
+      "language": "csharp",
+      "sizeLines": 1262,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Services/BudgetOrderTransferService.cs",
+      "language": "csharp",
+      "sizeLines": 446,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Services/BudgetRatioService.cs",
+      "language": "csharp",
+      "sizeLines": 368,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Services/BulkInvoiceEmailService.cs",
+      "language": "csharp",
+      "sizeLines": 135,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Services/BulkInvoiceExcelService.cs",
+      "language": "csharp",
+      "sizeLines": 37,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Services/BulkInvoiceJobs.cs",
+      "language": "csharp",
+      "sizeLines": 198,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Services/BulkInvoiceService.cs",
+      "language": "csharp",
+      "sizeLines": 439,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Services/BulkInvoiceTransferService.cs",
+      "language": "csharp",
+      "sizeLines": 98,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Services/BulkInvoiceTriggerConsumer.cs",
+      "language": "csharp",
+      "sizeLines": 231,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Services/ClaimsService.cs",
+      "language": "csharp",
+      "sizeLines": 239,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Services/CryptoService.cs",
+      "language": "csharp",
+      "sizeLines": 126,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Services/CurrentUserService.cs",
+      "language": "csharp",
+      "sizeLines": 19,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Services/DuesStatisticService .cs",
+      "language": "csharp",
+      "sizeLines": 713,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Services/EmailSenderAdapter.cs",
+      "language": "csharp",
+      "sizeLines": 55,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Services/EmailService.cs",
+      "language": "csharp",
+      "sizeLines": 160,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Services/EmailTemplateService.cs",
+      "language": "csharp",
+      "sizeLines": 150,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Services/ExtendedPropertiesService.cs",
+      "language": "csharp",
+      "sizeLines": 145,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Services/Jobs/BackgroundServices.cs",
+      "language": "csharp",
+      "sizeLines": 7,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Services/KrediKartTahsilatService.cs",
+      "language": "csharp",
+      "sizeLines": 174,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Services/LicenseReader.cs",
+      "language": "csharp",
+      "sizeLines": 45,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Services/LicenseValidator.cs",
+      "language": "csharp",
+      "sizeLines": 168,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Services/Message34EmailService.cs",
+      "language": "csharp",
+      "sizeLines": 354,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Services/ModuleService.cs",
+      "language": "csharp",
+      "sizeLines": 173,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Services/PgScheduleStore.cs",
+      "language": "csharp",
+      "sizeLines": 54,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Services/QRCodeService.cs",
+      "language": "csharp",
+      "sizeLines": 666,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Services/SalesInvoiceService.cs",
+      "language": "csharp",
+      "sizeLines": 273,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Services/SeedHostedService.cs",
+      "language": "csharp",
+      "sizeLines": 39,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Services/SeedService.cs",
+      "language": "csharp",
+      "sizeLines": 392,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Services/SettingsService.cs",
+      "language": "csharp",
+      "sizeLines": 1208,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Services/TransactionItemService.cs",
+      "language": "csharp",
+      "sizeLines": 181,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Services/TransactionService.cs",
+      "language": "csharp",
+      "sizeLines": 594,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Services/TransactionTypeService.cs",
+      "language": "csharp",
+      "sizeLines": 290,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Services/WorkplaceService.cs",
+      "language": "csharp",
+      "sizeLines": 1377,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Services/Yonetim/ArizaService.cs",
+      "language": "csharp",
+      "sizeLines": 339,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Services/Yonetim/ArsivService.cs",
+      "language": "csharp",
+      "sizeLines": 220,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Services/Yonetim/OrtakService.cs",
+      "language": "csharp",
+      "sizeLines": 195,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Services/Yonetim/OtoparkService.cs",
+      "language": "csharp",
+      "sizeLines": 300,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.Service/Services/Yonetim/SozlesmeService.cs",
+      "language": "csharp",
+      "sizeLines": 354,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebApi/Controllers/HealthCheckApiController.cs",
+      "language": "csharp",
+      "sizeLines": 223,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebApi/Controllers/KrediKartTahsilatApiController.cs",
+      "language": "csharp",
+      "sizeLines": 97,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebApi/Controllers/LogoClCardApiController.cs",
+      "language": "csharp",
+      "sizeLines": 248,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebApi/Controllers/SalesInvoiceApiController.cs",
+      "language": "csharp",
+      "sizeLines": 173,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebApi/Controllers/Yonetim/ArizaApiController.cs",
+      "language": "csharp",
+      "sizeLines": 133,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebApi/Controllers/Yonetim/ArsivApiController.cs",
+      "language": "csharp",
+      "sizeLines": 138,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebApi/Controllers/Yonetim/OtoparkApiController.cs",
+      "language": "csharp",
+      "sizeLines": 131,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebApi/Controllers/Yonetim/SozlesmeApiController.cs",
+      "language": "csharp",
+      "sizeLines": 133,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebApi/Koala.Yedpa.WebApi.csproj",
+      "language": "csproj",
+      "sizeLines": 42,
+      "fileCategory": "config"
+    },
+    {
+      "path": "Koala.Yedpa.WebApi/Koala.Yedpa.WebApi.http",
+      "language": "http",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebApi/Program.cs",
+      "language": "csharp",
+      "sizeLines": 219,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebApi/Properties/PublishProfiles/FolderProfile.pubxml",
+      "language": "pubxml",
+      "sizeLines": 18,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebApi/Properties/launchSettings.json",
+      "language": "json",
+      "sizeLines": 25,
+      "fileCategory": "config"
+    },
+    {
+      "path": "Koala.Yedpa.WebApi/YedpaApiCore.xml",
+      "language": "xml",
+      "sizeLines": 843,
+      "fileCategory": "config"
+    },
+    {
+      "path": "Koala.Yedpa.WebApi/appsettings.json",
+      "language": "json",
+      "sizeLines": 29,
+      "fileCategory": "config"
+    },
+    {
+      "path": "Koala.Yedpa.WebApi/dotnet-tools.json",
+      "language": "json",
+      "sizeLines": 12,
+      "fileCategory": "config"
+    },
+    {
+      "path": "Koala.Yedpa.WebApi/nlog.config",
+      "language": "config",
+      "sizeLines": 90,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebApi/wwwroot/Licenses/Koala.Yedpa_private.pem",
+      "language": "pem",
+      "sizeLines": 50,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebApi/wwwroot/Licenses/Koala.Yedpa_public.pem",
+      "language": "pem",
+      "sizeLines": 12,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebApi/wwwroot/Licenses/license.lic",
+      "language": "lic",
+      "sizeLines": 3,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Controllers/AppRoleController.cs",
+      "language": "csharp",
+      "sizeLines": 220,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Controllers/BudgetOrderApiController.cs",
+      "language": "csharp",
+      "sizeLines": 489,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Controllers/BudgetOrderController.cs",
+      "language": "csharp",
+      "sizeLines": 260,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Controllers/BudgetRatioApiController.cs",
+      "language": "csharp",
+      "sizeLines": 206,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Controllers/BulkInvoiceApiController.cs",
+      "language": "csharp",
+      "sizeLines": 143,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Controllers/BulkInvoiceController.cs",
+      "language": "csharp",
+      "sizeLines": 162,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Controllers/ClaimsController.cs",
+      "language": "csharp",
+      "sizeLines": 114,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Controllers/ConnectionTestController.cs",
+      "language": "csharp",
+      "sizeLines": 57,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Controllers/DashboardApiController.cs",
+      "language": "csharp",
+      "sizeLines": 72,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Controllers/DashboardController.cs",
+      "language": "csharp",
+      "sizeLines": 296,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Controllers/DuesStatisticApiController.cs",
+      "language": "csharp",
+      "sizeLines": 262,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Controllers/FinancialStatementController.cs",
+      "language": "csharp",
+      "sizeLines": 64,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Controllers/KoalaApiController.cs",
+      "language": "csharp",
+      "sizeLines": 69,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Controllers/LogoClCardApiController.cs",
+      "language": "csharp",
+      "sizeLines": 83,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Controllers/LogoSyncController.cs",
+      "language": "csharp",
+      "sizeLines": 35,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Controllers/ModuleController.cs",
+      "language": "csharp",
+      "sizeLines": 67,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Controllers/QRCodeApiController.cs",
+      "language": "csharp",
+      "sizeLines": 145,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Controllers/QRCodeController.cs",
+      "language": "csharp",
+      "sizeLines": 318,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Controllers/SettingsApiController.cs",
+      "language": "csharp",
+      "sizeLines": 24,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Controllers/SettingsController.cs",
+      "language": "csharp",
+      "sizeLines": 222,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Controllers/TestEmailController.cs",
+      "language": "csharp",
+      "sizeLines": 244,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Controllers/UserController.cs",
+      "language": "csharp",
+      "sizeLines": 544,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Controllers/WorkplaceController.cs",
+      "language": "csharp",
+      "sizeLines": 161,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Controllers/Yonetim/ArizaController.cs",
+      "language": "csharp",
+      "sizeLines": 56,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Controllers/Yonetim/ArsivController.cs",
+      "language": "csharp",
+      "sizeLines": 47,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Controllers/Yonetim/OtoparkController.cs",
+      "language": "csharp",
+      "sizeLines": 54,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Controllers/Yonetim/SozlesmeController.cs",
+      "language": "csharp",
+      "sizeLines": 66,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Extentions/LicenseHeaderHandler.cs",
+      "language": "csharp",
+      "sizeLines": 26,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Extentions/MappingExtention.cs",
+      "language": "csharp",
+      "sizeLines": 39,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Extentions/ModelStateExtention.cs",
+      "language": "csharp",
+      "sizeLines": 16,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Extentions/StartupExtention.cs",
+      "language": "csharp",
+      "sizeLines": 255,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Koala.Yedpa.WebUI.csproj",
+      "language": "csproj",
+      "sizeLines": 57,
+      "fileCategory": "config"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Localizations/LocalizationIdentityErrorDescriber.cs",
+      "language": "csharp",
+      "sizeLines": 181,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/ManageNavPages.cs",
+      "language": "csharp",
+      "sizeLines": 126,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Models/ErrorViewModel.cs",
+      "language": "csharp",
+      "sizeLines": 9,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/NLog.config",
+      "language": "config",
+      "sizeLines": 100,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Program.cs",
+      "language": "csharp",
+      "sizeLines": 257,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Properties/PublishProfiles/FolderProfile.pubxml",
+      "language": "pubxml",
+      "sizeLines": 19,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Properties/launchSettings.json",
+      "language": "json",
+      "sizeLines": 23,
+      "fileCategory": "config"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/TagHelpers/EnumSelectListTagHelper.cs",
+      "language": "csharp",
+      "sizeLines": 67,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/TagHelpers/SelectListTagHelpers.cs",
+      "language": "csharp",
+      "sizeLines": 36,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/TagHelpers/UserFullnameTagHelper.cs",
+      "language": "csharp",
+      "sizeLines": 108,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/TagHelpers/UserPictureThumbnailTagHelper.cs",
+      "language": "csharp",
+      "sizeLines": 34,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/TagHelpers/UserRolesTagHelper.cs",
+      "language": "csharp",
+      "sizeLines": 32,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/AppRole/AddClaimToRole.cshtml",
+      "language": "cshtml",
+      "sizeLines": 57,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/AppRole/CreateRole.cshtml",
+      "language": "cshtml",
+      "sizeLines": 61,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/AppRole/Index.cshtml",
+      "language": "cshtml",
+      "sizeLines": 126,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/AppRole/UpdateRole.cshtml",
+      "language": "cshtml",
+      "sizeLines": 59,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/Ariza/Index.cshtml",
+      "language": "cshtml",
+      "sizeLines": 214,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/Arsiv/Detay.cshtml",
+      "language": "cshtml",
+      "sizeLines": 117,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/Arsiv/Index.cshtml",
+      "language": "cshtml",
+      "sizeLines": 214,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/BudgetOrder/Create.cshtml",
+      "language": "cshtml",
+      "sizeLines": 286,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/BudgetOrder/Details.cshtml",
+      "language": "cshtml",
+      "sizeLines": 266,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/BudgetOrder/Index.cshtml",
+      "language": "cshtml",
+      "sizeLines": 97,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/BudgetOrder/Review.cshtml",
+      "language": "cshtml",
+      "sizeLines": 303,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/BudgetOrder/Transfer.cshtml",
+      "language": "cshtml",
+      "sizeLines": 197,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/BudgetOrder/Update.cshtml",
+      "language": "cshtml",
+      "sizeLines": 616,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/BulkInvoice/Manage.cshtml",
+      "language": "cshtml",
+      "sizeLines": 95,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/Claims/CreateClaim.cshtml",
+      "language": "cshtml",
+      "sizeLines": 68,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/Claims/ModuleClaims.cshtml",
+      "language": "cshtml",
+      "sizeLines": 158,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/Claims/UpdateClaim.cshtml",
+      "language": "cshtml",
+      "sizeLines": 68,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/Dashboard/Index.cshtml",
+      "language": "cshtml",
+      "sizeLines": 400,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/Dashboard/Index_.cshtml",
+      "language": "cshtml",
+      "sizeLines": 53,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/Dashboard/Privacy.cshtml",
+      "language": "cshtml",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/Dashboard/_WidgetAidatTahsilatDurumu.cshtml",
+      "language": "cshtml",
+      "sizeLines": 3,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/Dashboard/_WidgetBalanceDistribution.cshtml",
+      "language": "cshtml",
+      "sizeLines": 3,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/Dashboard/_WidgetBalanceSummary.cshtml",
+      "language": "cshtml",
+      "sizeLines": 3,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/Dashboard/_WidgetDuesCollection.cshtml",
+      "language": "cshtml",
+      "sizeLines": 3,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/Dashboard/_WidgetMonthlyBudget.cshtml",
+      "language": "cshtml",
+      "sizeLines": 3,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/Dashboard/_WidgetMonthlyTrend.cshtml",
+      "language": "cshtml",
+      "sizeLines": 3,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/Dashboard/_WidgetOverduePayments.cshtml",
+      "language": "cshtml",
+      "sizeLines": 3,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/Dashboard/_WidgetPendingInvoices.cshtml",
+      "language": "cshtml",
+      "sizeLines": 3,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/Dashboard/_WidgetRecentTransactions.cshtml",
+      "language": "cshtml",
+      "sizeLines": 3,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/Dashboard/_WidgetShopCount.cshtml",
+      "language": "cshtml",
+      "sizeLines": 3,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/Dashboard/_WidgetYearlyBudget.cshtml",
+      "language": "cshtml",
+      "sizeLines": 3,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/Module/CreateModule.cshtml",
+      "language": "cshtml",
+      "sizeLines": 61,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/Module/Index.cshtml",
+      "language": "cshtml",
+      "sizeLines": 147,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/Module/UpdateModule.cshtml",
+      "language": "cshtml",
+      "sizeLines": 61,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/Otopark/Index.cshtml",
+      "language": "cshtml",
+      "sizeLines": 296,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/QRCode/Create.cshtml",
+      "language": "cshtml",
+      "sizeLines": 202,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/QRCode/CreatePdf.cshtml",
+      "language": "cshtml",
+      "sizeLines": 164,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/QRCode/CurrentAccountDetail.cshtml",
+      "language": "cshtml",
+      "sizeLines": 179,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/QRCode/Index.cshtml",
+      "language": "cshtml",
+      "sizeLines": 363,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/QRCode/ViewBatch.cshtml",
+      "language": "cshtml",
+      "sizeLines": 224,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/Settings/EmailSettings.cshtml",
+      "language": "cshtml",
+      "sizeLines": 96,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/Settings/KoalaApiSettings.cshtml",
+      "language": "cshtml",
+      "sizeLines": 67,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/Settings/LogoRestServiceSettings.cshtml",
+      "language": "cshtml",
+      "sizeLines": 78,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/Settings/LogoSettings.cshtml",
+      "language": "cshtml",
+      "sizeLines": 70,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/Settings/LogoSqlSettings.cshtml",
+      "language": "cshtml",
+      "sizeLines": 71,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/Settings/Message34Settings.cshtml",
+      "language": "cshtml",
+      "sizeLines": 80,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/Settings/QRCodeSettings.cshtml",
+      "language": "cshtml",
+      "sizeLines": 71,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/Shared/Error.cshtml",
+      "language": "cshtml",
+      "sizeLines": 81,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/Shared/_FooterPartial.cshtml",
+      "language": "cshtml",
+      "sizeLines": 11,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/Shared/_HeaderMobilePartial.cshtml",
+      "language": "cshtml",
+      "sizeLines": 25,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/Shared/_HeaderPartial.cshtml",
+      "language": "cshtml",
+      "sizeLines": 67,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/Shared/_Layout.cshtml",
+      "language": "cshtml",
+      "sizeLines": 155,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/Shared/_LoaderParital.cshtml",
+      "language": "cshtml",
+      "sizeLines": 3,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/Shared/_MainManuPartial.cshtml",
+      "language": "cshtml",
+      "sizeLines": 139,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/Shared/_ScrollTopPartial.cshtml",
+      "language": "cshtml",
+      "sizeLines": 10,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/Shared/_UserPanelPartial.cshtml",
+      "language": "cshtml",
+      "sizeLines": 117,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/Shared/_ValidationScriptsPartial.cshtml",
+      "language": "cshtml",
+      "sizeLines": 2,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/Sozlesme/Index.cshtml",
+      "language": "cshtml",
+      "sizeLines": 196,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/User/AccessDenied.cshtml",
+      "language": "cshtml",
+      "sizeLines": 184,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/User/AsignRoleToUser.cshtml",
+      "language": "cshtml",
+      "sizeLines": 81,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/User/ChangePassword.cshtml",
+      "language": "cshtml",
+      "sizeLines": 7,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/User/CreateUser.cshtml",
+      "language": "cshtml",
+      "sizeLines": 101,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/User/ForgetConfirm.cshtml",
+      "language": "cshtml",
+      "sizeLines": 7,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/User/Index.cshtml",
+      "language": "cshtml",
+      "sizeLines": 158,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/User/Login.cshtml",
+      "language": "cshtml",
+      "sizeLines": 228,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/User/ResetPassword.cshtml",
+      "language": "cshtml",
+      "sizeLines": 7,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/User/UpdateUser.cshtml",
+      "language": "cshtml",
+      "sizeLines": 96,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/User/UserProfile.cshtml",
+      "language": "cshtml",
+      "sizeLines": 7,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/Workplace/Detail.cshtml",
+      "language": "cshtml",
+      "sizeLines": 245,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/Workplace/Index.cshtml",
+      "language": "cshtml",
+      "sizeLines": 85,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/Workplace/Update.cshtml",
+      "language": "cshtml",
+      "sizeLines": 291,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/_ViewImports.cshtml",
+      "language": "cshtml",
+      "sizeLines": 5,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/Views/_ViewStart.cshtml",
+      "language": "cshtml",
+      "sizeLines": 3,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/YedpaApi.xml",
+      "language": "xml",
+      "sizeLines": 518,
+      "fileCategory": "config"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/YedpaApiCore.xml",
+      "language": "xml",
+      "sizeLines": 839,
+      "fileCategory": "config"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/appsettings.json",
+      "language": "json",
+      "sizeLines": 38,
+      "fileCategory": "config"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/dotnet-tools.json",
+      "language": "json",
+      "sizeLines": 12,
+      "fileCategory": "config"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/Licenses/Koala.Yedpa_private.pem",
+      "language": "pem",
+      "sizeLines": 50,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/Licenses/Koala.Yedpa_public.pem",
+      "language": "pem",
+      "sizeLines": 12,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/Licenses/license.lic",
+      "language": "lic",
+      "sizeLines": 3,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css/pages/error/error-3.css",
+      "language": "css",
+      "sizeLines": 8,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css/pages/error/error-4.css",
+      "language": "css",
+      "sizeLines": 14,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css/pages/error/error-5.css",
+      "language": "css",
+      "sizeLines": 8,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css/pages/error/error-6.css",
+      "language": "css",
+      "sizeLines": 8,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css/pages/invoice/invoice-6.css",
+      "language": "css",
+      "sizeLines": 8,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css/pages/login/classic/login-1.css",
+      "language": "css",
+      "sizeLines": 60,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css/pages/login/classic/login-2.css",
+      "language": "css",
+      "sizeLines": 60,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css/pages/login/classic/login-3.css",
+      "language": "css",
+      "sizeLines": 43,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css/pages/login/classic/login-4.css",
+      "language": "css",
+      "sizeLines": 43,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css/pages/login/classic/login-5.css",
+      "language": "css",
+      "sizeLines": 43,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css/pages/login/classic/login-6.css",
+      "language": "css",
+      "sizeLines": 89,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css/pages/login/login-1.css",
+      "language": "css",
+      "sizeLines": 71,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css/pages/login/login-2.css",
+      "language": "css",
+      "sizeLines": 74,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css/pages/login/login-3.css",
+      "language": "css",
+      "sizeLines": 221,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css/pages/login/login-4.css",
+      "language": "css",
+      "sizeLines": 199,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css/pages/wizard/wizard-1.css",
+      "language": "css",
+      "sizeLines": 136,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css/pages/wizard/wizard-2.css",
+      "language": "css",
+      "sizeLines": 150,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css/pages/wizard/wizard-3.css",
+      "language": "css",
+      "sizeLines": 106,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css/pages/wizard/wizard-4.css",
+      "language": "css",
+      "sizeLines": 167,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css/pages/wizard/wizard-5.css",
+      "language": "css",
+      "sizeLines": 166,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css/pages/wizard/wizard-6.css",
+      "language": "css",
+      "sizeLines": 131,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css/style - Copy.bundle.css",
+      "language": "css",
+      "sizeLines": 86084,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css/style.bundle.css",
+      "language": "css",
+      "sizeLines": 86087,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css/style.bundle_.css",
+      "language": "css",
+      "sizeLines": 86087,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css/themes/layout/aside/dark.css",
+      "language": "css",
+      "sizeLines": 730,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css/themes/layout/aside/light.css",
+      "language": "css",
+      "sizeLines": 723,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css/themes/layout/brand/dark.css",
+      "language": "css",
+      "sizeLines": 77,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css/themes/layout/brand/light.css",
+      "language": "css",
+      "sizeLines": 79,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css/themes/layout/header/base/dark.css",
+      "language": "css",
+      "sizeLines": 128,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css/themes/layout/header/base/light.css",
+      "language": "css",
+      "sizeLines": 84,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css/themes/layout/header/menu/dark.css",
+      "language": "css",
+      "sizeLines": 754,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css/themes/layout/header/menu/light.css",
+      "language": "css",
+      "sizeLines": 704,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css_/pages/error/error-3.css",
+      "language": "css",
+      "sizeLines": 8,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css_/pages/error/error-4.css",
+      "language": "css",
+      "sizeLines": 14,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css_/pages/error/error-5.css",
+      "language": "css",
+      "sizeLines": 8,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css_/pages/error/error-6.css",
+      "language": "css",
+      "sizeLines": 8,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css_/pages/invoice/invoice-6.css",
+      "language": "css",
+      "sizeLines": 8,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css_/pages/login/classic/login-1.css",
+      "language": "css",
+      "sizeLines": 60,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css_/pages/login/classic/login-2.css",
+      "language": "css",
+      "sizeLines": 60,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css_/pages/login/classic/login-3.css",
+      "language": "css",
+      "sizeLines": 43,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css_/pages/login/classic/login-4.css",
+      "language": "css",
+      "sizeLines": 43,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css_/pages/login/classic/login-5.css",
+      "language": "css",
+      "sizeLines": 43,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css_/pages/login/classic/login-6.css",
+      "language": "css",
+      "sizeLines": 89,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css_/pages/login/login-1.css",
+      "language": "css",
+      "sizeLines": 71,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css_/pages/login/login-2.css",
+      "language": "css",
+      "sizeLines": 74,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css_/pages/login/login-3.css",
+      "language": "css",
+      "sizeLines": 221,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css_/pages/login/login-4.css",
+      "language": "css",
+      "sizeLines": 199,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css_/pages/wizard/wizard-1.css",
+      "language": "css",
+      "sizeLines": 136,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css_/pages/wizard/wizard-2.css",
+      "language": "css",
+      "sizeLines": 150,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css_/pages/wizard/wizard-3.css",
+      "language": "css",
+      "sizeLines": 106,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css_/pages/wizard/wizard-4.css",
+      "language": "css",
+      "sizeLines": 167,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css_/pages/wizard/wizard-5.css",
+      "language": "css",
+      "sizeLines": 166,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css_/pages/wizard/wizard-6.css",
+      "language": "css",
+      "sizeLines": 131,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css_/style.bundle.css",
+      "language": "css",
+      "sizeLines": 86084,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css_/themes/layout/aside/dark.css",
+      "language": "css",
+      "sizeLines": 730,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css_/themes/layout/aside/light.css",
+      "language": "css",
+      "sizeLines": 723,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css_/themes/layout/brand/dark.css",
+      "language": "css",
+      "sizeLines": 77,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css_/themes/layout/brand/light.css",
+      "language": "css",
+      "sizeLines": 79,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css_/themes/layout/header/base/dark.css",
+      "language": "css",
+      "sizeLines": 128,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css_/themes/layout/header/base/light.css",
+      "language": "css",
+      "sizeLines": 84,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css_/themes/layout/header/menu/dark.css",
+      "language": "css",
+      "sizeLines": 754,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/css_/themes/layout/header/menu/light.css",
+      "language": "css",
+      "sizeLines": 704,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/custom/ClaimList.js",
+      "language": "javascript",
+      "sizeLines": 36,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/custom/budget-list-page.js",
+      "language": "javascript",
+      "sizeLines": 74,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/custom/budget-order-create-page.js",
+      "language": "javascript",
+      "sizeLines": 835,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/custom/budget-order-details-page.js",
+      "language": "javascript",
+      "sizeLines": 97,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/custom/budget-order-list-page.js",
+      "language": "javascript",
+      "sizeLines": 94,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/custom/bulk-invoice-dashboard.js",
+      "language": "javascript",
+      "sizeLines": 221,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/custom/bulk-invoice-manage-page.js",
+      "language": "javascript",
+      "sizeLines": 322,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/custom/chat.bundle.es.js",
+      "language": "javascript",
+      "sizeLines": 30391,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/custom/claim-list-page.js",
+      "language": "javascript",
+      "sizeLines": 77,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/custom/cldiv-list-page.js",
+      "language": "javascript",
+      "sizeLines": 198,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/custom/create-user-page.js",
+      "language": "javascript",
+      "sizeLines": 30,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/custom/module-list-page.js",
+      "language": "javascript",
+      "sizeLines": 74,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/custom/role-list-page.js",
+      "language": "javascript",
+      "sizeLines": 100,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/custom/site-update-page.js",
+      "language": "javascript",
+      "sizeLines": 123,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/custom/update-user-page.js",
+      "language": "javascript",
+      "sizeLines": 65,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/custom/user-list-page.js",
+      "language": "javascript",
+      "sizeLines": 100,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/custom/workplace-list-page.js",
+      "language": "javascript",
+      "sizeLines": 379,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/custom/workplace-update-page.js",
+      "language": "javascript",
+      "sizeLines": 125,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/datatables/advanced/column-rendering.js",
+      "language": "javascript",
+      "sizeLines": 153,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/datatables/advanced/column-visibility.js",
+      "language": "javascript",
+      "sizeLines": 91,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/datatables/advanced/footer-callback.js",
+      "language": "javascript",
+      "sizeLines": 53,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/datatables/advanced/multiple-controls.js",
+      "language": "javascript",
+      "sizeLines": 95,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/datatables/advanced/row-callback.js",
+      "language": "javascript",
+      "sizeLines": 36,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/datatables/advanced/row-grouping.js",
+      "language": "javascript",
+      "sizeLines": 109,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/datatables/basic/basic.js",
+      "language": "javascript",
+      "sizeLines": 384,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/datatables/basic/headers.js",
+      "language": "javascript",
+      "sizeLines": 90,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/datatables/basic/paginations.js",
+      "language": "javascript",
+      "sizeLines": 145,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/datatables/basic/scrollable.js",
+      "language": "javascript",
+      "sizeLines": 386,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/datatables/data-sources/ajax-client-side.js",
+      "language": "javascript",
+      "sizeLines": 109,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/datatables/data-sources/ajax-server-side.js",
+      "language": "javascript",
+      "sizeLines": 114,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/datatables/data-sources/html.js",
+      "language": "javascript",
+      "sizeLines": 91,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/datatables/data-sources/javascript.js",
+      "language": "javascript",
+      "sizeLines": 61,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/datatables/extensions/buttons.js",
+      "language": "javascript",
+      "sizeLines": 176,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/datatables/extensions/colreorder.js",
+      "language": "javascript",
+      "sizeLines": 92,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/datatables/extensions/fixedcolumns.js",
+      "language": "javascript",
+      "sizeLines": 99,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/datatables/extensions/fixedheader.js",
+      "language": "javascript",
+      "sizeLines": 90,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/datatables/extensions/keytable.js",
+      "language": "javascript",
+      "sizeLines": 92,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/datatables/extensions/responsive.js",
+      "language": "javascript",
+      "sizeLines": 91,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/datatables/extensions/rowgroup.js",
+      "language": "javascript",
+      "sizeLines": 95,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/datatables/extensions/rowreorder.js",
+      "language": "javascript",
+      "sizeLines": 93,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/datatables/extensions/scroller.js",
+      "language": "javascript",
+      "sizeLines": 106,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/datatables/extensions/select.js",
+      "language": "javascript",
+      "sizeLines": 200,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/datatables/search-options/advanced-search.js",
+      "language": "javascript",
+      "sizeLines": 215,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/datatables/search-options/column-search.js",
+      "language": "javascript",
+      "sizeLines": 358,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/file-upload/dropzonejs.js",
+      "language": "javascript",
+      "sizeLines": 184,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/file-upload/image-input.js",
+      "language": "javascript",
+      "sizeLines": 93,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/file-upload/uppy.js",
+      "language": "javascript",
+      "sizeLines": 329,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/forms/editors/bootstrap-markdown.js",
+      "language": "javascript",
+      "sizeLines": 20,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/forms/editors/ckeditor-balloon-block.js",
+      "language": "javascript",
+      "sizeLines": 63,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/forms/editors/ckeditor-balloon.js",
+      "language": "javascript",
+      "sizeLines": 63,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/forms/editors/ckeditor-classic.js",
+      "language": "javascript",
+      "sizeLines": 63,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/forms/editors/ckeditor-document.js",
+      "language": "javascript",
+      "sizeLines": 51,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/forms/editors/ckeditor-inline.js",
+      "language": "javascript",
+      "sizeLines": 63,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/forms/editors/quill.js",
+      "language": "javascript",
+      "sizeLines": 75,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/forms/editors/summernote.js",
+      "language": "javascript",
+      "sizeLines": 24,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/forms/editors/tinymce.js",
+      "language": "javascript",
+      "sizeLines": 44,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/forms/validation/form-controls.js",
+      "language": "javascript",
+      "sizeLines": 263,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/forms/validation/form-widgets.js",
+      "language": "javascript",
+      "sizeLines": 199,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/forms/widgets/autosize.js",
+      "language": "javascript",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/forms/widgets/bootstrap-datepicker.js",
+      "language": "javascript",
+      "sizeLines": 123,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/forms/widgets/bootstrap-daterangepicker.js",
+      "language": "javascript",
+      "sizeLines": 143,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/forms/widgets/bootstrap-datetimepicker.js",
+      "language": "javascript",
+      "sizeLines": 91,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/forms/widgets/bootstrap-maxlength.js",
+      "language": "javascript",
+      "sizeLines": 128,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/forms/widgets/bootstrap-multipleselectsplitter.js",
+      "language": "javascript",
+      "sizeLines": 21,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/forms/widgets/bootstrap-select.js",
+      "language": "javascript",
+      "sizeLines": 20,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/forms/widgets/bootstrap-switch.js",
+      "language": "javascript",
+      "sizeLines": 21,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/forms/widgets/bootstrap-timepicker.js",
+      "language": "javascript",
+      "sizeLines": 54,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/forms/widgets/bootstrap-touchspin.js",
+      "language": "javascript",
+      "sizeLines": 109,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/forms/widgets/clipboard.js",
+      "language": "javascript",
+      "sizeLines": 25,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/forms/widgets/form-repeater.js",
+      "language": "javascript",
+      "sizeLines": 133,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/forms/widgets/google-recaptcha.js",
+      "language": "javascript",
+      "sizeLines": 20,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/forms/widgets/input-mask.js",
+      "language": "javascript",
+      "sizeLines": 78,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/forms/widgets/ion-range-slider.js",
+      "language": "javascript",
+      "sizeLines": 82,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/forms/widgets/jquery-mask.js",
+      "language": "javascript",
+      "sizeLines": 67,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/forms/widgets/nouislider.js",
+      "language": "javascript",
+      "sizeLines": 309,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/forms/widgets/select2.js",
+      "language": "javascript",
+      "sizeLines": 187,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/forms/widgets/tagify.js",
+      "language": "javascript",
+      "sizeLines": 297,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/forms/widgets/typeahead.js",
+      "language": "javascript",
+      "sizeLines": 152,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/ktdatatable/advanced/column-rendering.js",
+      "language": "javascript",
+      "sizeLines": 252,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/ktdatatable/advanced/column-width.js",
+      "language": "javascript",
+      "sizeLines": 241,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/ktdatatable/advanced/horizontal.js",
+      "language": "javascript",
+      "sizeLines": 217,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/ktdatatable/advanced/modal.js",
+      "language": "javascript",
+      "sizeLines": 849,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/ktdatatable/advanced/record-selection.js",
+      "language": "javascript",
+      "sizeLines": 298,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/ktdatatable/advanced/row-details.js",
+      "language": "javascript",
+      "sizeLines": 211,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/ktdatatable/advanced/vertical.js",
+      "language": "javascript",
+      "sizeLines": 159,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/ktdatatable/api/events.js",
+      "language": "javascript",
+      "sizeLines": 262,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/ktdatatable/api/methods.js",
+      "language": "javascript",
+      "sizeLines": 230,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/ktdatatable/base/data-ajax.js",
+      "language": "javascript",
+      "sizeLines": 245,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/ktdatatable/base/data-json.js",
+      "language": "javascript",
+      "sizeLines": 228,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/ktdatatable/base/data-local.js",
+      "language": "javascript",
+      "sizeLines": 329,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/ktdatatable/base/html-table.js",
+      "language": "javascript",
+      "sizeLines": 117,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/ktdatatable/base/local-sort.js",
+      "language": "javascript",
+      "sizeLines": 258,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/ktdatatable/base/translation.js",
+      "language": "javascript",
+      "sizeLines": 258,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/ktdatatable/child/data-ajax.js",
+      "language": "javascript",
+      "sizeLines": 398,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/crud/ktdatatable/child/data-local.js",
+      "language": "javascript",
+      "sizeLines": 623,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/custom/chat/chat.js",
+      "language": "javascript",
+      "sizeLines": 93,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/custom/contacts/add-contact.js",
+      "language": "javascript",
+      "sizeLines": 271,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/custom/contacts/edit-contact.js",
+      "language": "javascript",
+      "sizeLines": 22,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/custom/contacts/list-columns.js",
+      "language": "javascript",
+      "sizeLines": 26,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/custom/contacts/list-datatable.js",
+      "language": "javascript",
+      "sizeLines": 282,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/custom/ecommerce/checkout.js",
+      "language": "javascript",
+      "sizeLines": 216,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/custom/ecommerce/my-orders.js",
+      "language": "javascript",
+      "sizeLines": 263,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/custom/education/school/calendar.js",
+      "language": "javascript",
+      "sizeLines": 169,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/custom/education/school/library.js",
+      "language": "javascript",
+      "sizeLines": 225,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/custom/education/school/students.js",
+      "language": "javascript",
+      "sizeLines": 249,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/custom/education/school/teachers.js",
+      "language": "javascript",
+      "sizeLines": 216,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/custom/education/student/calendar.js",
+      "language": "javascript",
+      "sizeLines": 169,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/custom/education/student/profile.js",
+      "language": "javascript",
+      "sizeLines": 22,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/custom/inbox/inbox.js",
+      "language": "javascript",
+      "sizeLines": 574,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/custom/login/login-3.js",
+      "language": "javascript",
+      "sizeLines": 469,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/custom/login/login-4.js",
+      "language": "javascript",
+      "sizeLines": 373,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/custom/login/login-general.js",
+      "language": "javascript",
+      "sizeLines": 50,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/custom/profile/profile.js",
+      "language": "javascript",
+      "sizeLines": 35,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/custom/projects/add-project.js",
+      "language": "javascript",
+      "sizeLines": 264,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/custom/projects/list-datatable.js",
+      "language": "javascript",
+      "sizeLines": 288,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/custom/todo/todo.js",
+      "language": "javascript",
+      "sizeLines": 232,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/custom/user/add-user.js",
+      "language": "javascript",
+      "sizeLines": 269,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/custom/user/edit-user.js",
+      "language": "javascript",
+      "sizeLines": 22,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/custom/user/list-datatable.js",
+      "language": "javascript",
+      "sizeLines": 265,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/custom/wizard/wizard-1.js",
+      "language": "javascript",
+      "sizeLines": 312,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/custom/wizard/wizard-2.js",
+      "language": "javascript",
+      "sizeLines": 354,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/custom/wizard/wizard-3.js",
+      "language": "javascript",
+      "sizeLines": 309,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/custom/wizard/wizard-4.js",
+      "language": "javascript",
+      "sizeLines": 264,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/custom/wizard/wizard-5.js",
+      "language": "javascript",
+      "sizeLines": 203,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/custom/wizard/wizard-6.js",
+      "language": "javascript",
+      "sizeLines": 196,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/features/base/dropdown.js",
+      "language": "javascript",
+      "sizeLines": 51,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/features/calendar/background-events.js",
+      "language": "javascript",
+      "sizeLines": 182,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/features/calendar/basic.js",
+      "language": "javascript",
+      "sizeLines": 169,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/features/calendar/external-events.js",
+      "language": "javascript",
+      "sizeLines": 204,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/features/calendar/google.js",
+      "language": "javascript",
+      "sizeLines": 87,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/features/calendar/list-view.js",
+      "language": "javascript",
+      "sizeLines": 166,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/features/cards/draggable.js",
+      "language": "javascript",
+      "sizeLines": 29,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/features/cards/tools.js",
+      "language": "javascript",
+      "sizeLines": 273,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/features/charts/amcharts/charts.js",
+      "language": "javascript",
+      "sizeLines": 2391,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/features/charts/amcharts/maps.js",
+      "language": "javascript",
+      "sizeLines": 1023,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/features/charts/amcharts/stock-charts.js",
+      "language": "javascript",
+      "sizeLines": 783,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/features/charts/apexcharts.js",
+      "language": "javascript",
+      "sizeLines": 1088,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/features/charts/flotcharts.js",
+      "language": "javascript",
+      "sizeLines": 718,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/features/charts/google-charts.js",
+      "language": "javascript",
+      "sizeLines": 169,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/features/custom/spinners.js",
+      "language": "javascript",
+      "sizeLines": 74,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/features/maps/google-maps.js",
+      "language": "javascript",
+      "sizeLines": 222,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/features/maps/jqvmap.js",
+      "language": "javascript",
+      "sizeLines": 249,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/features/maps/jvectormap.js",
+      "language": "javascript",
+      "sizeLines": 21,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/features/maps/leaflet.js",
+      "language": "javascript",
+      "sizeLines": 280,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/features/miscellaneous/blockui.js",
+      "language": "javascript",
+      "sizeLines": 258,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/features/miscellaneous/bootstrap-notify.js",
+      "language": "javascript",
+      "sizeLines": 92,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/features/miscellaneous/cropper.js",
+      "language": "javascript",
+      "sizeLines": 124,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/features/miscellaneous/dual-listbox.js",
+      "language": "javascript",
+      "sizeLines": 106,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/features/miscellaneous/idle-timer.js",
+      "language": "javascript",
+      "sizeLines": 254,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/features/miscellaneous/kanban-board.js",
+      "language": "javascript",
+      "sizeLines": 409,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/features/miscellaneous/perfect-scrollbar.js",
+      "language": "javascript",
+      "sizeLines": 21,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/features/miscellaneous/session-timeout.js",
+      "language": "javascript",
+      "sizeLines": 29,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/features/miscellaneous/sticky-panels.js",
+      "language": "javascript",
+      "sizeLines": 32,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/features/miscellaneous/sweetalert2.js",
+      "language": "javascript",
+      "sizeLines": 175,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/features/miscellaneous/toastr.js",
+      "language": "javascript",
+      "sizeLines": 164,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/features/miscellaneous/treeview.js",
+      "language": "javascript",
+      "sizeLines": 281,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/my-script.js",
+      "language": "javascript",
+      "sizeLines": 0,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/pages/widgets.js",
+      "language": "javascript",
+      "sizeLines": 4706,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/js/scripts.bundle.js",
+      "language": "javascript",
+      "sizeLines": 11186,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/ckeditor/ckeditor-balloon-block.bundle.js",
+      "language": "javascript",
+      "sizeLines": 5,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/ckeditor/ckeditor-balloon.bundle.js",
+      "language": "javascript",
+      "sizeLines": 5,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/ckeditor/ckeditor-classic.bundle.js",
+      "language": "javascript",
+      "sizeLines": 5,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/ckeditor/ckeditor-document.bundle.js",
+      "language": "javascript",
+      "sizeLines": 5,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/ckeditor/ckeditor-inline.bundle.js",
+      "language": "javascript",
+      "sizeLines": 5,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/cropper/cropper.bundle.css",
+      "language": "css",
+      "sizeLines": 299,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/cropper/cropper.bundle.js",
+      "language": "javascript",
+      "sizeLines": 3624,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/datatables/datatables.bundle.css",
+      "language": "css",
+      "sizeLines": 1024,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/datatables/datatables.bundle.js",
+      "language": "javascript",
+      "sizeLines": 19298,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/draggable/draggable.bundle.js",
+      "language": "javascript",
+      "sizeLines": 39303,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/flot/flot.bundle.js",
+      "language": "javascript",
+      "sizeLines": 1698,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/fullcalendar/fullcalendar.bundle.css",
+      "language": "css",
+      "sizeLines": 1577,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/fullcalendar/fullcalendar.bundle.js",
+      "language": "javascript",
+      "sizeLines": 14505,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/gmaps/gmaps.js",
+      "language": "javascript",
+      "sizeLines": 2417,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/jqvmap/jqvmap.bundle.css",
+      "language": "css",
+      "sizeLines": 45,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/jqvmap/jqvmap.bundle.js",
+      "language": "javascript",
+      "sizeLines": 1296,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/jstree/jstree.bundle.css",
+      "language": "css",
+      "sizeLines": 1376,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/jstree/jstree.bundle.js",
+      "language": "javascript",
+      "sizeLines": 8655,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/kanban/kanban.bundle.css",
+      "language": "css",
+      "sizeLines": 155,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/kanban/kanban.bundle.js",
+      "language": "javascript",
+      "sizeLines": 0,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/leaflet/leaflet.bundle.css",
+      "language": "css",
+      "sizeLines": 898,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/leaflet/leaflet.bundle.js",
+      "language": "javascript",
+      "sizeLines": 24,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/prismjs/prismjs.bundle.css",
+      "language": "css",
+      "sizeLines": 140,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/prismjs/prismjs.bundle.js",
+      "language": "javascript",
+      "sizeLines": 1922,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/icons/default/icons.js",
+      "language": "javascript",
+      "sizeLines": 171,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/icons/default/index.js",
+      "language": "javascript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/advlist/index.js",
+      "language": "javascript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/advlist/plugin.js",
+      "language": "javascript",
+      "sizeLines": 278,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/anchor/index.js",
+      "language": "javascript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/anchor/plugin.js",
+      "language": "javascript",
+      "sizeLines": 216,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/autolink/index.js",
+      "language": "javascript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/autolink/plugin.js",
+      "language": "javascript",
+      "sizeLines": 185,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/autoresize/index.js",
+      "language": "javascript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/autoresize/plugin.js",
+      "language": "javascript",
+      "sizeLines": 171,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/autosave/index.js",
+      "language": "javascript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/autosave/plugin.js",
+      "language": "javascript",
+      "sizeLines": 212,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/bbcode/index.js",
+      "language": "javascript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/bbcode/plugin.js",
+      "language": "javascript",
+      "sizeLines": 99,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/charmap/index.js",
+      "language": "javascript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/charmap/plugin.js",
+      "language": "javascript",
+      "sizeLines": 1706,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/code/index.js",
+      "language": "javascript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/code/plugin.js",
+      "language": "javascript",
+      "sizeLines": 92,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/codesample/index.js",
+      "language": "javascript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/codesample/plugin.js",
+      "language": "javascript",
+      "sizeLines": 2104,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/colorpicker/index.js",
+      "language": "javascript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/colorpicker/plugin.js",
+      "language": "javascript",
+      "sizeLines": 22,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/contextmenu/index.js",
+      "language": "javascript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/contextmenu/plugin.js",
+      "language": "javascript",
+      "sizeLines": 22,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/directionality/index.js",
+      "language": "javascript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/directionality/plugin.js",
+      "language": "javascript",
+      "sizeLines": 314,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/emoticons/index.js",
+      "language": "javascript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/emoticons/js/emojiimages.js",
+      "language": "javascript",
+      "sizeLines": 9423,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/emoticons/js/emojis.js",
+      "language": "javascript",
+      "sizeLines": 9422,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/emoticons/plugin.js",
+      "language": "javascript",
+      "sizeLines": 605,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/fullpage/index.js",
+      "language": "javascript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/fullpage/plugin.js",
+      "language": "javascript",
+      "sizeLines": 544,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/fullscreen/index.js",
+      "language": "javascript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/fullscreen/plugin.js",
+      "language": "javascript",
+      "sizeLines": 979,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/help/index.js",
+      "language": "javascript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/help/plugin.js",
+      "language": "javascript",
+      "sizeLines": 846,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/hr/index.js",
+      "language": "javascript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/hr/plugin.js",
+      "language": "javascript",
+      "sizeLines": 46,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/image/index.js",
+      "language": "javascript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/image/plugin.js",
+      "language": "javascript",
+      "sizeLines": 1664,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/imagetools/index.js",
+      "language": "javascript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/imagetools/plugin.js",
+      "language": "javascript",
+      "sizeLines": 1348,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/importcss/index.js",
+      "language": "javascript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/importcss/plugin.js",
+      "language": "javascript",
+      "sizeLines": 343,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/insertdatetime/index.js",
+      "language": "javascript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/insertdatetime/plugin.js",
+      "language": "javascript",
+      "sizeLines": 177,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/legacyoutput/index.js",
+      "language": "javascript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/legacyoutput/plugin.js",
+      "language": "javascript",
+      "sizeLines": 199,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/link/index.js",
+      "language": "javascript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/link/plugin.js",
+      "language": "javascript",
+      "sizeLines": 1290,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/lists/index.js",
+      "language": "javascript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/lists/plugin.js",
+      "language": "javascript",
+      "sizeLines": 2148,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/media/index.js",
+      "language": "javascript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/media/plugin.js",
+      "language": "javascript",
+      "sizeLines": 1315,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/nonbreaking/index.js",
+      "language": "javascript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/nonbreaking/plugin.js",
+      "language": "javascript",
+      "sizeLines": 101,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/noneditable/index.js",
+      "language": "javascript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/noneditable/plugin.js",
+      "language": "javascript",
+      "sizeLines": 117,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/pagebreak/index.js",
+      "language": "javascript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/pagebreak/plugin.js",
+      "language": "javascript",
+      "sizeLines": 107,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/paste/index.js",
+      "language": "javascript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/paste/plugin.js",
+      "language": "javascript",
+      "sizeLines": 1764,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/preview/index.js",
+      "language": "javascript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/preview/plugin.js",
+      "language": "javascript",
+      "sizeLines": 127,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/print/index.js",
+      "language": "javascript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/print/plugin.js",
+      "language": "javascript",
+      "sizeLines": 53,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/quickbars/index.js",
+      "language": "javascript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/quickbars/plugin.js",
+      "language": "javascript",
+      "sizeLines": 491,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/save/index.js",
+      "language": "javascript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/save/plugin.js",
+      "language": "javascript",
+      "sizeLines": 119,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/searchreplace/index.js",
+      "language": "javascript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/searchreplace/plugin.js",
+      "language": "javascript",
+      "sizeLines": 1163,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/spellchecker/index.js",
+      "language": "javascript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/spellchecker/plugin.js",
+      "language": "javascript",
+      "sizeLines": 737,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/tabfocus/index.js",
+      "language": "javascript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/tabfocus/plugin.js",
+      "language": "javascript",
+      "sizeLines": 129,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/table/index.js",
+      "language": "javascript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/table/plugin.js",
+      "language": "javascript",
+      "sizeLines": 10495,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/template/index.js",
+      "language": "javascript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/template/plugin.js",
+      "language": "javascript",
+      "sizeLines": 577,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/textcolor/index.js",
+      "language": "javascript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/textcolor/plugin.js",
+      "language": "javascript",
+      "sizeLines": 22,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/textpattern/index.js",
+      "language": "javascript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/textpattern/plugin.js",
+      "language": "javascript",
+      "sizeLines": 1390,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/toc/index.js",
+      "language": "javascript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/toc/plugin.js",
+      "language": "javascript",
+      "sizeLines": 236,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/visualblocks/index.js",
+      "language": "javascript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/visualblocks/plugin.js",
+      "language": "javascript",
+      "sizeLines": 104,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/visualchars/index.js",
+      "language": "javascript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/visualchars/plugin.js",
+      "language": "javascript",
+      "sizeLines": 541,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/wordcount/index.js",
+      "language": "javascript",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/plugins/wordcount/plugin.js",
+      "language": "javascript",
+      "sizeLines": 416,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/skins/content/dark/content.css",
+      "language": "css",
+      "sizeLines": 83,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/skins/content/default/content.css",
+      "language": "css",
+      "sizeLines": 77,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/skins/content/document/content.css",
+      "language": "css",
+      "sizeLines": 82,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/skins/content/writer/content.css",
+      "language": "css",
+      "sizeLines": 78,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/skins/ui/oxide-dark/content.css",
+      "language": "css",
+      "sizeLines": 847,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/skins/ui/oxide-dark/content.inline.css",
+      "language": "css",
+      "sizeLines": 863,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/skins/ui/oxide-dark/content.mobile.css",
+      "language": "css",
+      "sizeLines": 33,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/skins/ui/oxide-dark/skin.css",
+      "language": "css",
+      "sizeLines": 4208,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/skins/ui/oxide-dark/skin.mobile.css",
+      "language": "css",
+      "sizeLines": 1005,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/skins/ui/oxide-dark/skin.shadowdom.css",
+      "language": "css",
+      "sizeLines": 41,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/skins/ui/oxide/content.css",
+      "language": "css",
+      "sizeLines": 871,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/skins/ui/oxide/content.inline.css",
+      "language": "css",
+      "sizeLines": 863,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/skins/ui/oxide/content.mobile.css",
+      "language": "css",
+      "sizeLines": 33,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/skins/ui/oxide/skin.css",
+      "language": "css",
+      "sizeLines": 4208,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/skins/ui/oxide/skin.mobile.css",
+      "language": "css",
+      "sizeLines": 1005,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/skins/ui/oxide/skin.shadowdom.css",
+      "language": "css",
+      "sizeLines": 41,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/tinymce.bundle.js",
+      "language": "javascript",
+      "sizeLines": 46060,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/uppy/uppy.bundle.css",
+      "language": "css",
+      "sizeLines": 4862,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/uppy/uppy.bundle.js",
+      "language": "javascript",
+      "sizeLines": 1,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/global/fonts/keenthemes-icons/ki.css",
+      "language": "css",
+      "sizeLines": 101,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/global/fonts/keenthemes-icons/ki.min.rtl.css",
+      "language": "css",
+      "sizeLines": 1,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/global/fonts/keenthemes-icons/ki.rtl.css",
+      "language": "css",
+      "sizeLines": 19,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/global/plugins.bundle.css",
+      "language": "css",
+      "sizeLines": 32527,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/assets/plugins/global/plugins.bundle.js",
+      "language": "javascript",
+      "sizeLines": 83988,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css/custom.css",
+      "language": "css",
+      "sizeLines": 238,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css/dashboard/dashboard.css",
+      "language": "css",
+      "sizeLines": 182,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css/pages/error/error-3.css",
+      "language": "css",
+      "sizeLines": 8,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css/pages/error/error-4.css",
+      "language": "css",
+      "sizeLines": 14,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css/pages/error/error-5.css",
+      "language": "css",
+      "sizeLines": 8,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css/pages/error/error-6.css",
+      "language": "css",
+      "sizeLines": 8,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css/pages/invoice/invoice-6.css",
+      "language": "css",
+      "sizeLines": 8,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css/pages/login/classic/login-1.css",
+      "language": "css",
+      "sizeLines": 60,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css/pages/login/classic/login-2.css",
+      "language": "css",
+      "sizeLines": 60,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css/pages/login/classic/login-3.css",
+      "language": "css",
+      "sizeLines": 43,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css/pages/login/classic/login-4.css",
+      "language": "css",
+      "sizeLines": 43,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css/pages/login/classic/login-5.css",
+      "language": "css",
+      "sizeLines": 43,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css/pages/login/classic/login-6.css",
+      "language": "css",
+      "sizeLines": 89,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css/pages/login/login-1.css",
+      "language": "css",
+      "sizeLines": 71,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css/pages/login/login-2.css",
+      "language": "css",
+      "sizeLines": 74,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css/pages/login/login-3.css",
+      "language": "css",
+      "sizeLines": 221,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css/pages/login/login-4.css",
+      "language": "css",
+      "sizeLines": 199,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css/pages/wizard/wizard-1.css",
+      "language": "css",
+      "sizeLines": 136,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css/pages/wizard/wizard-2.css",
+      "language": "css",
+      "sizeLines": 150,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css/pages/wizard/wizard-3.css",
+      "language": "css",
+      "sizeLines": 106,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css/pages/wizard/wizard-4.css",
+      "language": "css",
+      "sizeLines": 167,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css/pages/wizard/wizard-5.css",
+      "language": "css",
+      "sizeLines": 166,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css/pages/wizard/wizard-6.css",
+      "language": "css",
+      "sizeLines": 131,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css/style - Copy.bundle.css",
+      "language": "css",
+      "sizeLines": 86084,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css/style.bundle.css",
+      "language": "css",
+      "sizeLines": 86087,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css/style.bundle_.css",
+      "language": "css",
+      "sizeLines": 86087,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css/themes/layout/aside/dark.css",
+      "language": "css",
+      "sizeLines": 730,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css/themes/layout/aside/light.css",
+      "language": "css",
+      "sizeLines": 723,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css/themes/layout/brand/dark.css",
+      "language": "css",
+      "sizeLines": 77,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css/themes/layout/brand/light.css",
+      "language": "css",
+      "sizeLines": 79,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css/themes/layout/header/base/dark.css",
+      "language": "css",
+      "sizeLines": 128,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css/themes/layout/header/base/light.css",
+      "language": "css",
+      "sizeLines": 84,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css/themes/layout/header/menu/dark.css",
+      "language": "css",
+      "sizeLines": 754,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css/themes/layout/header/menu/light.css",
+      "language": "css",
+      "sizeLines": 704,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css_/pages/error/error-3.css",
+      "language": "css",
+      "sizeLines": 8,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css_/pages/error/error-4.css",
+      "language": "css",
+      "sizeLines": 14,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css_/pages/error/error-5.css",
+      "language": "css",
+      "sizeLines": 8,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css_/pages/error/error-6.css",
+      "language": "css",
+      "sizeLines": 8,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css_/pages/invoice/invoice-6.css",
+      "language": "css",
+      "sizeLines": 8,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css_/pages/login/classic/login-1.css",
+      "language": "css",
+      "sizeLines": 60,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css_/pages/login/classic/login-2.css",
+      "language": "css",
+      "sizeLines": 60,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css_/pages/login/classic/login-3.css",
+      "language": "css",
+      "sizeLines": 43,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css_/pages/login/classic/login-4.css",
+      "language": "css",
+      "sizeLines": 43,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css_/pages/login/classic/login-5.css",
+      "language": "css",
+      "sizeLines": 43,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css_/pages/login/classic/login-6.css",
+      "language": "css",
+      "sizeLines": 89,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css_/pages/login/login-1.css",
+      "language": "css",
+      "sizeLines": 71,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css_/pages/login/login-2.css",
+      "language": "css",
+      "sizeLines": 74,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css_/pages/login/login-3.css",
+      "language": "css",
+      "sizeLines": 221,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css_/pages/login/login-4.css",
+      "language": "css",
+      "sizeLines": 199,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css_/pages/wizard/wizard-1.css",
+      "language": "css",
+      "sizeLines": 136,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css_/pages/wizard/wizard-2.css",
+      "language": "css",
+      "sizeLines": 150,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css_/pages/wizard/wizard-3.css",
+      "language": "css",
+      "sizeLines": 106,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css_/pages/wizard/wizard-4.css",
+      "language": "css",
+      "sizeLines": 167,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css_/pages/wizard/wizard-5.css",
+      "language": "css",
+      "sizeLines": 166,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css_/pages/wizard/wizard-6.css",
+      "language": "css",
+      "sizeLines": 131,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css_/site.css",
+      "language": "css",
+      "sizeLines": 30,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css_/style - Copy.bundle.css",
+      "language": "css",
+      "sizeLines": 86084,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css_/style.bundle.css",
+      "language": "css",
+      "sizeLines": 86087,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css_/style.bundle_.css",
+      "language": "css",
+      "sizeLines": 86087,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css_/themes/layout/aside/dark.css",
+      "language": "css",
+      "sizeLines": 730,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css_/themes/layout/aside/light.css",
+      "language": "css",
+      "sizeLines": 723,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css_/themes/layout/brand/dark.css",
+      "language": "css",
+      "sizeLines": 77,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css_/themes/layout/brand/light.css",
+      "language": "css",
+      "sizeLines": 79,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css_/themes/layout/header/base/dark.css",
+      "language": "css",
+      "sizeLines": 128,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css_/themes/layout/header/base/light.css",
+      "language": "css",
+      "sizeLines": 84,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css_/themes/layout/header/menu/dark.css",
+      "language": "css",
+      "sizeLines": 754,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/css_/themes/layout/header/menu/light.css",
+      "language": "css",
+      "sizeLines": 704,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/js/custom/budget-order-details-page.js",
+      "language": "javascript",
+      "sizeLines": 241,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/js/dashboard/dashboard.js",
+      "language": "javascript",
+      "sizeLines": 284,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/js/site.js",
+      "language": "javascript",
+      "sizeLines": 4,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/lib/jquery-validation-unobtrusive/LICENSE.txt",
+      "language": "txt",
+      "sizeLines": 23,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/lib/jquery-validation/LICENSE.md",
+      "language": "markdown",
+      "sizeLines": 22,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/lib/jquery/LICENSE.txt",
+      "language": "txt",
+      "sizeLines": 20,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "Koala.Yedpa.WebUI/wwwroot/mailtemplate.html",
+      "language": "html",
+      "sizeLines": 540,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "Koala.Yedpa.sln",
+      "language": "sln",
+      "sizeLines": 141,
+      "fileCategory": "config"
+    },
+    {
+      "path": "KoalaYedpa_Api_Dokumantasyon_v01.md",
+      "language": "markdown",
+      "sizeLines": 547,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "KoalaYedpa_Smmury_v01.md",
+      "language": "markdown",
+      "sizeLines": 717,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "LogoClCardAPI_Documentation.md",
+      "language": "markdown",
+      "sizeLines": 424,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "MailTemplate.xlsx",
+      "language": "xlsx",
+      "sizeLines": 21,
+      "fileCategory": "code"
+    },
+    {
+      "path": "Todo.md",
+      "language": "markdown",
+      "sizeLines": 439,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "build_output.txt",
+      "language": "txt",
+      "sizeLines": 84,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/agent-teams-rehber.md",
+      "language": "markdown",
+      "sizeLines": 292,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/n8n/koala-bulk-invoice-trigger.workflow.json",
+      "language": "json",
+      "sizeLines": 128,
+      "fileCategory": "config"
+    },
+    {
+      "path": "docs/superpowers/plans/2026-04-30-pending-invoices.md",
+      "language": "markdown",
+      "sizeLines": 519,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/superpowers/plans/2026-05-05-dashboard.md",
+      "language": "markdown",
+      "sizeLines": 1223,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/superpowers/plans/2026-05-11-agent-team-setup.md",
+      "language": "markdown",
+      "sizeLines": 906,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/superpowers/plans/2026-06-30-bulk-invoice-rewrite.md",
+      "language": "markdown",
+      "sizeLines": 974,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/superpowers/specs/2026-04-30-pending-invoices-design.md",
+      "language": "markdown",
+      "sizeLines": 93,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/superpowers/specs/2026-05-04-dashboard-design.md",
+      "language": "markdown",
+      "sizeLines": 177,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/superpowers/specs/2026-05-11-agent-team-design.md",
+      "language": "markdown",
+      "sizeLines": 267,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/superpowers/specs/2026-05-13-bulk-invoicing-design.md",
+      "language": "markdown",
+      "sizeLines": 163,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/superpowers/specs/2026-07-01-bulk-invoice-n8n-rabbitmq-design.md",
+      "language": "markdown",
+      "sizeLines": 65,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/superpowers/specs/2026-07-31-cari-degisim-karsilastirma-design.md",
+      "language": "markdown",
+      "sizeLines": 124,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/team/gonca.md",
+      "language": "markdown",
+      "sizeLines": 48,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/team/katya.md",
+      "language": "markdown",
+      "sizeLines": 45,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/team/mahmut.md",
+      "language": "markdown",
+      "sizeLines": 52,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/team/nastya.md",
+      "language": "markdown",
+      "sizeLines": 46,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/team/natasa.md",
+      "language": "markdown",
+      "sizeLines": 39,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/team/olga.md",
+      "language": "markdown",
+      "sizeLines": 43,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/team/progress.md",
+      "language": "markdown",
+      "sizeLines": 358,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "handoff.md",
+      "language": "markdown",
+      "sizeLines": 271,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "sorgu001.sql",
+      "language": "sql",
+      "sizeLines": 84,
+      "fileCategory": "data"
+    }
+  ],
+  "totalFiles": 942,
+  "filteredByIgnore": 0,
+  "estimatedComplexity": "very-large",
+  "stats": {
+    "filesScanned": 942,
+    "byCategory": {
+      "config": 23,
+      "docs": 56,
+      "code": 703,
+      "markup": 159,
+      "data": 1
+    },
+    "byLanguage": {
+      "json": 11,
+      "markdown": 41,
+      "skill": 2,
+      "txt": 15,
+      "csharp": 341,
+      "javascript": 274,
+      "unknown": 1,
+      "csproj": 7,
+      "xml": 4,
+      "http": 1,
+      "pubxml": 2,
+      "config": 2,
+      "pem": 4,
+      "lic": 2,
+      "cshtml": 73,
+      "css": 158,
+      "html": 1,
+      "sln": 1,
+      "xlsx": 1,
+      "sql": 1
+    }
+  }
+}

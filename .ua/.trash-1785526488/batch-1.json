@@ -1,0 +1,174 @@
+{
+  "nodes": [
+    {
+      "id": "document:.claude/agents/katya.md",
+      "type": "document",
+      "name": "Katya Takım Lideri Ajan Tanımı",
+      "filePath": ".claude/agents/katya.md",
+      "summary": "Koala.Yedpa projesinin takım lideri ajanı. Görev dağıtımı, orkestrasyon, mimari kararlar ve kullanıcı raporlamasından sorumludur. Tüm teammate'leri koordine eder, build/test doğrulaması yapar.",
+      "tags": ["agent", "takım-lideri", "orkestrasyon", "koordinasyon", "claude-code"],
+      "complexity": "moderate",
+      "language": "markdown"
+    },
+    {
+      "id": "document:.claude/agents/natasa.md",
+      "type": "document",
+      "name": "Nataşa Veritabanı Uzmanı Ajan Tanımı",
+      "filePath": ".claude/agents/natasa.md",
+      "summary": "Veritabanı ve EF Core uzmanı ajan. MSSQL sorgu optimizasyonu, migration yönetimi, entity tasarımı ve repository pattern implementasyonundan sorumludur.",
+      "tags": ["agent", "veritabanı", "ef-core", "mssql", "migration", "repository-pattern", "claude-code"],
+      "complexity": "simple",
+      "language": "markdown"
+    },
+    {
+      "id": "document:.claude/agents/olga.md",
+      "type": "document",
+      "name": "Olga Servis Katmanı Uzmanı Ajan Tanımı",
+      "filePath": ".claude/agents/olga.md",
+      "summary": "Backend geliştirici ajan. Service layer geliştirme, DTO tasarımı, AutoMapper konfigürasyonu, matematiksel hesaplamalar (bütçe, aidat, otopark) ve iş kuralları validasyonundan sorumludur.",
+      "tags": ["agent", "service-layer", "iş-mantığı", "dto", "automapper", "validasyon", "claude-code"],
+      "complexity": "simple",
+      "language": "markdown"
+    },
+    {
+      "id": "document:.claude/agents/nastya.md",
+      "type": "document",
+      "name": "Nastya API Entegrasyon Uzmanı Ajan Tanımı",
+      "filePath": ".claude/agents/nastya.md",
+      "summary": "API ve entegrasyon geliştirici ajan. Logo REST API, Message34 email servisi, Hangfire background job yönetimi, WebAPI endpoint geliştirme ve Swagger dokümantasyonundan sorumludur.",
+      "tags": ["agent", "api", "entegrasyon", "logo-rest-api", "message34", "hangfire", "webapi", "claude-code"],
+      "complexity": "simple",
+      "language": "markdown"
+    },
+    {
+      "id": "document:.claude/agents/mahmut.md",
+      "type": "document",
+      "name": "Mahmut Frontend Uzmanı Ajan Tanımı",
+      "filePath": ".claude/agents/mahmut.md",
+      "summary": "Frontend geliştirici ajan. Metronic tema özelleştirme, Razor Views ve Partial View'lar, JavaScript mimarisi (DataTables, Chart.js), AJAX çağrıları ve form validasyonlarından sorumludur.",
+      "tags": ["agent", "frontend", "metronic", "razor-views", "datatables", "chartjs", "javascript", "claude-code"],
+      "complexity": "simple",
+      "language": "markdown"
+    },
+    {
+      "id": "document:.claude/agents/gonca.md",
+      "type": "document",
+      "name": "Gonca Test Uzmanı Ajan Tanımı",
+      "filePath": ".claude/agents/gonca.md",
+      "summary": "Test ve kalite güvencesi uzmanı ajan. Unit test, entegrasyon testi, regression testi yazımı, test coverage raporlama ve bug tespitinden sorumludur. Üretim koduna dokunamaz, sadece test dosyalarını değiştirebilir.",
+      "tags": ["agent", "test", "kalite-güvencesi", "unit-test", "entegrasyon-testi", "coverage", "claude-code"],
+      "complexity": "simple",
+      "language": "markdown"
+    }
+  ],
+  "edges": [
+    {
+      "source": "document:.claude/agents/katya.md",
+      "target": "document:.claude/agents/natasa.md",
+      "type": "coordinates",
+      "weight": 1.0
+    },
+    {
+      "source": "document:.claude/agents/katya.md",
+      "target": "document:.claude/agents/olga.md",
+      "type": "coordinates",
+      "weight": 1.0
+    },
+    {
+      "source": "document:.claude/agents/katya.md",
+      "target": "document:.claude/agents/nastya.md",
+      "type": "coordinates",
+      "weight": 1.0
+    },
+    {
+      "source": "document:.claude/agents/katya.md",
+      "target": "document:.claude/agents/mahmut.md",
+      "type": "coordinates",
+      "weight": 1.0
+    },
+    {
+      "source": "document:.claude/agents/katya.md",
+      "target": "document:.claude/agents/gonca.md",
+      "type": "coordinates",
+      "weight": 1.0
+    },
+    {
+      "source": "document:.claude/agents/natasa.md",
+      "target": "document:.claude/agents/olga.md",
+      "type": "coordinates_with",
+      "weight": 0.8
+    },
+    {
+      "source": "document:.claude/agents/olga.md",
+      "target": "document:.claude/agents/natasa.md",
+      "type": "coordinates_with",
+      "weight": 0.8
+    },
+    {
+      "source": "document:.claude/agents/olga.md",
+      "target": "document:.claude/agents/nastya.md",
+      "type": "coordinates_with",
+      "weight": 0.8
+    },
+    {
+      "source": "document:.claude/agents/nastya.md",
+      "target": "document:.claude/agents/mahmut.md",
+      "type": "coordinates_with",
+      "weight": 0.8
+    },
+    {
+      "source": "document:.claude/agents/mahmut.md",
+      "target": "document:.claude/agents/nastya.md",
+      "type": "coordinates_with",
+      "weight": 0.8
+    },
+    {
+      "source": "document:.claude/agents/natasa.md",
+      "target": "document:.claude/agents/katya.md",
+      "type": "reports_to",
+      "weight": 0.9
+    },
+    {
+      "source": "document:.claude/agents/olga.md",
+      "target": "document:.claude/agents/katya.md",
+      "type": "reports_to",
+      "weight": 0.9
+    },
+    {
+      "source": "document:.claude/agents/nastya.md",
+      "target": "document:.claude/agents/katya.md",
+      "type": "reports_to",
+      "weight": 0.9
+    },
+    {
+      "source": "document:.claude/agents/mahmut.md",
+      "target": "document:.claude/agents/katya.md",
+      "type": "reports_to",
+      "weight": 0.9
+    },
+    {
+      "source": "document:.claude/agents/gonca.md",
+      "target": "document:.claude/agents/katya.md",
+      "type": "reports_to",
+      "weight": 0.9
+    },
+    {
+      "source": "document:.claude/agents/gonca.md",
+      "target": "document:.claude/agents/natasa.md",
+      "type": "tests_code_by",
+      "weight": 0.7
+    },
+    {
+      "source": "document:.claude/agents/gonca.md",
+      "target": "document:.claude/agents/olga.md",
+      "type": "tests_code_by",
+      "weight": 0.7
+    },
+    {
+      "source": "document:.claude/agents/gonca.md",
+      "target": "document:.claude/agents/nastya.md",
+      "type": "tests_code_by",
+      "weight": 0.7
+    }
+  ]
+}

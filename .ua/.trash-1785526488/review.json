@@ -1,0 +1,61 @@
+{
+  "issues": [
+    "Tour step[0] refs missing node 'file:CLAUDE.md'"
+  ],
+  "warnings": [
+    "Node 'config:.Message34/MailApi.Json' has no edges (orphan)",
+    "Node 'file:Koala.Yedpa.WebApi/Properties/PublishProfiles/FolderProfile.pubxml' has no edges (orphan)",
+    "Node 'config:Koala.Yedpa.WebApi/Properties/launchSettings.json' has no edges (orphan)",
+    "Node 'file:Koala.Yedpa.WebUI/Localizations/LocalizationIdentityErrorDescriber.cs' has no edges (orphan)",
+    "Node 'file:Koala.Yedpa.WebUI/Models/ErrorViewModel.cs' has no edges (orphan)",
+    "Node 'file:Koala.Yedpa.WebUI/Properties/PublishProfiles/FolderProfile.pubxml' has no edges (orphan)",
+    "Node 'config:Koala.Yedpa.WebUI/Properties/launchSettings.json' has no edges (orphan)",
+    "Node 'file:Koala.Yedpa.WebUI/wwwroot/assets/css/pages/invoice/invoice-6.css' has no edges (orphan)",
+    "Node 'file:Koala.Yedpa.WebUI/wwwroot/assets/css_/pages/invoice/invoice-6.css' has no edges (orphan)",
+    "Node 'file:Koala.Yedpa.WebUI/wwwroot/assets/css_/style.bundle.css' has no edges (orphan)",
+    "Node 'file:Koala.Yedpa.WebUI/wwwroot/assets/js/pages/custom/chat/chat.js' has no edges (orphan)",
+    "Node 'file:Koala.Yedpa.WebUI/wwwroot/assets/js/pages/custom/inbox/inbox.js' has no edges (orphan)",
+    "Node 'file:Koala.Yedpa.WebUI/wwwroot/assets/js/pages/custom/profile/profile.js' has no edges (orphan)",
+    "Node 'file:Koala.Yedpa.WebUI/wwwroot/assets/js/pages/custom/todo/todo.js' has no edges (orphan)",
+    "Node 'file:Koala.Yedpa.WebUI/wwwroot/assets/js/pages/features/base/dropdown.js' has no edges (orphan)",
+    "Node 'file:Koala.Yedpa.WebUI/wwwroot/assets/js/pages/features/custom/spinners.js' has no edges (orphan)",
+    "Node 'file:Koala.Yedpa.WebUI/wwwroot/assets/js/scripts.bundle.js' has no edges (orphan)",
+    "Node 'file:Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/draggable/draggable.bundle.js' has no edges (orphan)",
+    "Node 'file:Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/flot/flot.bundle.js' has no edges (orphan)",
+    "Node 'file:Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/gmaps/gmaps.js' has no edges (orphan)",
+    "Node 'file:Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/skins/content/dark/content.css' has no edges (orphan)",
+    "Node 'file:Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/skins/content/default/content.css' has no edges (orphan)",
+    "Node 'file:Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/skins/content/document/content.css' has no edges (orphan)",
+    "Node 'file:Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/skins/content/writer/content.css' has no edges (orphan)",
+    "Node 'file:Koala.Yedpa.WebUI/wwwroot/assets/plugins/custom/tinymce/tinymce.bundle.js' has no edges (orphan)",
+    "Node 'file:Koala.Yedpa.WebUI/wwwroot/css/dashboard/dashboard.css' has no edges (orphan)",
+    "Node 'file:Koala.Yedpa.WebUI/wwwroot/css/pages/invoice/invoice-6.css' has no edges (orphan)",
+    "Node 'file:Koala.Yedpa.WebUI/wwwroot/css_/pages/invoice/invoice-6.css' has no edges (orphan)",
+    "Node 'file:Koala.Yedpa.WebUI/wwwroot/js/custom/budget-order-details-page.js' has no edges (orphan)",
+    "Node 'file:Koala.Yedpa.WebUI/wwwroot/js/dashboard/dashboard.js' has no edges (orphan)",
+    "Node 'file:Koala.Yedpa.WebUI/wwwroot/js/site.js' has no edges (orphan)",
+    "Node 'document:Koala.Yedpa.WebUI/wwwroot/lib/jquery-validation-unobtrusive/LICENSE.txt' has no edges (orphan)",
+    "Node 'document:Koala.Yedpa.WebUI/wwwroot/lib/jquery/LICENSE.txt' has no edges (orphan)",
+    "Node 'file:Koala.Yedpa.WebUI/wwwroot/mailtemplate.html' has no edges (orphan)",
+    "Node 'document:docs/agent-teams-rehber.md' has no edges (orphan)",
+    "Node 'config:docs/n8n/koala-bulk-invoice-trigger.workflow.json' has no edges (orphan)"
+  ],
+  "stats": {
+    "totalNodes": 942,
+    "totalEdges": 4203,
+    "totalLayers": 19,
+    "tourSteps": 10,
+    "nodeTypes": {
+      "config": 23,
+      "document": 56,
+      "file": 863
+    },
+    "edgeTypes": {
+      "related": 3058,
+      "depends_on": 1040,
+      "tested_by": 21,
+      "serves": 65,
+      "documents": 19
+    }
+  }
+}

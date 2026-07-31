@@ -1,0 +1,918 @@
+{
+  "nodes": [
+    {
+      "id": "batch4-n1",
+      "type": "file",
+      "name": "entities.md",
+      "filePath": ".claude/skills/Asp-Identity/references/entities.md",
+      "summary": "ASP.NET Core Identity entity şemaları: AppUser, AppRole, UserStatus enum, UserProperty, Module, ModuleClaim, GeneratedId varlıkları, Identity context sınıfları (AppUserRole, AppUserClaim, AppUserLogin, AppUserToken, AppRoleClaim), ApplicationDbContext Fluent API konfigürasyonu ve AvatarHelper yardımcı sınıfı tanımları.",
+      "tags": ["entity", "identity", "ef-core", "dbcontext", "aspnet-identity", "schema", "model"],
+      "complexity": "high",
+      "language": "markdown"
+    },
+    {
+      "id": "batch4-n2",
+      "type": "file",
+      "name": "patterns.md",
+      "filePath": ".claude/skills/Asp-Identity/references/patterns.md",
+      "summary": "Repository ve servis katmanı desenleri: UserManager vs UserStore vs Repository seçim rehberi, IIdentityService/IdentityService implementasyonu, IAccountService arayüzü, IUserRepository/UserRepository karmaşık sorgu desenleri, IJwtTokenService/JwtTokenService JWT token yönetimi, IClaimManagementService/ClaimManagementService claim yönetimi ve ClaimGroupDto/ClaimItemDto/UserDetailsDto/ClaimDto veri transfer nesneleri.",
+      "tags": ["service-layer", "repository-pattern", "jwt", "identity", "dto", "design-pattern", "dependency-injection"],
+      "complexity": "high",
+      "language": "markdown"
+    },
+    {
+      "id": "batch4-n3",
+      "type": "file",
+      "name": "workflows.md",
+      "filePath": ".claude/skills/Asp-Identity/references/workflows.md",
+      "summary": "Identity iş akışları: 7 aşamalı kurulum sırası (proje analizi, paket kurulumu, entity oluşturma, servis yapılandırması, servis oluşturma, controller oluşturma, view yapısı), kullanıcı kayıt akışı (açık kayıt ve admin tarafından oluşturma), giriş akışı (web ve API), claim atama akışı (rol tabanlı ve bireysel), şifre sıfırlama akışı, 2FA kurulum akışı, claim tabanlı yetkilendirme, kullanıcı durum yönetimi ve avatar yönetimi.",
+      "tags": ["workflow", "identity", "authentication", "authorization", "2fa", "password-reset", "registration", "avatar"],
+      "complexity": "high",
+      "language": "markdown"
+    },
+    {
+      "id": "batch4-n4",
+      "type": "entity",
+      "name": "AppUser",
+      "filePath": ".claude/skills/Asp-Identity/references/entities.md",
+      "summary": "IdentityUser<Guid> tabanlı özel kullanıcı entity'si. Name, LastName, Avatar, IsApiUser, UserStatus ve ExtendedProperties alanlarını içerir. UserProperties, UserRoles, UserClaims, UserLogins, UserTokens koleksiyonları ile bire-çok ilişkilere sahiptir. FullName hesaplanmış özelliği ile ad-soyad birleştirir.",
+      "tags": ["entity", "identity", "user", "appuser"],
+      "complexity": "high",
+      "language": "csharp"
+    },
+    {
+      "id": "batch4-n5",
+      "type": "entity",
+      "name": "AppRole",
+      "filePath": ".claude/skills/Asp-Identity/references/entities.md",
+      "summary": "IdentityRole<Guid> tabanlı özel rol entity'si. Description alanı ve UserRoles, RoleClaims navigasyon özellikleri ile kullanıcı-rol ve rol-claim ilişkilerini yönetir.",
+      "tags": ["entity", "identity", "role", "approval"],
+      "complexity": "medium",
+      "language": "csharp"
+    },
+    {
+      "id": "batch4-n6",
+      "type": "enum",
+      "name": "UserStatus",
+      "filePath": ".claude/skills/Asp-Identity/references/entities.md",
+      "summary": "Kullanıcı durumunu belirten byte tabanlı enum: Active (0x01), Passive (0x02), Deleted (0x03 - soft delete), Blocked (0x04), AwaitingApproval (0x05 - onay bekleyen). Durum geçişleri: AwaitingApproval->Active, Active<->Passive, Any->Blocked, Any->Deleted.",
+      "tags": ["enum", "user-status", "state-machine"],
+      "complexity": "medium",
+      "language": "csharp"
+    },
+    {
+      "id": "batch4-n7",
+      "type": "entity",
+      "name": "UserProperty",
+      "filePath": ".claude/skills/Asp-Identity/references/entities.md",
+      "summary": "Kullanıcı genişletilebilir özellikleri için key-value tablosu entity'si. Id, UserId, Key, Value ve PropertyType alanlarını içerir. AppUser ile bire-çok ilişkiye sahiptir. JSON kolon alternatifine karşı ikinci seçenek olarak sunulur.",
+      "tags": ["entity", "key-value", "extensibility", "user-property"],
+      "complexity": "medium",
+      "language": "csharp"
+    },
+    {
+      "id": "batch4-n8",
+      "type": "enum",
+      "name": "PropertyType",
+      "filePath": ".claude/skills/Asp-Identity/references/entities.md",
+      "summary": "UserProperty değer tipini belirleyen enum: String(1), Int(2), Bool(3), MultiSelect(4). EF Core'da HasConversion<byte>() ile byte olarak saklanır.",
+      "tags": ["enum", "property-type"],
+      "complexity": "low",
+      "language": "csharp"
+    },
+    {
+      "id": "batch4-n9",
+      "type": "entity",
+      "name": "Module",
+      "filePath": ".claude/skills/Asp-Identity/references/entities.md",
+      "summary": "Uygulama modülünü temsil eden entity. Id, Name, DisplayName, Description alanları ile Claims ve GeneratedIds navigasyon koleksiyonlarına sahiptir. ModuleClaim ve GeneratedId entity'leri ile bire-çok ilişki kurar.",
+      "tags": ["entity", "module", "authorization"],
+      "complexity": "medium",
+      "language": "csharp"
+    },
+    {
+      "id": "batch4-n10",
+      "type": "entity",
+      "name": "ModuleClaim",
+      "filePath": ".claude/skills/Asp-Identity/references/entities.md",
+      "summary": "Modüle ait claim tanımını tutan entity. Id, ModuleId, Name, DisplayName, Description alanlarını içerir. Module ile bire-çok (Cascade delete) ilişkilidir. Policy isimlendirmesi Module.Name.ClaimName formatındadır.",
+      "tags": ["entity", "claim", "module", "authorization"],
+      "complexity": "medium",
+      "language": "csharp"
+    },
+    {
+      "id": "batch4-n11",
+      "type": "entity",
+      "name": "GeneratedId",
+      "filePath": ".claude/skills/Asp-Identity/references/entities.md",
+      "summary": "Modül bazlı otomatik numara üretimi için entity. Id, ModuleId, Name, Description, Prefix, StartNumber, LastNumber, Digit alanlarını içerir. Module ile Cascade delete ilişkisine sahiptir.",
+      "tags": ["entity", "auto-number", "generated-id"],
+      "complexity": "medium",
+      "language": "csharp"
+    },
+    {
+      "id": "batch4-n12",
+      "type": "entity",
+      "name": "Identity Context Entities",
+      "filePath": ".claude/skills/Asp-Identity/references/entities.md",
+      "summary": "ASP.NET Core Identity tarafından otomatik oluşturulan junction tabloları: AppUserRole (IdentityUserRole<Guid>), AppUserClaim (IdentityUserClaim<Guid>), AppUserLogin (IdentityUserLogin<Guid>), AppUserToken (IdentityUserToken<Guid>), AppRoleClaim (IdentityRoleClaim<Guid>).",
+      "tags": ["entity", "identity", "junction-table", "auto-generated"],
+      "complexity": "low",
+      "language": "csharp"
+    },
+    {
+      "id": "batch4-n13",
+      "type": "configuration",
+      "name": "ApplicationDbContext",
+      "filePath": ".claude/skills/Asp-Identity/references/entities.md",
+      "summary": "IdentityDbContext<AppUser, AppRole, Guid, ...> tabanlı veritabanı context'i. Modules, ModuleClaims, GeneratedIds, UserProperties DbSet'lerini içerir. OnModelCreating'de Fluent API ile tablo adları, alan kısıtlamaları, ilişkiler ve cascade delete davranışları yapılandırılır.",
+      "tags": ["dbcontext", "ef-core", "fluent-api", "configuration"],
+      "complexity": "high",
+      "language": "csharp"
+    },
+    {
+      "id": "batch4-n14",
+      "type": "helper",
+      "name": "AvatarHelper",
+      "filePath": ".claude/skills/Asp-Identity/references/entities.md",
+      "summary": "Avatar dosyası yönetimi için statik yardımcı sınıf. wwwroot/Upload/Avatars dizininde GUID tabanlı dosya adıyla IFormFile kaydeder (SaveAvatarAsync) ve fiziksel dosya silme (DeleteAvatar) işlemlerini yönetir.",
+      "tags": ["helper", "avatar", "file-upload", "static-class"],
+      "complexity": "low",
+      "language": "csharp"
+    },
+    {
+      "id": "batch4-n15",
+      "type": "service",
+      "name": "IIdentityService",
+      "filePath": ".claude/skills/Asp-Identity/references/patterns.md",
+      "summary": "Kimlik yönetimi servis arayüzü. Kullanıcı CRUD, rol CRUD, rol atama/çıkarma, claim ekleme/çıkarma (kullanıcı ve rol bazlı), şifre işlemleri (reset, change, admin change), kullanıcı durumu yönetimi, avatar güncelleme/silme ve iki faktörlü doğrulama token işlemlerini tanımlar. Tüm metotlar (bool Succeeded, string[] Errors) tuple döner.",
+      "tags": ["interface", "service", "identity", "crud", "user-management"],
+      "complexity": "high",
+      "language": "csharp"
+    },
+    {
+      "id": "batch4-n16",
+      "type": "service",
+      "name": "IdentityService",
+      "filePath": ".claude/skills/Asp-Identity/references/patterns.md",
+      "summary": "IIdentityService implementasyonu. UserManager<AppUser>, RoleManager<AppRole> ve ApplicationDbContext'i dependency injection ile alır. UserManager'ı CRUD ve Identity işlemleri için, DbContext'i sorgu ve listeleme için kullanır. Soft delete (status=Deleted) ve avatar dosya yönetimi (AvatarHelper) entegrasyonu içerir.",
+      "tags": ["service", "implementation", "identity", "user-manager", "role-manager"],
+      "complexity": "high",
+      "language": "csharp"
+    },
+    {
+      "id": "batch4-n17",
+      "type": "service",
+      "name": "IAccountService",
+      "filePath": ".claude/skills/Asp-Identity/references/patterns.md",
+      "summary": "Hesap yönetimi servis arayüzü. RegisterAsync (API/web kullanıcısı ayırımı ile), LoginAsync, LogoutAsync, ForgotPasswordAsync, ResetPasswordAsync, GetUserProfileAsync, UpdateProfileAsync, EnableTwoFactorAsync, DisableTwoFactorAsync metotlarını tanımlar.",
+      "tags": ["interface", "service", "account", "authentication", "profile"],
+      "complexity": "medium",
+      "language": "csharp"
+    },
+    {
+      "id": "batch4-n18",
+      "type": "service",
+      "name": "IUserRepository",
+      "filePath": ".claude/skills/Asp-Identity/references/patterns.md",
+      "summary": "Karmaşık kullanıcı sorguları için repository arayüzü. GetByIdWithDetailsAsync (Include/T ThenInclude ile), GetUsersByRoleAsync, SearchUsersAsync (EF.Functions.Like ile), GetUsersByStatusAsync, GetUserDetailsAsync (UserDetailsDto projeksiyonu) metotlarını tanımlar.",
+      "tags": ["interface", "repository", "query", "include", "projection"],
+      "complexity": "medium",
+      "language": "csharp"
+    },
+    {
+      "id": "batch4-n19",
+      "type": "service",
+      "name": "UserRepository",
+      "filePath": ".claude/skills/Asp-Identity/references/patterns.md",
+      "summary": "IUserRepository implementasyonu. ApplicationDbContext üzerinden Include/ThenInclude ile eager loading, EF.Functions.Like ile arama, Select projeksiyonu ile DTO dönüşümü yapar. UserDetailsDto'da roller ve claim'ler alt sorgu olarak projekte edilir.",
+      "tags": ["repository", "implementation", "ef-core", "eager-loading", "projection"],
+      "complexity": "medium",
+      "language": "csharp"
+    },
+    {
+      "id": "batch4-n20",
+      "type": "service",
+      "name": "IJwtTokenService",
+      "filePath": ".claude/skills/Asp-Identity/references/patterns.md",
+      "summary": "JWT token servisi arayüzü. GenerateAccessToken (kullanıcı, roller ve claim'ler ile), GenerateRefreshToken (32 byte random) ve ValidateToken (TokenValidationParameters ile doğrulama) metotlarını tanımlar. API projeleri için tasarlanmıştır.",
+      "tags": ["interface", "service", "jwt", "token", "api"],
+      "complexity": "medium",
+      "language": "csharp"
+    },
+    {
+      "id": "batch4-n21",
+      "type": "service",
+      "name": "JwtTokenService",
+      "filePath": ".claude/skills/Asp-Identity/references/patterns.md",
+      "summary": "IJwtTokenService implementasyonu. IConfiguration'dan Jwt:SecretKey, Jwt:Issuer, Jwt:Audience, Jwt:ExpirationDays değerlerini okur. HMAC-SHA256 ile imzalanmış JWT access token ve kriptografik rastgele refresh token üretir. ClaimsPrincipal döndüren token doğrulama içerir.",
+      "tags": ["service", "implementation", "jwt", "token", "hmac-sha256"],
+      "complexity": "medium",
+      "language": "csharp"
+    },
+    {
+      "id": "batch4-n22",
+      "type": "service",
+      "name": "IClaimManagementService",
+      "filePath": ".claude/skills/Asp-Identity/references/patterns.md",
+      "summary": "Claim yönetimi servis arayüzü. GetUserClaimGroupsAsync (kullanıcının rol ve bireysel claim'lerini modül bazlı gruplayarak döner), GetRoleClaimGroupsAsync, UpdateUserClaimsAsync (rol claim'leri ile çakışmayı önleyerek), UpdateRoleClaimsAsync metotlarını tanımlar.",
+      "tags": ["interface", "service", "claim", "authorization", "role-based"],
+      "complexity": "medium",
+      "language": "csharp"
+    },
+    {
+      "id": "batch4-n23",
+      "type": "service",
+      "name": "ClaimManagementService",
+      "filePath": ".claude/skills/Asp-Identity/references/patterns.md",
+      "summary": "IClaimManagementService implementasyonu. UserManager, RoleManager ve DbContext'i birleştirir. Rol claim'lerini inherit eden ve bireysel claim'leri ayıran akıllı claim gruplama yapar. Claim güncellemede rol claim'leri ile çakışmayı kontrol eder, sadece bireysel claim'leri ekler/çıkarır.",
+      "tags": ["service", "implementation", "claim", "inheritance", "grouping"],
+      "complexity": "high",
+      "language": "csharp"
+    },
+    {
+      "id": "batch4-n24",
+      "type": "dto",
+      "name": "ClaimGroupDto",
+      "filePath": ".claude/skills/Asp-Identity/references/patterns.md",
+      "summary": "Claim grubu DTO'su. ModuleId, ModuleName, ModuleDisplayName ve ClaimItemDto listesini içerir. UI'da modül bazlı claim gruplarını göstermek için kullanılır.",
+      "tags": ["dto", "claim", "module", "grouping"],
+      "complexity": "low",
+      "language": "csharp"
+    },
+    {
+      "id": "batch4-n25",
+      "type": "dto",
+      "name": "ClaimItemDto",
+      "filePath": ".claude/skills/Asp-Identity/references/patterns.md",
+      "summary": "Tekil claim öğesi DTO'su. ClaimId, ClaimName, ClaimDisplayName, IsAssigned, IsInherited ve Source (Role/Individual) alanlarını içerir. UI'da checkbox durumu ve devralma bilgisini göstermek için kullanılır.",
+      "tags": ["dto", "claim", "checkbox", "inheritance"],
+      "complexity": "low",
+      "language": "csharp"
+    },
+    {
+      "id": "batch4-n26",
+      "type": "dto",
+      "name": "UserDetailsDto",
+      "filePath": ".claude/skills/Asp-Identity/references/patterns.md",
+      "summary": "Kullanıcı detay DTO'su. Id, Email, Name, LastName, FullName, Avatar, UserStatus, IsApiUser, roller (List<string>) ve claim'ler (List<ClaimDto>) alanlarını içerir. EF Core Select projeksiyonu ile tek sorguda doldurulur.",
+      "tags": ["dto", "user", "projection", "details"],
+      "complexity": "medium",
+      "language": "csharp"
+    },
+    {
+      "id": "batch4-n27",
+      "type": "dto",
+      "name": "ClaimDto",
+      "filePath": ".claude/skills/Asp-Identity/references/patterns.md",
+      "summary": "Basit claim DTO'su. Type ve Value alanlarını içerir. UserDetailsDto içinde kullanıcı claim'lerini listelemek için kullanılır.",
+      "tags": ["dto", "claim", "simple"],
+      "complexity": "low",
+      "language": "csharp"
+    },
+    {
+      "id": "batch4-n28",
+      "type": "workflow",
+      "name": "Identity Kurulum Akışı",
+      "filePath": ".claude/skills/Asp-Identity/references/workflows.md",
+      "summary": "7 aşamalı ASP.NET Core Identity kurulum süreci: (1) Proje analizi - API/MVC tipi belirleme, mevcut yapılandırmayı kontrol, kayıt politikası sorma; (2) Paket kurulumu - Identity.EntityFrameworkCore, Identity.UI, isteğe bağlı JwtBearer; (3) Entity oluşturma - UserStatus, AppUser, AppRole, Module, ModuleClaim, UserProperty, DbContext güncelleme; (4) Servis yapılandırması - Program.cs'de AddIdentity, şifre/kilitleme/oturum ayarları, JWT ve yetkilendirme yapılandırması; (5) Servis oluşturma - IIdentityService/IdentityService; (6) Controller oluşturma - Auth, Account, AdminUser, Role, Claim, Module sırasıyla; (7) View yapısı - Auth, Account, AdminUser, Role, Claim, Module klasörleri.",
+      "tags": ["workflow", "setup", "installation", "configuration", "7-phases"],
+      "complexity": "high",
+      "language": "markdown"
+    },
+    {
+      "id": "batch4-n29",
+      "type": "workflow",
+      "name": "Kullanıcı Kayıt Akışı",
+      "filePath": ".claude/skills/Asp-Identity/references/workflows.md",
+      "summary": "İki senaryolu kayıt akışı: (A) Açık kayıt - kullanıcı form doldurur, UserStatus=AwaitingApproval ile oluşturulur, onay email'i gönderilir, admin Active yapar; (B) Admin kaydı - admin form doldurur, UserStatus=Active (veya AwaitingApproval) ile oluşturulur, başlangıç rolleri atanır, geçici şifre email'i gönderilir, kullanıcı ilk girişte şifre değiştirir.",
+      "tags": ["workflow", "registration", "user-creation", "approval"],
+      "complexity": "medium",
+      "language": "markdown"
+    },
+    {
+      "id": "batch4-n30",
+      "type": "workflow",
+      "name": "Giriş Akışı",
+      "filePath": ".claude/skills/Asp-Identity/references/workflows.md",
+      "summary": "İki kanallı giriş akışı: (A) Web kullanıcısı - email/şifre doğrulama, IsApiUser=false kontrolü, UserStatus=Active kontrolü, 2FA kontrolü, auth cookie oluşturma; (B) API kullanıcısı - /api/auth/login endpoint'i, IsApiUser=true kontrolü, UserStatus=Active kontrolü, JWT token üretimi ve dönüşü. API kullanıcıları web arayüzünden giriş yapamaz, web kullanıcıları API'den giriş yapamaz.",
+      "tags": ["workflow", "login", "authentication", "web", "api", "jwt", "cookie"],
+      "complexity": "medium",
+      "language": "markdown"
+    },
+    {
+      "id": "batch4-n31",
+      "type": "workflow",
+      "name": "Claim Atama Akışı",
+      "filePath": ".claude/skills/Asp-Identity/references/workflows.md",
+      "summary": "İki tip claim atama: (A) Rol tabanlı - Role Claims sayfasında modül seçilir, claim'ler işaretlenir, kaydedilir ve roldeki tüm kullanıcılara uygulanır; (B) Bireysel kullanıcı - User Claims sayfasında rol'den inherit edilenler salt okunur gösterilir (kaynak rol adıyla), bireysel claim'ler düzenlenebilir, rol claim'leri seçicide gösterilmez.",
+      "tags": ["workflow", "claim", "role-based", "individual", "inheritance"],
+      "complexity": "medium",
+      "language": "markdown"
+    },
+    {
+      "id": "batch4-n32",
+      "type": "workflow",
+      "name": "Şifre Sıfırlama Akışı",
+      "filePath": ".claude/skills/Asp-Identity/references/workflows.md",
+      "summary": "5 adımlı şifre sıfırlama: (1) Kullanıcı email gönderir; (2) UserManager.GeneratePasswordResetTokenAsync() ile token üretilir; (3) Sıfırlama linki email ile gönderilir; (4) Kullanıcı linke tıklar ve yeni şifre girer; (5) UserManager.ResetPasswordAsync() ile token doğrulanır ve şifre güncellenir.",
+      "tags": ["workflow", "password-reset", "token", "email"],
+      "complexity": "low",
+      "language": "markdown"
+    },
+    {
+      "id": "batch4-n33",
+      "type": "workflow",
+      "name": "İki Faktörlü Doğrulama Akışı",
+      "filePath": ".claude/skills/Asp-Identity/references/workflows.md",
+      "summary": "7 adımlı 2FA kurulumu: (1) 2FA sayfasına git; (2) Paylaşılan gizli anahtar üret; (3) Authenticator uygulaması için QR kod göster; (4) Kullanıcı QR kodu tarar; (5) Doğrulama kodu girilir; (6) UserManager.VerifyTwoFactorTokenAsync() ile doğrulanır; (7) 2FA etkinleştirilir ve yedek kurtarma kodları gösterilir.",
+      "tags": ["workflow", "2fa", "two-factor", "qr-code", "authenticator"],
+      "complexity": "medium",
+      "language": "markdown"
+    },
+    {
+      "id": "batch4-n34",
+      "type": "workflow",
+      "name": "Yetkilendirme Yapılandırması",
+      "filePath": ".claude/skills/Asp-Identity/references/workflows.md",
+      "summary": "Claim tabanlı yetkilendirme: Controller/Action seviyesinde [Authorize(Policy = \"Module.Action\")] ile policy bazlı koruma. Dinamik policy oluşturma: ModuleClaim entity'lerinden otomatik policy üretimi, Program.cs'de uygulama başlangıcında tüm claim'ler taranır ve policy'lere dönüştürülür (RequireClaim ile Module ve Action claim kontrolleri).",
+      "tags": ["workflow", "authorization", "policy", "claim-based", "dynamic"],
+      "complexity": "medium",
+      "language": "markdown"
+    },
+    {
+      "id": "batch4-n35",
+      "type": "workflow",
+      "name": "Kullanıcı Durum Yönetimi",
+      "filePath": ".claude/skills/Asp-Identity/references/workflows.md",
+      "summary": "UserStatus durum geçişleri ve login validasyonu: AwaitingApproval->Active (admin onayı), Active<->Passive (kullanıcı/admin değiştirir), Any->Blocked (admin engeller, giriş yapamaz), Any->Deleted (soft delete, hiç gösterilmez). Login'de UserStatus != Active ise giriş reddedilir. API kullanıcılarının web'den girişi de engellenir.",
+      "tags": ["workflow", "user-status", "state-transition", "soft-delete"],
+      "complexity": "low",
+      "language": "markdown"
+    },
+    {
+      "id": "batch4-n36",
+      "type": "workflow",
+      "name": "Avatar Yönetimi",
+      "filePath": ".claude/skills/Asp-Identity/references/workflows.md",
+      "summary": "Avatar yükleme ve silme akışı: Upload - (1) Controller'da dosya al, (2) Dosya tipini doğrula (sadece resim), (3) Boyutu doğrula (max 2MB), (4) GUID dosya adı üret, (5) wwwroot/Upload/Avatars/ dizinine kaydet, (6) AppUser.Avatar'a göreceli yol yaz, (7) Eski avatar varsa sil. Delete - (1) Mevcut avatar yolunu al, (2) Fiziksel dosyayı sil, (3) AppUser.Avatar = null yap.",
+      "tags": ["workflow", "avatar", "upload", "file-management"],
+      "complexity": "low",
+      "language": "markdown"
+    },
+    {
+      "id": "batch4-n37",
+      "type": "concept",
+      "name": "UserManager vs Repository Seçim Kılavuzu",
+      "filePath": ".claude/skills/Asp-Identity/references/patterns.md",
+      "summary": "ASP.NET Core Identity'de UserManager ve DbContext/Repository kullanımının ne zaman uygun olduğunu belirleyen kritik kurallar: UserManager - kullanıcı CRUD, rol/claim atama, şifre işlemleri, token üretimi, validasyon için; DbContext/Repository - karmaşık LINQ sorguları, çoklu include, bulk operasyonlar, Identity dışı entity join'leri, özel raporlama, performans kritik okumalar için. UserManager asla şifre hash'lemez (DbContext ile oluşturulan kullanıcıda güvenlik açığı oluşur).",
+      "tags": ["concept", "best-practice", "user-manager", "repository", "decision-guide"],
+      "complexity": "medium",
+      "language": "markdown"
+    },
+    {
+      "id": "batch4-n38",
+      "type": "concept",
+      "name": "JWT Authentication Mimarisi",
+      "filePath": ".claude/skills/Asp-Identity/references/patterns.md",
+      "summary": "API projeleri için JWT tabanlı kimlik doğrulama mimarisi: Access token (HMAC-SHA256 imzalı, ClaimTypes.NameIdentifier/Email/Name/IsApiUser + roller + özel claim'ler, yapılandırılabilir süre), Refresh token (32 byte kriptografik rastgele), TokenValidationParameters ile doğrulama (Issuer/Audience/Lifetime/SigningKey). Program.cs'de AddAuthentication(JwtBearer) + AddAuthorization yapılandırması.",
+      "tags": ["concept", "jwt", "authentication", "api", "token", "architecture"],
+      "complexity": "medium",
+      "language": "markdown"
+    }
+  ],
+  "edges": [
+    {
+      "id": "batch4-e1",
+      "source": "batch4-n1",
+      "target": "batch4-n2",
+      "type": "references",
+      "label": "Entity'ler servis katmanında kullanılır"
+    },
+    {
+      "id": "batch4-e2",
+      "source": "batch4-n1",
+      "target": "batch4-n3",
+      "type": "references",
+      "label": "Entity'ler iş akışlarında yapılandırılır"
+    },
+    {
+      "id": "batch4-e3",
+      "source": "batch4-n2",
+      "target": "batch4-n3",
+      "type": "references",
+      "label": "Servis desenleri iş akışlarında uygulanır"
+    },
+    {
+      "id": "batch4-e4",
+      "source": "batch4-n1",
+      "target": "batch4-n4",
+      "type": "defines",
+      "label": "AppUser entity'sini tanımlar"
+    },
+    {
+      "id": "batch4-e5",
+      "source": "batch4-n1",
+      "target": "batch4-n5",
+      "type": "defines",
+      "label": "AppRole entity'sini tanımlar"
+    },
+    {
+      "id": "batch4-e6",
+      "source": "batch4-n1",
+      "target": "batch4-n6",
+      "type": "defines",
+      "label": "UserStatus enum'unu tanımlar"
+    },
+    {
+      "id": "batch4-e7",
+      "source": "batch4-n1",
+      "target": "batch4-n7",
+      "type": "defines",
+      "label": "UserProperty entity'sini tanımlar"
+    },
+    {
+      "id": "batch4-e8",
+      "source": "batch4-n1",
+      "target": "batch4-n8",
+      "type": "defines",
+      "label": "PropertyType enum'unu tanımlar"
+    },
+    {
+      "id": "batch4-e9",
+      "source": "batch4-n1",
+      "target": "batch4-n9",
+      "type": "defines",
+      "label": "Module entity'sini tanımlar"
+    },
+    {
+      "id": "batch4-e10",
+      "source": "batch4-n1",
+      "target": "batch4-n10",
+      "type": "defines",
+      "label": "ModuleClaim entity'sini tanımlar"
+    },
+    {
+      "id": "batch4-e11",
+      "source": "batch4-n1",
+      "target": "batch4-n11",
+      "type": "defines",
+      "label": "GeneratedId entity'sini tanımlar"
+    },
+    {
+      "id": "batch4-e12",
+      "source": "batch4-n1",
+      "target": "batch4-n12",
+      "type": "defines",
+      "label": "Identity Context entity'lerini tanımlar"
+    },
+    {
+      "id": "batch4-e13",
+      "source": "batch4-n1",
+      "target": "batch4-n13",
+      "type": "defines",
+      "label": "ApplicationDbContext konfigürasyonunu tanımlar"
+    },
+    {
+      "id": "batch4-e14",
+      "source": "batch4-n1",
+      "target": "batch4-n14",
+      "type": "defines",
+      "label": "AvatarHelper sınıfını tanımlar"
+    },
+    {
+      "id": "batch4-e15",
+      "source": "batch4-n2",
+      "target": "batch4-n15",
+      "type": "defines",
+      "label": "IIdentityService arayüzünü tanımlar"
+    },
+    {
+      "id": "batch4-e16",
+      "source": "batch4-n2",
+      "target": "batch4-n16",
+      "type": "defines",
+      "label": "IdentityService implementasyonunu tanımlar"
+    },
+    {
+      "id": "batch4-e17",
+      "source": "batch4-n2",
+      "target": "batch4-n17",
+      "type": "defines",
+      "label": "IAccountService arayüzünü tanımlar"
+    },
+    {
+      "id": "batch4-e18",
+      "source": "batch4-n2",
+      "target": "batch4-n18",
+      "type": "defines",
+      "label": "IUserRepository arayüzünü tanımlar"
+    },
+    {
+      "id": "batch4-e19",
+      "source": "batch4-n2",
+      "target": "batch4-n19",
+      "type": "defines",
+      "label": "UserRepository implementasyonunu tanımlar"
+    },
+    {
+      "id": "batch4-e20",
+      "source": "batch4-n2",
+      "target": "batch4-n20",
+      "type": "defines",
+      "label": "IJwtTokenService arayüzünü tanımlar"
+    },
+    {
+      "id": "batch4-e21",
+      "source": "batch4-n2",
+      "target": "batch4-n21",
+      "type": "defines",
+      "label": "JwtTokenService implementasyonunu tanımlar"
+    },
+    {
+      "id": "batch4-e22",
+      "source": "batch4-n2",
+      "target": "batch4-n22",
+      "type": "defines",
+      "label": "IClaimManagementService arayüzünü tanımlar"
+    },
+    {
+      "id": "batch4-e23",
+      "source": "batch4-n2",
+      "target": "batch4-n23",
+      "type": "defines",
+      "label": "ClaimManagementService implementasyonunu tanımlar"
+    },
+    {
+      "id": "batch4-e24",
+      "source": "batch4-n2",
+      "target": "batch4-n24",
+      "type": "defines",
+      "label": "ClaimGroupDto DTO'sunu tanımlar"
+    },
+    {
+      "id": "batch4-e25",
+      "source": "batch4-n2",
+      "target": "batch4-n25",
+      "type": "defines",
+      "label": "ClaimItemDto DTO'sunu tanımlar"
+    },
+    {
+      "id": "batch4-e26",
+      "source": "batch4-n2",
+      "target": "batch4-n26",
+      "type": "defines",
+      "label": "UserDetailsDto DTO'sunu tanımlar"
+    },
+    {
+      "id": "batch4-e27",
+      "source": "batch4-n2",
+      "target": "batch4-n27",
+      "type": "defines",
+      "label": "ClaimDto DTO'sunu tanımlar"
+    },
+    {
+      "id": "batch4-e28",
+      "source": "batch4-n3",
+      "target": "batch4-n28",
+      "type": "defines",
+      "label": "Identity kurulum akışını tanımlar"
+    },
+    {
+      "id": "batch4-e29",
+      "source": "batch4-n3",
+      "target": "batch4-n29",
+      "type": "defines",
+      "label": "Kullanıcı kayıt akışını tanımlar"
+    },
+    {
+      "id": "batch4-e30",
+      "source": "batch4-n3",
+      "target": "batch4-n30",
+      "type": "defines",
+      "label": "Giriş akışını tanımlar"
+    },
+    {
+      "id": "batch4-e31",
+      "source": "batch4-n3",
+      "target": "batch4-n31",
+      "type": "defines",
+      "label": "Claim atama akışını tanımlar"
+    },
+    {
+      "id": "batch4-e32",
+      "source": "batch4-n3",
+      "target": "batch4-n32",
+      "type": "defines",
+      "label": "Şifre sıfırlama akışını tanımlar"
+    },
+    {
+      "id": "batch4-e33",
+      "source": "batch4-n3",
+      "target": "batch4-n33",
+      "type": "defines",
+      "label": "İki faktörlü doğrulama akışını tanımlar"
+    },
+    {
+      "id": "batch4-e34",
+      "source": "batch4-n3",
+      "target": "batch4-n34",
+      "type": "defines",
+      "label": "Yetkilendirme yapılandırmasını tanımlar"
+    },
+    {
+      "id": "batch4-e35",
+      "source": "batch4-n3",
+      "target": "batch4-n35",
+      "type": "defines",
+      "label": "Kullanıcı durum yönetimini tanımlar"
+    },
+    {
+      "id": "batch4-e36",
+      "source": "batch4-n3",
+      "target": "batch4-n36",
+      "type": "defines",
+      "label": "Avatar yönetimini tanımlar"
+    },
+    {
+      "id": "batch4-e37",
+      "source": "batch4-n2",
+      "target": "batch4-n37",
+      "type": "defines",
+      "label": "UserManager vs Repository seçim kılavuzunu tanımlar"
+    },
+    {
+      "id": "batch4-e38",
+      "source": "batch4-n2",
+      "target": "batch4-n38",
+      "type": "defines",
+      "label": "JWT Authentication mimarisini tanımlar"
+    },
+    {
+      "id": "batch4-e39",
+      "source": "batch4-n16",
+      "target": "batch4-n15",
+      "type": "implements",
+      "label": "IdentityService, IIdentityService'i uygular"
+    },
+    {
+      "id": "batch4-e40",
+      "source": "batch4-n19",
+      "target": "batch4-n18",
+      "type": "implements",
+      "label": "UserRepository, IUserRepository'i uygular"
+    },
+    {
+      "id": "batch4-e41",
+      "source": "batch4-n21",
+      "target": "batch4-n20",
+      "type": "implements",
+      "label": "JwtTokenService, IJwtTokenService'i uygular"
+    },
+    {
+      "id": "batch4-e42",
+      "source": "batch4-n23",
+      "target": "batch4-n22",
+      "type": "implements",
+      "label": "ClaimManagementService, IClaimManagementService'i uygular"
+    },
+    {
+      "id": "batch4-e43",
+      "source": "batch4-n16",
+      "target": "batch4-n4",
+      "type": "uses",
+      "label": "IdentityService, AppUser entity'sini yönetir"
+    },
+    {
+      "id": "batch4-e44",
+      "source": "batch4-n16",
+      "target": "batch4-n5",
+      "type": "uses",
+      "label": "IdentityService, AppRole entity'sini yönetir"
+    },
+    {
+      "id": "batch4-e45",
+      "source": "batch4-n16",
+      "target": "batch4-n13",
+      "type": "uses",
+      "label": "IdentityService, ApplicationDbContext'i kullanır"
+    },
+    {
+      "id": "batch4-e46",
+      "source": "batch4-n16",
+      "target": "batch4-n14",
+      "type": "uses",
+      "label": "IdentityService, AvatarHelper'ı kullanır"
+    },
+    {
+      "id": "batch4-e47",
+      "source": "batch4-n19",
+      "target": "batch4-n4",
+      "type": "uses",
+      "label": "UserRepository, AppUser sorgularını yönetir"
+    },
+    {
+      "id": "batch4-e48",
+      "source": "batch4-n19",
+      "target": "batch4-n13",
+      "type": "uses",
+      "label": "UserRepository, ApplicationDbContext'i kullanır"
+    },
+    {
+      "id": "batch4-e49",
+      "source": "batch4-n23",
+      "target": "batch4-n9",
+      "type": "uses",
+      "label": "ClaimManagementService, Module entity'sini kullanır"
+    },
+    {
+      "id": "batch4-e50",
+      "source": "batch4-n23",
+      "target": "batch4-n10",
+      "type": "uses",
+      "label": "ClaimManagementService, ModuleClaim entity'sini kullanır"
+    },
+    {
+      "id": "batch4-e51",
+      "source": "batch4-n23",
+      "target": "batch4-n13",
+      "type": "uses",
+      "label": "ClaimManagementService, ApplicationDbContext'i kullanır"
+    },
+    {
+      "id": "batch4-e52",
+      "source": "batch4-n24",
+      "target": "batch4-n25",
+      "type": "contains",
+      "label": "ClaimGroupDto, ClaimItemDto listesini içerir"
+    },
+    {
+      "id": "batch4-e53",
+      "source": "batch4-n26",
+      "target": "batch4-n27",
+      "type": "contains",
+      "label": "UserDetailsDto, ClaimDto listesini içerir"
+    },
+    {
+      "id": "batch4-e54",
+      "source": "batch4-n26",
+      "target": "batch4-n6",
+      "type": "uses",
+      "label": "UserDetailsDto, UserStatus enum'unu kullanır"
+    },
+    {
+      "id": "batch4-e55",
+      "source": "batch4-n37",
+      "target": "batch4-n16",
+      "type": "applies_to",
+      "label": "Seçim kılavuzu IdentityService tasarımını yönlendirir"
+    },
+    {
+      "id": "batch4-e56",
+      "source": "batch4-n37",
+      "target": "batch4-n19",
+      "type": "applies_to",
+      "label": "Seçim kılavuzu UserRepository kullanımını gerekçelendirir"
+    },
+    {
+      "id": "batch4-e57",
+      "source": "batch4-n34",
+      "target": "batch4-n9",
+      "type": "uses",
+      "label": "Yetkilendirme, Module entity'sinden policy üretir"
+    },
+    {
+      "id": "batch4-e58",
+      "source": "batch4-n34",
+      "target": "batch4-n10",
+      "type": "uses",
+      "label": "Yetkilendirme, ModuleClaim entity'sinden policy üretir"
+    },
+    {
+      "id": "batch4-e59",
+      "source": "batch4-n30",
+      "target": "batch4-n21",
+      "type": "uses",
+      "label": "API giriş akışı JwtTokenService kullanır"
+    },
+    {
+      "id": "batch4-e60",
+      "source": "batch4-n30",
+      "target": "batch4-n6",
+      "type": "uses",
+      "label": "Giriş akışı UserStatus kontrolü yapar"
+    },
+    {
+      "id": "batch4-e61",
+      "source": "batch4-n29",
+      "target": "batch4-n6",
+      "type": "uses",
+      "label": "Kayıt akışı UserStatus=AwaitingApproval/Active atar"
+    },
+    {
+      "id": "batch4-e62",
+      "source": "batch4-n35",
+      "target": "batch4-n6",
+      "type": "uses",
+      "label": "Durum yönetimi UserStatus enum'unu kullanır"
+    },
+    {
+      "id": "batch4-e63",
+      "source": "batch4-n36",
+      "target": "batch4-n14",
+      "type": "uses",
+      "label": "Avatar yönetimi AvatarHelper'ı kullanır"
+    },
+    {
+      "id": "batch4-e64",
+      "source": "batch4-n36",
+      "target": "batch4-n4",
+      "type": "uses",
+      "label": "Avatar yönetimi AppUser.Avatar alanını günceller"
+    },
+    {
+      "id": "batch4-e65",
+      "source": "batch4-n28",
+      "target": "batch4-n1",
+      "type": "implements_step",
+      "label": "Kurulum 3. aşama: Entity'leri oluştur"
+    },
+    {
+      "id": "batch4-e66",
+      "source": "batch4-n28",
+      "target": "batch4-n2",
+      "type": "implements_step",
+      "label": "Kurulum 5. aşama: Servisleri oluştur"
+    },
+    {
+      "id": "batch4-e67",
+      "source": "batch4-n13",
+      "target": "batch4-n4",
+      "type": "configures",
+      "label": "DbContext, AppUser için Fluent API konfigürasyonu"
+    },
+    {
+      "id": "batch4-e68",
+      "source": "batch4-n13",
+      "target": "batch4-n5",
+      "type": "configures",
+      "label": "DbContext, AppRole için Fluent API konfigürasyonu"
+    },
+    {
+      "id": "batch4-e69",
+      "source": "batch4-n13",
+      "target": "batch4-n9",
+      "type": "configures",
+      "label": "DbContext, Module için tablo ve ilişki konfigürasyonu"
+    },
+    {
+      "id": "batch4-e70",
+      "source": "batch4-n13",
+      "target": "batch4-n10",
+      "type": "configures",
+      "label": "DbContext, ModuleClaim için cascade delete ilişki"
+    },
+    {
+      "id": "batch4-e71",
+      "source": "batch4-n13",
+      "target": "batch4-n7",
+      "type": "configures",
+      "label": "DbContext, UserProperty için cascade delete ilişki"
+    },
+    {
+      "id": "batch4-e72",
+      "source": "batch4-n13",
+      "target": "batch4-n11",
+      "type": "configures",
+      "label": "DbContext, GeneratedId için tablo ve ilişki konfigürasyonu"
+    },
+    {
+      "id": "batch4-e73",
+      "source": "batch4-n21",
+      "target": "batch4-n38",
+      "type": "implements",
+      "label": "JwtTokenService, JWT mimarisini uygular"
+    },
+    {
+      "id": "batch4-e74",
+      "source": "batch4-n31",
+      "target": "batch4-n23",
+      "type": "uses",
+      "label": "Claim atama akışı ClaimManagementService kullanır"
+    },
+    {
+      "id": "batch4-e75",
+      "source": "batch4-n32",
+      "target": "batch4-n16",
+      "type": "uses",
+      "label": "Şifre sıfırlama IdentityService token metotlarını kullanır"
+    },
+    {
+      "id": "batch4-e76",
+      "source": "batch4-n33",
+      "target": "batch4-n16",
+      "type": "uses",
+      "label": "2FA akışı IdentityService 2FA metotlarını kullanır"
+    }
+  ]
+}

@@ -1,0 +1,164 @@
+{
+  "nodes": [
+    {
+      "id": "batch3-node-01",
+      "type": "PartialViewTemplate",
+      "name": "_UserActivityPartial",
+      "filePath": ".claude/skills/Asp-Identity/assets/views/_UserActivityPartial.txt",
+      "summary": "Kullanıcının son aktivitelerini gösteren Razor partial view şablonu. UserActivityViewModel modelini kullanır, son 5 aktiviteyi listeleyip toplam aktivite sayısı 5'ten fazla ise tümünü görme linki sunar.",
+      "tags": ["partial-view", "kullanıcı-aktivite", "razor", "asp-identity", "şablon"],
+      "complexity": "low",
+      "language": "Razor (C# HTML)"
+    },
+    {
+      "id": "batch3-node-02",
+      "type": "PartialViewTemplate",
+      "name": "_UserInfoPartial",
+      "filePath": ".claude/skills/Asp-Identity/assets/views/_UserInfoPartial.txt",
+      "summary": "Kullanıcı detaylarını modal dialog içinde gösteren Razor partial view şablonu. UserInfoViewModel kullanır; avatar, ad-soyad, e-posta, durum (aktif/pasif), kullanıcı tipi (API/Web), roller, genişletilmiş özellikler, departman, unvan ve telefon bilgilerini koşullu olarak gösterir. Düzenleme yetkisi varsa AdminUser/Edit sayfasına link içerir. Bootstrap 4 modal yapısı (data-dismiss) kullanır.",
+      "tags": ["partial-view", "kullanıcı-detay", "modal", "razor", "asp-identity", "bootstrap-4", "şablon"],
+      "complexity": "medium",
+      "language": "Razor (C# HTML)"
+    },
+    {
+      "id": "batch3-node-03",
+      "type": "PartialViewTemplate",
+      "name": "_UserPartial",
+      "filePath": ".claude/skills/Asp-Identity/assets/views/_UserPartial.txt",
+      "summary": "Kompakt kullanıcı özet kartı gösteren Razor partial view şablonu. Doğrudan AppUser entity'sini model olarak kullanır; avatar, tam ad, e-posta, UserStatus rozeti ve API kullanıcı rozeti gösterir. Varsayılan avatar yolu /images/default-avatar.png olarak ayarlanmıştır.",
+      "tags": ["partial-view", "kullanıcı-özet", "razor", "asp-identity", "şablon", "badge"],
+      "complexity": "low",
+      "language": "Razor (C# HTML)"
+    },
+    {
+      "id": "batch3-node-04",
+      "type": "View",
+      "name": "AccessDenied",
+      "filePath": "Koala.Yedpa.WebUI/Views/User/AccessDenied.cshtml",
+      "summary": "Erişim reddedildiğinde gösterilen tam ekran hata sayfası. Layout kullanmaz (Layout = null), Metronic 7 login tema yapısıyla özel tasarlanmıştır. SVG ikonlu alert-danger kutusu, 'Yetkilendirme Hatası' başlığı, Login sayfasına ve Dashboard/Index sayfasına yönlendirme butonları içerir. Sistem Bilgisayar footer'ı ve Yedpa Ticaret Merkezi markalaması mevcuttur.",
+      "tags": ["view", "erişim-reddi", "yetkilendirme", "metronic-7", "razor", "hata-sayfası", "login-template"],
+      "complexity": "medium",
+      "language": "Razor (C# HTML)"
+    },
+    {
+      "id": "batch3-node-05",
+      "type": "DocumentationTemplate",
+      "name": "view-structure",
+      "filePath": ".claude/skills/Asp-Identity/assets/views/view-structure.txt",
+      "summary": "Identity modülü için gerekli tüm view klasör yapısını ve dosyalarını tanımlayan dokümantasyon. Auth, Account, AdminUser, Role, Claim, Module ve Shared klasörleri altında oluşturulması gereken tüm .cshtml dosyalarını listeler. Her view grubu için frontend geliştirici notları (layout kullanımı, responsive tasarım, DataTables, Select2, modal, toast) içerir. Üç partial view (_UserPartial, _UserActivityPartial, _UserInfoPartial) Shared klasörü altında tanımlanmıştır.",
+      "tags": ["dokümantasyon", "klasör-yapısı", "view-organizasyonu", "asp-identity", "frontend-rehberi"],
+      "complexity": "low",
+      "language": "Markdown"
+    }
+  ],
+  "edges": [
+    {
+      "source": "batch3-node-01",
+      "target": "batch3-node-05",
+      "type": "described_by",
+      "label": "view-structure.txt içinde konumlandırılmış (Views/Shared/)"
+    },
+    {
+      "source": "batch3-node-02",
+      "target": "batch3-node-05",
+      "type": "described_by",
+      "label": "view-structure.txt içinde konumlandırılmış (Views/Shared/)"
+    },
+    {
+      "source": "batch3-node-03",
+      "target": "batch3-node-05",
+      "type": "described_by",
+      "label": "view-structure.txt içinde konumlandırılmış (Views/Shared/)"
+    },
+    {
+      "source": "batch3-node-05",
+      "target": "batch3-node-01",
+      "type": "documents",
+      "label": "Partial view gereksinimlerini tanımlar"
+    },
+    {
+      "source": "batch3-node-05",
+      "target": "batch3-node-02",
+      "type": "documents",
+      "label": "Partial view gereksinimlerini tanımlar"
+    },
+    {
+      "source": "batch3-node-05",
+      "target": "batch3-node-03",
+      "type": "documents",
+      "label": "Partial view gereksinimlerini tanımlar"
+    },
+    {
+      "source": "batch3-node-01",
+      "target": "batch3-node-03",
+      "type": "companion",
+      "label": "Aynı Shared klasöründe kardeş partial view"
+    },
+    {
+      "source": "batch3-node-02",
+      "target": "batch3-node-03",
+      "type": "companion",
+      "label": "Aynı Shared klasöründe kardeş partial view"
+    },
+    {
+      "source": "batch3-node-01",
+      "target": "batch3-node-02",
+      "type": "companion",
+      "label": "Aynı Shared klasöründe kardeş partial view"
+    },
+    {
+      "source": "batch3-node-03",
+      "target": "batch3-node-01",
+      "type": "companion",
+      "label": "Aynı Shared klasöründe kardeş partial view"
+    },
+    {
+      "source": "batch3-node-03",
+      "target": "batch3-node-02",
+      "type": "companion",
+      "label": "Aynı Shared klasöründe kardeş partial view"
+    },
+    {
+      "source": "batch3-node-02",
+      "target": "batch3-node-01",
+      "type": "companion",
+      "label": "Aynı Shared klasöründe kardeş partial view"
+    },
+    {
+      "source": "batch3-node-04",
+      "target": "batch3-node-01",
+      "type": "related_to",
+      "label": "Her ikisi de Asp-Identity yetkilendirme ekosisteminin parçası"
+    },
+    {
+      "source": "batch3-node-04",
+      "target": "batch3-node-02",
+      "type": "related_to",
+      "label": "Her ikisi de Asp-Identity yetkilendirme ekosisteminin parçası"
+    },
+    {
+      "source": "batch3-node-04",
+      "target": "batch3-node-03",
+      "type": "related_to",
+      "label": "Her ikisi de Asp-Identity yetkilendirme ekosisteminin parçası"
+    },
+    {
+      "source": "batch3-node-01",
+      "target": "batch3-node-04",
+      "type": "related_to",
+      "label": "Kullanıcı aktivite görünümü, yetkisiz erişim durumunda gizlenir"
+    },
+    {
+      "source": "batch3-node-02",
+      "target": "batch3-node-04",
+      "type": "related_to",
+      "label": "Kullanıcı detay modalı, yetkisiz erişim durumunda gösterilmez"
+    },
+    {
+      "source": "batch3-node-03",
+      "target": "batch3-node-04",
+      "type": "related_to",
+      "label": "Kullanıcı özet kartı, yetkisiz erişim durumunda gösterilmez"
+    }
+  ]
+}
