@@ -8,13 +8,13 @@
     <!--begin::Toolbar-->
     <div class="toolbar" id="kt_toolbar">
         <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
-            <div data-kt-swapper="true" data-kt-swapper-mode="prepend" class="page-title d-flex align-items-center flex-wrap me-3 mb-5 mb-lg-0">
-                <h1 class="d-flex align-items-center text-dark fw-bolder my-1 fs-3">
-                    <span class="bullet bg-danger align-self-end me-3"></span>
+            <div data-kt-swapper="true" data-kt-swapper-mode="prepend" class="page-title d-flex align-items-center flex-wrap mr-3 mb-5 mb-lg-0">
+                <h1 class="d-flex align-items-center text-dark font-weight-bolder my-1 font-size-h2">
+                    <span class="bullet bg-danger align-self-end mr-3"></span>
                     Arıza Yönetimi
                 </h1>
             </div>
-            <div class="d-flex align-items-center gap-2">
+            <div class="d-flex align-items-center">
                 <a href="/Ariza/Yeni" class="btn btn-primary">
                     <i class="fas fa-plus"></i> Yeni Arıza
                 </a>
@@ -68,8 +68,8 @@
                 <!--begin::Card header-->
                 <div class="card-header border-0 pt-5">
                     <h3 class="card-title align-items-start flex-column">
-                        <span class="card-label fw-bolder fs-3 mb-1">Arızalar</span>
-                        <span class="text-muted mt-1 fw-bold fs-7">Arıza listesi</span>
+                        <span class="card-label font-weight-bolder font-size-h2 mb-1">Arızalar</span>
+                        <span class="text-muted mt-1 font-weight-bold font-size-sm">Arıza listesi</span>
                     </h3>
                 </div>
                 <!--end::Card header-->
@@ -79,7 +79,7 @@
                     <div class="table-responsive">
                         <table class="table table-row-dashed table-row-gray-300 align-middle g-4" id="arizaTable">
                             <thead>
-                                <tr class="fw-bolder fs-6 text-gray-800">
+                                <tr class="font-weight-bolder font-size-base text-dark">
                                     <th>Konu</th>
                                     <th>Birim</th>
                                     <th>Tarih</th>
@@ -173,20 +173,20 @@
 
             let html = '';
             data.forEach(a => {
-                const durumClass = a.durum === 'Tamamlandı' ? 'badge-light-success' :
-                                   a.durum === 'İnceleniyor' ? 'badge-light-warning' :
-                                   a.durum === 'Beklemede' ? 'badge-light-info' : 'badge-light-secondary';
+                const durumClass = a.durum === 'Tamamlandı' ? 'label-light-success' :
+                                   a.durum === 'İnceleniyor' ? 'label-light-warning' :
+                                   a.durum === 'Beklemede' ? 'label-light-info' : 'label-light-secondary';
 
                 html += `
                     <tr>
-                        <td><span class="fw-bold ${a.gizli ? 'text-decoration-line-through text-muted' : ''}">${a.konu || '-'}</span></td>
+                        <td><span class="font-weight-bold ${a.gizli ? 'text-decoration-line-through text-muted' : ''}">${a.konu || '-'}</span></td>
                         <td>${a.birim || '-'}</td>
                         <td>${formatDateTime(a.tarih)}</td>
-                        <td><span class="badge ${durumClass}">${a.durum || '-'}</span></td>
+                        <td><span class="label ${durumClass} label-inline">${a.durum || '-'}</span></td>
                         <td>${a.sonKisi || '-'}</td>
-                        <td><span class="badge badge-light-primary">${a.hareketSayisi} hareket</span></td>
+                        <td><span class="label label-light-primary label-inline">${a.hareketSayisi} hareket</span></td>
                         <td>
-                            <div class="d-flex gap-1">
+                            <div class="d-flex">
                                 <a href="/Ariza/Detay/${a.arizaID}" class="btn btn-sm btn-light-primary">
                                     <i class="fas fa-eye"></i>
                                 </a>

@@ -57,5 +57,25 @@ Koala.Yedpa.WebUI/      → ASP.NET MVC + Metronic Theme
 - **Framework:** ASP.NET Core 10.0
 - **ORM:** EF Core (Code-First)
 - **DB:** MSSQL
-- **Theme:** Metronic 7
+- **Theme:** Metronic 7 → **Bootstrap 4.6** (`wwwroot/assets/css/style.bundle.css`)
 - **JS:** jQuery, DataTables, Chart.js
+
+### ⚠️ Bootstrap 4 kuralı (Metronic 7)
+
+Bootstrap 5 / Metronic 8 sözdizimi bu temada **sessizce çalışmaz** — hata vermez, sadece bozuk görünür
+veya kapanmayan modal/alert üretir. Yeni view/JS yazarken **daima BS4 karşılığını** kullan:
+
+| Yazma (BS5/M8) ❌ | Kullan (BS4/M7) ✅ |
+|---|---|
+| `data-bs-dismiss` / `data-bs-toggle` / `data-bs-target` / `data-bs-backdrop` | `data-dismiss` / `data-toggle` / `data-target` / `data-backdrop` |
+| `<button class="btn-close">` | `<button class="close"><span aria-hidden="true">&times;</span></button>` |
+| `text-end` / `text-start` | `text-right` / `text-left` |
+| `me-2` / `ms-2` | `mr-2` / `ml-2` |
+| `fw-bold` / `fw-bolder` | `font-weight-bold` / `font-weight-bolder` |
+| `fs-6` / `fs-5` / `fs-4` / `fs-3` | `font-size-base` / `font-size-h5` / `font-size-h3` / `font-size-h2` |
+| `gap-2` | üst öğeye değil, çocuklara `mr-2` |
+| `badge badge-light-success` | `label label-light-success label-inline` |
+| `text-gray-800` | `text-dark` |
+
+Şüphedeyken sınıfın gerçekten var olduğunu doğrula:
+`grep -c "font-size-h3" Koala.Yedpa.WebUI/wwwroot/assets/css/style.bundle.css`

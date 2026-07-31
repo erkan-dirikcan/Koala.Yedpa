@@ -26,11 +26,11 @@
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Fatura Tarihi</th>
+                                <th>Aktarım Tarihi</th>
                                 <th>Durum</th>
-                                <th class="text-end">Toplam</th>
-                                <th class="text-end">Aktarılan</th>
-                                <th class="text-end">Başarısız</th>
+                                <th class="text-right">Toplam</th>
+                                <th class="text-right">Aktarılan</th>
+                                <th class="text-right">Başarısız</th>
                                 <th>Oluşturan</th>
                                 <th>Oluşturma</th>
                             </tr>
@@ -45,13 +45,15 @@
         <div class="card card-custom" id="itemsCard" style="display:none">
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
-                    <h3 class="card-label">Aktarım Satırları
+                    <h3 class="card-label">Aktarım Yapılacak Firmalar
                         <span class="d-block text-muted pt-2 font-size-sm" id="itemsSubtitle"></span>
                     </h3>
                 </div>
                 <div class="card-toolbar">
-                    <button type="button" class="btn btn-sm btn-light-success me-2" id="btnPrepareItems">
-                        <i class="fas fa-sync-alt"></i> Aktarılacak Verileri Oluştur / Güncelle
+                    @* Excel / Yazdır butonları DataTables Buttons tarafından buraya basılır. *@
+                    <div id="itemsExportButtons" class="d-inline-block mr-2"></div>
+                    <button type="button" class="btn btn-sm btn-light-success mr-2" id="btnPrepareItems">
+                        <i class="fas fa-sync-alt"></i> Listeyi Güncelle
                     </button>
                     <button type="button" class="btn btn-sm btn-light-danger" id="btnRetryFailed">
                         <i class="fas fa-redo"></i> Eksik Kalanları Yeniden Aktar
@@ -66,7 +68,7 @@
                                 <th>Cari Kod</th>
                                 <th>Cari Ad</th>
                                 <th>Ay</th>
-                                <th class="text-end">Tutar</th>
+                                <th class="text-right">Tutar</th>
                                 <th class="text-center">Durum</th>
                                 <th class="text-center">Deneme</th>
                                 <th>Fiş Ref</th>
@@ -84,141 +86,10 @@
 </div>
 
 @section Scripts {
+    @{ var deepLinkSessionId = ViewBag.SessionId as int?; }
     <script>
-        (function () {
-            var sessionsTable = null, itemsTable = null, selectedSessionId = null;
-
-            function fmtDate(s) {
-                if (!s) return '';
-                var d = new Date(s);
-                if (isNaN(d)) return s;
-                var p = function (n) { return ('0' + n).slice(-2); };
-                return p(d.getDate()) + '.' + p(d.getMonth() + 1) + '.' + d.getFullYear();
-            }
-            function fmtDateTime(s) {
-                if (!s) return '';
-                var d = new Date(s);
-                if (isNaN(d)) return s;
-                var p = function (n) { return ('0' + n).slice(-2); };
-                return p(d.getDate()) + '.' + p(d.getMonth() + 1) + '.' + d.getFullYear() + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
-            }
-            function money(v) { return (parseFloat(v) || 0).toFixed(2) + ' ₺'; }
-
-            function sessionStatusBadge(s) {
-                switch (s) {
-                    case 0: return '<span class="badge badge-light-warning">Bekliyor</span>';
-                    case 1: return '<span class="badge badge-light-primary">İşleniyor</span>';
-                    case 2: return '<span class="badge badge-light-success">Tamamlandı</span>';
-                    case 3: return '<span class="badge badge-light-danger">Hatalı</span>';
-                    default: return s;
-                }
-            }
-            function itemStatusBadge(s) {
-                switch (s) {
-                    case 0: return '<span class="badge badge-light-warning">Gönderilmedi</span>';
-                    case 1: return '<span class="badge badge-light-success">Aktarıldı</span>';
-                    case 2: return '<span class="badge badge-light-danger">Başarısız</span>';
-                    default: return s;
-                }
-            }
-
-            function loadSessions() {
-                $.ajax({
-                    url: '/BulkInvoice/Sessions', method: 'GET',
-                    success: function (res) {
-                        var data = (res && res.isSuccess && res.data) ? res.data : [];
-                        if (sessionsTable) sessionsTable.destroy();
-                        sessionsTable = $('#sessionsTable').DataTable({
-                            data: data, pageLength: 10,
-                            order: [[0, 'desc']],
-                            language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/tr.json' },
-                            columns: [
-                                { data: 'id' },
-                                { data: 'invoiceDate', render: fmtDate },
-                                { data: 'status', render: sessionStatusBadge },
-                                { data: 'totalItems', className: 'text-end' },
-                                { data: 'completedItems', className: 'text-end' },
-                                { data: 'failedItems', className: 'text-end' },
-                                { data: 'createdBy' },
-                                { data: 'createdAt', render: fmtDateTime }
-                            ]
-                        });
-                    },
-                    error: function () { toastr.error('Oturumlar yüklenemedi'); }
-                });
-            }
-
-            function loadItems(sessionId) {
-                $.ajax({
-                    url: '/BulkInvoice/Items?sessionId=' + sessionId, method: 'GET',
-                    success: function (res) {
-                        var data = (res && res.isSuccess && res.data) ? res.data : [];
-                        if (itemsTable) itemsTable.destroy();
-                        itemsTable = $('#itemsTable').DataTable({
-                            data: data, pageLength: 25,
-                            language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/tr.json' },
-                            columns: [
-                                { data: 'clientCode' },
-                                { data: 'clientName' },
-                                { data: 'monthName' },
-                                { data: 'amount', className: 'text-end', render: money },
-                                { data: 'status', className: 'text-center', render: itemStatusBadge },
-                                { data: 'retryCount', className: 'text-center' },
-                                { data: 'logoInvoiceRef', render: function (v) { return v || ''; } },
-                                { data: 'note', render: function (v) { return v || ''; } },
-                                { data: 'restError', render: function (v) { return v ? $('<div>').text(v).html() : ''; } }
-                            ]
-                        });
-                        $('#itemsCard').show();
-                        $('#itemsSubtitle').text('Oturum #' + sessionId + ' — ' + data.length + ' satır');
-                    },
-                    error: function () { toastr.error('Satırlar yüklenemedi'); }
-                });
-            }
-
-            $(document).on('click', '#sessionsTable tbody tr', function () {
-                var row = sessionsTable.row(this).data();
-                if (!row) return;
-                selectedSessionId = row.id;
-                loadItems(selectedSessionId);
-                $('html, body').animate({ scrollTop: $('#itemsCard').offset().top - 80 }, 300);
-            });
-
-            $('#btnRetryFailed').on('click', function () {
-                if (!selectedSessionId) return;
-                if (!confirm('Bu oturumda eksik kalan (başarısız + hiç denenmemiş) tüm satırlar yeniden aktarılacak. Onaylıyor musunuz?')) return;
-                $.ajax({
-                    url: '/BulkInvoice/RetryFailed?sessionId=' + selectedSessionId, method: 'POST',
-                    success: function (res) {
-                        if (res && res.isSuccess) {
-                            toastr.success('Yeniden aktarım başlatıldı. Tamamlanınca rapor maili gelecek.');
-                        } else {
-                            toastr.error((res && res.message) || 'Yeniden aktarım başlatılamadı');
-                        }
-                    },
-                    error: function () { toastr.error('Yeniden aktarım başlatılamadı'); }
-                });
-            });
-
-            $('#btnPrepareItems').on('click', function () {
-                if (!selectedSessionId) { toastr.info('Önce bir oturum seçin'); return; }
-                $.ajax({
-                    url: '/BulkInvoice/PrepareItems?sessionId=' + selectedSessionId, method: 'POST',
-                    success: function (res) {
-                        if (res && res.isSuccess) {
-                            toastr.success((res.data || 0) + ' satır aktarıma hazır.');
-                            loadItems(selectedSessionId);
-                            loadSessions();
-                        } else {
-                            toastr.error((res && res.message) || 'Aktarılacak veriler oluşturulamadı');
-                        }
-                    },
-                    error: function () { toastr.error('Aktarılacak veriler oluşturulamadı'); }
-                });
-            });
-
-            $('#btnRefreshSessions').on('click', loadSessions);
-            $(document).ready(loadSessions);
-        })();
+        // Dashboard'daki "Aktarım Yapılacak Firmaları Görüntüle" butonundan gelen oturum.
+        window.__bulkInvoiceSessionId = @(deepLinkSessionId?.ToString() ?? "null");
     </script>
+    <script src="~/assets/js/custom/bulk-invoice-manage-page.js"></script>
 }

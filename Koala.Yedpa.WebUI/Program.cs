@@ -18,6 +18,10 @@ namespace Koala.Yedpa.WebUI
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            // RabbitMQ/PG gibi secret'lar user-secrets'tan gelsin — ortam Development olmasa da yükle.
+            // (Sunucuda dosya yoksa optional:true no-op olur; orada env değişkeni kullanılır.)
+            builder.Configuration.AddUserSecrets<Program>(optional: true);
+
             // NLog yapılandırması
             builder.Host.ConfigureLogging(logging =>
             {

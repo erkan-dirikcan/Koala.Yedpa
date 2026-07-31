@@ -8,17 +8,17 @@
     <!--begin::Toolbar-->
     <div class="toolbar" id="kt_toolbar">
         <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
-            <div data-kt-swapper="true" data-kt-swapper-mode="prepend" class="page-title d-flex align-items-center flex-wrap me-3 mb-5 mb-lg-0">
-                <h1 class="d-flex align-items-center text-dark fw-bolder my-1 fs-3">
-                    <span class="bullet bg-info align-self-end me-3"></span>
+            <div data-kt-swapper="true" data-kt-swapper-mode="prepend" class="page-title d-flex align-items-center flex-wrap mr-3 mb-5 mb-lg-0">
+                <h1 class="d-flex align-items-center text-dark font-weight-bolder my-1 font-size-h2">
+                    <span class="bullet bg-info align-self-end mr-3"></span>
                     Otopark Yönetimi
                 </h1>
             </div>
-            <div class="d-flex align-items-center gap-2">
-                <a href="/Otopark/Giris" class="btn btn-success">
+            <div class="d-flex align-items-center">
+                <a href="/Otopark/Giris" class="btn btn-success mr-2">
                     <i class="fas fa-car"></i> Giriş
                 </a>
-                <a href="/Otopark/Cikis" class="btn btn-warning">
+                <a href="/Otopark/Cikis" class="btn btn-warning mr-2">
                     <i class="fas fa-car-side"></i> Çıkış
                 </a>
                 <a href="/Otopark/Abonelik" class="btn btn-primary">
@@ -37,14 +37,14 @@
                 <div class="col-xl-3">
                     <div class="card card-xl-stretch mb-5 mb-xl-8">
                         <div class="card-body d-flex align-items-center">
-                            <div class="symbol symbol-50px me-5">
+                            <div class="symbol symbol-50px mr-5">
                                 <span class="symbol-label bg-light-success">
-                                    <i class="fas fa-car text-success fs-2"></i>
+                                    <i class="fas fa-car text-success font-size-h1"></i>
                                 </span>
                             </div>
                             <div class="d-flex flex-column">
-                                <span class="text-dark fw-bolder fs-2" id="toplamKayit">-</span>
-                                <span class="text-muted fw-bold fs-7">Toplam Kayıt</span>
+                                <span class="text-dark font-weight-bolder font-size-h1" id="toplamKayit">-</span>
+                                <span class="text-muted font-weight-bold font-size-sm">Toplam Kayıt</span>
                             </div>
                         </div>
                     </div>
@@ -52,14 +52,14 @@
                 <div class="col-xl-3">
                     <div class="card card-xl-stretch mb-5 mb-xl-8">
                         <div class="card-body d-flex align-items-center">
-                            <div class="symbol symbol-50px me-5">
+                            <div class="symbol symbol-50px mr-5">
                                 <span class="symbol-label bg-light-primary">
-                                    <i class="fas fa-parking text-primary fs-2"></i>
+                                    <i class="fas fa-parking text-primary font-size-h1"></i>
                                 </span>
                             </div>
                             <div class="d-flex flex-column">
-                                <span class="text-dark fw-bolder fs-2" id="icindekiler">-</span>
-                                <span class="text-muted fw-bold fs-7">İçeride</span>
+                                <span class="text-dark font-weight-bolder font-size-h1" id="icindekiler">-</span>
+                                <span class="text-muted font-weight-bold font-size-sm">İçeride</span>
                             </div>
                         </div>
                     </div>
@@ -67,14 +67,14 @@
                 <div class="col-xl-3">
                     <div class="card card-xl-stretch mb-5 mb-xl-8">
                         <div class="card-body d-flex align-items-center">
-                            <div class="symbol symbol-50px me-5">
+                            <div class="symbol symbol-50px mr-5">
                                 <span class="symbol-label bg-light-warning">
-                                    <i class="fas fa-clock text-warning fs-2"></i>
+                                    <i class="fas fa-clock text-warning font-size-h1"></i>
                                 </span>
                             </div>
                             <div class="d-flex flex-column">
-                                <span class="text-dark fw-bolder fs-2" id="cikanlar">-</span>
-                                <span class="text-muted fw-bold fs-7">Çıkan</span>
+                                <span class="text-dark font-weight-bolder font-size-h1" id="cikanlar">-</span>
+                                <span class="text-muted font-weight-bold font-size-sm">Çıkan</span>
                             </div>
                         </div>
                     </div>
@@ -82,14 +82,14 @@
                 <div class="col-xl-3">
                     <div class="card card-xl-stretch mb-5 mb-xl-8">
                         <div class="card-body d-flex align-items-center">
-                            <div class="symbol symbol-50px me-5">
+                            <div class="symbol symbol-50px mr-5">
                                 <span class="symbol-label bg-light-info">
-                                    <i class="fas fa-id-card text-info fs-2"></i>
+                                    <i class="fas fa-id-card text-info font-size-h1"></i>
                                 </span>
                             </div>
                             <div class="d-flex flex-column">
-                                <span class="text-dark fw-bolder fs-2" id="aboneler">-</span>
-                                <span class="text-muted fw-bold fs-7">Abonelik</span>
+                                <span class="text-dark font-weight-bolder font-size-h1" id="aboneler">-</span>
+                                <span class="text-muted font-weight-bold font-size-sm">Abonelik</span>
                             </div>
                         </div>
                     </div>
@@ -102,18 +102,18 @@
                 <!--begin::Card header-->
                 <div class="card-header border-0 pt-5">
                     <h3 class="card-title align-items-start flex-column">
-                        <span class="card-label fw-bolder fs-3 mb-1">Otopark Kayıtları</span>
-                        <span class="text-muted mt-1 fw-bold fs-7">Giriş/Çıkış kayıtları</span>
+                        <span class="card-label font-weight-bolder font-size-h2 mb-1">Otopark Kayıtları</span>
+                        <span class="text-muted mt-1 font-weight-bold font-size-sm">Giriş/Çıkış kayıtları</span>
                     </h3>
                     <div class="card-toolbar">
-                        <ul class="nav nav-tabs nav-line-tabs nav-line-tabs-2x mb-0 mt-3 fs-6">
+                        <ul class="nav nav-tabs mb-0 mt-3 font-size-base">
                             <li class="nav-item">
-                                <a class="nav-link active" data-bs-toggle="tab" href="#tumTab" onclick="loadOtoparkKayitlari('tum')">
+                                <a class="nav-link active" data-toggle="tab" href="#tumTab" onclick="loadOtoparkKayitlari('tum')">
                                     Tümü
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" data-bs-toggle="tab" href="#aktifTab" onclick="loadOtoparkKayitlari('aktif')">
+                                <a class="nav-link" data-toggle="tab" href="#aktifTab" onclick="loadOtoparkKayitlari('aktif')">
                                     İçeridekiler
                                 </a>
                             </li>
@@ -129,7 +129,7 @@
                             <div class="table-responsive">
                                 <table class="table table-row-dashed table-row-gray-300 align-middle g-4">
                                     <thead>
-                                        <tr class="fw-bolder fs-6 text-gray-800">
+                                        <tr class="font-weight-bolder font-size-base text-dark">
                                             <th>Plaka</th>
                                             <th>Giriş Zamanı</th>
                                             <th>Çıkış Zamanı</th>
@@ -150,7 +150,7 @@
                             <div class="table-responsive">
                                 <table class="table table-row-dashed table-row-gray-300 align-middle g-4">
                                     <thead>
-                                        <tr class="fw-bolder fs-6 text-gray-800">
+                                        <tr class="font-weight-bolder font-size-base text-dark">
                                             <th>Plaka</th>
                                             <th>Giriş Zamanı</th>
                                             <th>Kalan Süre</th>
@@ -228,9 +228,9 @@
 
                     html += `
                         <tr>
-                            <td><span class="fw-bolder fs-6">${k.plaka || '-'}</span></td>
+                            <td><span class="font-weight-bolder font-size-base">${k.plaka || '-'}</span></td>
                             <td>${formatDateTime(k.girisTarih)}</td>
-                            <td class="${saatClass} fw-bolder">${saat} saat</td>
+                            <td class="${saatClass} font-weight-bolder">${saat} saat</td>
                             <td>${k.telefon || '-'}</td>
                             <td>
                                 <button class="btn btn-sm btn-warning" onclick="cikisYap('${k.plaka}')">
@@ -240,17 +240,17 @@
                         </tr>
                     `;
                 } else {
-                    const durumClass = k.aktif ? 'badge-light-success' : 'badge-light-secondary';
+                    const durumClass = k.aktif ? 'label-light-success' : 'label-light-secondary';
                     const sure = k.toplamSaat ? k.toplamSaat.toFixed(1) + ' saat' : '-';
 
                     html += `
                         <tr>
-                            <td><span class="fw-bolder fs-6">${k.plaka || '-'}</span></td>
+                            <td><span class="font-weight-bolder font-size-base">${k.plaka || '-'}</span></td>
                             <td>${formatDateTime(k.girisTarih)}</td>
                             <td>${k.cikisTarih ? formatDateTime(k.cikisTarih) : '-'}</td>
                             <td>${sure}</td>
                             <td>${k.aboneAd || '-'}</td>
-                            <td><span class="badge ${durumClass}">${k.durum}</span></td>
+                            <td><span class="label ${durumClass} label-inline">${k.durum}</span></td>
                         </tr>
                     `;
                 }

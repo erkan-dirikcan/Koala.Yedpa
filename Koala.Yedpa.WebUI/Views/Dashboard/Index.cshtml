@@ -30,16 +30,34 @@
         <div class="row">
             <div class="col-lg-12">
 
-                <!-- Bulk Invoicing Alert Banner -->
+                <!-- Toplu Faturalandırma: tarih seçilmemişse uyarı -->
                 <div id="bulkInvoiceAlert" class="alert alert-custom alert-light-primary fade show mb-6 d-none" role="alert">
                     <div class="alert-icon">
                         <i class="fas fa-file-invoice-dollar text-primary"></i>
                     </div>
                     <div class="alert-text">
-                        <h4 class="alert-heading">Toplu Faturalandırma Hazır!</h4>
-                        <p>Bu ay için faturalandırılmamış aidat siparişleri bulunuyor. Toplu faturalandırma işlemi başlatmak için <strong><a href="#" id="openBulkInvoiceModal" style="text-decoration: underline;">buraya tıklayın</a></strong>.</p>
+                        <h4 class="alert-heading">Toplu Faturalandırma Tarihi Bekleniyor</h4>
+                        <p class="mb-0">Gelecek ayın aidat aktarım gününü belirlemek için <strong><a href="#" id="openBulkInvoiceModal" style="text-decoration: underline;">buraya tıklayın</a></strong>. Seçtiğiniz gün saat 00:01'de aktarım otomatik başlar.</p>
                     </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+
+                <!-- Toplu Faturalandırma: tarih seçildiyse planlanan aktarım paneli -->
+                <div id="bulkInvoicePlanned" class="alert alert-custom alert-light-success fade show mb-6 d-none" role="alert">
+                    <div class="alert-icon">
+                        <i class="fas fa-calendar-check text-success"></i>
+                    </div>
+                    <div class="alert-text">
+                        <h4 class="alert-heading">Toplu Faturalandırma Planlandı</h4>
+                        <p class="mb-0">
+                            Aktarım <strong id="plannedTransferDate"></strong> tarihinde saat 00:01'de otomatik başlayacak.
+                            Bir gün önce saat 12:01'de bilgilendirme e-postası gönderilir.
+                        </p>
+                    </div>
+                    <div class="alert-close">
+                        <a href="#" id="btnViewPlannedFirms" class="btn btn-sm btn-light-success font-weight-bold">
+                            <i class="fas fa-list-ul"></i> Aktarım Yapılacak Firmaları Görüntüle
+                        </a>
+                    </div>
                 </div>
 
                 <div class="card card-custom">
@@ -53,14 +71,6 @@
 
 
                         <div class="card-toolbar">
-                            @* Sadece localhost'ta görünür yan etkisiz önizleme/test butonu:
-                               bekleyen AIDAT satırlarını listeler, fatura/mail göndermez. Canlıda çıkmaz. *@
-                            @if (Context.Request.Host.Value.Contains("localhost"))
-                            {
-                                <button type="button" class="btn btn-sm btn-light-warning me-2 mr-1" id="btnTestBulkInvoice" title="Toplu Fatura Test">
-                                    <i class="fas fa-vial"></i> Toplu Fatura Test
-                                </button>
-                            }
                             <button type="button" class="btn btn-sm btn-light-primary mr-1" id="btnToggleSidebar">
                                 <i class="fas fa-th-large"></i> Widgetlar
                             </button>
@@ -78,7 +88,7 @@
                                         <div class="card card-xl-stretch mb-5 mb-xl-8">
                                             <div class="card-header border-0 pt-5">
                                                 <h3 class="card-title align-items-start flex-column">
-                                                    <span class="card-label fw-bolder fs-3 mb-1">@widget.Title</span>
+                                                    <span class="card-label font-weight-bolder font-size-h3 mb-1">@widget.Title</span>
                                                 </h3>
                                                 <div class="card-toolbar">
                                                     <span class="drag-handle" title="Sürükleerek sıralayın">
@@ -274,8 +284,8 @@
                                     var currentWidth = widget.Width > 0 ? widget.Width : 6;
                                     <div class="widget-toggle-item">
                                         <span>@widget.Title</span>
-                                        <div class="d-flex align-items-center gap-3">
-                                            <select class="form-control form-control-sm widget-width-select" data-widget-id="@widget.Id" style="width:80px">
+                                        <div class="d-flex align-items-center">
+                                            <select class="form-control form-control-sm widget-width-select mr-3" data-widget-id="@widget.Id" style="width:80px">
                                                 @if (currentWidth == 12) { <text><option value="12" selected>Tam</option></text> } else { <text><option value="12">Tam</option></text> }
                                                 @if (currentWidth == 6) { <text><option value="6" selected>Yarım</option></text> } else { <text><option value="6">Yarım</option></text> }
                                                 @if (currentWidth == 4) { <text><option value="4" selected>1/3</option></text> } else { <text><option value="4">1/3</option></text> }
@@ -306,39 +316,44 @@
 </div>
 
 <!-- Bulk Invoicing Modal -->
-<div class="modal fade" id="bulkInvoiceModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+<div class="modal fade" id="bulkInvoiceModal" tabindex="-1" aria-hidden="true" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-xl">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
-                    <i class="fas fa-file-invoice-dollar text-primary me-2"></i>
+                    <i class="fas fa-file-invoice-dollar text-primary mr-2"></i>
                     Toplu Faturalandırma
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Kapat">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
             <div class="modal-body">
                 <!-- Tarih Seçici -->
                 <div class="row mb-6">
                     <div class="col-md-4">
-                        <label class="form-label required">Fatura Tarihi</label>
-                        <input type="text" class="form-control" id="invoiceDate" placeholder="dd.MM.yyyy" />
+                        <label class="form-label required">Aktarım Tarihi</label>
+                        <input type="text" class="form-control" id="invoiceDate" placeholder="dd.MM.yyyy" autocomplete="off" />
                         <span class="form-text text-muted">Bu tarih hem fatura tarihi hem vade tarihi olarak kullanılacaktır.</span>
                     </div>
                 </div>
 
-                <!-- DataTable -->
+                <div class="alert alert-custom alert-light-warning" role="alert">
+                    <div class="alert-icon"><i class="fas fa-info-circle"></i></div>
+                    <div class="alert-text">
+                        Aşağıdaki liste <strong>önizlemedir</strong>; aktarım günü o ana kadar biriken
+                        <strong>tüm bekleyen AIDAT satırları</strong> faturalandırılır. Satır seçimi yapılmaz.
+                    </div>
+                </div>
+
+                <!-- DataTable (salt önizleme) -->
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover" id="pendingLinesTable" style="margin-top: 13px !important">
                         <thead>
                             <tr>
-                                <th style="width: 40px;" class="text-center">
-                                    <div class="form-check form-check-sm form-check-custom form-check-solid">
-                                        <input class="form-check-input" type="checkbox" id="selectAllLines" />
-                                    </div>
-                                </th>
                                 <th>Cari Kod</th>
                                 <th>Cari Adı</th>
-                                <th class="text-end">Tutar</th>
+                                <th class="text-right">Tutar</th>
                                 <th>Ay Adı</th>
                                 <th class="text-center">Durum</th>
                             </tr>
@@ -349,16 +364,17 @@
                     </table>
                 </div>
 
-                <!-- Toplam Tut ve Butonlar -->
+                <!-- Toplam ve Butonlar -->
                 <div class="d-flex justify-content-between align-items-center mt-6">
                     <div>
-                        <span class="fw-bolder fs-5">Seçilen Toplam: </span>
-                        <span class="fw-bolder fs-4 text-primary" id="selectedTotal">0.00 ₺</span>
+                        <span class="font-weight-bolder font-size-h5">Aktarılacak Toplam: </span>
+                        <span class="font-weight-bolder font-size-h4 text-primary" id="pendingTotal">0.00 ₺</span>
+                        <span class="text-muted ml-2">(<span id="pendingCount">0</span> satır)</span>
                     </div>
-                    <div class="d-flex gap-3">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <div class="d-flex">
+                        <button type="button" class="btn btn-secondary mr-3" data-dismiss="modal">İptal</button>
                         <button type="button" class="btn btn-primary" id="btnCreateInvoices" disabled>
-                            <i class="fas fa-file-invoice me-2"></i>Faturalandır
+                            <i class="fas fa-calendar-check mr-2"></i>Aktarım Tarihini Kaydet
                         </button>
                     </div>
                 </div>
@@ -380,5 +396,5 @@
         };
     </script>
     <script src="~/js/dashboard/dashboard.js"></script>
-    <script src="~/js/dashboard/bulk-invoice.js"></script>
+    <script src="~/assets/js/custom/bulk-invoice-dashboard.js"></script>
 }

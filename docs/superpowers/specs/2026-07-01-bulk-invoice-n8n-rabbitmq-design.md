@@ -30,7 +30,12 @@ Eksik/başarısız satırlar → Manage sayfası "Eksik Kalanları Yeniden Aktar
 **Kaynak-doğruluk:** MSSQL = uygulamanın kendi doğruluğu (VPS düşse de app çalışır). PG = N8N için "sıradaki tarih" projeksiyonu. Tarih seçilince ikisine de yazılır.
 
 ## Mail
-Tek mail: **aktarım sonrası sonuç maili** (crosstable → Excel). Ayrı T-1 08:00 ön-bilgi maili YOK — kesilecekler Manage sayfasından görülebiliyor.
+> ⚠️ **GEÇERSİZ (2026-07-28'de değişti).** Aşağıdaki "tek mail" kararı iptal edildi; müşteri T-1
+> bilgilendirme maili istedi. Güncel hâli: **iki mail** — (1) T-1 günü **12:01** bilgilendirme maili
+> (Excel + toplam), (2) aktarım sonrası sonuç maili. Tetikleyici: N8N workflow'una eklenen ikinci
+> zamanlayıcı + RabbitMQ mesajındaki `kind: "info" | "transfer"` alanı. Bkz. `handoff.md` §2 ve §5b.
+
+~~Tek mail: **aktarım sonrası sonuç maili** (crosstable → Excel). Ayrı T-1 08:00 ön-bilgi maili YOK — kesilecekler Manage sayfasından görülebiliyor.~~
 
 ## Bileşenler (uygulama tarafı)
 - **`IScheduleStore` + `PgScheduleStore` (Npgsql):** `UpsertTransferDateAsync(DateOnly)`. Tek satır (sabit id). Tarih seçiminde çağrılır. Bağlantı `appsettings`/secret'ten.

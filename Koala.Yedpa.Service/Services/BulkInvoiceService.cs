@@ -40,47 +40,41 @@ namespace Koala.Yedpa.Service.Services
             try
             {
                 var now = DateTime.Now;
-                var currentDay = now.Day;
-                var currentMonth = now.Month;
-                var currentYear = now.Year;
+                var today = now.Date;
+                var next = now.AddMonths(1);
 
-                // Ayın 15'inden önceyse alert gösterme
-                if (currentDay < 15)
-                {
-                    return ResponseDto<AlertCheckResultDto>.SuccessData(200, "Alert kontrolü başarılı",
-                        new AlertCheckResultDto
-                        {
-                            ShowAlert = false,
-                            Message = $"Ayın 15'inden önce ({currentDay}). Alert gösterilmiyor.",
-                            CurrentMonth = currentMonth,
-                            CurrentYear = currentYear
-                        });
-                }
+                // Yaklaşan aktarım: tarihi henüz geçmemiş (bugün dahil) en yakın oturum.
+                // Bu varsa dashboard'da alert yerine "aktarım yapılacak firmaları görüntüle" paneli çıkar.
+                var upcoming = await _context.BulkInvoiceSessions
+                    .Where(s => s.InvoiceDate >= today)
+                    .OrderBy(s => s.InvoiceDate)
+                    .FirstOrDefaultAsync();
 
-                // Bu ay için session var mı kontrol et
-                var existingSession = await _context.BulkInvoiceSessions
-                    .FirstOrDefaultAsync(s => s.Month == currentMonth && s.Year == currentYear);
+                // GELECEK ayın aktarımı için oturum seçilmiş mi? Aktarım tarihi gelecek ayın ilk iş
+                // günüdür; oturum o ayın (N+1) Month/Year'ına yazılır → MEVCUT ay değil, GELECEK ay
+                // için ararız. Böylece tarih seçilince alert kalkar ve o ay 15'ine dek çıkmaz.
+                var nextMonthSession = await _context.BulkInvoiceSessions
+                    .FirstOrDefaultAsync(s => s.Month == next.Month && s.Year == next.Year);
 
-                if (existingSession != null)
-                {
-                    return ResponseDto<AlertCheckResultDto>.SuccessData(200, "Alert kontrolü başarılı",
-                        new AlertCheckResultDto
-                        {
-                            ShowAlert = false,
-                            Message = $"Bu ay ({currentMonth}/{currentYear}) için zaten faturalandırma oturumu mevcut.",
-                            CurrentMonth = currentMonth,
-                            CurrentYear = currentYear
-                        });
-                }
+                // Alert yalnızca ayın 15'inden sonra VE gelecek ay için tarih seçilmemişse.
+                var showAlert = now.Day >= 15 && nextMonthSession == null;
 
-                // Alert göster
-                return ResponseDto<AlertCheckResultDto>.SuccessData(200, "Alert gösterilecek",
+                var message = showAlert
+                    ? $"Gelecek ayın ({next.Month}/{next.Year}) aktarım gününü seçin."
+                    : upcoming != null
+                        ? $"Aktarım {upcoming.InvoiceDate:dd.MM.yyyy} tarihinde yapılacak."
+                        : $"Bekleyen aktarım yok. Alert ayın 15'inden sonra çıkar.";
+
+                return ResponseDto<AlertCheckResultDto>.SuccessData(200, "Alert kontrolü başarılı",
                     new AlertCheckResultDto
                     {
-                        ShowAlert = true,
-                        Message = $"Faturalandırılmamış aidat siparişleri bulunuyor. Lütfen faturalandırma işlemini başlatın.",
-                        CurrentMonth = currentMonth,
-                        CurrentYear = currentYear
+                        ShowAlert = showAlert,
+                        Message = message,
+                        CurrentMonth = next.Month,
+                        CurrentYear = next.Year,
+                        ShowPlannedPanel = upcoming != null,
+                        SessionId = upcoming?.Id,
+                        TransferDate = upcoming?.InvoiceDate
                     });
             }
             catch (Exception ex)
@@ -352,6 +346,26 @@ namespace Koala.Yedpa.Service.Services
 
                 _logger.LogInformation("Toplu fatura oturumu oluşturuluyor. Kullanıcı: {Username}, Tarih: {Date}",
                     username, dto.InvoiceDate.ToShortDateString());
+
+                // Aynı ay için henüz aktarılmamış bir oturum varsa YENİSİ AÇILMAZ, tarihi güncellenir.
+                // (Aksi halde çift oturum oluşur ve hangisinin tetikleneceği belirsizleşir.)
+                var existing = await _context.BulkInvoiceSessions
+                    .FirstOrDefaultAsync(s => s.Month == dto.InvoiceDate.Month
+                                           && s.Year == dto.InvoiceDate.Year
+                                           && s.Status == BulkInvoiceSessionStatus.Pending);
+
+                if (existing != null)
+                {
+                    existing.InvoiceDate = dto.InvoiceDate;
+                    await _context.SaveChangesAsync();
+
+                    _logger.LogInformation("Mevcut oturumun aktarım tarihi güncellendi. Session ID: {SessionId}, Tarih: {Date:dd.MM.yyyy}",
+                        existing.Id, existing.InvoiceDate);
+
+                    return ResponseDto<int>.SuccessData(200,
+                        $"Aktarım tarihi güncellendi: {existing.InvoiceDate:dd.MM.yyyy}.",
+                        existing.Id);
+                }
 
                 // Session oluştur. Aktarılacak satırlar AKTARIM ANINDA (o ayın tüm bekleyen AIDAT
                 // satırları) çekilir — bu nedenle burada item oluşturulmaz, job oluşturur.

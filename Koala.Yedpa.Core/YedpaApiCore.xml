@@ -30,12 +30,15 @@
         </member>
         <member name="T:Koala.Yedpa.Core.Dtos.BulkInvoice.AlertCheckResultDto">
             <summary>
-            Alert kontrol sonucu DTO'su
+            Dashboard toplu faturalandırma durumu.
+            İki durumdan biri gösterilir:
+            - <see cref="P:Koala.Yedpa.Core.Dtos.BulkInvoice.AlertCheckResultDto.ShowAlert"/>: tarih henüz seçilmedi → "tarih seçin" uyarısı.
+            - <see cref="P:Koala.Yedpa.Core.Dtos.BulkInvoice.AlertCheckResultDto.ShowPlannedPanel"/>: tarih seçildi → "aktarım yapılacak firmaları görüntüle" paneli.
             </summary>
         </member>
         <member name="P:Koala.Yedpa.Core.Dtos.BulkInvoice.AlertCheckResultDto.ShowAlert">
             <summary>
-            Alert gösterilecek mi?
+            Alert gösterilecek mi? (ayın 15'inden sonra ve gelecek ay için tarih seçilmemişse)
             </summary>
         </member>
         <member name="P:Koala.Yedpa.Core.Dtos.BulkInvoice.AlertCheckResultDto.Message">
@@ -51,6 +54,22 @@
         <member name="P:Koala.Yedpa.Core.Dtos.BulkInvoice.AlertCheckResultDto.CurrentYear">
             <summary>
             Mevcut yıl
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.BulkInvoice.AlertCheckResultDto.ShowPlannedPanel">
+            <summary>
+            Yaklaşan (henüz tarihi geçmemiş) bir aktarım oturumu var mı?
+            Varsa dashboard'da alert yerine "Aktarım Yapılacak Firmaları Görüntüle" paneli çıkar.
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.BulkInvoice.AlertCheckResultDto.SessionId">
+            <summary>
+            Yaklaşan oturumun ID'si (panel butonu bu oturuma derin bağlantı verir).
+            </summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Dtos.BulkInvoice.AlertCheckResultDto.TransferDate">
+            <summary>
+            Yaklaşan oturumun aktarım tarihi.
             </summary>
         </member>
         <member name="T:Koala.Yedpa.Core.Dtos.BulkInvoice.BulkInvoiceItemDto">

@@ -70,18 +70,18 @@ document.addEventListener('DOMContentLoaded', function () {
                         </thead>
                         <tbody>
                             <tr>
-                                <td class="text-end">${january}</td>
-                                <td class="text-end">${february}</td>
-                                <td class="text-end">${march}</td>
-                                <td class="text-end">${april}</td>
-                                <td class="text-end">${may}</td>
-                                <td class="text-end">${june}</td>
-                                <td class="text-end">${july}</td>
-                                <td class="text-end">${august}</td>
-                                <td class="text-end">${september}</td>
-                                <td class="text-end">${october}</td>
-                                <td class="text-end">${november}</td>
-                                <td class="text-end">${december}</td>
+                                <td class="text-right">${january}</td>
+                                <td class="text-right">${february}</td>
+                                <td class="text-right">${march}</td>
+                                <td class="text-right">${april}</td>
+                                <td class="text-right">${may}</td>
+                                <td class="text-right">${june}</td>
+                                <td class="text-right">${july}</td>
+                                <td class="text-right">${august}</td>
+                                <td class="text-right">${september}</td>
+                                <td class="text-right">${october}</td>
+                                <td class="text-right">${november}</td>
+                                <td class="text-right">${december}</td>
                             </tr>
                         </tbody>
                     </table>

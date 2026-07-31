@@ -185,9 +185,11 @@
             Oturum durumunu getirir (progress tracking için).
             </summary>
         </member>
-        <member name="M:Koala.Yedpa.WebUI.Controllers.BulkInvoiceController.Manage">
+        <member name="M:Koala.Yedpa.WebUI.Controllers.BulkInvoiceController.Manage(System.Nullable{System.Int32})">
             <summary>
             Toplu Faturalandırma Yönetimi sayfası — oturumlar + aktarım satırları + yeniden aktarım.
+            <paramref name="sessionId"/> verilirse (dashboard'daki "Aktarım Yapılacak Firmaları
+            Görüntüle" butonu) o oturum doğrudan açılır ve satırları yüklenir.
             </summary>
         </member>
         <member name="M:Koala.Yedpa.WebUI.Controllers.BulkInvoiceController.Sessions">

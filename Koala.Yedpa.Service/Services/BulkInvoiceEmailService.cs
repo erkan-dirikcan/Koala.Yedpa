@@ -19,7 +19,7 @@ namespace Koala.Yedpa.Service.Services
         {
             "erkan@sistem-bilgisayar.com.tr",
             "adegimli@yedpa.com.tr",
-            "muhasebe@yedpa.com.tr"
+            "tahsilat@yedpa.com.tr"
         };
 
         private readonly AppDbContext _db;
@@ -61,28 +61,38 @@ namespace Koala.Yedpa.Service.Services
             };
 
             var body =
-                $"<p><b>{session.InvoiceDate:dd.MM.yyyy}</b> tarihinde <b>{lines.Count}</b> adet AIDAT faturası oluşturulacaktır.</p>" +
+                $"<p><b>{session.InvoiceDate:dd.MM.yyyy}</b> günü saat <b>00:01</b>'de <b>{lines.Count}</b> adet " +
+                "AIDAT faturası otomatik olarak oluşturulacaktır.</p>" +
                 $"<p>Toplam tutar: <b>{total:N2} ₺</b></p>" +
-                "<p>Oluşturulacak faturaların listesi ektedir.</p>";
+                "<p>Oluşturulacak faturaların listesi ektedir. Liste aktarım anına kadar değişebilir; " +
+                "güncel hâli <b>Toplu Faturalandırma Yönetimi</b> sayfasından görülebilir.</p>";
 
             await SendToAllAsync($"Toplu Faturalandırma Bilgilendirme - {monthName}", body, attachment);
         }
 
         public async Task SendReportMailAsync(int sessionId)
         {
+            var session = await _db.BulkInvoiceSessions.FindAsync(sessionId);
+
             var items = await _db.BulkInvoiceItems
                 .Where(i => i.SessionId == sessionId)
                 .ToListAsync();
 
-            var success = items.Count(i => i.Status == BulkInvoiceItemStatus.Transferred);
-            var failedItems = items.Where(i => i.Status == BulkInvoiceItemStatus.Failed).ToList();
+            var transferred = items.Where(i => i.Status == BulkInvoiceItemStatus.Transferred).ToList();
+            var success = transferred.Count;
+            var failedItems = items.Where(i => i.Status != BulkInvoiceItemStatus.Transferred).ToList();
 
             var sb = new StringBuilder();
             sb.Append("<p>Toplu faturalandırma işlemi tamamlandı.</p>");
-            sb.Append($"<p>Başarılı: <b>{success}</b> &nbsp; Başarısız: <b>{failedItems.Count}</b></p>");
+            if (session != null)
+                sb.Append($"<p>Aktarım tarihi: <b>{session.InvoiceDate:dd.MM.yyyy}</b></p>");
+            sb.Append($"<p>Başarılı: <b>{success}</b> &nbsp; Eksik/Başarısız: <b>{failedItems.Count}</b></p>");
+            sb.Append($"<p>Faturalanan toplam tutar: <b>{transferred.Sum(i => i.Amount):N2} ₺</b></p>");
 
             if (failedItems.Count > 0)
             {
+                sb.Append("<p>Aşağıdaki satırlar aktarılamadı. <b>Toplu Faturalandırma Yönetimi</b> " +
+                          "sayfasındaki <b>\"Eksik Kalanları Yeniden Aktar\"</b> butonu ile tekrar denenebilir.</p>");
                 sb.Append("<table border='1' cellpadding='4' cellspacing='0'>");
                 sb.Append("<tr><th>Cari Kod</th><th>Fiş No/Ref</th><th>Not</th><th>REST Hata</th></tr>");
                 foreach (var f in failedItems)

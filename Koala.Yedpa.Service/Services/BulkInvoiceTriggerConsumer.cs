@@ -5,6 +5,7 @@ using Koala.Yedpa.Core.Dtos;
 using Koala.Yedpa.Core.Models;
 using Koala.Yedpa.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -15,14 +16,19 @@ using RabbitMQ.Client.Events;
 namespace Koala.Yedpa.Service.Services
 {
     /// <summary>
-    /// N8N'in RabbitMQ'ya attığı "aktarımı başlat" tetiğini dinleyen outbound consumer.
-    /// Mesajdaki tarihe ait bekleyen oturumu bulur ve BulkInvoiceJobs.RunTransferAsync'i çalıştırır.
+    /// N8N'in RabbitMQ'ya attığı toplu faturalandırma tetiklerini dinleyen outbound consumer.
+    /// İki tetik türü vardır (mesajdaki "kind" alanı):
+    /// - <c>info</c>  : aktarımdan bir gün önce 12:01 → bilgilendirme maili (SendInfoMailAsync).
+    /// - <c>transfer</c> (varsayılan): aktarım günü 00:01 → faturalandırma (RunTransferAsync).
+    /// Her iki mesajda da "date" AKTARIM tarihidir; oturum bu tarihe göre bulunur.
     /// Broker erişilemezse uygulamayı ÇÖKERTMEZ; 10 sn'de bir yeniden dener (+ otomatik recovery).
     /// </summary>
     public class BulkInvoiceTriggerConsumer : BackgroundService
     {
         private readonly RabbitMqSettings _cfg;
         private readonly IServiceScopeFactory _scopeFactory;
+        private readonly IConfiguration _config;
+        private readonly IHostEnvironment _env;
         private readonly ILogger<BulkInvoiceTriggerConsumer> _logger;
 
         private IConnection? _connection;
@@ -31,10 +37,14 @@ namespace Koala.Yedpa.Service.Services
         public BulkInvoiceTriggerConsumer(
             IOptions<RabbitMqSettings> cfg,
             IServiceScopeFactory scopeFactory,
+            IConfiguration config,
+            IHostEnvironment env,
             ILogger<BulkInvoiceTriggerConsumer> logger)
         {
             _cfg = cfg.Value;
             _scopeFactory = scopeFactory;
+            _config = config;
+            _env = env;
             _logger = logger;
         }
 
@@ -42,7 +52,13 @@ namespace Koala.Yedpa.Service.Services
         {
             if (string.IsNullOrWhiteSpace(_cfg.HostName))
             {
-                _logger.LogWarning("RabbitMq:HostName boş — toplu fatura tetik consumer başlatılmadı.");
+                // DİKKAT: Bu durumda toplu faturalandırma tetiği HİÇ ÇALIŞMAZ (sessiz arıza).
+                // Sunucuda RabbitMq__HostName / ConnectionStrings__N8nScheduleDb env değişkenleri tanımlı olmalı.
+                _logger.LogError("RabbitMq:HostName boş — toplu fatura tetik consumer BAŞLATILMADI, " +
+                    "aktarım otomatik tetiklenmeyecek. Env={Env} rawHost='{Raw}' pgConn={Pg}",
+                    _env.EnvironmentName,
+                    _config["RabbitMq:HostName"] ?? "<null>",
+                    string.IsNullOrEmpty(_config.GetConnectionString("N8nScheduleDb")) ? "BOŞ" : "tanımlı");
                 return;
             }
 
@@ -96,7 +112,8 @@ namespace Koala.Yedpa.Service.Services
             var body = Encoding.UTF8.GetString(ea.Body.ToArray());
             try
             {
-                await ProcessAsync(ParseDate(body));
+                var (date, kind) = ParseTrigger(body);
+                await ProcessAsync(date, kind);
                 if (_channel is not null)
                     await _channel.BasicAckAsync(ea.DeliveryTag, multiple: false);
             }
@@ -109,24 +126,50 @@ namespace Koala.Yedpa.Service.Services
             }
         }
 
-        /// <summary>JSON { "date": "yyyy-MM-dd" } ya da düz "yyyy-MM-dd"; tarih yoksa null (o an bekleyen son oturum işlenir).</summary>
-        private static DateOnly? ParseDate(string body)
+        /// <summary>Tetik türü — N8N mesajındaki "kind" alanı.</summary>
+        private enum TriggerKind
         {
-            if (string.IsNullOrWhiteSpace(body)) return null;
+            /// <summary>Aktarım günü 00:01 — faturaları oluştur.</summary>
+            Transfer,
+            /// <summary>Aktarımdan bir gün önce 12:01 — bilgilendirme maili + Excel.</summary>
+            Info
+        }
+
+        /// <summary>
+        /// JSON { "date": "yyyy-MM-dd", "kind": "transfer|info" } ya da düz "yyyy-MM-dd".
+        /// "kind" yoksa geriye dönük uyumluluk için Transfer varsayılır.
+        /// Tarih yoksa null (o an bekleyen son oturum işlenir).
+        /// Her iki tetikte de "date" AKTARIM tarihidir (info tetiği bir gün önce gelir ama
+        /// yine aktarım tarihini taşır) — oturum eşleştirmesi tek kurala göre yapılır.
+        /// </summary>
+        private static (DateOnly? Date, TriggerKind Kind) ParseTrigger(string body)
+        {
+            if (string.IsNullOrWhiteSpace(body)) return (null, TriggerKind.Transfer);
+
             try
             {
                 using var doc = JsonDocument.Parse(body);
-                if (doc.RootElement.ValueKind == JsonValueKind.Object &&
-                    doc.RootElement.TryGetProperty("date", out var d) &&
-                    d.GetString() is { } s && DateOnly.TryParse(s, out var jd))
-                    return jd;
+                if (doc.RootElement.ValueKind == JsonValueKind.Object)
+                {
+                    DateOnly? date = null;
+                    if (doc.RootElement.TryGetProperty("date", out var d) &&
+                        d.GetString() is { } s && DateOnly.TryParse(s, out var jd))
+                        date = jd;
+
+                    var kind = TriggerKind.Transfer;
+                    if (doc.RootElement.TryGetProperty("kind", out var k) &&
+                        string.Equals(k.GetString(), "info", StringComparison.OrdinalIgnoreCase))
+                        kind = TriggerKind.Info;
+
+                    return (date, kind);
+                }
             }
             catch (JsonException) { /* düz metin dene */ }
 
-            return DateOnly.TryParse(body.Trim().Trim('"'), out var raw) ? raw : null;
+            return (DateOnly.TryParse(body.Trim().Trim('"'), out var raw) ? raw : null, TriggerKind.Transfer);
         }
 
-        private async Task ProcessAsync(DateOnly? date)
+        private async Task ProcessAsync(DateOnly? date, TriggerKind kind)
         {
             using var scope = _scopeFactory.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -141,12 +184,22 @@ namespace Koala.Yedpa.Service.Services
             var session = await query.OrderByDescending(s => s.Id).FirstOrDefaultAsync();
             if (session is null)
             {
-                _logger.LogWarning("Tetik geldi ama uygun bekleyen oturum yok. Tarih={Date}", date);
+                _logger.LogWarning("Tetik geldi ama uygun bekleyen oturum yok. Tür={Kind} Tarih={Date}", kind, date);
                 return;
             }
 
-            _logger.LogInformation("Tetik alındı → aktarım başlıyor. Session {Id}, Tarih {Date:dd.MM.yyyy}", session.Id, session.InvoiceDate);
             var jobs = scope.ServiceProvider.GetRequiredService<BulkInvoiceJobs>();
+
+            if (kind == TriggerKind.Info)
+            {
+                _logger.LogInformation("Bilgilendirme tetiği → T-1 maili gönderiliyor. Session {Id}, Aktarım {Date:dd.MM.yyyy}",
+                    session.Id, session.InvoiceDate);
+                await jobs.SendInfoMailAsync(session.Id);
+                return;
+            }
+
+            _logger.LogInformation("Aktarım tetiği → aktarım başlıyor. Session {Id}, Tarih {Date:dd.MM.yyyy}",
+                session.Id, session.InvoiceDate);
             await jobs.RunTransferAsync(session.Id);
         }
 

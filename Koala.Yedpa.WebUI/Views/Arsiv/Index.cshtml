@@ -9,9 +9,9 @@
     <div class="toolbar" id="kt_toolbar">
         <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
             <!--begin::Page title-->
-            <div data-kt-swapper="true" data-kt-swapper-mode="prepend" class="page-title d-flex align-items-center flex-wrap me-3 mb-5 mb-lg-0">
-                <h1 class="d-flex align-items-center text-dark fw-bolder my-1 fs-3">
-                    <span class="bullet bg-warning align-self-end me-3"></span>
+            <div data-kt-swapper="true" data-kt-swapper-mode="prepend" class="page-title d-flex align-items-center flex-wrap mr-3 mb-5 mb-lg-0">
+                <h1 class="d-flex align-items-center text-dark font-weight-bolder my-1 font-size-h2">
+                    <span class="bullet bg-warning align-self-end mr-3"></span>
                     Arşiv Yönetimi
                 </h1>
             </div>
@@ -29,8 +29,8 @@
                 <!--begin::Card header-->
                 <div class="card-header border-0 pt-5">
                     <h3 class="card-title align-items-start flex-column">
-                        <span class="card-label fw-bolder fs-3 mb-1">Raf - Bölme - Koli</span>
-                        <span class="text-muted mt-1 fw-bold fs-7">Arşiv hiyerarşik yapısı</span>
+                        <span class="card-label font-weight-bolder font-size-h2 mb-1">Raf - Bölme - Koli</span>
+                        <span class="text-muted mt-1 font-weight-bold font-size-sm">Arşiv hiyerarşik yapısı</span>
                     </h3>
                     <div class="card-toolbar">
                         <button class="btn btn-sm btn-primary" onclick="showAddRafModal()">
@@ -63,7 +63,9 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Yeni Raf</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Kapat">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
             <div class="modal-body">
                 <form id="addRafForm">
@@ -74,7 +76,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">İptal</button>
                 <button type="button" class="btn btn-primary" onclick="saveRaf()">Kaydet</button>
             </div>
         </div>
@@ -120,21 +122,21 @@
             let html = '<div class="tree-container">';
             for (const raf in grouped) {
                 html += `<div class="tree-node raf-node" onclick="toggleNode(this)">
-                    <i class="fas fa-folder text-warning me-2"></i>
+                    <i class="fas fa-folder text-warning mr-2"></i>
                     <strong>${grouped[raf].raf}</strong>
                 </div>`;
                 html += '<div class="tree-children" style="display:none;">';
                 for (const bolme in grouped[raf].bolumeler) {
                     html += `<div class="tree-node bolme-node" onclick="toggleNode(this)">
-                        <i class="fas fa-folder-open text-info me-2"></i>
+                        <i class="fas fa-folder-open text-info mr-2"></i>
                         ${bolme}
                     </div>`;
                     html += '<div class="tree-children" style="display:none;">';
                     grouped[raf].bolumeler[bolme].forEach(koli => {
                         html += `<div class="tree-node koli-node">
-                            <i class="fas fa-box text-success me-2"></i>
+                            <i class="fas fa-box text-success mr-2"></i>
                             <a href="/Arsiv/Detay/${koli.koliId}">${koli.koliNo || 'Koli ' + koli.koliId}</a>
-                            ${koli.detay ? `<small class="text-muted ms-2">${koli.detay}</small>` : ''}
+                            ${koli.detay ? `<small class="text-muted ml-2">${koli.detay}</small>` : ''}
                         </div>`;
                     });
                     html += '</div>';

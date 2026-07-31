@@ -101,9 +101,15 @@ namespace Koala.Yedpa.WebUI.Controllers
 
         /// <summary>
         /// Toplu Faturalandırma Yönetimi sayfası — oturumlar + aktarım satırları + yeniden aktarım.
+        /// <paramref name="sessionId"/> verilirse (dashboard'daki "Aktarım Yapılacak Firmaları
+        /// Görüntüle" butonu) o oturum doğrudan açılır ve satırları yüklenir.
         /// </summary>
         [HttpGet]
-        public IActionResult Manage() => View();
+        public IActionResult Manage(int? sessionId)
+        {
+            ViewBag.SessionId = sessionId;
+            return View();
+        }
 
         /// <summary>Tüm oturumları (özet sayılarla) JSON döner.</summary>
         [HttpGet]

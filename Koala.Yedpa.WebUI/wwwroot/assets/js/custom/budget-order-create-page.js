@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Show loading
         calculateBtn.disabled = true;
-        calculateBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Hesaplanıyor...';
+        calculateBtn.innerHTML = '<span class="spinner-border spinner-border-sm mr-2"></span>Hesaplanıyor...';
 
         try {
             const request = {
@@ -252,7 +252,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             saveBtn.disabled = true;
-            saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Kaydediliyor...';
+            saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm mr-2"></span>Kaydediliyor...';
 
             try {
                 // Flag değerini ay numaralarına çevir
@@ -358,7 +358,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         saveBtn.disabled = true;
-        saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Kaydediliyor...';
+        saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm mr-2"></span>Kaydediliyor...';
 
         try {
             // Flag değerini ay numaralarına çevir
@@ -657,18 +657,18 @@ document.addEventListener('DOMContentLoaded', function () {
                         </thead>
                         <tbody>
                             <tr>
-                                <td class="text-end">${data.january > 0 ? formatCurrency(data.january) : '-'}</td>
-                                <td class="text-end">${data.february > 0 ? formatCurrency(data.february) : '-'}</td>
-                                <td class="text-end">${data.march > 0 ? formatCurrency(data.march) : '-'}</td>
-                                <td class="text-end">${data.april > 0 ? formatCurrency(data.april) : '-'}</td>
-                                <td class="text-end">${data.may > 0 ? formatCurrency(data.may) : '-'}</td>
-                                <td class="text-end">${data.june > 0 ? formatCurrency(data.june) : '-'}</td>
-                                <td class="text-end">${data.july > 0 ? formatCurrency(data.july) : '-'}</td>
-                                <td class="text-end">${data.august > 0 ? formatCurrency(data.august) : '-'}</td>
-                                <td class="text-end">${data.september > 0 ? formatCurrency(data.september) : '-'}</td>
-                                <td class="text-end">${data.october > 0 ? formatCurrency(data.october) : '-'}</td>
-                                <td class="text-end">${data.november > 0 ? formatCurrency(data.november) : '-'}</td>
-                                <td class="text-end">${data.december > 0 ? formatCurrency(data.december) : '-'}</td>
+                                <td class="text-right">${data.january > 0 ? formatCurrency(data.january) : '-'}</td>
+                                <td class="text-right">${data.february > 0 ? formatCurrency(data.february) : '-'}</td>
+                                <td class="text-right">${data.march > 0 ? formatCurrency(data.march) : '-'}</td>
+                                <td class="text-right">${data.april > 0 ? formatCurrency(data.april) : '-'}</td>
+                                <td class="text-right">${data.may > 0 ? formatCurrency(data.may) : '-'}</td>
+                                <td class="text-right">${data.june > 0 ? formatCurrency(data.june) : '-'}</td>
+                                <td class="text-right">${data.july > 0 ? formatCurrency(data.july) : '-'}</td>
+                                <td class="text-right">${data.august > 0 ? formatCurrency(data.august) : '-'}</td>
+                                <td class="text-right">${data.september > 0 ? formatCurrency(data.september) : '-'}</td>
+                                <td class="text-right">${data.october > 0 ? formatCurrency(data.october) : '-'}</td>
+                                <td class="text-right">${data.november > 0 ? formatCurrency(data.november) : '-'}</td>
+                                <td class="text-right">${data.december > 0 ? formatCurrency(data.december) : '-'}</td>
                             </tr>
                         </tbody>
                     </table>

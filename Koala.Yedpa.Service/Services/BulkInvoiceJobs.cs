@@ -37,8 +37,16 @@ namespace Koala.Yedpa.Service.Services
             _logger = logger;
         }
 
-        /// <summary>T-1 gün 08:00 — bilgilendirme maili + Excel.</summary>
-        public Task SendInfoMailAsync(int sessionId) => _email.SendInfoMailAsync(sessionId);
+        /// <summary>
+        /// T-1 gün 12:01 — bilgilendirme maili + Excel.
+        /// Mailden önce oturum satırları senkronlanır ki Yönetim sayfasındaki "aktarım yapılacak
+        /// firmalar" listesi ile mailde giden Excel aynı olsun.
+        /// </summary>
+        public async Task SendInfoMailAsync(int sessionId)
+        {
+            await _bulk.SyncSessionItemsAsync(sessionId);
+            await _email.SendInfoMailAsync(sessionId);
+        }
 
         /// <summary>T günü 00:01 — bekleyen AIDAT satırlarından fatura oluşturur.</summary>
         public async Task RunTransferAsync(int sessionId)
@@ -90,11 +98,21 @@ namespace Koala.Yedpa.Service.Services
                 .ToList();
             await _bulk.MarkLinesAsTransferredAsync(transferredRefs);
 
-            session.Status = BulkInvoiceSessionStatus.Completed;
+            // 6) Sonucu oturuma yaz. Eksik kalan varsa oturum "Hatalı" işaretlenir; böylece Yönetim
+            // sayfasında görünür ve "Eksik Kalanları Yeniden Aktar" ile tamamlanabilir.
+            var remaining = await _db.BulkInvoiceItems
+                .CountAsync(i => i.SessionId == session.Id && i.Status != BulkInvoiceItemStatus.Transferred);
+
+            session.Status = remaining == 0
+                ? BulkInvoiceSessionStatus.Completed
+                : BulkInvoiceSessionStatus.Failed;
             session.CompletedAt = DateTime.UtcNow;
             await _db.SaveChangesAsync();
 
-            // 6) Görev komple bitti → rapor maili
+            _logger.LogInformation("Aktarım bitti. Session {Id}: {Ok} başarılı, {Kalan} eksik.",
+                session.Id, transferredRefs.Count, remaining);
+
+            // 7) Görev komple bitti → sonuç maili
             await _email.SendReportMailAsync(session.Id);
         }
 
@@ -126,15 +144,18 @@ namespace Koala.Yedpa.Service.Services
                 .ToList();
             await _bulk.MarkLinesAsTransferredAsync(newlyTransferred);
 
-            // Oturum tümüyle tamamlandıysa durumu güncelle.
+            // Oturum durumunu güncelle: eksik kalmadıysa Tamamlandı, kaldıysa Hatalı.
             var kalan = await _db.BulkInvoiceItems
                 .CountAsync(i => i.SessionId == sessionId && i.Status != BulkInvoiceItemStatus.Transferred);
-            if (kalan == 0)
-            {
-                session.Status = BulkInvoiceSessionStatus.Completed;
-                session.CompletedAt = DateTime.UtcNow;
-                await _db.SaveChangesAsync();
-            }
+
+            session.Status = kalan == 0
+                ? BulkInvoiceSessionStatus.Completed
+                : BulkInvoiceSessionStatus.Failed;
+            session.CompletedAt = DateTime.UtcNow;
+            await _db.SaveChangesAsync();
+
+            _logger.LogInformation("Yeniden aktarım bitti. Session {Id}: {Ok} aktarıldı, {Kalan} eksik.",
+                sessionId, newlyTransferred.Count, kalan);
 
             await _email.SendReportMailAsync(sessionId);
         }

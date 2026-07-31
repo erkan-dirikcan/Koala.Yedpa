@@ -8,13 +8,13 @@
     <!--begin::Toolbar-->
     <div class="toolbar" id="kt_toolbar">
         <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
-            <div data-kt-swapper="true" data-kt-swapper-mode="prepend" class="page-title d-flex align-items-center flex-wrap me-3 mb-5 mb-lg-0">
-                <h1 class="d-flex align-items-center text-dark fw-bolder my-1 fs-3">
-                    <span class="bullet bg-primary align-self-end me-3"></span>
+            <div data-kt-swapper="true" data-kt-swapper-mode="prepend" class="page-title d-flex align-items-center flex-wrap mr-3 mb-5 mb-lg-0">
+                <h1 class="d-flex align-items-center text-dark font-weight-bolder my-1 font-size-h2">
+                    <span class="bullet bg-primary align-self-end mr-3"></span>
                     Sözleşme Yönetimi
                 </h1>
             </div>
-            <div class="d-flex align-items-center gap-2">
+            <div class="d-flex align-items-center">
                 <a href="/Sozlesme/Yeni" class="btn btn-primary">
                     <i class="fas fa-plus"></i> Yeni Sözleşme
                 </a>
@@ -31,18 +31,18 @@
                 <!--begin::Card header-->
                 <div class="card-header border-0 pt-5">
                     <h3 class="card-title align-items-start flex-column">
-                        <span class="card-label fw-bolder fs-3 mb-1">Sözleşmeler</span>
-                        <span class="text-muted mt-1 fw-bold fs-7">Tüm sözleşmeler</span>
+                        <span class="card-label font-weight-bolder font-size-h2 mb-1">Sözleşmeler</span>
+                        <span class="text-muted mt-1 font-weight-bold font-size-sm">Tüm sözleşmeler</span>
                     </h3>
                     <div class="card-toolbar">
-                        <ul class="nav nav-tabs nav-line-tabs nav-line-tabs-2x mb-0 mt-3 fs-6">
+                        <ul class="nav nav-tabs mb-0 mt-3 font-size-base">
                             <li class="nav-item">
-                                <a class="nav-link active" data-bs-toggle="tab" href="#tumTab" onclick="loadSozlesmeler('tum')">
+                                <a class="nav-link active" data-toggle="tab" href="#tumTab" onclick="loadSozlesmeler('tum')">
                                     Tümü
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" data-bs-toggle="tab" href="#yaklasanTab" onclick="loadSozlesmeler('yaklasan')">
+                                <a class="nav-link" data-toggle="tab" href="#yaklasanTab" onclick="loadSozlesmeler('yaklasan')">
                                     Yaklaşan (30 Gün)
                                 </a>
                             </li>
@@ -58,7 +58,7 @@
                             <div class="table-responsive">
                                 <table class="table table-row-dashed table-row-gray-300 align-middle g-4" id="sozlesmeTable">
                                     <thead>
-                                        <tr class="fw-bolder fs-6 text-gray-800">
+                                        <tr class="font-weight-bolder font-size-base text-dark">
                                             <th>Firma</th>
                                             <th>Konu</th>
                                             <th>Başlangıç</th>
@@ -80,7 +80,7 @@
                             <div class="table-responsive">
                                 <table class="table table-row-dashed table-row-gray-300 align-middle g-4" id="yaklasanTable">
                                     <thead>
-                                        <tr class="fw-bolder fs-6 text-gray-800">
+                                        <tr class="font-weight-bolder font-size-base text-dark">
                                             <th>Firma</th>
                                             <th>Konu</th>
                                             <th>Bitiş Tarihi</th>
@@ -139,35 +139,35 @@
 
             let html = '';
             sozlesmeler.forEach(s => {
-                const durumClass = s.bitti ? 'badge-light-danger' :
-                                   s.yaklasan ? 'badge-light-warning' : 'badge-light-success';
+                const durumClass = s.bitti ? 'label-light-danger' :
+                                   s.yaklasan ? 'label-light-warning' : 'label-light-success';
                 const kalanGunClass = s.kalanGun <= 7 ? 'text-danger' :
                                      s.kalanGun <= 30 ? 'text-warning' : 'text-success';
 
                 if (tur === 'yaklasan') {
                     html += `
                         <tr>
-                            <td><span class="fw-bold">${s.firma || '-'}</span></td>
+                            <td><span class="font-weight-bold">${s.firma || '-'}</span></td>
                             <td>${s.konu || '-'}</td>
                             <td>${formatDate(s.bitis)}</td>
-                            <td class="${kalanGunClass} fw-bolder">${s.kalanGun} gün</td>
+                            <td class="${kalanGunClass} font-weight-bolder">${s.kalanGun} gün</td>
                             <td>
-                                <a href="/Sozlesme/Detay/${s.sozlesmeID}" class="btn btn-sm btn-light-primary">Detay</a>
+                                <a href="/Sozlesme/Detay/${s.sozlesmeID}" class="btn btn-sm btn-light-primary mr-1">Detay</a>
                             </td>
                         </tr>
                     `;
                 } else {
                     html += `
                         <tr>
-                            <td><span class="fw-bold">${s.firma || '-'}</span></td>
+                            <td><span class="font-weight-bold">${s.firma || '-'}</span></td>
                             <td>${s.konu || '-'}</td>
                             <td>${formatDate(s.baslangic)}</td>
                             <td>${formatDate(s.bitis)}</td>
-                            <td><span class="badge ${durumClass}">${s.durum}</span></td>
-                            <td class="${kalanGunClass} fw-bolder">${s.kalanGun} gün</td>
+                            <td><span class="label ${durumClass} label-inline">${s.durum}</span></td>
+                            <td class="${kalanGunClass} font-weight-bolder">${s.kalanGun} gün</td>
                             <td>
-                                <div class="d-flex gap-1">
-                                    <a href="/Sozlesme/Detay/${s.sozlesmeID}" class="btn btn-sm btn-light-primary">
+                                <div class="d-flex">
+                                    <a href="/Sozlesme/Detay/${s.sozlesmeID}" class="btn btn-sm btn-light-primary mr-1">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                     <a href="/Sozlesme/Duzenle/${s.sozlesmeID}" class="btn btn-sm btn-light-warning">
