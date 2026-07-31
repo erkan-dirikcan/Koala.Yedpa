@@ -234,6 +234,34 @@ Servis tarafı hazır (aynı ay Pending oturum varsa tarihi günceller), sadece 
 
 ---
 
+## 10. Boş catch blokları (31.07.2026'da tespit — aktarım sonrası doldurulacak)
+
+Kullanıcı debug sırasında fark etti. **Şu an hiçbiri gerçek bir hatayı gizlemiyor** — hepsi
+temizlik veya geri-düşüş yolu. Yani bu bir bug değil, hijyen borcu. Ama bu kod tabanı yutulan
+hatalar yüzünden daha önce bir gün kaybettirdi (bkz. §6), o yüzden kapatılmalı.
+
+**Kesinleşen 6 konum:**
+
+| Dosya:satır | Bağlam | Değerlendirme |
+|---|---|---|
+| `LogoRestServiceProvider.cs:434` | Hata yolunda token revoke denemesi | Savunulabilir — zaten hata yolundayız, başarısız revoke asıl hatayı maskelememeli. **Debug log eklenmeli.** |
+| `LogoRestServiceProvider.cs:465` | Aynı | Aynı |
+| `LogoRestServiceProvider.cs:484` | Aynı | Aynı |
+| `BulkInvoiceTriggerConsumer.cs:173` | `catch (JsonException)` → düz metin ayrıştırmaya düş | **Kasıtlı ve doğru.** Olduğu gibi kalabilir, yorumu netleştirilebilir. |
+| `BulkInvoiceTriggerConsumer.cs:218` | `SafeCloseAsync` — kanal kapatma | Kapanış temizliği. **Debug log eklenmeli.** |
+| `BulkInvoiceTriggerConsumer.cs:223` | `SafeCloseAsync` — bağlantı kapatma | Aynı |
+
+⚠️ Daha gevşek bir tarama Service'te 7, Core'da 1 sonucu verdi; yukarıdaki 6'sı satır satır
+doğrulandı. Kalan 1-2 tanesi Pazartesi taramayla netleşecek (`Koala.Yedpa.Core/Helpers/` altında).
+
+**Önerilen kural:** sessiz `catch` yok. En azından `LogDebug` ile "ne yutuldu" yazılsın; gerçekten
+önemsizse yorumda **neden** önemsiz olduğu açıklansın ("zaten hata yolundayız" gibi).
+
+**Kapsam dışı ama ilgili:** Asıl tehlike boş catch'ler değil, hatayı `result.Message`'a gömüp
+`result.Errors.Errors`'ı okutmayan desen (§6). Boş catch temizliği sırasında ona da bakılabilir.
+
+---
+
 ## 9. Git / Deploy Durumu
 
 - **Branch:** `feature/bulk-invoice-rewrite`

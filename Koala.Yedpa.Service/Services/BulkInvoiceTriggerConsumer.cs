@@ -69,13 +69,19 @@ namespace Koala.Yedpa.Service.Services
                     await StartConsumingAsync(stoppingToken);
                     await Task.Delay(Timeout.Infinite, stoppingToken); // auto-recovery devrede; iptale kadar bekle
                 }
-                catch (OperationCanceledException) { break; }
+                catch (OperationCanceledException)
+                {
+                    break;
+                }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "RabbitMQ tetik consumer bağlanamadı; 10 sn sonra tekrar denenecek.");
                     await SafeCloseAsync();
                     try { await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken); }
-                    catch (OperationCanceledException) { break; }
+                    catch (OperationCanceledException)
+                    {
+                        break;
+                    }
                 }
             }
 
@@ -164,7 +170,10 @@ namespace Koala.Yedpa.Service.Services
                     return (date, kind);
                 }
             }
-            catch (JsonException) { /* düz metin dene */ }
+            catch (JsonException)
+            {
+                /* düz metin dene */
+            }
 
             return (DateOnly.TryParse(body.Trim().Trim('"'), out var raw) ? raw : null, TriggerKind.Transfer);
         }
@@ -205,8 +214,16 @@ namespace Koala.Yedpa.Service.Services
 
         private async Task SafeCloseAsync()
         {
-            try { if (_channel is not null) await _channel.CloseAsync(); } catch { /* yut */ }
-            try { if (_connection is not null) await _connection.CloseAsync(); } catch { /* yut */ }
+            try { if (_channel is not null) await _channel.CloseAsync(); }
+            catch
+            {
+                /* yut */
+            }
+            try { if (_connection is not null) await _connection.CloseAsync(); }
+            catch
+            {
+                /* yut */
+            }
             _channel = null;
             _connection = null;
         }
