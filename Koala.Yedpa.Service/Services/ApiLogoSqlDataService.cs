@@ -53,8 +53,11 @@ namespace Koala.Yedpa.Service.Services
             var totalQuery = $@"
                                 SELECT COUNT(*)
                                 FROM LG_{LogoSetting.Firm}_CLCARD AS CLC
-                                INNER JOIN LG_{LogoSetting.Firm}_CLCARD AS CLP ON CLP.LOGICALREF = CLC.PARENTCLREF
-                                WHERE CLP.CODE LIKE '%.IS'{specodeClause}";
+                                LEFT JOIN LG_{LogoSetting.Firm}_CLCARD AS CLP ON CLP.LOGICALREF = CLC.PARENTCLREF
+                                WHERE (
+                                    (CLP.CODE LIKE '%.IS' AND CLP.DEFINITION_ IS NOT NULL AND LTRIM(RTRIM(CLP.DEFINITION_)) <> '')
+                                    OR CLC.CODE LIKE '120.02%'
+                                ){specodeClause}";
 
             var totalResult = _sqlProvider.SqlReader(totalQuery);
             var recordsTotal = totalResult.IsSuccess ? Convert.ToInt32(totalResult.Data.Rows[0][0]) : 0;
@@ -162,8 +165,11 @@ namespace Koala.Yedpa.Service.Services
             var totalQuery = $@"
                                 SELECT COUNT(*)
                                 FROM LG_{LogoSetting.Firm}_CLCARD AS CLC
-                                INNER JOIN LG_{LogoSetting.Firm}_CLCARD AS CLP ON CLP.LOGICALREF = CLC.PARENTCLREF
-                                WHERE CLP.CODE LIKE '%.IS'{specodeClause}";
+                                LEFT JOIN LG_{LogoSetting.Firm}_CLCARD AS CLP ON CLP.LOGICALREF = CLC.PARENTCLREF
+                                WHERE (
+                                    (CLP.CODE LIKE '%.IS' AND CLP.DEFINITION_ IS NOT NULL AND LTRIM(RTRIM(CLP.DEFINITION_)) <> '')
+                                    OR CLC.CODE LIKE '120.02%'
+                                ){specodeClause}";
             var totalResult = _sqlProvider.SqlReader(totalQuery);
             var recordsTotal = totalResult.IsSuccess ? Convert.ToInt32(totalResult.Data.Rows[0][0]) : 0;
 
@@ -247,7 +253,7 @@ namespace Koala.Yedpa.Service.Services
                                 WHERE GNCLTOT.TOTTYP = 1
                                   AND CLC.CODE IS NOT NULL
                                   AND CLC.ACTIVE=0
-                                  AND CLC.CODE LIKE '1.%'
+                                  AND (CLC.CODE LIKE '1.%' OR CLC.CODE LIKE '120.02%')
                                   AND CLC.CODE NOT LIKE '%KD%'
                                   AND ISNULL(CLC.SPECODE, '') NOT LIKE 'KIRMIZI%'
                                   AND ISNULL(CLC.SPECODE, '') NOT LIKE 'YEŞİL%'
@@ -528,10 +534,11 @@ namespace Koala.Yedpa.Service.Services
                     CLC.CAPIBLOCK_CREADEDDATE AS CreatedDate,
                     CLC.CAPIBLOCK_MODIFIEDDATE AS ModifiedDate
                 FROM LG_{LogoSetting.Firm}_CLCARD AS CLC
-                INNER JOIN LG_{LogoSetting.Firm}_CLCARD AS CLP ON CLP.LOGICALREF = CLC.PARENTCLREF
-                WHERE CLP.CODE LIKE '%.IS'
-                  AND CLP.DEFINITION_ IS NOT NULL
-                  AND LTRIM(RTRIM(CLP.DEFINITION_)) <> ''{specodeWhereClause ?? ""}";
+                LEFT JOIN LG_{LogoSetting.Firm}_CLCARD AS CLP ON CLP.LOGICALREF = CLC.PARENTCLREF
+                WHERE (
+                    (CLP.CODE LIKE '%.IS' AND CLP.DEFINITION_ IS NOT NULL AND LTRIM(RTRIM(CLP.DEFINITION_)) <> '')
+                    OR CLC.CODE LIKE '120.02%'
+                ){specodeWhereClause ?? ""}";
         }
 
         private string BuildBasePendingInvoiceQuery()

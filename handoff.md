@@ -234,6 +234,80 @@ Servis tarafı hazır (aynı ay Pending oturum varsa tarihi günceller), sadece 
 
 ---
 
+## 9b. İlk gerçek koşu — 01.08.2026 (sonuç: kısmen başarılı, faturalar iptal edildi)
+
+**Ne oldu:** Aktarım 01:02'de başladı, 02:54'te bitti. **2.093 başarılı, 1 başarısız**
+(`1.H2P1.026.00.KR` ASM OTO ŞAKİR CEBECİ — Logo REST "Catastrophic failure"). Hız ~0,30 fatura/sn
+(≈3,4 sn/fatura), 2.094 satır ≈ 1 saat 52 dakika.
+
+**Ama tüm faturalar e-Fatura olarak kesildi** → cari mükellefiyetine göre e-Arşiv olması gerekenler de
+vardı. **Faturaların tamamı iptal edildi ve aktarım eski uygulamayla yapıldı.** Gelecek ay için
+düzeltme şart — bkz. `docs/superpowers/specs/2026-08-01-efatura-earsiv-ayrimi-design.md`.
+
+**Yol boyunca çözülen üç arıza (hepsi kalıcı):**
+
+1. **N8N UTC'de çalışıyor.** Cron `1 0 * * *` İstanbul 00:01 değil, **03:01**'de tetikliyordu.
+   Kanıt: `25 21 * * *` (21:25 UTC) yazıldı, tam 00:25 İstanbul'da tetiklendi.
+   → Kalıcı çözüm: konteynere `TZ=Europe/Istanbul` + `GENERIC_TIMEZONE=Europe/Istanbul`.
+   Yapılmazsa cron'u `1 21 * * *` yazmak gerekir (Türkiye kalıcı UTC+3, yaz saati yok).
+2. **LogoRest adresi `http://localhost` idi.** Bu makinede http.sys'e kayıtlı bir servis
+   (`HTTP://LOCALHOST:32001/`) isteği alıp `login_error` döndürdüğü için "kimlik bilgisi hatası"
+   gibi göründü — oysa istek gerçek sunucuya hiç ulaşmıyordu.
+   → `Settings` (SettingType=6, Name='Server') **`http://85.105.152.74`** olarak güncellendi (şifreli).
+3. **Oturum `Processing`'de takılınca tetikler sessizce boşa düşüyor.** İlk koşu token hatasıyla
+   yarıda kalınca oturum `Processing`'de kaldı; sonraki 3 tetik *"uygun bekleyen oturum yok"* deyip
+   hiçbir şey yapmadan ack'lendi. **Kimse haberdar olmadı.** Oturum elle `Pending`'e çekilerek çözüldü.
+
+**⚠️ Bu 3. madde §11'deki güvenlik ağının neden gerekli olduğunun kanıtıdır.**
+
+**Öğrenilen operasyonel gerçekler:**
+- TRGFLAG işaretlemesi döngü **bittikten sonra toplu** yapılıyor → koşu yarıda kesilirse Logo'da
+  faturalar oluşur ama TRGFLAG 0 kalır. Süreç ortada durdurulmamalı.
+- RabbitMQ `consumer_timeout` 30 dk; aktarım ~2 saat sürdüğü için sonda ack hatası normal ve zararsız.
+- Ack'lenmemiş mesaj her yeniden başlatmada tekrar teslim edilir (bir gece boyunca bu yaşandı).
+
+---
+
+## 12. KrediKartTahsilat — TIME alanı yanlış hesaplanıyor (03.08.2026 tespit)
+
+`KrediKartTahsilatService.cs:120`:
+
+```csharp
+Time = date.Hour * 10000 + date.Minute * 100 + date.Second,   // YANLIŞ
+```
+
+Logo'nun `TIME` alanı **paketlenmiş** bir int'tir, `HHmmss` değil. Doğrusu:
+
+```csharp
+Time = 16777216 * date.Hour + 65536 * date.Minute + 256 * date.Second,
+```
+
+12:40:14 için biz `124014` yolluyoruz; Logo bunu `00:01:228` diye okuyor. **Fiş yine de oluşuyor**,
+o yüzden fark edilmemiş — sadece fiş saatleri saçma kaydediliyor.
+
+Doğrulama: canlı `LG_211_16_CLFICHE` üzerinde 14.613 kayıt, aralık 00:01:00–23:54:48 (hepsi geçerli).
+Referans araç: `D:\cSource\repos\Logo_Time_Format`.
+
+📌 Formül ve dönüşüm kodları kalıcı skill'e alındı: **`logo-time-format`**
+(`~/.claude/skills/logo-time-format/SKILL.md`) — Logo TIME alanına dokunan her işte kullanılabilir.
+
+⚠️ Aynı hatanın diğer Logo payload'larında da olup olmadığı kontrol edilmeli
+(`SalesInvoiceService`, `BulkInvoiceTransferService`, `AidatInvoicePayload`).
+
+---
+
+## 11. Sessiz arıza koruması (ÖNERİ — 01.08 gecesi gerçekten ısırdı)
+
+Bu modül tetiği tek bir dış servise bağlı ve **başarısızlık hiçbir sinyal üretmiyor.** Öneri:
+
+- Uygulama içinde küçük bir `BackgroundService`: "aktarım tarihi bugün/dün, oturum hâlâ
+  `Pending`/`Processing` mi?" → öyleyse uyarı maili (ve/veya kendisi çalıştırsın)
+- Dashboard'a "Toplu Faturalandırma Durumu" widget'ı — takılı oturumu kırmızı göstersin
+
+Hangfire'a gerek yok; ~40 satırlık iş.
+
+---
+
 ## 10. Boş catch blokları (31.07.2026'da tespit — aktarım sonrası doldurulacak)
 
 Kullanıcı debug sırasında fark etti. **Şu an hiçbiri gerçek bir hatayı gizlemiyor** — hepsi

@@ -115,6 +115,7 @@ namespace Koala.Yedpa.Service.Services
 
         private async Task OnMessageAsync(object sender, BasicDeliverEventArgs ea)
         {
+
             var body = Encoding.UTF8.GetString(ea.Body.ToArray());
             try
             {
