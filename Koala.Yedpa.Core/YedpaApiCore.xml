@@ -1490,6 +1490,11 @@
             Bakiye
             </summary>
         </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.PendingInvoiceViewModel.ModifiedDate">
+            <summary>
+            Faturanın son değiştirilme tarihi (Logo INVOICE.CAPIBLOCK_MODIFIEDDATE)
+            </summary>
+        </member>
         <member name="P:Koala.Yedpa.Core.Models.ViewModels.ClCardStatementDetailedViewModel.CreatedDate">
             <summary>
             Cari kartının oluşturulma tarihi (Logo CLCARD.CAPIBLOCK_CREADEDDATE)

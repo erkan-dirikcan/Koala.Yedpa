@@ -1008,7 +1008,8 @@ namespace Koala.Yedpa.Service.Services
                   AND PT2.SIGN = 0
                   AND PT2.CROSSREF = 0
                   AND PT2.CANCELLED = 0
-            )                       AS TotalPayTransForInvoice
+            )                       AS TotalPayTransForInvoice,
+            INVFC.CAPIBLOCK_MODIFIEDDATE AS ModifiedDate
         FROM LG_{LogoSetting.Firm}_{LogoSetting.Period}_PAYTRANS AS PTRNS
         INNER JOIN LG_{LogoSetting.Firm}_CLCARD AS CLNTC
             ON CLNTC.LOGICALREF = PTRNS.CARDREF

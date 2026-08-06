@@ -515,6 +515,12 @@ namespace Koala.Yedpa.Core.Models.ViewModels
 
         [SwaggerSchema(Description = "Aynı fatura için tüm PAYTRANS satırlarının TOTAL toplamı (kuruş farkı analizi için)")]
         public decimal? TotalPayTransForInvoice { get; set; }
+
+        /// <summary>
+        /// Faturanın son değiştirilme tarihi (Logo INVOICE.CAPIBLOCK_MODIFIEDDATE)
+        /// </summary>
+        [SwaggerSchema(Description = "Faturanın son değiştirilme tarihi")]
+        public DateTime? ModifiedDate { get; set; }
     }
 
     public class PendingInvoiceSearchViewModel
