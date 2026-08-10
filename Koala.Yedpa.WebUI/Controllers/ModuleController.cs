@@ -22,22 +22,22 @@ namespace Koala.Yedpa.WebUI.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateModule(CreateModuleViewModel model)
+        public async Task<IActionResult> CreateModule(CreateModuleViewModel model)
         {
             if (ModelState.IsValid)
             {
-                var res = _service.CreateModuleAsync(model);
-                if (res.Result.IsSuccess)
+                var res = await _service.CreateModuleAsync(model);
+                if (res.IsSuccess)
                 {
                     return RedirectToAction("Index", "Module");
                 }
-                ModelState.AddModelError("", res.Result.Message);
+                ModelState.AddModelError("", res.Message);
             }
             else
             {
                 ModelState.AddModelError("", "Model is not valid");
             }
-            return RedirectToAction("Index", "Module");
+            return View(model);
         }
 
         public async Task<IActionResult> UpdateModule(string id)
