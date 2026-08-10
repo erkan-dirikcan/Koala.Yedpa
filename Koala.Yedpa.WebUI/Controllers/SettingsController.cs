@@ -17,6 +17,11 @@ namespace Koala.Yedpa.WebUI.Controllers
             _settingsService = settingsService;
         }
 
+        public IActionResult Index()
+        {
+            return View();
+        }
+
         [HttpGet]
         public async Task<IActionResult> EmailSettings()
         {

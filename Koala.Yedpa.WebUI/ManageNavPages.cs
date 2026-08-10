@@ -24,6 +24,7 @@ namespace Koala.Yedpa.WebUI
         private static string QRCodeIndex => "QRCodeIndex";
         private static string CreatePdf => "CreatePdf";
         private static string CurrentAccountDetail => "CurrentAccountDetail";
+        private static string SystemSettings => "SystemSettings";
 
         //======================================İşyeri Menu Value====================================================
         private static string BudgetOrderList => "BudgetOrderList";
@@ -61,6 +62,7 @@ namespace Koala.Yedpa.WebUI
         public static string QRCodeIndexNavClass(ViewContext viewContext) => PageMainNavClass(viewContext, QRCodeIndex);
         public static string CreatePdfNavClass(ViewContext viewContext) => PageMainNavClass(viewContext, CreatePdf);
         public static string CurrentAccountDetailNavClass(ViewContext viewContext) => PageMainNavClass(viewContext, CurrentAccountDetail);
+        public static string SystemSettingsNavClass(ViewContext viewContext) => PageMainNavClass(viewContext, SystemSettings);
 
 
 
