@@ -1,4 +1,3 @@
-using DocumentFormat.OpenXml.Wordprocessing;
 using Koala.Yedpa.Core.Models.Yonetim;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
