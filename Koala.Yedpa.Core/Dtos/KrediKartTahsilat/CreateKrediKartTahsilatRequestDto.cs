@@ -23,7 +23,10 @@ public class CreateKrediKartTahsilatRequestDto
 
     /// <summary>
     /// Fiş numarası (opsiyonel). Boş/null gelirse servis "~" kullanır (Logo otomatik sıralı no üretir).
+    /// Logo'nun FICHENO alanı 16 karakterle sınırlı; daha uzun değer kırpılır ve farklı numaralar
+    /// aynı fişe düşüp çakışabilir. Bu yüzden burada peşinen reddediyoruz.
     /// </summary>
+    [MaxLength(16, ErrorMessage = "Fiş numarası en fazla 16 karakter olabilir (Logo FICHENO sınırı).")]
     public string? Number { get; set; }
 
     /// <summary>

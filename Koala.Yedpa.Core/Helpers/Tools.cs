@@ -114,14 +114,22 @@ namespace Koala.Yedpa.Core.Helpers
 
             return valid;
         }
+        /// <summary>
+        /// DateTime → Logo'nun paketlenmiş TIME değeri.
+        /// Logo TIME alanı 32-bit'in byte'larına yerleşir: saat(2^24) · dakika(2^16) · saniye(2^8) · salise(1).
+        /// Sıradan bir HHmmss değeri DEĞİLDİR; yanlış yazılırsa Logo hata vermez, sessizce yanlış saat kaydeder.
+        /// Detay: `logo-time-format` skill'i.
+        /// </summary>
         public static int ConvertToLogoTime(this DateTime date)
-        {
-            return 0 + 256 * 2 + 65536 * date.Minute + 16777216 * date.Hour;
-        }
-        public static string ConvertToLogoTime(int minute, int hour)
-        {
-            return (0 + 256 * 2 + 65536 * minute + 16777216 * hour).ToString(); ;
-        }
+            => ConvertToLogoTime(date.Hour, date.Minute, date.Second);
+
+        /// <summary>Saat/dakika/saniye → Logo paketlenmiş TIME.</summary>
+        public static int ConvertToLogoTime(int hour, int minute, int second)
+            => 16777216 * hour + 65536 * minute + 256 * second;
+
+        /// <summary>Logo paketlenmiş TIME → saat/dakika/saniye.</summary>
+        public static (int Hour, int Minute, int Second) ParseLogoTime(int logoTime)
+            => (logoTime / 16777216, (logoTime % 16777216) / 65536, (logoTime % 65536) / 256);
         public static bool InternetControl()
         {
             try

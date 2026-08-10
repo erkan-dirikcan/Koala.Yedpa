@@ -270,6 +270,8 @@
         <member name="P:Koala.Yedpa.Core.Dtos.KrediKartTahsilat.CreateKrediKartTahsilatRequestDto.Number">
             <summary>
             Fiş numarası (opsiyonel). Boş/null gelirse servis "~" kullanır (Logo otomatik sıralı no üretir).
+            Logo'nun FICHENO alanı 16 karakterle sınırlı; daha uzun değer kırpılır ve farklı numaralar
+            aynı fişe düşüp çakışabilir. Bu yüzden burada peşinen reddediyoruz.
             </summary>
         </member>
         <member name="P:Koala.Yedpa.Core.Dtos.KrediKartTahsilat.CreateKrediKartTahsilatRequestDto.Guid">
@@ -1059,6 +1061,20 @@
             </summary>
             <param name="json">JSON string</param>
             <returns>DataObjectParameter eklenmiş JSON string</returns>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Helpers.Tools.ConvertToLogoTime(System.DateTime)">
+            <summary>
+            DateTime → Logo'nun paketlenmiş TIME değeri.
+            Logo TIME alanı 32-bit'in byte'larına yerleşir: saat(2^24) · dakika(2^16) · saniye(2^8) · salise(1).
+            Sıradan bir HHmmss değeri DEĞİLDİR; yanlış yazılırsa Logo hata vermez, sessizce yanlış saat kaydeder.
+            Detay: `logo-time-format` skill'i.
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Helpers.Tools.ConvertToLogoTime(System.Int32,System.Int32,System.Int32)">
+            <summary>Saat/dakika/saniye → Logo paketlenmiş TIME.</summary>
+        </member>
+        <member name="M:Koala.Yedpa.Core.Helpers.Tools.ParseLogoTime(System.Int32)">
+            <summary>Logo paketlenmiş TIME → saat/dakika/saniye.</summary>
         </member>
         <!-- Badly formed XML comment ignored for member "M:Koala.Yedpa.Core.Extensions.DataTableExtensions.AsList``1(System.Data.DataTable)" -->
         <member name="P:Koala.Yedpa.Core.Models.BulkInvoiceItem.RetryCount">

@@ -128,8 +128,9 @@ public class KrediKartTahsilatServiceTests : ServiceTestBase
         Assert.Equal(3000.50m, (decimal)parsed["TOTAL_CREDIT"]);
         Assert.Equal("120.01.8888", parsed["ARP_CODE"]?.ToString());
 
-        // TIME/HOUR/MINUTE CollectionDate'ten türetilir (14:30:00 -> 143000)
-        Assert.Equal(143000, (int)parsed["TIME"]);
+        // TIME Logo'nun PAKETLENMİŞ formatındadır (HHmmss DEĞİL):
+        // 14:30:00 -> 16777216*14 + 65536*30 = 236847104. Bkz. LogoTimeFormatTests.
+        Assert.Equal(236847104, (int)parsed["TIME"]);
         Assert.Equal(14, (int)parsed["HOUR"]);
         Assert.Equal(30, (int)parsed["MINUTE"]);
 
@@ -222,8 +223,8 @@ public class KrediKartTahsilatServiceTests : ServiceTestBase
         var result = await _sut.CreateKrediKartTahsilatAsync(request);
 
         result.IsSuccess.Should().BeFalse();
-        result.StatusCode.Should().Be(500);
-        result.Message.Should().Contain("oluşturulamadı");
+        result.StatusCode.Should().Be(500, "401/403 dışındaki Logo kodları olduğu gibi aktarılır");
+        result.Message.Should().Contain("Logo", "hatanın kaynağı mesajda açıkça belirtilmeli");
         result.Data.Should().BeNullOrEmpty();
     }
 

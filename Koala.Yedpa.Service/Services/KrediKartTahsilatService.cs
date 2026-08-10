@@ -63,12 +63,18 @@ public class KrediKartTahsilatService : IKrediKartTahsilatService
             // 4. Response kontrol
             if (!response.IsSuccess)
             {
-                _logger.LogError("Kredi kartı tahsilat fişi oluşturulamadı. StatusCode: {StatusCode}, Message: {Message}",
+                _logger.LogError("Kredi kartı tahsilat fişi oluşturulamadı. Logo HTTP={StatusCode}, Message: {Message}",
                     response.StatusCode, response.Message);
 
+                // Logo'nun durum kodunu AYNEN döndürmeyiz. 401/403 çağıranın kendi token'ını
+                // suçlamasına yol açıyor (01.08.2026'da tam olarak bu yaşandı: müşteri saatlerce
+                // kendi kimlik doğrulamasını aradı, oysa reddedilen Logo token'ıydı).
+                // Yukarı akış hatası bizim için bir ağ geçidi hatasıdır → 502.
+                var httpStatus = response.StatusCode is 401 or 403 ? 502 : response.StatusCode;
+
                 return ResponseDto<string>.FailData(
-                    response.StatusCode,
-                    "Kredi kartı tahsilat fişi oluşturulamadı",
+                    httpStatus,
+                    $"Logo tarafından reddedildi (Logo HTTP {response.StatusCode})",
                     response.Message,
                     true);
             }
@@ -117,7 +123,8 @@ public class KrediKartTahsilatService : IKrediKartTahsilatService
             PrintCounter  = PrintCounter,                                        // sabit: 3
             CurrSelTotals = CurrSelTotals,                                       // sabit: 1
             BankAccCode   = request.BankAccCode,
-            Time   = date.Hour * 10000 + date.Minute * 100 + date.Second,
+            // Logo TIME paketlenmiş bir int'tir (HHmmss DEĞİL) — bkz. Tools.ConvertToLogoTime.
+            Time   = date.ConvertToLogoTime(),
             Hour   = date.Hour,
             Minute = date.Minute,
             Guid   = string.IsNullOrWhiteSpace(request.Guid)

@@ -268,7 +268,36 @@ düzeltme şart — bkz. `docs/superpowers/specs/2026-08-01-efatura-earsiv-ayrim
 
 ---
 
-## 12. KrediKartTahsilat — TIME alanı yanlış hesaplanıyor (03.08.2026 tespit)
+## 12. KrediKartTahsilat düzeltmeleri (03.08.2026 — ✅ YAPILDI)
+
+Üçü de kodlandı, test edildi, build 0 hata / 205 test yeşil.
+
+**a) TIME formatı düzeltildi.** `Tools.ConvertToLogoTime` artık gerçek saniyeyi kullanıyor
+(eskiden `256*2` sabitti) ve `ParseLogoTime` eklendi. `KrediKartTahsilatService` yanlış
+`HHmmss` formülünü bırakıp yardımcıyı çağırıyor. Ayrıntı aşağıda.
+
+**b) Fiş numarası sınırı.** `CreateKrediKartTahsilatRequestDto.Number` → `[MaxLength(16)]`.
+Logo `FICHENO` alanı `varchar(17)` (16 kullanılabilir). Müşteri 20 karakter gönderiyordu;
+Logo kırpıyor, farklı numaralar aynı fişe düşüp çakışıyordu. Artık peşinen ve **anlaşılır bir
+mesajla** reddediliyor.
+
+**c) Durum kodu eşlemesi.** Logo'nun `401/403`'ü artık dışarıya **502** olarak dönüyor; mesajda
+asıl Logo kodu görünüyor. Diğer kodlar olduğu gibi aktarılıyor. Sebep: 01.08'de müşteri Logo'nun
+401'ini kendi token'ı sanıp saatlerce yanlış yerde aradı.
+⚠️ Aynı desen `LogoClCardApiController`, `SalesInvoiceApiController` ve diğer Logo tabanlı
+servislerde de var (12+ yer) — oralara henüz dokunulmadı.
+
+**Yeni testler:** `LogoTimeFormatTests` (11), `KrediKartTahsilatFailureMappingTests` (12).
+
+**Testlerin yakaladığı iki şey** (yazarken benim varsayımlarım yanlıştı):
+- Canlı kayıt `TIME=269228595` → **16:12:26** çözüyor, fişin `SEC_CREATED=49` alanından farklı.
+  `TIME` fişin kendi saati, `SEC_CREATED` kaydın oluşturulma anı — ayrı bilgiler.
+- `BulkInvoiceTransferService` zaten doğru paketli formatı kullanıyordu (saniyesi sabit 2'ydi,
+  o da düzeltildi). Hata yalnızca `KrediKartTahsilatService`'teydi.
+
+---
+
+## 12b. TIME formatı — arka plan
 
 `KrediKartTahsilatService.cs:120`:
 
