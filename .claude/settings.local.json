@@ -88,7 +88,8 @@
       "Bash([ -d \"$PROJECT_ROOT/.understand-anything\" ])",
       "Bash(mkdir -p /d/cSource/repos/Koala.Yedpa_cursor/__CMDSUB_OUTPUT__/intermediate)",
       "Bash(mkdir -p /d/cSource/repos/Koala.Yedpa_cursor/__CMDSUB_OUTPUT__/tmp)",
-      "Read(//d/cSource/repos/Koala.Yedpa_cursor/**)"
+      "Read(//d/cSource/repos/Koala.Yedpa_cursor/**)",
+      "Bash(sqlcmd *)"
     ]
   },
   "enabledPlugins": {

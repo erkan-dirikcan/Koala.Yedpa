@@ -40,19 +40,40 @@ namespace Service.Services
 
         private async Task SeedRolesAsync()
         {
-            if (await _context.Roles.AnyAsync()) return;
-
-            var role = new AppRole
+            // Varsayılan roller: SistemKoala + Süper Yönetici
+            // Süper Yönetici, PermissionSeeder.GrantAllToSuperAdminAsync'in
+            // DisplayName "Süper Yönetici" ile bulduğu roldür.
+            var roller = new[]
             {
-                Id = Tools.CreateGuidStr(),
-                Name = "SistemKoala",
-                NormalizedName = "SISTEMKOALA",
-                Description = "Sistem Koala Rolü",
-                DisplayName = "Sistem Koala",
-                StatusEnum = StatusEnum.Active
+                new AppRole
+                {
+                    Id = Tools.CreateGuidStr(),
+                    Name = "SistemKoala",
+                    NormalizedName = "SISTEMKOALA",
+                    Description = "Sistem Koala Rolü",
+                    DisplayName = "Sistem Koala",
+                    StatusEnum = StatusEnum.Active
+                },
+                new AppRole
+                {
+                    Id = Tools.CreateGuidStr(),
+                    Name = "SuperAdmin",
+                    NormalizedName = "SUPERADMIN",
+                    Description = "Tüm yetkilere sahip süper yönetici rolü",
+                    DisplayName = "Süper Yönetici",
+                    StatusEnum = StatusEnum.Active
+                }
             };
 
-            await _context.Roles.AddAsync(role);
+            // Idempotent: rol zaten varsa tekrar ekleme
+            foreach (var rol in roller)
+            {
+                var varOlan = await _context.Roles.FirstOrDefaultAsync(r => r.Name == rol.Name);
+                if (varOlan != null) continue;
+
+                await _context.Roles.AddAsync(rol);
+            }
+
             await _context.SaveChangesAsync();
         }
 
@@ -60,8 +81,8 @@ namespace Service.Services
         {
             if (await _context.Users.AnyAsync()) return;
 
-            var role = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "SistemKoala");
-            if (role == null) return;
+            var superAdminRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "SuperAdmin");
+            if (superAdminRole == null) return;
 
             var user = new AppUser
             {
@@ -89,14 +110,23 @@ namespace Service.Services
 
             await _context.Users.AddAsync(user);
 
-            // User role relationship
-            var userRole = new Microsoft.AspNetCore.Identity.IdentityUserRole<string>
+            // Kullanıcı-rol ilişkisi: kullanıcı hem Süper Yönetici hem SistemKoala rolüne üye
+            var userRoles = new List<Microsoft.AspNetCore.Identity.IdentityUserRole<string>>
             {
-                UserId = user.Id,
-                RoleId = role.Id
+                new() { UserId = user.Id, RoleId = superAdminRole.Id }
             };
 
-            await _context.UserRoles.AddAsync(userRole);
+            var sistemKoalaRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "SistemKoala");
+            if (sistemKoalaRole != null)
+            {
+                userRoles.Add(new Microsoft.AspNetCore.Identity.IdentityUserRole<string>
+                {
+                    UserId = user.Id,
+                    RoleId = sistemKoalaRole.Id
+                });
+            }
+
+            await _context.UserRoles.AddRangeAsync(userRoles);
             await _context.SaveChangesAsync();
         }
 
