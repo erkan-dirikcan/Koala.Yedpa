@@ -1,6 +1,7 @@
 using Koala.Yedpa.Core.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
 
 namespace Koala.Yedpa.WebUI.Tests;
@@ -21,6 +22,24 @@ public static class IdentityMocks
             new UpperInvariantLookupNormalizer(),
             new IdentityErrorDescriber(),
             Mock.Of<ILogger<RoleManager<AppRole>>>())
+        {
+            CallBase = false
+        };
+    }
+
+    public static Mock<UserManager<AppUser>> CreateUserManagerMock()
+    {
+        var store = new Mock<IUserStore<AppUser>>();
+        return new Mock<UserManager<AppUser>>(
+            store.Object,
+            Options.Create(new IdentityOptions()),
+            Mock.Of<IPasswordHasher<AppUser>>(),
+            Array.Empty<IUserValidator<AppUser>>(),
+            Array.Empty<IPasswordValidator<AppUser>>(),
+            new UpperInvariantLookupNormalizer(),
+            new IdentityErrorDescriber(),
+            Mock.Of<IServiceProvider>(),
+            Mock.Of<ILogger<UserManager<AppUser>>>())
         {
             CallBase = false
         };

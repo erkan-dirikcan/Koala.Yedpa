@@ -5,7 +5,6 @@ using Koala.Yedpa.Repositories;
 using Koala.Yedpa.WebUI.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 
