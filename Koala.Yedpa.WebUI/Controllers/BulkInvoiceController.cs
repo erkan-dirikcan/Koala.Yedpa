@@ -3,7 +3,6 @@ using Koala.Yedpa.Core.Dtos.BulkInvoice;
 using Koala.Yedpa.Core.Services;
 using Koala.Yedpa.Service.Services;
 using Koala.Yedpa.WebUI.Authorization;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -56,6 +55,7 @@ namespace Koala.Yedpa.WebUI.Controllers
         /// Yeni toplu faturalandırma oturumu oluşturur ve kuyruğa alır.
         /// </summary>
         [HttpPost]
+        [Permission(PermissionCatalog.BulkInvoice.Transfer)]
         public async Task<IActionResult> CreateSession([FromBody] CreateBulkInvoiceSessionDto model)
         {
             // Yeni akış: yalnızca fatura tarihi gerekir. Aktarım job'ı o ayın tüm bekleyen
@@ -128,6 +128,7 @@ namespace Koala.Yedpa.WebUI.Controllers
 
         /// <summary>Aktarılacak satırları (önizleme) o anki bekleyenlere göre oluşturur/günceller — gün içi kullanım.</summary>
         [HttpPost]
+        [Permission(PermissionCatalog.BulkInvoice.Transfer)]
         public async Task<IActionResult> PrepareItems([FromQuery] int sessionId)
         {
             if (sessionId <= 0)
@@ -137,6 +138,7 @@ namespace Koala.Yedpa.WebUI.Controllers
 
         /// <summary>Oturumun başarısız satırlarını arka planda yeniden aktarır.</summary>
         [HttpPost]
+        [Permission(PermissionCatalog.BulkInvoice.Transfer)]
         public IActionResult RetryFailed([FromQuery] int sessionId)
         {
             if (sessionId <= 0)

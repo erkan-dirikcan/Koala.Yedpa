@@ -5,6 +5,7 @@ using Koala.Yedpa.Repositories;
 using Koala.Yedpa.Service.Services;
 using Koala.Yedpa.WebUI.Authorization;
 using Koala.Yedpa.WebUI.Extentions;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -241,17 +242,6 @@ namespace Koala.Yedpa.WebUI
                 //Development'ta da Swagger aktif olsun
 
             }
-            app.UseSwagger();
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "YEDPA API V1");
-                c.RoutePrefix = "swagger";
-                c.OAuthScopeSeparator(" ");
-                c.DefaultModelsExpandDepth(0);
-                c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.List);
-            });
-            
-            
             app.UseExceptionHandler("/Dashboard/Error");
             app.UseHsts();
 
@@ -278,6 +268,31 @@ namespace Koala.Yedpa.WebUI
             // Authentication & Authorization middleware (must be after Routing, before endpoint mapping)
             app.UseAuthentication();
             app.UseAuthorization();
+
+            // Swagger yalnızca giriş yapmış kullanıcılara. UseSwagger/UseSwaggerUI middleware'dir,
+            // endpoint olmadıkları için FallbackPolicy onlara uygulanmaz — kapıyı elle koyuyoruz.
+            app.UseWhen(
+                ctx => ctx.Request.Path.StartsWithSegments("/swagger"),
+                branch => branch.Use(async (ctx, next) =>
+                {
+                    if (ctx.User?.Identity?.IsAuthenticated != true)
+                    {
+                        await ctx.ChallengeAsync();
+                        return;
+                    }
+
+                    await next();
+                }));
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "YEDPA API V1");
+                c.RoutePrefix = "swagger";
+                c.OAuthScopeSeparator(" ");
+                c.DefaultModelsExpandDepth(0);
+                c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.List);
+            });
 
             app.MapStaticAssets();
             app.MapControllers();
