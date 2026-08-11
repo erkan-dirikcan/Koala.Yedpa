@@ -1,9 +1,13 @@
+using System.Security.Claims;
 using FluentAssertions;
 using Koala.Yedpa.Core.Models;
 using Koala.Yedpa.Repositories;
 using Koala.Yedpa.WebUI.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Moq;
 
 namespace Koala.Yedpa.WebUI.Tests.Authorization;
 
@@ -75,5 +79,87 @@ public class PermissionSeederTests
 
         var dbAdlari = await context.Claims.Select(c => c.Name).ToListAsync();
         dbAdlari.Should().BeEquivalentTo(PermissionCatalog.AllPermissionNames);
+    }
+
+    private static Mock<RoleManager<AppRole>> CreateRoleManagerMock() =>
+        new(
+            Mock.Of<IRoleStore<AppRole>>(),
+            Array.Empty<IRoleValidator<AppRole>>(),
+            new UpperInvariantLookupNormalizer(),
+            new IdentityErrorDescriber(),
+            Mock.Of<ILogger<RoleManager<AppRole>>>());
+
+    [Fact]
+    public async Task GrantAllToSuperAdmin_RolBulunamazsa_SifirDonerVeClaimEklemez()
+    {
+        var roleManagerMock = CreateRoleManagerMock();
+        roleManagerMock.Setup(m => m.Roles).Returns(new List<AppRole>().AsQueryable());
+
+        var sonuc = await PermissionSeeder.GrantAllToSuperAdminAsync(roleManagerMock.Object, NullLogger.Instance);
+
+        sonuc.Should().Be(0);
+        roleManagerMock.Verify(
+            m => m.AddClaimAsync(It.IsAny<AppRole>(), It.IsAny<Claim>()),
+            Times.Never);
+    }
+
+    [Fact]
+    public async Task GrantAllToSuperAdmin_RolDisplayNameIleBulunur_TumIzinlerEklenir()
+    {
+        var rol = new AppRole { Id = "role-1", Name = "SuperAdmin", DisplayName = PermissionSeeder.SuperAdminRoleDisplayName };
+        var roleManagerMock = CreateRoleManagerMock();
+        roleManagerMock.Setup(m => m.Roles).Returns(new List<AppRole> { rol }.AsQueryable());
+        roleManagerMock.Setup(m => m.GetClaimsAsync(rol)).ReturnsAsync(new List<Claim>());
+        roleManagerMock.Setup(m => m.AddClaimAsync(rol, It.IsAny<Claim>())).ReturnsAsync(IdentityResult.Success);
+
+        var sonuc = await PermissionSeeder.GrantAllToSuperAdminAsync(roleManagerMock.Object, NullLogger.Instance);
+
+        sonuc.Should().Be(PermissionCatalog.AllPermissionNames.Count);
+        roleManagerMock.Verify(
+            m => m.AddClaimAsync(rol, It.IsAny<Claim>()),
+            Times.Exactly(PermissionCatalog.AllPermissionNames.Count));
+    }
+
+    [Fact]
+    public async Task GrantAllToSuperAdmin_RolNameIleDeBulunur_TumIzinlerEklenir()
+    {
+        var rol = new AppRole { Id = "role-2", Name = PermissionSeeder.SuperAdminRoleDisplayName, DisplayName = null };
+        var roleManagerMock = CreateRoleManagerMock();
+        roleManagerMock.Setup(m => m.Roles).Returns(new List<AppRole> { rol }.AsQueryable());
+        roleManagerMock.Setup(m => m.GetClaimsAsync(rol)).ReturnsAsync(new List<Claim>());
+        roleManagerMock.Setup(m => m.AddClaimAsync(rol, It.IsAny<Claim>())).ReturnsAsync(IdentityResult.Success);
+
+        var sonuc = await PermissionSeeder.GrantAllToSuperAdminAsync(roleManagerMock.Object, NullLogger.Instance);
+
+        sonuc.Should().Be(PermissionCatalog.AllPermissionNames.Count);
+    }
+
+    [Fact]
+    public async Task GrantAllToSuperAdmin_ZatenVerilmisIzinler_TekrarEklenmez()
+    {
+        var rol = new AppRole { Id = "role-3", Name = "SuperAdmin", DisplayName = PermissionSeeder.SuperAdminRoleDisplayName };
+        var mevcutIzinAdlari = PermissionCatalog.AllPermissionNames.Take(3).ToList();
+        var mevcutClaimler = mevcutIzinAdlari
+            .Select(izin => new Claim(PermissionPolicyProvider.PermissionClaimType, izin))
+            .ToList();
+
+        var roleManagerMock = CreateRoleManagerMock();
+        roleManagerMock.Setup(m => m.Roles).Returns(new List<AppRole> { rol }.AsQueryable());
+        roleManagerMock.Setup(m => m.GetClaimsAsync(rol)).ReturnsAsync(mevcutClaimler);
+        roleManagerMock.Setup(m => m.AddClaimAsync(rol, It.IsAny<Claim>())).ReturnsAsync(IdentityResult.Success);
+
+        var sonuc = await PermissionSeeder.GrantAllToSuperAdminAsync(roleManagerMock.Object, NullLogger.Instance);
+
+        var beklenenEksikSayisi = PermissionCatalog.AllPermissionNames.Count - mevcutIzinAdlari.Count;
+        sonuc.Should().Be(beklenenEksikSayisi);
+        roleManagerMock.Verify(
+            m => m.AddClaimAsync(rol, It.IsAny<Claim>()),
+            Times.Exactly(beklenenEksikSayisi));
+        foreach (var izin in mevcutIzinAdlari)
+        {
+            roleManagerMock.Verify(
+                m => m.AddClaimAsync(rol, It.Is<Claim>(c => c.Value == izin)),
+                Times.Never);
+        }
     }
 }

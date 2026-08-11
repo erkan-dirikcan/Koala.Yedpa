@@ -89,7 +89,7 @@ public static class PermissionSeeder
         RoleManager<AppRole> roleManager,
         ILogger logger)
     {
-        var rol = await roleManager.Roles.FirstOrDefaultAsync(r =>
+        var rol = roleManager.Roles.FirstOrDefault(r =>
             r.DisplayName == SuperAdminRoleDisplayName || r.Name == SuperAdminRoleDisplayName);
 
         if (rol is null)
