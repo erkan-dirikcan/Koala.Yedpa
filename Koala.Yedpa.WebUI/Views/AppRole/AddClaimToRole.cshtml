@@ -2,7 +2,7 @@
 @{
     ViewData["Title"] = "AddClaimToRole";
     var RoleInfo = ViewData["RoleInfo"]!.ToString()!;
-    var rolleClaims = (List<Koala.Yedpa.Core.Dtos.SelectListDto<string>>)TempData["Claims"]!;
+    var rolleClaims = (List<Koala.Yedpa.Core.Dtos.SelectListDto<string>>)ViewData["Claims"]!;
     ViewData["Title"] = "AddClaimToRole";
 }
 

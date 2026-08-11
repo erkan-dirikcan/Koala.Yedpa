@@ -26,6 +26,8 @@
 			<ul class="menu-nav ">
 
 
+				@if (User.HasPermission(PermissionCatalog.Dashboard.View))
+				{
 				<li class="menu-item  @ManageNavPages.DashboardNavClass(ViewContext)" aria-haspopup="true">
 					<a href="~/" class="menu-link">
 						<span class="svg-icon svg-icon-primary svg-icon-2x">
@@ -40,7 +42,8 @@
 						<span class="menu-text">Dashboard</span>
 					</a>
 				</li>
-               
+				}
+
                 <li class="menu-item  menu-item-submenu @ManageNavPages.SiteNavClass(ViewContext)" aria-haspopup="true" data-menu-toggle="hover">
 					<a href="javascript:;" class="menu-link menu-toggle">
 						<i class="menu-icon far fa-building"></i><span class="menu-text">Yedpa Cari Kart Site</span><i class="menu-arrow"></i>
@@ -48,9 +51,15 @@
                     <div class="menu-submenu ">
                         <i class="menu-arrow"></i>
                         <ul class="menu-subnav">
-							<li class="menu-item @ManageNavPages.BudgetOrderNavClass(ViewContext)" aria-haspopup="true"><a class="menu-link " asp-controller="BudgetOrder" asp-action="Index"><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">Bütçe & Sipariş</span></a></li>
+							@if (User.HasPermission(PermissionCatalog.BudgetOrder.View))
+							{
+								<li class="menu-item @ManageNavPages.BudgetOrderNavClass(ViewContext)" aria-haspopup="true"><a class="menu-link " asp-controller="BudgetOrder" asp-action="Index"><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">Bütçe & Sipariş</span></a></li>
+							}
 							<li class="menu-item @ManageNavPages.WorkplaceIndexNavClass(ViewContext)" aria-haspopup="true"><a class="menu-link " asp-controller="Workplace" asp-action="Index"><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">İşyerleri</span></a></li>
-							<li class="menu-item" aria-haspopup="true"><a class="menu-link" asp-controller="BulkInvoice" asp-action="Manage"><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">Toplu Faturalandırma</span></a></li>
+							@if (User.HasPermission(PermissionCatalog.BulkInvoice.View))
+							{
+								<li class="menu-item" aria-haspopup="true"><a class="menu-link" asp-controller="BulkInvoice" asp-action="Manage"><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">Toplu Faturalandırma</span></a></li>
+							}
                         </ul>
                     </div>
                 </li>

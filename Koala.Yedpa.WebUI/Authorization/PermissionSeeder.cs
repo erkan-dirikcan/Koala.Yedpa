@@ -28,6 +28,7 @@ public static class PermissionSeeder
 
         var mevcutModuller = await context.Module.ToListAsync(cancellationToken);
         var mevcutClaimAdlari = await context.Claims
+            .Where(c => c.Name != null)
             .Select(c => c.Name!)
             .ToListAsync(cancellationToken);
         var claimAdSeti = new HashSet<string>(mevcutClaimAdlari, StringComparer.Ordinal);
@@ -89,6 +90,9 @@ public static class PermissionSeeder
         RoleManager<AppRole> roleManager,
         ILogger logger)
     {
+        // Bilinçli olarak senkron: Moq ile mock'lanan RoleManager.Roles düz bir IQueryable döner,
+        // EF'in IAsyncQueryProvider'ı yoktur ve FirstOrDefaultAsync InvalidOperationException atar.
+        // Açılışta bir kez, küçük AspNetRoles tablosuna giden bir sorgu — senkron olması sorun değil.
         var rol = roleManager.Roles.FirstOrDefault(r =>
             r.DisplayName == SuperAdminRoleDisplayName || r.Name == SuperAdminRoleDisplayName);
 

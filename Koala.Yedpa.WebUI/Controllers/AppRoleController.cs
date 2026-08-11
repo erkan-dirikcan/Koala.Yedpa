@@ -145,7 +145,7 @@ namespace Koala.Yedpa.WebUI.Controllers
         }
 
         /// <summary>
-        /// TempData["Claims"]'i "Modül - Yetki" etiketli, rolde seçili olanları işaretlenmiş
+        /// ViewData["Claims"]'i "Modül - Yetki" etiketli, rolde seçili olanları işaretlenmiş
         /// select listesiyle doldurur. GET ve POST-invalid yollarının ikisi de bunu kullanır
         /// ki ekran her iki durumda da aynı görünsün.
         /// </summary>
@@ -170,7 +170,9 @@ namespace Koala.Yedpa.WebUI.Controllers
                 });
             }
 
-            TempData["Claims"] = claimData.OrderBy(x => x.Key).ToList();
+            // ViewData (TempData değil): veri aynı istekte view tarafından okunuyor ve
+            // CookieTempDataProvider'ın DefaultTempDataSerializer'ı özel tip listesini serileştiremez.
+            ViewData["Claims"] = claimData.OrderBy(x => x.Key).ToList();
         }
 
         [HttpPost]
