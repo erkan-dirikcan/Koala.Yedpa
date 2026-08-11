@@ -89,48 +89,81 @@
 					<h4 class="menu-text">Sistem Özellikleri</h4>
 					<i class="menu-icon ki ki-bold-more-hor icon-md"></i>
 				</li>
-				<li class="menu-item  menu-item-submenu @ManageNavPages.UserNavClass(ViewContext)"  aria-haspopup="true" data-menu-toggle="hover">
-					<a href="javascript:;" class="menu-link menu-toggle"><i class="menu-icon flaticon-users"></i><span class="menu-text">Kullanıcı İşlemleri</span><i class="menu-arrow"></i></a>
-					<div class="menu-submenu ">
-						<i class="menu-arrow"></i>
-						<ul class="menu-subnav">
-						@* 	<li class="menu-item  menu-item-parent" aria-haspopup="true"><span class="menu-link"><span class="menu-text">Kullanıcı İşlemleri</span></span></li> *@
-                            <li class="menu-item @ManageNavPages.UserListNavClass(ViewContext)" aria-haspopup="true"><a class="menu-link " asp-action="Index" asp-controller="User"><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">Kullanıcı Listesi</span></a></li>
-                            <li class="menu-item @ManageNavPages.CreateUserNavClass(ViewContext)" aria-haspopup="true"><a class="menu-link " asp-action="CreateUser" asp-controller="User"><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">Kullanıcı Ekle</span></a></li>
-							<li class="menu-item @ManageNavPages.RoleListNavClass(ViewContext)" aria-haspopup="true"><a class="menu-link " asp-action="Index" asp-controller="AppRole"><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">Roller</span></a></li>
-							<li class="menu-item @ManageNavPages.CreateRoleNavClass(ViewContext)" aria-haspopup="true"><a class="menu-link " asp-controller="AppRole" asp-action="CreateRole"><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">Rol Ekle</span></a></li>
+				@if (User.HasAnyPermission(
+						PermissionCatalog.UserManagement.List,
+						PermissionCatalog.UserManagement.Create,
+						PermissionCatalog.RoleManagement.List,
+						PermissionCatalog.RoleManagement.Create))
+				{
+					<li class="menu-item  menu-item-submenu @ManageNavPages.UserNavClass(ViewContext)"  aria-haspopup="true" data-menu-toggle="hover">
+						<a href="javascript:;" class="menu-link menu-toggle"><i class="menu-icon flaticon-users"></i><span class="menu-text">Kullanıcı İşlemleri</span><i class="menu-arrow"></i></a>
+						<div class="menu-submenu ">
+							<i class="menu-arrow"></i>
+							<ul class="menu-subnav">
+							@* 	<li class="menu-item  menu-item-parent" aria-haspopup="true"><span class="menu-link"><span class="menu-text">Kullanıcı İşlemleri</span></span></li> *@
+								@if (User.HasPermission(PermissionCatalog.UserManagement.List))
+								{
+									<li class="menu-item @ManageNavPages.UserListNavClass(ViewContext)" aria-haspopup="true"><a class="menu-link " asp-action="Index" asp-controller="User"><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">Kullanıcı Listesi</span></a></li>
+								}
+								@if (User.HasPermission(PermissionCatalog.UserManagement.Create))
+								{
+									<li class="menu-item @ManageNavPages.CreateUserNavClass(ViewContext)" aria-haspopup="true"><a class="menu-link " asp-action="CreateUser" asp-controller="User"><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">Kullanıcı Ekle</span></a></li>
+								}
+								@if (User.HasPermission(PermissionCatalog.RoleManagement.List))
+								{
+									<li class="menu-item @ManageNavPages.RoleListNavClass(ViewContext)" aria-haspopup="true"><a class="menu-link " asp-action="Index" asp-controller="AppRole"><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">Roller</span></a></li>
+								}
+								@if (User.HasPermission(PermissionCatalog.RoleManagement.Create))
+								{
+									<li class="menu-item @ManageNavPages.CreateRoleNavClass(ViewContext)" aria-haspopup="true"><a class="menu-link " asp-controller="AppRole" asp-action="CreateRole"><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">Rol Ekle</span></a></li>
+								}
 
 
-                        </ul>
-					</div>
-				</li>
-				<li class="menu-item  menu-item-submenu @ManageNavPages.ModuleNavClass(ViewContext)" aria-haspopup="true" data-menu-toggle="hover">
-					<a href="javascript:;" class="menu-link menu-toggle"><i class="menu-icon flaticon-cogwheel-2"></i><span class="menu-text">Modül İşlemleri</span><i class="menu-arrow"></i></a>
-					<div class="menu-submenu ">
-						<i class="menu-arrow"></i>
-						<ul class="menu-subnav">
-							<li class="menu-item @ManageNavPages.ModuleListNavClass(ViewContext)" aria-haspopup="true"><a asp-controller="Module" class="menu-link "><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">Modül Listesi</span></a></li>
-							<li class="menu-item  @ManageNavPages.CreateModuleNavClass(ViewContext)" aria-haspopup="true"><a asp-controller="Module" asp-action="CreateModule" class="menu-link "><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">Modül Ekle</span></a></li>
-						</ul>
-					</div>
-				</li>
-				<li class="menu-item  menu-item-submenu @ManageNavPages.SettingsNavClass(ViewContext)" aria-haspopup="true" data-menu-toggle="hover">
-					<a href="javascript:;" class="menu-link menu-toggle"><i class="menu-icon flaticon2-map"></i><span class="menu-text">Ayarlar</span><i class="menu-arrow"></i></a>
-					<div class="menu-submenu ">
-						<i class="menu-arrow"></i>
-						<ul class="menu-subnav">
-							<li class="menu-item  menu-item-parent" aria-haspopup="true"><span class="menu-link"><span class="menu-text">Ayarlar</span></span></li>
-							<li class="menu-item  @ManageNavPages.LogoUserSettingsNavClass(ViewContext)" aria-haspopup="true"><a asp-controller="Settings" asp-action="LogoSettings" class="menu-link "><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">Logo Kullanıcı Ayarları</span></a></li>
-							<li class="menu-item  @ManageNavPages.LogoSqlSettingsNavClass(ViewContext)" aria-haspopup="true"><a asp-controller="Settings" asp-action="LogoSqlSettings" class="menu-link "><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">Logo Veri Tabanı Ayarları</span></a></li>
-							<li class="menu-item  @ManageNavPages.LogoRestServiceSettingsNavClass(ViewContext)" aria-haspopup="true"><a asp-controller="Settings" asp-action="LogoRestServiceSettings" class="menu-link "><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">Logo Rest Servis Ayarları</span></a></li>
-							<li class="menu-item  @ManageNavPages.SmtpSettingsNavClass(ViewContext)" aria-haspopup="true"><a asp-controller="Settings" asp-action="EmailSettings" class="menu-link "><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">E-Posta Ayarları</span></a></li>
-							<li class="menu-item  @ManageNavPages.Message34SettingsNavClass(ViewContext)" aria-haspopup="true"><a asp-controller="Settings" asp-action="Message34Settings" class="menu-link "><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">Message34 API Ayarları</span></a></li>
-							<li class="menu-item  @ManageNavPages.KoalaApiSettingsNavClass(ViewContext)" aria-haspopup="true"><a asp-controller="Settings" asp-action="KoalaApiSettings" class="menu-link "><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">Koala API Ayarları</span></a></li>
-							<li class="menu-item  @ManageNavPages.QRCodeSettingsNavClass(ViewContext)" aria-haspopup="true"><a asp-controller="Settings" asp-action="QRCodeSettings" class="menu-link "><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">QR Kod Ayarları</span></a></li>
-							<li class="menu-item  @ManageNavPages.SystemSettingsNavClass(ViewContext)" aria-haspopup="true"><a asp-controller="Settings" asp-action="Index" class="menu-link "><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">Sistem Ayarları</span></a></li>
-						</ul>
-					</div>
-				</li>
+							</ul>
+						</div>
+					</li>
+				}
+				@if (User.HasAnyPermission(
+						PermissionCatalog.ModuleManagement.List,
+						PermissionCatalog.ModuleManagement.Create))
+				{
+					<li class="menu-item  menu-item-submenu @ManageNavPages.ModuleNavClass(ViewContext)" aria-haspopup="true" data-menu-toggle="hover">
+						<a href="javascript:;" class="menu-link menu-toggle"><i class="menu-icon flaticon-cogwheel-2"></i><span class="menu-text">Modül İşlemleri</span><i class="menu-arrow"></i></a>
+						<div class="menu-submenu ">
+							<i class="menu-arrow"></i>
+							<ul class="menu-subnav">
+								@if (User.HasPermission(PermissionCatalog.ModuleManagement.List))
+								{
+									<li class="menu-item @ManageNavPages.ModuleListNavClass(ViewContext)" aria-haspopup="true"><a asp-controller="Module" class="menu-link "><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">Modül Listesi</span></a></li>
+								}
+								@if (User.HasPermission(PermissionCatalog.ModuleManagement.Create))
+								{
+									<li class="menu-item  @ManageNavPages.CreateModuleNavClass(ViewContext)" aria-haspopup="true"><a asp-controller="Module" asp-action="CreateModule" class="menu-link "><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">Modül Ekle</span></a></li>
+								}
+							</ul>
+						</div>
+					</li>
+				}
+				@if (User.HasPermission(PermissionCatalog.Settings.View))
+				{
+					<li class="menu-item  menu-item-submenu @ManageNavPages.SettingsNavClass(ViewContext)" aria-haspopup="true" data-menu-toggle="hover">
+						<a href="javascript:;" class="menu-link menu-toggle"><i class="menu-icon flaticon2-map"></i><span class="menu-text">Ayarlar</span><i class="menu-arrow"></i></a>
+						<div class="menu-submenu ">
+							<i class="menu-arrow"></i>
+							<ul class="menu-subnav">
+								<li class="menu-item  menu-item-parent" aria-haspopup="true"><span class="menu-link"><span class="menu-text">Ayarlar</span></span></li>
+								<li class="menu-item  @ManageNavPages.LogoUserSettingsNavClass(ViewContext)" aria-haspopup="true"><a asp-controller="Settings" asp-action="LogoSettings" class="menu-link "><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">Logo Kullanıcı Ayarları</span></a></li>
+								<li class="menu-item  @ManageNavPages.LogoSqlSettingsNavClass(ViewContext)" aria-haspopup="true"><a asp-controller="Settings" asp-action="LogoSqlSettings" class="menu-link "><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">Logo Veri Tabanı Ayarları</span></a></li>
+								<li class="menu-item  @ManageNavPages.LogoRestServiceSettingsNavClass(ViewContext)" aria-haspopup="true"><a asp-controller="Settings" asp-action="LogoRestServiceSettings" class="menu-link "><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">Logo Rest Servis Ayarları</span></a></li>
+								<li class="menu-item  @ManageNavPages.SmtpSettingsNavClass(ViewContext)" aria-haspopup="true"><a asp-controller="Settings" asp-action="EmailSettings" class="menu-link "><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">E-Posta Ayarları</span></a></li>
+								<li class="menu-item  @ManageNavPages.Message34SettingsNavClass(ViewContext)" aria-haspopup="true"><a asp-controller="Settings" asp-action="Message34Settings" class="menu-link "><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">Message34 API Ayarları</span></a></li>
+								<li class="menu-item  @ManageNavPages.KoalaApiSettingsNavClass(ViewContext)" aria-haspopup="true"><a asp-controller="Settings" asp-action="KoalaApiSettings" class="menu-link "><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">Koala API Ayarları</span></a></li>
+								<li class="menu-item  @ManageNavPages.QRCodeSettingsNavClass(ViewContext)" aria-haspopup="true"><a asp-controller="Settings" asp-action="QRCodeSettings" class="menu-link "><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">QR Kod Ayarları</span></a></li>
+								<li class="menu-item  @ManageNavPages.SystemSettingsNavClass(ViewContext)" aria-haspopup="true"><a asp-controller="Settings" asp-action="Index" class="menu-link "><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">Sistem Ayarları</span></a></li>
+							</ul>
+						</div>
+					</li>
+				}
 			</ul>
 
 		</div>
