@@ -45,7 +45,7 @@
                                         {
 
                                             <tr>
-                                                <td>@Model[i].Name</td>
+                                                <td>@Model[i].DisplayName</td>
                                                 <td>@Model[i].Description</td>
                                                 <td>
 
@@ -60,6 +60,7 @@
                                                 </td>
                                             </tr>
                                             <input type="hidden" asp-for="@Model[i].Name" />
+                                            <input type="hidden" asp-for="@Model[i].DisplayName" />
                                             <input type="hidden" asp-for="@Model[i].Id" />
                                         }
                                     </tbody>

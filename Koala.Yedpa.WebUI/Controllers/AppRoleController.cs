@@ -3,6 +3,7 @@ using Koala.Yedpa.Core.Helpers;
 using Koala.Yedpa.Core.Models;
 using Koala.Yedpa.Core.Models.ViewModels;
 using Koala.Yedpa.Core.Services;
+using Koala.Yedpa.WebUI.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -120,70 +121,84 @@ namespace Koala.Yedpa.WebUI.Controllers
         {
             if (string.IsNullOrEmpty(id))
             {
-                TempData["Error"] = Core.Dtos.ResponseDto.Fail(404, "Role Id Bilgisi Alınamadı", "Role Id Bilgisi Alınamadı", true);
+                TempData["Error"] = ResponseDto.Fail(404, "Role Id Bilgisi Alınamadı", "Role Id Bilgisi Alınamadı", true);
                 return View("Error");
             }
+
             var role = await _roleManager.FindByIdAsync(id);
+            if (role == null)
+            {
+                TempData["Error"] = ResponseDto.Fail(404, "Rol Bulunamadı", "Yetkilendirilecek rol bulunamadı", true);
+                return View("Error");
+            }
+
+            await FillClaimSelectListAsync(role);
+            ViewData["RoleInfo"] = role.DisplayName ?? role.Name;
+
+            return View(new AddClaimToRoleViewModel { RoleId = id, Claims = new List<string>() });
+        }
+
+        /// <summary>
+        /// TempData["Claims"]'i "Modül - Yetki" etiketli, rolde seçili olanları işaretlenmiş
+        /// select listesiyle doldurur. GET ve POST-invalid yollarının ikisi de bunu kullanır
+        /// ki ekran her iki durumda da aynı görünsün.
+        /// </summary>
+        private async Task FillClaimSelectListAsync(AppRole role)
+        {
             var roleClaims = await _roleManager.GetClaimsAsync(role);
             var claims = await _claimService.GetClaimToRoleList();
-            var claimData = new List<SelectListDto<string>>();
             var modules = await _moduleService.GetAllModuleAsync();
-            foreach (var claim in claims.Data)
+
+            var claimData = new List<SelectListDto<string>>();
+            foreach (var claim in claims.Data ?? Enumerable.Empty<ClaimListForRoleViewModels>())
             {
-                var isSelected = roleClaims.Any(x => x.Value == $"{claim.Name}");
+                var module = modules.Data?.FirstOrDefault(x => x.Id == claim.ModuleId);
+                var moduleLabel = module?.DisplayName ?? module?.Name ?? "Tanımsız Modül";
 
                 claimData.Add(new SelectListDto<string>
                 {
-                    IsSelected = isSelected,
-                    Key = $"{modules.Data.FirstOrDefault(x => x.Id == claim.ModuleId).DisplayName} - {claim.DisplayName}",
+                    IsSelected = roleClaims.Any(x =>
+                        x.Type == PermissionPolicyProvider.PermissionClaimType && x.Value == claim.Name),
+                    Key = $"{moduleLabel} - {claim.DisplayName}",
                     Val = claim.Name
                 });
             }
-            claimData = claimData.OrderBy(x => x.Key).ToList();
-            TempData["Claims"] = claimData.OrderBy(x => x.Key).ToList();
-            ViewData["RoleInfo"] = $"{role.Name}";
-            var model = new AddClaimToRoleViewModel { RoleId = id, Claims = new List<string>() };
 
-            return View(model);
+            TempData["Claims"] = claimData.OrderBy(x => x.Key).ToList();
         }
+
         [HttpPost]
         public async Task<IActionResult> AddClaimToRole(AddClaimToRoleViewModel model)
         {
             var role = await _roleManager.FindByIdAsync(model.RoleId);
-            var roleClaims = await _roleManager.GetClaimsAsync(role);
-            var claims = await _claimService.GetClaimToRoleList();
-            var claimData = new List<SelectListDto<string>>();
-            foreach (var claim in claims.Data)
+            if (role == null)
             {
-                var isSelected = roleClaims.Any(x => x.Value == claim.Name);
-                claimData.Add(new SelectListDto<string>
-                {
-                    IsSelected = isSelected,
-                    Key = claim.DisplayName,
-                    Val = claim.Name
-                });
+                TempData["Error"] = ResponseDto.Fail(404, "Rol Bulunamadı", "Yetkilendirilecek rol bulunamadı", true);
+                return View("Error");
             }
-            claimData = claimData.OrderBy(x => x.Key).ToList();
-            TempData["Claims"] = claimData;
+
+            var secilenler = model.Claims ?? new List<string>();
+
             if (!ModelState.IsValid)
             {
+                await FillClaimSelectListAsync(role);
+                ViewData["RoleInfo"] = role.Name;
                 return View(model);
             }
+
             var currentClaims = await _roleManager.GetClaimsAsync(role);
-            foreach (var claim in currentClaims)
+            foreach (var claim in currentClaims.Where(c => c.Type == PermissionPolicyProvider.PermissionClaimType))
             {
-                if (claim.Type == "Permission")
-                {
-                    await _roleManager.RemoveClaimAsync(role, claim);
-
-                }
+                await _roleManager.RemoveClaimAsync(role, claim);
             }
 
-            foreach (var item in model.Claims)
+            foreach (var item in secilenler)
             {
-                await _roleManager.AddClaimAsync(role, new Claim("Permission", item));
+                await _roleManager.AddClaimAsync(
+                    role, new Claim(PermissionPolicyProvider.PermissionClaimType, item));
             }
-            TempData.Clear();
+
+            TempData["InfoMessage"] = $"'{role.DisplayName ?? role.Name}' rolünün yetkileri güncellendi.";
             return RedirectToAction("Index");
         }
 

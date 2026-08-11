@@ -31,10 +31,18 @@ public class AppRoleUserViewModel
 public class AsignRoleToUserViewModel
 {
     public string Id { get; set; }
+
+    /// <summary>Identity'nin gerçek rol adı. AddToRoleAsync/RemoveFromRoleAsync bunu ister.</summary>
     [Display(Name = "Rol Adı")]
     public string Name { get; set; }
+
+    /// <summary>Ekranda gösterilen ad. Identity API'lerine ASLA gönderilmez.</summary>
+    [Display(Name = "Görünen Ad")]
+    public string DisplayName { get; set; }
+
     [Display(Name = "Rol Açıklaması")]
     public string Description { get; set; }
+
     [Display(Name = "Rol Atanmış mı?")]
     public bool IsExist { get; set; }
 }

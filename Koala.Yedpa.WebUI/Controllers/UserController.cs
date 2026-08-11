@@ -3,6 +3,7 @@ using Koala.Yedpa.Core.Helpers;
 using Koala.Yedpa.Core.Models;
 using Koala.Yedpa.Core.Models.ViewModels;
 using Koala.Yedpa.Core.Services;
+using Koala.Yedpa.WebUI.Authorization;
 using Koala.Yedpa.WebUI.Extentions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -390,21 +391,23 @@ namespace Koala.Yedpa.WebUI.Controllers
             var model = new List<AsignRoleToUserViewModel>();
             ViewData["UserInfo"] = retVal;
 
+            var useRoles = await _userManager.GetRolesAsync(user!);
             foreach (var item in roles)
             {
-                if (item.DisplayName== "Süper Yönetici")
+                if (item.Name == PermissionSeeder.SuperAdminRoleDisplayName ||
+                    item.DisplayName == PermissionSeeder.SuperAdminRoleDisplayName)
                 {
                     continue;
                 }
-                var modelItem = new AsignRoleToUserViewModel
+
+                model.Add(new AsignRoleToUserViewModel
                 {
-                    Name = item.DisplayName,
+                    Id = item.Id,
+                    Name = item.Name!,
+                    DisplayName = item.DisplayName ?? item.Name!,
                     Description = item.Description,
-                    Id = item.Id
-                };
-                var useRoles = await _userManager.GetRolesAsync(user!);
-                modelItem.IsExist = useRoles.Contains(item.Name!);
-                model.Add(modelItem);
+                    IsExist = useRoles.Contains(item.Name!)
+                });
             }
             return View(model);
         }
@@ -424,17 +427,29 @@ namespace Koala.Yedpa.WebUI.Controllers
                 UserName = user.UserName
             };
             ViewData["UserInfo"] = retVal;
+
+            var mevcutRoller = await _userManager.GetRolesAsync(user!);
             foreach (var item in model)
             {
-                if (item.IsExist)
+                if (string.IsNullOrWhiteSpace(item.Name))
+                {
+                    continue;
+                }
+
+                var zatenAtanmis = mevcutRoller.Contains(item.Name);
+
+                if (item.IsExist && !zatenAtanmis)
                 {
                     await _userManager.AddToRoleAsync(user!, item.Name);
                 }
-                else
+                else if (!item.IsExist && zatenAtanmis)
                 {
                     await _userManager.RemoveFromRoleAsync(user!, item.Name);
                 }
             }
+
+            // Rol değişikliğinin cookie'ye yansıması için güvenlik damgasını yenile.
+            await _userManager.UpdateSecurityStampAsync(user!);
 
             TempData["InfoMessage"] = "Kullanıcı Rolleri Başarıyla Güncellendi";
             return RedirectToAction("Index", "User");

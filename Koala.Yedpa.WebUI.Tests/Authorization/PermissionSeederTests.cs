@@ -81,18 +81,10 @@ public class PermissionSeederTests
         dbAdlari.Should().BeEquivalentTo(PermissionCatalog.AllPermissionNames);
     }
 
-    private static Mock<RoleManager<AppRole>> CreateRoleManagerMock() =>
-        new(
-            Mock.Of<IRoleStore<AppRole>>(),
-            Array.Empty<IRoleValidator<AppRole>>(),
-            new UpperInvariantLookupNormalizer(),
-            new IdentityErrorDescriber(),
-            Mock.Of<ILogger<RoleManager<AppRole>>>());
-
     [Fact]
     public async Task GrantAllToSuperAdmin_RolBulunamazsa_SifirDonerVeClaimEklemez()
     {
-        var roleManagerMock = CreateRoleManagerMock();
+        var roleManagerMock = IdentityMocks.CreateRoleManagerMock();
         roleManagerMock.Setup(m => m.Roles).Returns(new List<AppRole>().AsQueryable());
 
         var sonuc = await PermissionSeeder.GrantAllToSuperAdminAsync(roleManagerMock.Object, NullLogger.Instance);
@@ -107,7 +99,7 @@ public class PermissionSeederTests
     public async Task GrantAllToSuperAdmin_RolDisplayNameIleBulunur_TumIzinlerEklenir()
     {
         var rol = new AppRole { Id = "role-1", Name = "SuperAdmin", DisplayName = PermissionSeeder.SuperAdminRoleDisplayName };
-        var roleManagerMock = CreateRoleManagerMock();
+        var roleManagerMock = IdentityMocks.CreateRoleManagerMock();
         roleManagerMock.Setup(m => m.Roles).Returns(new List<AppRole> { rol }.AsQueryable());
         roleManagerMock.Setup(m => m.GetClaimsAsync(rol)).ReturnsAsync(new List<Claim>());
         roleManagerMock.Setup(m => m.AddClaimAsync(rol, It.IsAny<Claim>())).ReturnsAsync(IdentityResult.Success);
@@ -124,7 +116,7 @@ public class PermissionSeederTests
     public async Task GrantAllToSuperAdmin_RolNameIleDeBulunur_TumIzinlerEklenir()
     {
         var rol = new AppRole { Id = "role-2", Name = PermissionSeeder.SuperAdminRoleDisplayName, DisplayName = null };
-        var roleManagerMock = CreateRoleManagerMock();
+        var roleManagerMock = IdentityMocks.CreateRoleManagerMock();
         roleManagerMock.Setup(m => m.Roles).Returns(new List<AppRole> { rol }.AsQueryable());
         roleManagerMock.Setup(m => m.GetClaimsAsync(rol)).ReturnsAsync(new List<Claim>());
         roleManagerMock.Setup(m => m.AddClaimAsync(rol, It.IsAny<Claim>())).ReturnsAsync(IdentityResult.Success);
@@ -143,7 +135,7 @@ public class PermissionSeederTests
             .Select(izin => new Claim(PermissionPolicyProvider.PermissionClaimType, izin))
             .ToList();
 
-        var roleManagerMock = CreateRoleManagerMock();
+        var roleManagerMock = IdentityMocks.CreateRoleManagerMock();
         roleManagerMock.Setup(m => m.Roles).Returns(new List<AppRole> { rol }.AsQueryable());
         roleManagerMock.Setup(m => m.GetClaimsAsync(rol)).ReturnsAsync(mevcutClaimler);
         roleManagerMock.Setup(m => m.AddClaimAsync(rol, It.IsAny<Claim>())).ReturnsAsync(IdentityResult.Success);
