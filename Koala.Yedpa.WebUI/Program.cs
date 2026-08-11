@@ -5,6 +5,7 @@ using Koala.Yedpa.Repositories;
 using Koala.Yedpa.Service.Services;
 using Koala.Yedpa.WebUI.Authorization;
 using Koala.Yedpa.WebUI.Extentions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
@@ -38,8 +39,17 @@ namespace Koala.Yedpa.WebUI
             // ASP.NET Identity Cookie Authentication for WebUI
             builder.Services.AddIdentityWithExt();
 
-            // Add Authorization
-            builder.Services.AddAuthorization();
+            // Kapalı kapı: aksi belirtilmedikçe her endpoint kimlik doğrulaması ister.
+            // [AllowAnonymous] ile açıkça muaf tutulanlar serbesttir.
+            builder.Services.AddAuthorization(options =>
+            {
+                options.FallbackPolicy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build();
+            });
+
+            // [Permission("X")] → RequireClaim("Permission", "X")
+            builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
@@ -114,7 +124,6 @@ namespace Koala.Yedpa.WebUI
             builder.Services.AddApplicationServices();
             builder.Services.AddApplicationRepositories();
             builder.Services.AddApplicationProviders();
-            builder.Services.AddHostedService<AuthorizationRulesInitializer>();
 
             // Crypto API + X-SKey header handler
             builder.Services.AddHttpClient("CryptoApi", client =>

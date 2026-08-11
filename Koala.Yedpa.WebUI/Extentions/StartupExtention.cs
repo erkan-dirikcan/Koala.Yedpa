@@ -12,9 +12,7 @@ using Koala.Yedpa.Service.Services;
 using Koala.Yedpa.Service.Services.BackgroundServices;
 using Koala.Yedpa.Service.Services.Jobs;
 using Koala.Yedpa.WebUI.Localizations;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Options;
 using Service.Services;
 using Koala.Yedpa.Core.Helpers;
 
@@ -175,81 +173,6 @@ namespace Koala.Yedpa.WebUI.Extentions
             //services.AddScoped<, >();
             //services.AddScoped<, >();
             //services.AddScoped<, >();
-        }
-        //public static void AddAuthorizationRules(this IServiceCollection services, AppDbContext context)
-        //{
-        //    var claims = context.Claims.ToList();
-
-
-        //    services.AddAuthorization(options =>
-        //    {
-        //        foreach (var claim in claims)
-        //        {
-        //            options.AddPolicy(claim.Name, policy =>
-        //            {
-        //                policy.RequireClaim("Permission", claim.Name);
-
-        //            });
-        //        }
-        //    });
-        //}
-    }
-
-    public class AuthorizationRulesInitializer(IServiceProvider serviceProvider) : IHostedService
-    {
-        public async Task StartAsync(CancellationToken cancellationToken)
-        {
-            using (var scope = serviceProvider.CreateScope())
-            {
-                var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-                var claims = context.Claims.ToList();
-
-                var authService = scope.ServiceProvider.GetRequiredService<IAuthorizationPolicyProvider>();
-                foreach (var claim in claims)
-                {
-                    // Politikaları dinamik olarak eklemek için farklı bir yaklaşım gerekebilir
-                    // Bu örnekte, AuthorizationOptions doğrudan değiştirilemez
-                    // Bunun yerine, özel bir IAuthorizationPolicyProvider kullanılabilir
-                }
-            }
-        }
-
-        public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
-    }
-    public static class AuthorizationRulesExtensions
-    {
-        public static IServiceCollection AddAuthorizationRules(this IServiceCollection services)
-        {
-            services.AddSingleton<IAuthorizationPolicyProvider, DynamicAuthorizationPolicyProvider>();
-            return services;
-        }
-    }
-    public class DynamicAuthorizationPolicyProvider(
-        IOptions<AuthorizationOptions> options,
-        IServiceProvider serviceProvider)
-        : DefaultAuthorizationPolicyProvider(options)
-    {
-        public override async Task<AuthorizationPolicy> GetPolicyAsync(string policyName)
-        {
-            var policy = await base.GetPolicyAsync(policyName);
-            if (policy != null)
-            {
-                return policy;
-            }
-
-            using (var scope = serviceProvider.CreateScope())
-            {
-                var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-                var claim = context.Claims.FirstOrDefault(c => c.Name == policyName);
-                if (claim != null)
-                {
-                    return new AuthorizationPolicyBuilder()
-                        .RequireClaim("Permission", claim.Name)
-                        .Build();
-                }
-            }
-
-            return null;
         }
     }
 }
