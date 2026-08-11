@@ -4,6 +4,98 @@
         <name>Koala.Yedpa.WebUI</name>
     </assembly>
     <members>
+        <member name="T:Koala.Yedpa.WebUI.Authorization.ClaimsPrincipalExtensions">
+            <summary>
+            View'larda ve controller'larda izin kontrolü için.
+            Örnek: @if (User.HasPermission(PermissionCatalog.ModuleManagement.List)) { ... }
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Authorization.ClaimsPrincipalExtensions.HasAnyPermission(System.Security.Claims.ClaimsPrincipal,System.String[])">
+            <summary>Verilen izinlerden en az biri varsa true. Menü başlıklarını gizlemek için.</summary>
+        </member>
+        <member name="T:Koala.Yedpa.WebUI.Authorization.PermissionAttribute">
+            <summary>
+            [Permission(PermissionCatalog.ModuleManagement.Create)] şeklinde kullanılır.
+            Policy adı doğrudan izin adıdır; PermissionPolicyProvider bunu
+            RequireClaim("Permission", izinAdi) şartına çevirir.
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.WebUI.Authorization.PermissionDefinition">
+            <summary>Katalogdaki tek bir izin tanımı. Name → Claims.Name → policy adı.</summary>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Authorization.PermissionDefinition.#ctor(System.String,System.String,System.String)">
+            <summary>Katalogdaki tek bir izin tanımı. Name → Claims.Name → policy adı.</summary>
+        </member>
+        <member name="T:Koala.Yedpa.WebUI.Authorization.PermissionModule">
+            <summary>Katalogdaki bir modül ve altındaki izinler.</summary>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Authorization.PermissionModule.#ctor(System.String,System.String,System.String,System.Collections.Generic.IReadOnlyList{Koala.Yedpa.WebUI.Authorization.PermissionDefinition})">
+            <summary>Katalogdaki bir modül ve altındaki izinler.</summary>
+        </member>
+        <member name="T:Koala.Yedpa.WebUI.Authorization.PermissionCatalog">
+             <summary>
+             Kodda kullanılan tüm izinlerin TEK doğruluk kaynağı.
+             Buraya eklenen her izin, PermissionSeeder tarafından uygulama açılışında
+             Module + Claims tablolarına idempotent şekilde yazılır ve
+             AppRole/AddClaimToRole ekranında otomatik görünür.
+            
+             Yeni izin eklerken:
+             1. İlgili gruba bir sabit ekle
+             2. Modules listesindeki ilgili modülün Permissions dizisine PermissionDefinition ekle
+             3. Controller/action üzerine [Permission(...)] koy
+             </summary>
+        </member>
+        <member name="F:Koala.Yedpa.WebUI.Authorization.PermissionCatalog.AllPermissionNames">
+            <summary>Katalogdaki tüm izin adları (düz liste).</summary>
+        </member>
+        <member name="T:Koala.Yedpa.WebUI.Authorization.PermissionPolicyProvider">
+             <summary>
+             Policy adını doğrudan bir "Permission" claim şartına çevirir.
+             Böylece her izin için elle policy tanımlamaya gerek kalmaz:
+             [Permission("ModuleManagement.Create")] → RequireClaim("Permission", "ModuleManagement.Create")
+            
+             Veritabanına gitmez. Claim'in DB'de tanımlı olup olmadığını kontrol etmek
+             güvenlik açısından gereksizdir: kullanıcıda o claim yoksa zaten reddedilir.
+             DB'de olmayan bir izin adı yazılırsa sonuç "herkes reddedilir" olur (fail-closed).
+             </summary>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Authorization.PermissionPolicyProvider.#ctor(Microsoft.Extensions.Options.IOptions{Microsoft.AspNetCore.Authorization.AuthorizationOptions})">
+             <summary>
+             Policy adını doğrudan bir "Permission" claim şartına çevirir.
+             Böylece her izin için elle policy tanımlamaya gerek kalmaz:
+             [Permission("ModuleManagement.Create")] → RequireClaim("Permission", "ModuleManagement.Create")
+            
+             Veritabanına gitmez. Claim'in DB'de tanımlı olup olmadığını kontrol etmek
+             güvenlik açısından gereksizdir: kullanıcıda o claim yoksa zaten reddedilir.
+             DB'de olmayan bir izin adı yazılırsa sonuç "herkes reddedilir" olur (fail-closed).
+             </summary>
+        </member>
+        <member name="F:Koala.Yedpa.WebUI.Authorization.PermissionPolicyProvider.PermissionClaimType">
+            <summary>Rol/kullanıcı claim'lerinde kullanılan sabit claim tipi.</summary>
+        </member>
+        <member name="T:Koala.Yedpa.WebUI.Authorization.PermissionSeeder">
+            <summary>
+            PermissionCatalog'u veritabanına yansıtır. Idempotent:
+            var olan modül/claim kayıtlarına dokunmaz, sadece eksikleri ekler.
+            Kullanıcının ekrandan girdiği DisplayName/Description değerleri korunur.
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Authorization.PermissionSeeder.SeedModulesAndClaimsAsync(Koala.Yedpa.Repositories.AppDbContext,Microsoft.Extensions.Logging.ILogger,System.Threading.CancellationToken)">
+            <summary>Eksik modül ve claim kayıtlarını ekler. Eklenen toplam kayıt sayısını döner.</summary>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Authorization.PermissionSeeder.GrantAllToSuperAdminAsync(Microsoft.AspNetCore.Identity.RoleManager{Koala.Yedpa.Core.Models.AppRole},Microsoft.Extensions.Logging.ILogger)">
+            <summary>
+            "Süper Yönetici" rolüne katalogdaki tüm izinleri verir. Rol yoksa uyarı loglar ve 0 döner.
+            Yönetici rolünün yeni eklenen izinleri otomatik alması içindir.
+            </summary>
+        </member>
+        <member name="M:Koala.Yedpa.WebUI.Controllers.AppRoleController.FillClaimSelectListAsync(Koala.Yedpa.Core.Models.AppRole)">
+            <summary>
+            ViewData["Claims"]'i "Modül - Yetki" etiketli, rolde seçili olanları işaretlenmiş
+            select listesiyle doldurur. GET ve POST-invalid yollarının ikisi de bunu kullanır
+            ki ekran her iki durumda da aynı görünsün.
+            </summary>
+        </member>
         <member name="M:Koala.Yedpa.WebUI.Controllers.BudgetOrderApiController.CreateBudgetAndOrders(Koala.Yedpa.Core.Models.ViewModels.CreateBudgetOrderViewModel)">
             <summary>
             Bütçe ve sipariş oluştur

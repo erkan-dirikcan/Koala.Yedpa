@@ -1550,6 +1550,12 @@
             Boş geçilirse tüm dükkanlar (kullanıcı yetki alanı içindeki) döner.
             </summary>
         </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.AsignRoleToUserViewModel.Name">
+            <summary>Identity'nin gerçek rol adı. AddToRoleAsync/RemoveFromRoleAsync bunu ister.</summary>
+        </member>
+        <member name="P:Koala.Yedpa.Core.Models.ViewModels.AsignRoleToUserViewModel.DisplayName">
+            <summary>Ekranda gösterilen ad. Identity API'lerine ASLA gönderilmez.</summary>
+        </member>
         <member name="T:Koala.Yedpa.Core.Models.ViewModels.CreateBudgetOrderViewModel">
             <summary>
             Bütçe ve sipariş oluşturma istek modeli
