@@ -81,12 +81,12 @@ public class PermissionSeederTests
     }
 
     [Fact]
-    public async Task GrantAllToSuperAdmin_RolBulunamazsa_SifirDonerVeClaimEklemez()
+    public async Task GrantAllToFullAccessRole_RolBulunamazsa_SifirDonerVeClaimEklemez()
     {
         var roleManagerMock = IdentityMocks.CreateRoleManagerMock();
         roleManagerMock.Setup(m => m.Roles).Returns(new List<AppRole>().AsQueryable());
 
-        var sonuc = await PermissionSeeder.GrantAllToSuperAdminAsync(roleManagerMock.Object, NullLogger.Instance);
+        var sonuc = await PermissionSeeder.GrantAllToFullAccessRoleAsync(roleManagerMock.Object, NullLogger.Instance);
 
         sonuc.Should().Be(0);
         roleManagerMock.Verify(
@@ -95,15 +95,15 @@ public class PermissionSeederTests
     }
 
     [Fact]
-    public async Task GrantAllToSuperAdmin_RolDisplayNameIleBulunur_TumIzinlerEklenir()
+    public async Task GrantAllToFullAccessRole_RolDisplayNameIleBulunur_TumIzinlerEklenir()
     {
-        var rol = new AppRole { Id = "role-1", Name = "SuperAdmin", DisplayName = PermissionSeeder.SuperAdminRoleDisplayName };
+        var rol = new AppRole { Id = "role-1", Name = "SistemKoala", DisplayName = PermissionSeeder.FullAccessRoleDisplayName };
         var roleManagerMock = IdentityMocks.CreateRoleManagerMock();
         roleManagerMock.Setup(m => m.Roles).Returns(new List<AppRole> { rol }.AsQueryable());
         roleManagerMock.Setup(m => m.GetClaimsAsync(rol)).ReturnsAsync(new List<Claim>());
         roleManagerMock.Setup(m => m.AddClaimAsync(rol, It.IsAny<Claim>())).ReturnsAsync(IdentityResult.Success);
 
-        var sonuc = await PermissionSeeder.GrantAllToSuperAdminAsync(roleManagerMock.Object, NullLogger.Instance);
+        var sonuc = await PermissionSeeder.GrantAllToFullAccessRoleAsync(roleManagerMock.Object, NullLogger.Instance);
 
         sonuc.Should().Be(PermissionCatalog.AllPermissionNames.Count);
         roleManagerMock.Verify(
@@ -112,23 +112,23 @@ public class PermissionSeederTests
     }
 
     [Fact]
-    public async Task GrantAllToSuperAdmin_RolNameIleDeBulunur_TumIzinlerEklenir()
+    public async Task GrantAllToFullAccessRole_RolNameIleDeBulunur_TumIzinlerEklenir()
     {
-        var rol = new AppRole { Id = "role-2", Name = PermissionSeeder.SuperAdminRoleDisplayName, DisplayName = null };
+        var rol = new AppRole { Id = "role-2", Name = PermissionSeeder.FullAccessRoleName, DisplayName = null };
         var roleManagerMock = IdentityMocks.CreateRoleManagerMock();
         roleManagerMock.Setup(m => m.Roles).Returns(new List<AppRole> { rol }.AsQueryable());
         roleManagerMock.Setup(m => m.GetClaimsAsync(rol)).ReturnsAsync(new List<Claim>());
         roleManagerMock.Setup(m => m.AddClaimAsync(rol, It.IsAny<Claim>())).ReturnsAsync(IdentityResult.Success);
 
-        var sonuc = await PermissionSeeder.GrantAllToSuperAdminAsync(roleManagerMock.Object, NullLogger.Instance);
+        var sonuc = await PermissionSeeder.GrantAllToFullAccessRoleAsync(roleManagerMock.Object, NullLogger.Instance);
 
         sonuc.Should().Be(PermissionCatalog.AllPermissionNames.Count);
     }
 
     [Fact]
-    public async Task GrantAllToSuperAdmin_ZatenVerilmisIzinler_TekrarEklenmez()
+    public async Task GrantAllToFullAccessRole_ZatenVerilmisIzinler_TekrarEklenmez()
     {
-        var rol = new AppRole { Id = "role-3", Name = "SuperAdmin", DisplayName = PermissionSeeder.SuperAdminRoleDisplayName };
+        var rol = new AppRole { Id = "role-3", Name = "SistemKoala", DisplayName = PermissionSeeder.FullAccessRoleDisplayName };
         var mevcutIzinAdlari = PermissionCatalog.AllPermissionNames.Take(3).ToList();
         var mevcutClaimler = mevcutIzinAdlari
             .Select(izin => new Claim(PermissionPolicyProvider.PermissionClaimType, izin))
@@ -139,7 +139,7 @@ public class PermissionSeederTests
         roleManagerMock.Setup(m => m.GetClaimsAsync(rol)).ReturnsAsync(mevcutClaimler);
         roleManagerMock.Setup(m => m.AddClaimAsync(rol, It.IsAny<Claim>())).ReturnsAsync(IdentityResult.Success);
 
-        var sonuc = await PermissionSeeder.GrantAllToSuperAdminAsync(roleManagerMock.Object, NullLogger.Instance);
+        var sonuc = await PermissionSeeder.GrantAllToFullAccessRoleAsync(roleManagerMock.Object, NullLogger.Instance);
 
         var beklenenEksikSayisi = PermissionCatalog.AllPermissionNames.Count - mevcutIzinAdlari.Count;
         sonuc.Should().Be(beklenenEksikSayisi);

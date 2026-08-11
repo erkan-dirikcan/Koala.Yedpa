@@ -17,8 +17,8 @@ public class UserControllerTests
     private static AppRole MuhasebeRolu() =>
         new() { Id = "rol-1", Name = "Muhasebe", DisplayName = "Muhasebe Departmanı" };
 
-    private static AppRole SuperYoneticiRolu() =>
-        new() { Id = "rol-super", Name = "SuperAdmin", DisplayName = PermissionSeeder.SuperAdminRoleDisplayName };
+    private static AppRole TamYetkiliRol() =>
+        new() { Id = "rol-super", Name = PermissionSeeder.FullAccessRoleName, DisplayName = PermissionSeeder.FullAccessRoleDisplayName };
 
     private static (UserController Controller, Mock<UserManager<AppUser>> UserManager) CreateSut(
         AppUser user, IEnumerable<string> mevcutRoller, IEnumerable<AppRole>? sunucudakiRoller = null)
@@ -125,22 +125,22 @@ public class UserControllerTests
     }
 
     [Fact]
-    public async Task AsignRoleToUser_PostaSuperYoneticiRoluGonderilirse_HicRolAtanmaz()
+    public async Task AsignRoleToUser_PostaTamYetkiliRolGonderilirse_HicRolAtanmaz()
     {
         var user = new AppUser { Id = "user-1", UserName = "kullanici1" };
         var (controller, userManager) = CreateSut(
             user,
             mevcutRoller: [],
-            sunucudakiRoller: [MuhasebeRolu(), SuperYoneticiRolu()]);
+            sunucudakiRoller: [MuhasebeRolu(), TamYetkiliRol()]);
 
-        // Saldırı: gizli input DevTools'ta "Süper Yönetici" yapılıp IsExist=true gönderiliyor.
+        // Saldırı: gizli input DevTools'ta "Sistem Koala" yapılıp IsExist=true gönderiliyor.
         await controller.AsignRoleToUser(
             [
                 new AsignRoleToUserViewModel
                 {
                     Id = "rol-super",
-                    Name = PermissionSeeder.SuperAdminRoleDisplayName,
-                    DisplayName = PermissionSeeder.SuperAdminRoleDisplayName,
+                    Name = PermissionSeeder.FullAccessRoleDisplayName,
+                    DisplayName = PermissionSeeder.FullAccessRoleDisplayName,
                     IsExist = true
                 }
             ],
@@ -150,22 +150,22 @@ public class UserControllerTests
     }
 
     [Fact]
-    public async Task AsignRoleToUser_GizliAlanSuperYoneticiYapilsaBile_SunucudakiGercekRolAdiKullanilir()
+    public async Task AsignRoleToUser_GizliAlanTamYetkiliRolYapilsaBile_SunucudakiGercekRolAdiKullanilir()
     {
         var user = new AppUser { Id = "user-1", UserName = "kullanici1" };
         var (controller, userManager) = CreateSut(
             user,
             mevcutRoller: [],
-            sunucudakiRoller: [MuhasebeRolu(), SuperYoneticiRolu()]);
+            sunucudakiRoller: [MuhasebeRolu(), TamYetkiliRol()]);
 
-        // Id normal rolün, gönderilen Name ise "Süper Yönetici" — istemciye güvenilmemeli.
+        // Id normal rolün, gönderilen Name ise "Sistem Koala" — istemciye güvenilmemeli.
         await controller.AsignRoleToUser(
             [
                 new AsignRoleToUserViewModel
                 {
                     Id = "rol-1",
-                    Name = PermissionSeeder.SuperAdminRoleDisplayName,
-                    DisplayName = PermissionSeeder.SuperAdminRoleDisplayName,
+                    Name = PermissionSeeder.FullAccessRoleDisplayName,
+                    DisplayName = PermissionSeeder.FullAccessRoleDisplayName,
                     IsExist = true
                 }
             ],
@@ -173,8 +173,8 @@ public class UserControllerTests
 
         userManager.Verify(x => x.AddToRoleAsync(user, "Muhasebe"), Times.Once);
         userManager.Verify(
-            x => x.AddToRoleAsync(user, PermissionSeeder.SuperAdminRoleDisplayName), Times.Never);
-        userManager.Verify(x => x.AddToRoleAsync(user, "SuperAdmin"), Times.Never);
+            x => x.AddToRoleAsync(user, PermissionSeeder.FullAccessRoleDisplayName), Times.Never);
+        userManager.Verify(x => x.AddToRoleAsync(user, PermissionSeeder.FullAccessRoleName), Times.Never);
     }
 
     [Fact]
