@@ -1,8 +1,11 @@
 using Koala.Yedpa.Core.Configuration;
+using Koala.Yedpa.Core.Models;
 using Koala.Yedpa.Core.Services;
 using Koala.Yedpa.Repositories;
 using Koala.Yedpa.Service.Services;
+using Koala.Yedpa.WebUI.Authorization;
 using Koala.Yedpa.WebUI.Extentions;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
@@ -194,6 +197,29 @@ namespace Koala.Yedpa.WebUI
                 catch (Exception ex)
                 {
                     logger.LogError(ex, "Transaction Type ID güncellemesi sırasında hata oluştu.");
+                }
+            }
+
+            // YETKİ KATALOĞU SEED (idempotent)
+            using (var scope = app.Services.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<AppRole>>();
+                var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+
+                try
+                {
+                    var eklenenKayit = await PermissionSeeder.SeedModulesAndClaimsAsync(
+                        context, logger, CancellationToken.None);
+                    var eklenenYetki = await PermissionSeeder.GrantAllToSuperAdminAsync(roleManager, logger);
+
+                    logger.LogInformation(
+                        "Yetki kataloğu senkronize edildi. Yeni kayıt: {Kayit}, Süper Yönetici'ye eklenen yetki: {Yetki}",
+                        eklenenKayit, eklenenYetki);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Yetki kataloğu seed edilirken hata oluştu");
                 }
             }
 
