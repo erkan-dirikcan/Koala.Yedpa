@@ -435,23 +435,40 @@ namespace Koala.Yedpa.WebUI.Controllers
             };
             ViewData["UserInfo"] = retVal;
 
+            // İstemciden gelen Name alanına GÜVENİLMEZ (gizli input manipüle edilebilir).
+            // Rol adı her zaman Id üzerinden sunucudan çözülür.
+            // Bilinçli olarak senkron: Moq ile mock'lanan RoleManager.Roles düz bir IQueryable
+            // döner, EF'in IAsyncQueryProvider'ı yoktur ve ToListAsync InvalidOperationException atar.
+            // Kullanıcı başına bir kez, küçük AspNetRoles tablosuna giden bir sorgu.
+            var rolIdleri = model.Select(m => m.Id).ToList();
+            var roller = _roleManager.Roles.Where(r => rolIdleri.Contains(r.Id)).ToList();
+
             var mevcutRoller = await _userManager.GetRolesAsync(user!);
             foreach (var item in model)
             {
-                if (string.IsNullOrWhiteSpace(item.Name))
+                var rol = roller.FirstOrDefault(r => r.Id == item.Id);
+                if (rol is null)
                 {
                     continue;
                 }
 
-                var zatenAtanmis = mevcutRoller.Contains(item.Name);
+                // GET'te gizlenen rol POST'ta da atanamaz — gizli alan manipülasyonuna karşı.
+                if (rol.Name == PermissionSeeder.SuperAdminRoleDisplayName ||
+                    rol.DisplayName == PermissionSeeder.SuperAdminRoleDisplayName)
+                {
+                    continue;
+                }
+
+                var gercekAd = rol.Name!;
+                var zatenAtanmis = mevcutRoller.Contains(gercekAd);
 
                 if (item.IsExist && !zatenAtanmis)
                 {
-                    await _userManager.AddToRoleAsync(user!, item.Name);
+                    await _userManager.AddToRoleAsync(user!, gercekAd);
                 }
                 else if (!item.IsExist && zatenAtanmis)
                 {
-                    await _userManager.RemoveFromRoleAsync(user!, item.Name);
+                    await _userManager.RemoveFromRoleAsync(user!, gercekAd);
                 }
             }
 
