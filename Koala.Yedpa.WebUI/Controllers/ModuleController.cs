@@ -1,6 +1,7 @@
 ﻿using Koala.Yedpa.Core.Dtos;
 using Koala.Yedpa.Core.Models.ViewModels;
 using Koala.Yedpa.Core.Services;
+using Koala.Yedpa.WebUI.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Koala.Yedpa.WebUI.Controllers
@@ -9,6 +10,7 @@ namespace Koala.Yedpa.WebUI.Controllers
     {
         private readonly IModuleService _service = moduleService ?? throw new ArgumentNullException(nameof(moduleService));
 
+        [Permission(PermissionCatalog.ModuleManagement.List)]
         public async Task<IActionResult> Index()
         {
             var res = await _service.GetAllModuleAsync();
@@ -16,12 +18,14 @@ namespace Koala.Yedpa.WebUI.Controllers
             return View(retVal);
         }
 
+        [Permission(PermissionCatalog.ModuleManagement.Create)]
         public IActionResult CreateModule()
         {
             return View();
         }
 
         [HttpPost]
+        [Permission(PermissionCatalog.ModuleManagement.Create)]
         public async Task<IActionResult> CreateModule(CreateModuleViewModel model)
         {
             if (ModelState.IsValid)
@@ -40,6 +44,7 @@ namespace Koala.Yedpa.WebUI.Controllers
             return View(model);
         }
 
+        [Permission(PermissionCatalog.ModuleManagement.Update)]
         public async Task<IActionResult> UpdateModule(string id)
         {
             var res = await _service.GetUpdateModel(id);
@@ -49,6 +54,7 @@ namespace Koala.Yedpa.WebUI.Controllers
         }
 
         [HttpPost]
+        [Permission(PermissionCatalog.ModuleManagement.Update)]
         public async Task<IActionResult> UpdateModule(UpdateModuleViewModel model)
         {
             var res = await _service.UpdateModule(model, model.Id);
@@ -57,7 +63,8 @@ namespace Koala.Yedpa.WebUI.Controllers
             return View("Error");
         }
 
-        [HttpPost] 
+        [HttpPost]
+        [Permission(PermissionCatalog.ModuleManagement.ChangeStatus)]
         public async Task<JsonResult> ChangeStatus(ModuleChangeStatusViewModel model)
         {
             var res = await _service.ModuleChangeStatus(model);

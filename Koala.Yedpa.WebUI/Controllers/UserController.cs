@@ -33,6 +33,7 @@ namespace Koala.Yedpa.WebUI.Controllers
             _httpContextAccessor = httpContextAccessor;
             _emailService = emailService;
         }
+        [Permission(PermissionCatalog.UserManagement.List)]
         public async Task<IActionResult> Index()
         {
             var url = Request.Host;
@@ -244,11 +245,13 @@ namespace Koala.Yedpa.WebUI.Controllers
        
 
         [HttpGet]
+        [Permission(PermissionCatalog.UserManagement.Create)]
         public async Task<IActionResult> CreateUser()
         {
             return View(new CreateAppUserViewModel());
         }
         [HttpPost]
+        [Permission(PermissionCatalog.UserManagement.Create)]
         public async Task<IActionResult> CreateUser(CreateAppUserViewModel model)
         {
             if (!ModelState.IsValid)
@@ -300,6 +303,7 @@ namespace Koala.Yedpa.WebUI.Controllers
         }
 
         [HttpGet]
+        [Permission(PermissionCatalog.UserManagement.Update)]
         public async Task<IActionResult> UpdateUser(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
@@ -322,6 +326,7 @@ namespace Koala.Yedpa.WebUI.Controllers
         }
 
         [HttpPost]
+        [Permission(PermissionCatalog.UserManagement.Update)]
         public async Task<IActionResult> UpdateUser(UpdateAppUserViewModel model)
         {
             var user = await _userManager.FindByIdAsync(model.Id);
@@ -372,6 +377,7 @@ namespace Koala.Yedpa.WebUI.Controllers
             return RedirectToAction("Index");
         }
         [HttpGet]
+        [Permission(PermissionCatalog.UserManagement.AssignRole)]
         public async Task<IActionResult> AsignRoleToUser(string userId)
         {
             ViewBag.UserId = userId;
@@ -412,6 +418,7 @@ namespace Koala.Yedpa.WebUI.Controllers
             return View(model);
         }
         [HttpPost]
+        [Permission(PermissionCatalog.UserManagement.AssignRole)]
         public async Task<IActionResult> AsignRoleToUser(List<AsignRoleToUserViewModel> model, string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
@@ -457,6 +464,7 @@ namespace Koala.Yedpa.WebUI.Controllers
         #region Json Results
 
         [HttpPost]
+        [Permission(PermissionCatalog.UserManagement.ChangeStatus)]
         public async Task<JsonResult> UserChangeStatus(UpdateUserStatusViewModel model)
         {
             var user = await _userManager.FindByIdAsync(model.Id);

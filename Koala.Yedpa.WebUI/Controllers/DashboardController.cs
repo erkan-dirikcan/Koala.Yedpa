@@ -5,6 +5,7 @@ using Koala.Yedpa.Core.Models.ViewModels;
 using Koala.Yedpa.Core.Services;
 using Koala.Yedpa.WebUI.Models;
 using Koala.Yedpa.Repositories;
+using Koala.Yedpa.WebUI.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +14,7 @@ using System.Diagnostics;
 
 namespace Koala.Yedpa.WebUI.Controllers
 {
-    [Authorize]
+    [Permission(PermissionCatalog.Dashboard.View)]
     public class DashboardController : Controller
     {
         private readonly ILogger<DashboardController> _logger;
@@ -255,6 +256,7 @@ namespace Koala.Yedpa.WebUI.Controllers
             return Json(new { success = true });
         }
 
+        [AllowAnonymous]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

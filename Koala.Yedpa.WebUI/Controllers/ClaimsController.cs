@@ -1,5 +1,6 @@
 ﻿using Koala.Yedpa.Core.Models.ViewModels;
 using Koala.Yedpa.Core.Services;
+using Koala.Yedpa.WebUI.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Koala.Yedpa.WebUI.Controllers
@@ -9,6 +10,7 @@ namespace Koala.Yedpa.WebUI.Controllers
         private readonly IClaimsService _service = service ?? throw new ArgumentNullException(nameof(service));
         private readonly IModuleService _moduleService = moduleService ?? throw new ArgumentNullException(nameof(moduleService));
 
+        [Permission(PermissionCatalog.ModuleManagement.ClaimList)]
         public async Task<IActionResult> ModuleClaims(string moduleId)
         {
             var module = await _moduleService.GetModuleByIdAsync(moduleId);
@@ -39,6 +41,7 @@ namespace Koala.Yedpa.WebUI.Controllers
 
 
         [HttpGet]
+        [Permission(PermissionCatalog.ModuleManagement.ClaimCreate)]
         public async Task<IActionResult> CreateClaim(string moduleId)
         {
             var module = await _moduleService.GetModuleByIdAsync(moduleId);
@@ -47,6 +50,7 @@ namespace Koala.Yedpa.WebUI.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Permission(PermissionCatalog.ModuleManagement.ClaimCreate)]
         public async Task<IActionResult> CreateClaim(CreateClaimsViewModel model)
         {
             if (!ModelState.IsValid)
@@ -66,6 +70,7 @@ namespace Koala.Yedpa.WebUI.Controllers
         }
 
         [HttpGet]
+        [Permission(PermissionCatalog.ModuleManagement.ClaimUpdate)]
         public async Task<IActionResult> UpdateClaim(string id)
         {
             var res = await _service.GetClaimById(id);
@@ -77,6 +82,7 @@ namespace Koala.Yedpa.WebUI.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Permission(PermissionCatalog.ModuleManagement.ClaimUpdate)]
         public async Task<IActionResult> UpdateClaim(UpdateClaimsViewModel model)
         {
             if (!ModelState.IsValid)
@@ -94,6 +100,7 @@ namespace Koala.Yedpa.WebUI.Controllers
         }
 
         [HttpGet]
+        [Permission(PermissionCatalog.ModuleManagement.ClaimDelete)]
         public async Task<JsonResult> DeleteClaim(string id)
         {
             var claim = await _service.GetClaimById(id);

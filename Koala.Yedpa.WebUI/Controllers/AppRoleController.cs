@@ -31,9 +31,10 @@ namespace Koala.Yedpa.WebUI.Controllers
             _moduleService = moduleService;
         }
 
+        [Permission(PermissionCatalog.RoleManagement.List)]
         public IActionResult Index()
         {
-            
+
             var roles = _roleManager.Roles.ToList();
             var retVal = roles.Select(role => new AppRoleListViewModel
             {
@@ -49,11 +50,13 @@ namespace Koala.Yedpa.WebUI.Controllers
 
 
         [HttpGet]
+        [Permission(PermissionCatalog.RoleManagement.Create)]
         public IActionResult CreateRole()
         {
             return View(new CreateAppRoleViewModel());
         }
         [HttpPost]
+        [Permission(PermissionCatalog.RoleManagement.Create)]
         public async Task<IActionResult> CreateRole(CreateAppRoleViewModel model)
         {
             try
@@ -75,6 +78,7 @@ namespace Koala.Yedpa.WebUI.Controllers
             }
         }
         [HttpGet]
+        [Permission(PermissionCatalog.RoleManagement.Update)]
         public IActionResult UpdateRole(string id)
         {
             var role = _roleManager.Roles.FirstOrDefault(x => x.Id == id);
@@ -95,6 +99,7 @@ namespace Koala.Yedpa.WebUI.Controllers
             return View(retVal);
         }
         [HttpPost]
+        [Permission(PermissionCatalog.RoleManagement.Update)]
         public async Task<IActionResult> UpdateRole(UpdateAppRoleViewModel model)
         {
             var appRole = await _roleManager.FindByIdAsync(model.Id);
@@ -117,6 +122,7 @@ namespace Koala.Yedpa.WebUI.Controllers
 
 
         [HttpGet]
+        [Permission(PermissionCatalog.RoleManagement.AssignClaim)]
         public async Task<IActionResult> AddClaimToRole(string id)
         {
             if (string.IsNullOrEmpty(id))
@@ -168,6 +174,7 @@ namespace Koala.Yedpa.WebUI.Controllers
         }
 
         [HttpPost]
+        [Permission(PermissionCatalog.RoleManagement.AssignClaim)]
         public async Task<IActionResult> AddClaimToRole(AddClaimToRoleViewModel model)
         {
             var role = await _roleManager.FindByIdAsync(model.RoleId);
@@ -205,6 +212,7 @@ namespace Koala.Yedpa.WebUI.Controllers
 
 
         [HttpPost]
+        [Permission(PermissionCatalog.RoleManagement.Delete)]
         public async Task<JsonResult> DeleteRole(string id)
         {
             var role = await _roleManager.FindByIdAsync(id);

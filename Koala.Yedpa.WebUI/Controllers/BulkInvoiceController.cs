@@ -2,6 +2,7 @@ using Koala.Yedpa.Core.Dtos;
 using Koala.Yedpa.Core.Dtos.BulkInvoice;
 using Koala.Yedpa.Core.Services;
 using Koala.Yedpa.Service.Services;
+using Koala.Yedpa.WebUI.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +15,7 @@ namespace Koala.Yedpa.WebUI.Controllers
     /// Ön yüz AJAX çağrıları buraya gelir: cookie auth geçerli, API token gerekmez.
     /// (ApiController token bekler; ön yüz onu doğrudan çağıramaz.)
     /// </summary>
-    [Authorize]
+    [Permission(PermissionCatalog.BulkInvoice.View)]
     public class BulkInvoiceController : Controller
     {
         private readonly IBulkInvoiceService _service;

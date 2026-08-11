@@ -1,11 +1,13 @@
 ﻿using Koala.Yedpa.Core.Dtos;
 using Koala.Yedpa.Core.Models.ViewModels;
 using Koala.Yedpa.Core.Services;
+using Koala.Yedpa.WebUI.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Koala.Yedpa.WebUI.Controllers
 {
 
+    [Permission(PermissionCatalog.Settings.View)]
     public class SettingsController : Controller
     {
         private readonly IEmailService _emailService;
@@ -32,6 +34,7 @@ namespace Koala.Yedpa.WebUI.Controllers
             return View("Error");
         }
         [HttpPost]
+        [Permission(PermissionCatalog.Settings.Update)]
         public async Task<IActionResult> EmailSettings(EmailSettingViewModel model)
         {
             var settings = await _settingsService.GetEmailSettingsAsync();
@@ -71,6 +74,7 @@ namespace Koala.Yedpa.WebUI.Controllers
             return View(logoSetting.Data);
         }
         [HttpPost]
+        [Permission(PermissionCatalog.Settings.Update)]
         public async Task<IActionResult> LogoSettings(LogoSettingViewModel model)
         {
             var res = await _settingsService.UpdateLogoSettingsAsync(model);
@@ -92,6 +96,7 @@ namespace Koala.Yedpa.WebUI.Controllers
             return View(logoSqlSetting.Data);
         }
         [HttpPost]
+        [Permission(PermissionCatalog.Settings.Update)]
         public async Task<IActionResult> LogoSqlSettings(LogoSqlSettingViewModel model)
         {
             var res = await _settingsService.UpdateLogoSqlSettingsAsync(model);
@@ -103,6 +108,7 @@ namespace Koala.Yedpa.WebUI.Controllers
             return View(res.Data);
         }
         [HttpPost]
+        [Permission(PermissionCatalog.Settings.Update)]
         public async Task<IActionResult> LogoRestServiceSettings(LogoRestServiceSettingViewModel model)
         {
             var res = await _settingsService.UpdateLogoRestServiceSettingsAsync(model);
@@ -117,6 +123,7 @@ namespace Koala.Yedpa.WebUI.Controllers
             return View("Error");
         }
         [HttpPost]
+        [Permission(PermissionCatalog.Settings.Update)]
         public async Task<IActionResult> Message34Settings(Message34SettingsViewModel model)
         {
             var settings = await _settingsService.GetMessage34SettingsAsync();
@@ -155,6 +162,7 @@ namespace Koala.Yedpa.WebUI.Controllers
         }
 
         [HttpPost]
+        [Permission(PermissionCatalog.Settings.Update)]
         public async Task<IActionResult> KoalaApiSettings(KoalaApiSettingsViewModel model)
         {
             var settings = await _settingsService.GetKoalaApiSettingsAsync();
@@ -194,6 +202,7 @@ namespace Koala.Yedpa.WebUI.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Permission(PermissionCatalog.Settings.Update)]
         public async Task<IActionResult> QRCodeSettings(QRCodeSettingsViewModel model)
         {
             var settings = await _settingsService.GetQRCodeSettingsAsync();

@@ -2,13 +2,14 @@ using Koala.Yedpa.Core.Dtos;
 using Koala.Yedpa.Core.Models;
 using Koala.Yedpa.Core.Models.ViewModels;
 using Koala.Yedpa.Core.Services;
+using Koala.Yedpa.WebUI.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 
 namespace Koala.Yedpa.WebUI.Controllers
 {
-    [Authorize]
+    [Permission(PermissionCatalog.BudgetOrder.View)]
     public class BudgetOrderController : Controller
     {
         private readonly ILogger<BudgetOrderController> _logger;
