@@ -14,6 +14,15 @@ namespace Koala.Yedpa.Repositories.Configurations
                 .WithMany(x => x.Claims)
                 .HasForeignKey(x => x.ModuleId);
 
+            // Claims.Name doğrudan authorization policy adı olarak kullanılıyor;
+            // benzersizliği DB seviyesinde garanti altına alıyoruz.
+            builder.Property(x => x.Name)
+                .IsRequired()
+                .HasMaxLength(150);
+
+            builder.HasIndex(x => x.Name)
+                .IsUnique()
+                .HasDatabaseName("IX_Claims_Name_Unique");
         }
     }
 }
