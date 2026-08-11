@@ -16,7 +16,9 @@ namespace Koala.Yedpa.WebUI.Authorization;
 /// </summary>
 public static class PermissionSeeder
 {
-    public const string SuperAdminRoleDisplayName = "Süper Yönetici";
+    public const string FullAccessRoleName = "SistemKoala";
+
+    public const string FullAccessRoleDisplayName = "Sistem Koala";
 
     /// <summary>Eksik modül ve claim kayıtlarını ekler. Eklenen toplam kayıt sayısını döner.</summary>
     public static async Task<int> SeedModulesAndClaimsAsync(
@@ -83,10 +85,10 @@ public static class PermissionSeeder
     }
 
     /// <summary>
-    /// "Süper Yönetici" rolüne katalogdaki tüm izinleri verir. Rol yoksa uyarı loglar ve 0 döner.
-    /// Yönetici rolünün yeni eklenen izinleri otomatik alması içindir.
+    /// "SistemKoala" (tam yetkili) rolüne katalogdaki tüm izinleri verir. Rol yoksa uyarı loglar ve 0 döner.
+    /// Bu rolün yeni eklenen izinleri otomatik alması içindir.
     /// </summary>
-    public static async Task<int> GrantAllToSuperAdminAsync(
+    public static async Task<int> GrantAllToFullAccessRoleAsync(
         RoleManager<AppRole> roleManager,
         ILogger logger)
     {
@@ -94,13 +96,13 @@ public static class PermissionSeeder
         // EF'in IAsyncQueryProvider'ı yoktur ve FirstOrDefaultAsync InvalidOperationException atar.
         // Açılışta bir kez, küçük AspNetRoles tablosuna giden bir sorgu — senkron olması sorun değil.
         var rol = roleManager.Roles.FirstOrDefault(r =>
-            r.DisplayName == SuperAdminRoleDisplayName || r.Name == SuperAdminRoleDisplayName);
+            r.Name == FullAccessRoleName || r.DisplayName == FullAccessRoleDisplayName);
 
         if (rol is null)
         {
             logger.LogWarning(
                 "PermissionSeeder: '{RolAdi}' rolü bulunamadı, otomatik yetkilendirme atlandı",
-                SuperAdminRoleDisplayName);
+                FullAccessRoleName);
             return 0;
         }
 
@@ -128,15 +130,15 @@ public static class PermissionSeeder
             }
             else
             {
-                logger.LogError("PermissionSeeder: '{IzinAdi}' Süper Yönetici rolüne eklenemedi: {Hatalar}",
-                    izinAdi, string.Join(", ", sonuc.Errors.Select(e => e.Description)));
+                logger.LogError("PermissionSeeder: '{IzinAdi}' {RolAdi} rolüne eklenemedi: {Hatalar}",
+                    izinAdi, FullAccessRoleName, string.Join(", ", sonuc.Errors.Select(e => e.Description)));
             }
         }
 
         if (eklenen > 0)
         {
             logger.LogInformation(
-                "PermissionSeeder: Süper Yönetici rolüne {Sayi} yeni yetki eklendi", eklenen);
+                "PermissionSeeder: {RolAdi} rolüne {Sayi} yeni yetki eklendi", FullAccessRoleName, eklenen);
         }
 
         return eklenen;

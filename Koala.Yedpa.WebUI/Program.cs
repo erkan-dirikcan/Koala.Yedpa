@@ -221,11 +221,11 @@ namespace Koala.Yedpa.WebUI
                 {
                     var eklenenKayit = await PermissionSeeder.SeedModulesAndClaimsAsync(
                         context, logger, CancellationToken.None);
-                    var eklenenYetki = await PermissionSeeder.GrantAllToSuperAdminAsync(roleManager, logger);
+                    var eklenenYetki = await PermissionSeeder.GrantAllToFullAccessRoleAsync(roleManager, logger);
 
                     logger.LogInformation(
-                        "Yetki kataloğu senkronize edildi. Yeni kayıt: {Kayit}, Süper Yönetici'ye eklenen yetki: {Yetki}",
-                        eklenenKayit, eklenenYetki);
+                        "Yetki kataloğu senkronize edildi. Yeni kayıt: {Kayit}, {RolAdi}'ya eklenen yetki: {Yetki}",
+                        eklenenKayit, PermissionSeeder.FullAccessRoleName, eklenenYetki);
                 }
                 catch (Exception ex)
                 {

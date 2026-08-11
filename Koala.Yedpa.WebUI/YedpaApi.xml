@@ -83,10 +83,10 @@
         <member name="M:Koala.Yedpa.WebUI.Authorization.PermissionSeeder.SeedModulesAndClaimsAsync(Koala.Yedpa.Repositories.AppDbContext,Microsoft.Extensions.Logging.ILogger,System.Threading.CancellationToken)">
             <summary>Eksik modül ve claim kayıtlarını ekler. Eklenen toplam kayıt sayısını döner.</summary>
         </member>
-        <member name="M:Koala.Yedpa.WebUI.Authorization.PermissionSeeder.GrantAllToSuperAdminAsync(Microsoft.AspNetCore.Identity.RoleManager{Koala.Yedpa.Core.Models.AppRole},Microsoft.Extensions.Logging.ILogger)">
+        <member name="M:Koala.Yedpa.WebUI.Authorization.PermissionSeeder.GrantAllToFullAccessRoleAsync(Microsoft.AspNetCore.Identity.RoleManager{Koala.Yedpa.Core.Models.AppRole},Microsoft.Extensions.Logging.ILogger)">
             <summary>
-            "Süper Yönetici" rolüne katalogdaki tüm izinleri verir. Rol yoksa uyarı loglar ve 0 döner.
-            Yönetici rolünün yeni eklenen izinleri otomatik alması içindir.
+            "SistemKoala" (tam yetkili) rolüne katalogdaki tüm izinleri verir. Rol yoksa uyarı loglar ve 0 döner.
+            Bu rolün yeni eklenen izinleri otomatik alması içindir.
             </summary>
         </member>
         <member name="M:Koala.Yedpa.WebUI.Controllers.AppRoleController.FillClaimSelectListAsync(Koala.Yedpa.Core.Models.AppRole)">

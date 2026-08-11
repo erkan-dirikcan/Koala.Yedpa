@@ -40,9 +40,8 @@ namespace Service.Services
 
         private async Task SeedRolesAsync()
         {
-            // Varsayılan roller: SistemKoala + Süper Yönetici
-            // Süper Yönetici, PermissionSeeder.GrantAllToSuperAdminAsync'in
-            // DisplayName "Süper Yönetici" ile bulduğu roldür.
+            // Varsayılan rol: SistemKoala. Tek tam yetkili rol budur;
+            // PermissionSeeder.GrantAllToFullAccessRoleAsync'in Name/DisplayName ile bulduğu roldür.
             var roller = new[]
             {
                 new AppRole
@@ -52,15 +51,6 @@ namespace Service.Services
                     NormalizedName = "SISTEMKOALA",
                     Description = "Sistem Koala Rolü",
                     DisplayName = "Sistem Koala",
-                    StatusEnum = StatusEnum.Active
-                },
-                new AppRole
-                {
-                    Id = Tools.CreateGuidStr(),
-                    Name = "SuperAdmin",
-                    NormalizedName = "SUPERADMIN",
-                    Description = "Tüm yetkilere sahip süper yönetici rolü",
-                    DisplayName = "Süper Yönetici",
                     StatusEnum = StatusEnum.Active
                 }
             };
@@ -81,8 +71,8 @@ namespace Service.Services
         {
             if (await _context.Users.AnyAsync()) return;
 
-            var superAdminRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "SuperAdmin");
-            if (superAdminRole == null) return;
+            var sistemKoalaRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "SistemKoala");
+            if (sistemKoalaRole == null) return;
 
             var user = new AppUser
             {
@@ -110,21 +100,11 @@ namespace Service.Services
 
             await _context.Users.AddAsync(user);
 
-            // Kullanıcı-rol ilişkisi: kullanıcı hem Süper Yönetici hem SistemKoala rolüne üye
+            // Kullanıcı-rol ilişkisi: kullanıcı SistemKoala rolüne üye
             var userRoles = new List<Microsoft.AspNetCore.Identity.IdentityUserRole<string>>
             {
-                new() { UserId = user.Id, RoleId = superAdminRole.Id }
+                new() { UserId = user.Id, RoleId = sistemKoalaRole.Id }
             };
-
-            var sistemKoalaRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "SistemKoala");
-            if (sistemKoalaRole != null)
-            {
-                userRoles.Add(new Microsoft.AspNetCore.Identity.IdentityUserRole<string>
-                {
-                    UserId = user.Id,
-                    RoleId = sistemKoalaRole.Id
-                });
-            }
 
             await _context.UserRoles.AddRangeAsync(userRoles);
             await _context.SaveChangesAsync();

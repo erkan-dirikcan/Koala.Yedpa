@@ -400,8 +400,8 @@ namespace Koala.Yedpa.WebUI.Controllers
             var useRoles = await _userManager.GetRolesAsync(user!);
             foreach (var item in roles)
             {
-                if (item.Name == PermissionSeeder.SuperAdminRoleDisplayName ||
-                    item.DisplayName == PermissionSeeder.SuperAdminRoleDisplayName)
+                if (item.Name == PermissionSeeder.FullAccessRoleName ||
+                    item.DisplayName == PermissionSeeder.FullAccessRoleDisplayName)
                 {
                     continue;
                 }
@@ -453,8 +453,8 @@ namespace Koala.Yedpa.WebUI.Controllers
                 }
 
                 // GET'te gizlenen rol POST'ta da atanamaz — gizli alan manipülasyonuna karşı.
-                if (rol.Name == PermissionSeeder.SuperAdminRoleDisplayName ||
-                    rol.DisplayName == PermissionSeeder.SuperAdminRoleDisplayName)
+                if (rol.Name == PermissionSeeder.FullAccessRoleName ||
+                    rol.DisplayName == PermissionSeeder.FullAccessRoleDisplayName)
                 {
                     continue;
                 }
