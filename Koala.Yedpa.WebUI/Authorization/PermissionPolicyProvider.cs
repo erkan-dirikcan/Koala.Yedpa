@@ -8,6 +8,11 @@ namespace Koala.Yedpa.WebUI.Authorization;
 /// Böylece her izin için elle policy tanımlamaya gerek kalmaz:
 /// [Permission("ModuleManagement.Create")] → RequireClaim("Permission", "ModuleManagement.Create")
 ///
+/// Policy adı '|' ile ayrılmış birden fazla izin içerebilir; bu durumda şart
+/// VEYA olarak kurulur (RequireClaim birden fazla değerle zaten "herhangi biri"
+/// anlamına gelir):
+/// [Permission(A, B)] → RequireClaim("Permission", A, B)
+///
 /// Veritabanına gitmez. Claim'in DB'de tanımlı olup olmadığını kontrol etmek
 /// güvenlik açısından gereksizdir: kullanıcıda o claim yoksa zaten reddedilir.
 /// DB'de olmayan bir izin adı yazılırsa sonuç "herkes reddedilir" olur (fail-closed).
@@ -32,9 +37,17 @@ public class PermissionPolicyProvider(IOptions<AuthorizationOptions> options)
             return existing;
         }
 
+        var izinAdlari = policyName
+            .Split(PermissionAttribute.Separator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+        if (izinAdlari.Length == 0)
+        {
+            return null;
+        }
+
         return new AuthorizationPolicyBuilder()
             .RequireAuthenticatedUser()
-            .RequireClaim(PermissionClaimType, policyName)
+            .RequireClaim(PermissionClaimType, izinAdlari)
             .Build();
     }
 }

@@ -138,6 +138,15 @@ public class PermissionCoverageTests
                      "beyaz listede olmayan bir anonim erişim veya beyaz listede olup artık kullanılmayan bir kayıt bu testi kırmalı");
     }
 
+    /// <summary>Policy adı '|' ile ayrılmış birden fazla izin içerebilir (VEYA mantığı);
+    /// katalog kontrolü tek tek izin adları üzerinden yapılmalı.</summary>
+    private static IEnumerable<string> IzinAdlariniAyikla(PermissionAttribute attribute)
+    {
+        return attribute.Policy!.Split(
+            PermissionAttribute.Separator,
+            StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+    }
+
     [Fact]
     public void KullanilanIzinAdlari_KatalogdaTanimliOlmali()
     {
@@ -148,7 +157,7 @@ public class PermissionCoverageTests
             var sinifIzinleri = controllerType
                 .GetCustomAttributes(typeof(PermissionAttribute), inherit: true)
                 .Cast<PermissionAttribute>()
-                .Select(a => a.Policy!);
+                .SelectMany(IzinAdlariniAyikla);
             kullanilanIzinAdlari.AddRange(sinifIzinleri);
 
             foreach (var action in ActionMetotlariniGetir(controllerType))
@@ -156,7 +165,7 @@ public class PermissionCoverageTests
                 var metotIzinleri = action
                     .GetCustomAttributes(typeof(PermissionAttribute), inherit: true)
                     .Cast<PermissionAttribute>()
-                    .Select(a => a.Policy!);
+                    .SelectMany(IzinAdlariniAyikla);
                 kullanilanIzinAdlari.AddRange(metotIzinleri);
             }
         }

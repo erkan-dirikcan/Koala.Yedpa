@@ -16,6 +16,37 @@ public class PermissionPolicyProviderTests
     }
 
     [Fact]
+    public async Task GetPolicyAsync_CokluIzin_Icin_HerhangiBiriniKabulEden_Sart_Uretir()
+    {
+        var provider = CreateProvider();
+        var attribute = new PermissionAttribute("Workplace.View", "BudgetOrder.View");
+
+        var policy = await provider.GetPolicyAsync(attribute.Policy!);
+
+        var claimRequirement = policy!.Requirements.OfType<ClaimsAuthorizationRequirement>().Single();
+        claimRequirement.ClaimType.Should().Be("Permission");
+        // RequireClaim birden fazla değerle "herhangi biri" (VEYA) anlamına gelir.
+        claimRequirement.AllowedValues.Should().BeEquivalentTo(["Workplace.View", "BudgetOrder.View"]);
+    }
+
+    [Fact]
+    public void PermissionAttribute_TekIzinde_PolicyAdini_AynenKullanir()
+    {
+        var attribute = new PermissionAttribute("Workplace.View");
+
+        attribute.Policy.Should().Be("Workplace.View",
+            because: "tek izinli kullanımda ayraç eklenmemeli, davranış eskisiyle birebir aynı kalmalı");
+    }
+
+    [Fact]
+    public void PermissionAttribute_BosIzinListesi_Icin_Hata_Firlatir()
+    {
+        var act = () => new PermissionAttribute();
+
+        act.Should().Throw<ArgumentException>();
+    }
+
+    [Fact]
     public async Task GetPolicyAsync_BilinmeyenPolicyIcin_PermissionClaimSarti_Uretir()
     {
         var provider = CreateProvider();

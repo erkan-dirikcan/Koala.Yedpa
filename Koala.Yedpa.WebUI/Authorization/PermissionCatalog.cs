@@ -74,18 +74,6 @@ public static class PermissionCatalog
         public const string RatioManage = "BudgetOrder.RatioManage";
     }
 
-    /// <summary>
-    /// Aidat istatistiği okuma izni. DİKKAT: bu uçları HEM bütçe emri ekranı
-    /// HEM DE işyerleri ekranı çağırıyor (yıl listesi açılır kutusu).
-    /// Bu yüzden BudgetOrder altına değil, ayrı modül olarak konuldu;
-    /// Workplace.View verilen role bu izin de verilmezse işyerleri ekranındaki
-    /// yıl listesi sessizce boş kalır.
-    /// </summary>
-    public static class DuesStatistic
-    {
-        public const string View = "DuesStatistic.View";
-    }
-
     public static class Workplace
     {
         public const string View = "Workplace.View";
@@ -196,13 +184,6 @@ public static class PermissionCatalog
             new(BudgetOrder.Transfer, "Aidat İstatistiği Aktar", "Aidat istatistiklerini aktarır"),
             new(BudgetOrder.RatioView, "Bütçe Oranlarını Görüntüle", "Tanımlı bütçe oranlarını listeler"),
             new(BudgetOrder.RatioManage, "Bütçe Oranlarını Yönet", "Bütçe oranı ekler, günceller ve siler")
-        ]),
-
-        new PermissionModule("DuesStatistic", "Aidat İstatistiği",
-            "Aidat istatistiği okuma. Bütçe emri ve işyerleri ekranlarının ikisi de bu izni ister",
-        [
-            new(DuesStatistic.View, "Aidat İstatistiğini Görüntüle",
-                "Aidat istatistiği listelerini ve yıl seçeneklerini okur. Bütçe emri ve işyerleri ekranları için gereklidir")
         ]),
 
         new PermissionModule("Workplace", "İşyerleri",

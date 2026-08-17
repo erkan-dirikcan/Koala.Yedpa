@@ -333,53 +333,6 @@ public class BudgetOrderApiController : ControllerBase
     }
 
     /// <summary>
-    /// Test için basit bütçe oluşturma endpoint'i
-    /// </summary>
-    /// <returns>Bütçe oluşturma sonucu</returns>
-    // GÜVENLİK: Bu uç eskiden [AllowAnonymous] idi ve kimlik doğrulaması olmadan
-    // 2026 yılı için gerçek bütçe kaydı oluşturuyordu. Yetkiye bağlandı.
-    // TESLİM ÖNCESİ TAMAMEN KALDIRILMALI — bu bir test ucudur.
-    [HttpGet("test-create")]
-    [Permission(PermissionCatalog.BudgetOrder.Create)]
-    public async Task<IActionResult> TestCreateBudget()
-    {
-        _logger.LogInformation("TestCreateBudget called");
-        var testModel = new CreateBudgetOrderViewModel
-        {
-            SourceYear = 2025,
-            TargetYear = 2026,
-            BudgetRatioId = "test-budget-ratio-001",
-            BudgetType = BuggetTypeEnum.Budget,
-            SelectedMonths = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 },
-            CreateOrders = false,
-            UserId = "test-user"
-        };
-
-        var result = await _budgetOrderService.CreateBudgetAsync(testModel);
-
-        if (result.IsSuccess)
-        {
-            _logger.LogInformation("TestCreateBudget: Test successful");
-            return Ok(new
-            {
-                message = "Test bütçe oluşturma başarılı!",
-                data = result.Data,
-                count = result.Data?.Count ?? 0
-            });
-        }
-        else
-        {
-            _logger.LogWarning("TestCreateBudget: Test failed - {Message}", result.Message);
-            return BadRequest(new
-            {
-                message = "Test bütçe oluşturma hatası!",
-                error = result.Message,
-                statusCode = result.StatusCode
-            });
-        }
-    }
-
-    /// <summary>
     /// BudgetRatio ID'sine göre DuesStatistic ID'lerini getir
     /// </summary>
     /// <param name="budgetRatioId">BudgetRatio ID</param>

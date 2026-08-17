@@ -14,10 +14,29 @@
             <summary>Verilen izinlerden en az biri varsa true. Menü başlıklarını gizlemek için.</summary>
         </member>
         <member name="T:Koala.Yedpa.WebUI.Authorization.PermissionAttribute">
+             <summary>
+             [Permission(PermissionCatalog.ModuleManagement.Create)] şeklinde kullanılır.
+             Policy adı doğrudan izin adıdır; PermissionPolicyProvider bunu
+             RequireClaim("Permission", izinAdi) şartına çevirir.
+            
+             Birden fazla izin verilirse şart VEYA (OR) olarak çalışır — kullanıcının
+             bunlardan HERHANGİ BİRİNE sahip olması yeterlidir:
+             [Permission(A, B)] → RequireClaim("Permission", A, B)
+            
+             Bunu, birden fazla ekranın ortak kullandığı uçlar için kullan. Örnek:
+             aidat istatistiği uçlarını hem bütçe emri hem işyerleri ekranı çağırıyor,
+             bu yüzden iki izinden biri yeterli sayılıyor.
+            
+             VE (AND) mantığı istiyorsan iki ayrı attribute kullanma — bu attribute
+             AllowMultiple=false. Bunun yerine sınıf seviyesinde bir, metot seviyesinde
+             başka bir izin koy; ASP.NET Core ikisini de arar.
+             </summary>
+        </member>
+        <member name="F:Koala.Yedpa.WebUI.Authorization.PermissionAttribute.Separator">
             <summary>
-            [Permission(PermissionCatalog.ModuleManagement.Create)] şeklinde kullanılır.
-            Policy adı doğrudan izin adıdır; PermissionPolicyProvider bunu
-            RequireClaim("Permission", izinAdi) şartına çevirir.
+            Policy adı içinde birden fazla izni ayırmak için kullanılan karakter.
+            İzin adları yalnızca harf, rakam ve nokta içerdiği için (PermissionCatalog
+            testleri bunu doğruluyor) bu karakterin bir izin adının içinde geçmesi mümkün değil.
             </summary>
         </member>
         <member name="T:Koala.Yedpa.WebUI.Authorization.PermissionDefinition">
@@ -45,15 +64,6 @@
              3. Controller/action üzerine [Permission(...)] koy
              </summary>
         </member>
-        <member name="T:Koala.Yedpa.WebUI.Authorization.PermissionCatalog.DuesStatistic">
-            <summary>
-            Aidat istatistiği okuma izni. DİKKAT: bu uçları HEM bütçe emri ekranı
-            HEM DE işyerleri ekranı çağırıyor (yıl listesi açılır kutusu).
-            Bu yüzden BudgetOrder altına değil, ayrı modül olarak konuldu;
-            Workplace.View verilen role bu izin de verilmezse işyerleri ekranındaki
-            yıl listesi sessizce boş kalır.
-            </summary>
-        </member>
         <member name="T:Koala.Yedpa.WebUI.Authorization.PermissionCatalog.Management">
             <summary>
             Controllers/Yonetim altındaki arıza, arşiv, otopark ve sözleşme ekranları.
@@ -74,6 +84,11 @@
              Böylece her izin için elle policy tanımlamaya gerek kalmaz:
              [Permission("ModuleManagement.Create")] → RequireClaim("Permission", "ModuleManagement.Create")
             
+             Policy adı '|' ile ayrılmış birden fazla izin içerebilir; bu durumda şart
+             VEYA olarak kurulur (RequireClaim birden fazla değerle zaten "herhangi biri"
+             anlamına gelir):
+             [Permission(A, B)] → RequireClaim("Permission", A, B)
+            
              Veritabanına gitmez. Claim'in DB'de tanımlı olup olmadığını kontrol etmek
              güvenlik açısından gereksizdir: kullanıcıda o claim yoksa zaten reddedilir.
              DB'de olmayan bir izin adı yazılırsa sonuç "herkes reddedilir" olur (fail-closed).
@@ -84,6 +99,11 @@
              Policy adını doğrudan bir "Permission" claim şartına çevirir.
              Böylece her izin için elle policy tanımlamaya gerek kalmaz:
              [Permission("ModuleManagement.Create")] → RequireClaim("Permission", "ModuleManagement.Create")
+            
+             Policy adı '|' ile ayrılmış birden fazla izin içerebilir; bu durumda şart
+             VEYA olarak kurulur (RequireClaim birden fazla değerle zaten "herhangi biri"
+             anlamına gelir):
+             [Permission(A, B)] → RequireClaim("Permission", A, B)
             
              Veritabanına gitmez. Claim'in DB'de tanımlı olup olmadığını kontrol etmek
              güvenlik açısından gereksizdir: kullanıcıda o claim yoksa zaten reddedilir.
@@ -157,12 +177,6 @@
             </summary>
             <param name="request">Önizleme isteği</param>
             <returns>Önizleme sonucu</returns>
-        </member>
-        <member name="M:Koala.Yedpa.WebUI.Controllers.BudgetOrderApiController.TestCreateBudget">
-            <summary>
-            Test için basit bütçe oluşturma endpoint'i
-            </summary>
-            <returns>Bütçe oluşturma sonucu</returns>
         </member>
         <member name="M:Koala.Yedpa.WebUI.Controllers.BudgetOrderApiController.GetDuesStatisticIds(System.String)">
             <summary>

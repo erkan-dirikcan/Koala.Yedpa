@@ -11,9 +11,10 @@ namespace Koala.Yedpa.WebUI.Controllers;
 /// </summary>
 [Route("api/[controller]")]
 [ApiController]
-// Bu uçları hem bütçe emri hem işyerleri ekranı çağırıyor (yıl listesi).
-// Bu yüzden BudgetOrder.* değil, ayrı DuesStatistic.View izni kullanılıyor.
-[Permission(PermissionCatalog.DuesStatistic.View)]
+// Bu uçları hem bütçe emri hem işyerleri ekranı çağırıyor (yıl listesi açılır kutusu).
+// Ayrı bir izin tanımlamak yerine iki ekrandan HERHANGİ BİRİNİN görüntüleme iznine
+// sahip olmak yeterli — çoklu izin VEYA olarak değerlendirilir.
+[Permission(PermissionCatalog.Workplace.View, PermissionCatalog.BudgetOrder.View)]
 [ApiExplorerSettings(IgnoreApi = true)]
 public class DuesStatisticApiController : ControllerBase
 {
