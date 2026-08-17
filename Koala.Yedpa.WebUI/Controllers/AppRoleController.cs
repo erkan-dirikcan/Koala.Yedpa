@@ -166,7 +166,8 @@ namespace Koala.Yedpa.WebUI.Controllers
                     IsSelected = roleClaims.Any(x =>
                         x.Type == PermissionPolicyProvider.PermissionClaimType && x.Value == claim.Name),
                     Key = $"{moduleLabel} - {claim.DisplayName}",
-                    Val = claim.Name
+                    Val = claim.Name,
+                    Description = claim.Description
                 });
             }
 

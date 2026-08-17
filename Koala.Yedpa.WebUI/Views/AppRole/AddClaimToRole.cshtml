@@ -29,11 +29,25 @@
                                     {
                                         if (item.IsSelected)
                                         {
-                                            <option value="@item.Val" selected="selected">@item.Key</option>
+                                            if (!string.IsNullOrWhiteSpace(item.Description))
+                                            {
+                                                <option value="@item.Val" title="@item.Description" selected="selected">@item.Key</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@item.Val" selected="selected">@item.Key</option>
+                                            }
                                         }
                                         else
                                         {
-                                            <option value="@item.Val">@item.Key</option>
+                                            if (!string.IsNullOrWhiteSpace(item.Description))
+                                            {
+                                                <option value="@item.Val" title="@item.Description">@item.Key</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@item.Val">@item.Key</option>
+                                            }
                                         }
                                     }
                                 </select>
