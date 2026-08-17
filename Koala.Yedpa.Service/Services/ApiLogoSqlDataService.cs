@@ -861,9 +861,9 @@ namespace Koala.Yedpa.Service.Services
             if (!string.IsNullOrWhiteSpace(searchModel.CustomerName))
                 conditions.Add($"ISNULL(INVCL.DEFINITION_, CLNTC.DEFINITION_) LIKE '%{searchModel.CustomerName.Replace("'", "''")}%'");
             if (searchModel.DueDateStart.HasValue)
-                conditions.Add($"ISNULL(PTRNS.DATE_, INVFC.DATE_) >= '{searchModel.DueDateStart.Value:yyyy-MM-dd}'");
+                conditions.Add($"PTRNS.DATE_ >= '{searchModel.DueDateStart.Value:yyyy-MM-dd}'");
             if (searchModel.DueDateEnd.HasValue)
-                conditions.Add($"ISNULL(PTRNS.DATE_, INVFC.DATE_) <= '{searchModel.DueDateEnd.Value:yyyy-MM-dd}'");
+                conditions.Add($"PTRNS.DATE_ <= '{searchModel.DueDateEnd.Value:yyyy-MM-dd}'");
             if (!string.IsNullOrWhiteSpace(searchModel.InvoiceNumber))
                 conditions.Add($"INVFC.FICHENO LIKE '%{searchModel.InvoiceNumber.Replace("'", "''")}%'");
 
@@ -922,22 +922,22 @@ namespace Koala.Yedpa.Service.Services
 
             var remainingCondition = normalizedFilter switch
             {
-                // PTRNS.LOGICALREF IS NULL → VADE FARKI gibi PAYTRANS kaydı olmayan faturalar "açık" sayılır
-                "closed" => "\n            AND PTRNS.LOGICALREF IS NOT NULL AND ISNULL((ISNULL(PTRNS.TOTAL, 0) - ISNULL(KAPATILAN.KAPANAN_TUTAR, 0)), 0) = 0",
+                "closed" => "\n            AND (PTRNS.TOTAL - ISNULL(KAPATILAN.KAPANAN_TUTAR, 0)) = 0",
                 "all"    => "",
-                _        => "\n            AND (ISNULL((ISNULL(PTRNS.TOTAL, 0) - ISNULL(KAPATILAN.KAPANAN_TUTAR, 0)), 0) > 0 OR PTRNS.LOGICALREF IS NULL)"
+                _        => "\n            AND (PTRNS.TOTAL - ISNULL(KAPATILAN.KAPANAN_TUTAR, 0)) > 0"
             };
 
             return $@"
         SELECT
-            ISNULL(CLNTC.LOGICALREF, INVCL.LOGICALREF) AS CustomerReference,
-            -- INVFC.CLIENTREF → gerçek cari kart kodu.
-            -- PTRNS.CARDREF üzerinden CLNTC; PTRNS yoksa INVCL'e düş.
+            CLNTC.LOGICALREF        AS CustomerReference,
+            -- Madde 1 fix: INVFC.CLIENTREF → gerçek cari kart kodu (1.A000.x formatı, ClCardInfoAll ile uyumlu).
+            -- PTRNS.CARDREF → CLNTC.CODE bazen muhasebe/gelir hesabı kodu (679.01.x) döndürebilir.
+            -- INVFC.CLIENTREF faturanın INVOICE tablosundaki gerçek cari kart referansıdır.
             ISNULL(INVCL.CODE, CLNTC.CODE) AS CustomerCode,
             ISNULL(INVCL.DEFINITION_, CLNTC.DEFINITION_) AS CustomerName,
-            ISNULL(PTRNS.FICHEREF, INVFC.LOGICALREF) AS InvoiceLogicalRef,
+            PTRNS.FICHEREF          AS InvoiceLogicalRef,
             INVFC.FICHENO           AS InvoiceNumber,
-            ISNULL(PTRNS.PROCDATE, INVFC.DATE_) AS InvoiceDate,
+            PTRNS.PROCDATE          AS InvoiceDate,
             CASE INVFC.TRCODE
                 WHEN 1  THEN 'Satınalma Faturası'
                 WHEN 2  THEN 'Perakende Satış İade Faturası'
@@ -980,22 +980,37 @@ namespace Koala.Yedpa.Service.Services
             ISNULL(INVFC.NETTOTAL, 0)    AS NetAmount,
             ISNULL(INVFC.TOTALVAT, 0)    AS VatAmount,
             ISNULL(INVFC.TOTALDISCOUNTS, 0) AS DiscountAmount,
-            ISNULL(PTRNS.TOTAL, 0)  AS InvoiceDueAmount,
-            ISNULL(KAPATILAN.KAPANAN_TUTAR, 0) AS PaidAmount,
-            (ISNULL(PTRNS.TOTAL, 0) - ISNULL(KAPATILAN.KAPANAN_TUTAR, 0)) AS RemainingAmount,
+            PTRNS.TOTAL             AS InvoiceDueAmount,
+            -- Odenen tutar = faturanin TAMAMEN kapanmis plan satirlarinin toplami
+            --                + bu satirin kismen kapanan kismi.
+            -- Logo kismi tahsilatta plan satirini ikiye boler: odenen kisim ayri bir
+            -- satira gecip kapanir (kendi CROSSREF'i dolar), geriye yalnizca kalan kisim
+            -- CROSSREF=0 olarak durur. Bu yuzden tek basina KAPATILAN her zaman 0 dondurur;
+            -- 11.08.2026 olcumunde 2.503 acik satirin TAMAMINDA PaidAmount=0 idi.
+            -- Kapanmis satirlari ayrica toplamadan odenen tutar hesaplanamaz.
+            (
+                (SELECT ISNULL(SUM(PT3.TOTAL), 0)
+                 FROM LG_{LogoSetting.Firm}_{LogoSetting.Period}_PAYTRANS PT3
+                 WHERE PT3.FICHEREF = INVFC.LOGICALREF
+                   AND PT3.MODULENR = 4
+                   AND PT3.SIGN = 0
+                   AND PT3.CANCELLED = 0
+                   AND PT3.CROSSREF <> 0)
+                + ISNULL(KAPATILAN.KAPANAN_TUTAR, 0)
+            )                       AS PaidAmount,
+            (PTRNS.TOTAL - ISNULL(KAPATILAN.KAPANAN_TUTAR, 0)) AS RemainingAmount,
             PTRNS.DATE_             AS DueDate,
-            DATEPART(mm, ISNULL(PTRNS.DATE_, INVFC.DATE_)) AS Month,
-            DATEPART(wk, ISNULL(PTRNS.DATE_, INVFC.DATE_)) AS Week,
-            DATEDIFF(DAY, ISNULL(PTRNS.PROCDATE, INVFC.DATE_), ISNULL(PTRNS.DATE_, INVFC.DATE_)) AS DueDays,
-            DATEDIFF(DAY, GETDATE(), ISNULL(PTRNS.DATE_, INVFC.DATE_)) AS RemainingDays,
-            CASE ISNULL(PTRNS.TRCURR, 0)
+            DATEPART(mm, PTRNS.DATE_) AS Month,
+            DATEPART(wk, PTRNS.DATE_) AS Week,
+            DATEDIFF(DAY, PTRNS.PROCDATE, PTRNS.DATE_) AS DueDays,
+            DATEDIFF(DAY, GETDATE(), PTRNS.DATE_)      AS RemainingDays,
+            CASE PTRNS.TRCURR
                 WHEN 0  THEN 'TL'
                 WHEN 1  THEN 'USD'
                 WHEN 20 THEN 'EUR'
                 ELSE ''
             END                     AS CurrencyType,
             CASE
-                WHEN PTRNS.LOGICALREF IS NULL THEN 'BEKLİYOR'
                 WHEN PTRNS.PAID = 0 THEN 'AÇIK'
                 WHEN PTRNS.PAID = 1 AND (PTRNS.TOTAL - ISNULL(KAPATILAN.KAPANAN_TUTAR, 0)) > 0 THEN 'KISMİ ÖDEME'
                 ELSE 'KAPALI'
@@ -1004,22 +1019,30 @@ namespace Koala.Yedpa.Service.Services
             (
                 SELECT SUM(PT2.TOTAL)
                 FROM LG_{LogoSetting.Firm}_{LogoSetting.Period}_PAYTRANS PT2
-                WHERE PT2.FICHEREF = INVFC.LOGICALREF
+                WHERE PT2.FICHEREF = PTRNS.FICHEREF
                   AND PT2.MODULENR = 4
                   AND PT2.SIGN = 0
                   AND PT2.CROSSREF = 0
                   AND PT2.CANCELLED = 0
             )                       AS TotalPayTransForInvoice,
             INVFC.CAPIBLOCK_MODIFIEDDATE AS ModifiedDate
-        FROM LG_{LogoSetting.Firm}_{LogoSetting.Period}_INVOICE AS INVFC
-        LEFT JOIN LG_{LogoSetting.Firm}_{LogoSetting.Period}_PAYTRANS AS PTRNS
-            ON PTRNS.FICHEREF = INVFC.LOGICALREF
-            AND PTRNS.MODULENR = 4
-            AND PTRNS.SIGN = 0
-            AND PTRNS.CROSSREF = 0
-            AND PTRNS.CANCELLED = 0
-        LEFT JOIN LG_{LogoSetting.Firm}_CLCARD AS CLNTC
+        -- DİKKAT: Sürücü tablo PAYTRANS olmak ZORUNDA (INNER JOIN).
+        -- 06.08.2026'da vade farkı faturalarını da listelemek için bu sorgu
+        -- FROM INVOICE LEFT JOIN PAYTRANS + OR PTRNS.LOGICALREF IS NULL haline
+        -- getirildi ve canlıda 2.503 açık fatura 27.915'e çıktı (11.08.2026 olayı).
+        -- Sebep: Logo bir ödeme planı satırını tamamen kapattığında satırın kendi
+        -- CROSSREF'ini doldurur. Kapanmış faturada CROSSREF=0 satır KALMAZ, LEFT JOIN
+        -- boş döner ve tahsil edilmiş fatura açık sayılır (DueDate/kalan tutar da NULL gelir).
+        -- Ölçüm: hayalet kayıtların 25.359/25.412'sinin PAYTRANS kaydı vardı, yani kapalıydı.
+        -- Vade farkı faturaları bu uçta BİLEREK listelenmiyor; gerekirse ayrı endpoint yazılacak.
+        FROM LG_{LogoSetting.Firm}_{LogoSetting.Period}_PAYTRANS AS PTRNS
+        INNER JOIN LG_{LogoSetting.Firm}_CLCARD AS CLNTC
             ON CLNTC.LOGICALREF = PTRNS.CARDREF
+        INNER JOIN LG_{LogoSetting.Firm}_{LogoSetting.Period}_INVOICE AS INVFC
+            ON INVFC.LOGICALREF = PTRNS.FICHEREF
+        -- Madde 1 fix: INVOICE.CLIENTREF → gerçek cari kart (1.A000.x formatı).
+        -- PAYTRANS.CARDREF bazen muhasebe grubu kartını (679.01.x) işaret edebilir;
+        -- INVOICE.CLIENTREF daima faturanın kesildiği gerçek cari kartı gösterir.
         LEFT JOIN LG_{LogoSetting.Firm}_CLCARD AS INVCL
             ON INVCL.LOGICALREF = INVFC.CLIENTREF
         LEFT OUTER JOIN (
@@ -1033,7 +1056,11 @@ namespace Koala.Yedpa.Service.Services
         ) AS KAPATILAN
             ON KAPATILAN.CROSSREF = PTRNS.LOGICALREF
         WHERE
-            INVFC.TRCODE IN (7, 8, 9, 11, 14)
+            PTRNS.MODULENR = 4
+            AND PTRNS.SIGN = 0
+            AND PTRNS.CROSSREF = 0
+            AND PTRNS.CANCELLED = 0
+            AND INVFC.TRCODE IN (7, 8, 9, 11, 14)
             AND INVFC.CANCELLED = 0{remainingCondition}{specodeWhereClause ?? ""}";
         }
 
