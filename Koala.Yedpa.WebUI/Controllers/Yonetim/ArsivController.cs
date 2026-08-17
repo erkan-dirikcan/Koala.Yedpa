@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authorization;
+using Koala.Yedpa.WebUI.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Koala.Yedpa.WebUI.Controllers.Yonetim;
@@ -6,7 +6,6 @@ namespace Koala.Yedpa.WebUI.Controllers.Yonetim;
 /// <summary>
 /// Arşiv Yönetimi MVC Controller
 /// </summary>
-[Authorize]
 public class ArsivController : Controller
 {
     private readonly ILogger<ArsivController> _logger;
@@ -20,6 +19,7 @@ public class ArsivController : Controller
     /// Arşiv ana sayfa - Raf/Bölme/Koli ağaç görünümü
     /// </summary>
     [HttpGet]
+    [Permission(PermissionCatalog.Management.ArsivView)]
     public IActionResult Index()
     {
         return View();
@@ -29,6 +29,7 @@ public class ArsivController : Controller
     /// Koli detay sayfası
     /// </summary>
     [HttpGet]
+    [Permission(PermissionCatalog.Management.ArsivView)]
     public IActionResult Detay(int id)
     {
         ViewData["KoliId"] = id;
@@ -39,6 +40,7 @@ public class ArsivController : Controller
     /// Yeni koli ekleme modal/popup
     /// </summary>
     [HttpGet]
+    [Permission(PermissionCatalog.Management.ArsivManage)]
     public IActionResult KoliEkle(int bolmeId)
     {
         ViewData["BolmeId"] = bolmeId;

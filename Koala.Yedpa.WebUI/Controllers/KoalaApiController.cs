@@ -1,6 +1,7 @@
 using Koala.Yedpa.Core.Dtos;
 using Koala.Yedpa.Core.Models.ViewModels;
 using Koala.Yedpa.Core.Services;
+using Koala.Yedpa.WebUI.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
@@ -13,6 +14,7 @@ namespace Koala.Yedpa.WebUI.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [ApiExplorerSettings(IgnoreApi = true)]
+[Permission(PermissionCatalog.Settings.View)]
 public class KoalaApiController : ControllerBase
 {
     private readonly ISettingsService _settingsService;

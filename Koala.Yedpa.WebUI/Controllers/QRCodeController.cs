@@ -1,6 +1,7 @@
 using Koala.Yedpa.Core.Dtos;
 using Koala.Yedpa.Core.Models;
 using Koala.Yedpa.Core.Services;
+using Koala.Yedpa.WebUI.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Security.Claims;
@@ -21,6 +22,7 @@ namespace Koala.Yedpa.WebUI.Controllers
         }
 
         // GET: /QRCode/Index
+        [Permission(PermissionCatalog.QRCode.View)]
         public async Task<IActionResult> Index()
         {
             _logger.LogInformation("Index called");
@@ -41,6 +43,7 @@ namespace Koala.Yedpa.WebUI.Controllers
 
         // GET: /QRCode/List - AJAX ile batch listesini getirir
         [HttpGet]
+        [Permission(PermissionCatalog.QRCode.View)]
         public async Task<IActionResult> List()
         {
             _logger.LogInformation("List called");
@@ -72,6 +75,7 @@ namespace Koala.Yedpa.WebUI.Controllers
 
         // GET: /QRCode/Create - QR kod oluşturma tanımlama sayfası
         [HttpGet]
+        [Permission(PermissionCatalog.QRCode.Create)]
         public async Task<IActionResult> Create()
         {
             _logger.LogInformation("Create GET called");
@@ -97,6 +101,7 @@ namespace Koala.Yedpa.WebUI.Controllers
         // POST: /QRCode/Create - QR kodları oluşturur
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Permission(PermissionCatalog.QRCode.Create)]
         public async Task<IActionResult> Create(QRCodeCreateViewModel model)
         {
             _logger.LogInformation("Create POST called with Year={Year}, PreCode={PreCode}", model?.QrCodeYear, model?.QrCodePreCode);
@@ -151,6 +156,7 @@ namespace Koala.Yedpa.WebUI.Controllers
         // POST: /QRCode/Refresh - Mevcut QR kodları yeniden oluşturur
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Permission(PermissionCatalog.QRCode.Create)]
         public async Task<IActionResult> Refresh()
         {
             _logger.LogInformation("Refresh called");
@@ -173,6 +179,7 @@ namespace Koala.Yedpa.WebUI.Controllers
         // POST: /QRCode/Delete - Tüm QR kodları siler
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Permission(PermissionCatalog.QRCode.Delete)]
         public async Task<IActionResult> Delete()
         {
             _logger.LogInformation("Delete called");
@@ -195,6 +202,7 @@ namespace Koala.Yedpa.WebUI.Controllers
         // POST: /QRCode/DeleteBatch - Belirli bir batch'i siler
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Permission(PermissionCatalog.QRCode.Delete)]
         public async Task<IActionResult> DeleteBatch(int batchId)
         {
             _logger.LogInformation("DeleteBatch called for batch ID {BatchId}", batchId);
@@ -215,6 +223,7 @@ namespace Koala.Yedpa.WebUI.Controllers
         }
 
         // GET: /QRCode/ViewBatch?batchId=1 - Oluşturulan QR görsellerini gösterir
+        [Permission(PermissionCatalog.QRCode.View)]
         public async Task<IActionResult> ViewBatch(int batchId)
         {
             _logger.LogInformation("ViewBatch called for batch ID {BatchId}", batchId);
@@ -236,6 +245,7 @@ namespace Koala.Yedpa.WebUI.Controllers
 
         // GET: /QRCode/QRCodesByBatch?batchId=1 - AJAX ile belirli batch'in QR kodlarını getirir
         [HttpGet]
+        [Permission(PermissionCatalog.QRCode.View)]
         public async Task<IActionResult> QRCodesByBatch(int batchId)
         {
             _logger.LogInformation("QRCodesByBatch called for batch ID {BatchId}", batchId);
@@ -267,6 +277,7 @@ namespace Koala.Yedpa.WebUI.Controllers
         }
 
         // GET: /QRCode/CurrentAccountDetail?partnerNo=xxx - Tekil QR detay
+        [Permission(PermissionCatalog.QRCode.View)]
         public async Task<IActionResult> CurrentAccountDetail(string partnerNo)
         {
             _logger.LogInformation("CurrentAccountDetail called for partner {PartnerNo}", partnerNo);
@@ -309,6 +320,7 @@ namespace Koala.Yedpa.WebUI.Controllers
         }
 
         // GET: /QRCode/CreatePdf (eski action - deprecated)
+        [Permission(PermissionCatalog.QRCode.Create)]
         public async Task<IActionResult> CreatePdf()
         {
             _logger.LogInformation("CreatePdf called (deprecated action)");

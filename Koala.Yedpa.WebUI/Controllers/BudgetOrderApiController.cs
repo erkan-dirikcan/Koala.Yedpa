@@ -2,7 +2,7 @@ using Koala.Yedpa.Core.Services;
 using Koala.Yedpa.Core.Models.ViewModels;
 using Koala.Yedpa.Core.Dtos;
 using Koala.Yedpa.Service.Services.BackgroundServices;
-using Microsoft.AspNetCore.Authorization;
+using Koala.Yedpa.WebUI.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -10,7 +10,6 @@ namespace Koala.Yedpa.WebUI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize]
 [ApiExplorerSettings(IgnoreApi = true)]
 public class BudgetOrderApiController : ControllerBase
 {
@@ -34,6 +33,7 @@ public class BudgetOrderApiController : ControllerBase
     /// <param name="model">Bütçe ve sipariş oluşturma modeli</param>
     /// <returns>Bütçe ve sipariş oluşturma sonucu</returns>
     [HttpPost]
+    [Permission(PermissionCatalog.BudgetOrder.Create)]
     public async Task<IActionResult> CreateBudgetAndOrders([FromBody] CreateBudgetOrderViewModel model)
     {
         _logger.LogInformation("CreateBudgetAndOrders called with SourceYear: {SourceYear}, BudgetType: {BudgetType}",
@@ -58,6 +58,7 @@ public class BudgetOrderApiController : ControllerBase
     /// <param name="model">Bütçe oluşturma modeli</param>
     /// <returns>Oluşturulan bütçe kayıtları</returns>
     [HttpPost("create-budget")]
+    [Permission(PermissionCatalog.BudgetOrder.Create)]
     public async Task<IActionResult> CreateBudget([FromBody] CreateBudgetOrderViewModel model)
     {
         _logger.LogInformation("CreateBudget called with SourceYear: {SourceYear}, BudgetType: {BudgetType}",
@@ -82,6 +83,7 @@ public class BudgetOrderApiController : ControllerBase
     /// <param name="model">Sipariş oluşturma modeli</param>
     /// <returns>Sipariş sonuçları</returns>
     [HttpPost("create-orders")]
+    [Permission(PermissionCatalog.BudgetOrder.Create)]
     public async Task<IActionResult> CreateOrdersForExistingBudget([FromBody] CreateOrdersForExistingBudgetViewModel model)
     {
         _logger.LogInformation("CreateOrdersForExistingBudget called for BudgetRatioId: {BudgetRatioId}, UserId: {UserId}",
@@ -109,6 +111,7 @@ public class BudgetOrderApiController : ControllerBase
     /// <param name="model">Yeni bütçe kaydetme modeli</param>
     /// <returns>Kaydetme sonucu</returns>
     [HttpPost("SaveNewBudget")]
+    [Permission(PermissionCatalog.BudgetOrder.Create)]
     public async Task<IActionResult> SaveNewBudget([FromBody] SaveNewBudgetViewModel model)
     {
         try
@@ -281,6 +284,7 @@ public class BudgetOrderApiController : ControllerBase
     /// <param name="request">Hesaplama isteği</param>
     /// <returns>Hesaplanan bütçe verileri</returns>
     [HttpPost("CalculateBudget")]
+    [Permission(PermissionCatalog.BudgetOrder.Calculate)]
     public async Task<IActionResult> CalculateBudget([FromBody] BudgetCalculationRequestViewModel request)
     {
         _logger.LogInformation("CalculateBudget called with SourceYear: {SourceYear}, BudgetType: {BudgetType}",
@@ -305,6 +309,7 @@ public class BudgetOrderApiController : ControllerBase
     /// <param name="request">Önizleme isteği</param>
     /// <returns>Önizleme sonucu</returns>
     [HttpPost("PreviewUpdate")]
+    [Permission(PermissionCatalog.BudgetOrder.Calculate)]
     public async Task<IActionResult> PreviewUpdate([FromBody] PreviewUpdateRequestViewModel request)
     {
         _logger.LogInformation("PreviewUpdate called for BudgetRatioId: {BudgetRatioId}", request?.Id);
@@ -331,8 +336,11 @@ public class BudgetOrderApiController : ControllerBase
     /// Test için basit bütçe oluşturma endpoint'i
     /// </summary>
     /// <returns>Bütçe oluşturma sonucu</returns>
+    // GÜVENLİK: Bu uç eskiden [AllowAnonymous] idi ve kimlik doğrulaması olmadan
+    // 2026 yılı için gerçek bütçe kaydı oluşturuyordu. Yetkiye bağlandı.
+    // TESLİM ÖNCESİ TAMAMEN KALDIRILMALI — bu bir test ucudur.
     [HttpGet("test-create")]
-    [AllowAnonymous]
+    [Permission(PermissionCatalog.BudgetOrder.Create)]
     public async Task<IActionResult> TestCreateBudget()
     {
         _logger.LogInformation("TestCreateBudget called");
@@ -377,6 +385,7 @@ public class BudgetOrderApiController : ControllerBase
     /// <param name="budgetRatioId">BudgetRatio ID</param>
     /// <returns>DuesStatistic ID'leri</returns>
     [HttpGet("GetDuesStatisticIds")]
+    [Permission(PermissionCatalog.BudgetOrder.View)]
     public async Task<IActionResult> GetDuesStatisticIds([FromQuery] string budgetRatioId)
     {
         _logger.LogInformation("GetDuesStatisticIds çağrıldı. BudgetRatioId: {BudgetRatioId}", budgetRatioId);
@@ -420,6 +429,7 @@ public class BudgetOrderApiController : ControllerBase
     /// <param name="model">Aktarım modeli</param>
     /// <returns>Aktarım sonuçları</returns>
     [HttpPost("Transfer")]
+    [Permission(PermissionCatalog.BudgetOrder.Transfer)]
     public async Task<IActionResult> TransferDuesStatistics([FromBody] TransferDuesStatisticsViewModel model)
     {
         _logger.LogInformation("Transfer job kuyruğa eklendi. Kayıt sayısı: {Count}, Debug Mod: {IsDebugMode}",

@@ -1,7 +1,7 @@
 using Koala.Yedpa.Core.Dtos;
 using Koala.Yedpa.Core.Models.ViewModels;
 using Koala.Yedpa.Core.Services;
-using Microsoft.AspNetCore.Authorization;
+using Koala.Yedpa.WebUI.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Koala.Yedpa.WebUI.Controllers;
@@ -11,7 +11,9 @@ namespace Koala.Yedpa.WebUI.Controllers;
 /// </summary>
 [Route("api/[controller]")]
 [ApiController]
-[Authorize]
+// Bu uçları hem bütçe emri hem işyerleri ekranı çağırıyor (yıl listesi).
+// Bu yüzden BudgetOrder.* değil, ayrı DuesStatistic.View izni kullanılıyor.
+[Permission(PermissionCatalog.DuesStatistic.View)]
 [ApiExplorerSettings(IgnoreApi = true)]
 public class DuesStatisticApiController : ControllerBase
 {

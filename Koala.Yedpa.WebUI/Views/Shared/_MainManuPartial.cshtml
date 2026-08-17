@@ -55,7 +55,10 @@
 							{
 								<li class="menu-item @ManageNavPages.BudgetOrderNavClass(ViewContext)" aria-haspopup="true"><a class="menu-link " asp-controller="BudgetOrder" asp-action="Index"><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">Bütçe & Sipariş</span></a></li>
 							}
-							<li class="menu-item @ManageNavPages.WorkplaceIndexNavClass(ViewContext)" aria-haspopup="true"><a class="menu-link " asp-controller="Workplace" asp-action="Index"><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">İşyerleri</span></a></li>
+							@if (User.HasPermission(PermissionCatalog.Workplace.View))
+							{
+								<li class="menu-item @ManageNavPages.WorkplaceIndexNavClass(ViewContext)" aria-haspopup="true"><a class="menu-link " asp-controller="Workplace" asp-action="Index"><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">İşyerleri</span></a></li>
+							}
 							@if (User.HasPermission(PermissionCatalog.BulkInvoice.View))
 							{
 								<li class="menu-item" aria-haspopup="true"><a class="menu-link" asp-controller="BulkInvoice" asp-action="Manage"><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">Toplu Faturalandırma</span></a></li>
@@ -64,17 +67,20 @@
                     </div>
                 </li>
 
-                <li class="menu-item  menu-item-submenu @ManageNavPages.QRCodeNavClass(ViewContext)" aria-haspopup="true" data-menu-toggle="hover">
-					<a href="javascript:;" class="menu-link menu-toggle">
-						<i class="menu-icon fas fa-qrcode"></i><span class="menu-text">QR Kod</span><i class="menu-arrow"></i>
-					</a>
-                    <div class="menu-submenu ">
-                        <i class="menu-arrow"></i>
-                        <ul class="menu-subnav">
-							<li class="menu-item @ManageNavPages.QRCodeIndexNavClass(ViewContext)" aria-haspopup="true"><a class="menu-link " asp-controller="QRCode" asp-action="Index"><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">QR Kod Listesi</span></a></li>
-                        </ul>
-                    </div>
-                </li>
+				@if (User.HasPermission(PermissionCatalog.QRCode.View))
+				{
+					<li class="menu-item  menu-item-submenu @ManageNavPages.QRCodeNavClass(ViewContext)" aria-haspopup="true" data-menu-toggle="hover">
+						<a href="javascript:;" class="menu-link menu-toggle">
+							<i class="menu-icon fas fa-qrcode"></i><span class="menu-text">QR Kod</span><i class="menu-arrow"></i>
+						</a>
+						<div class="menu-submenu ">
+							<i class="menu-arrow"></i>
+							<ul class="menu-subnav">
+								<li class="menu-item @ManageNavPages.QRCodeIndexNavClass(ViewContext)" aria-haspopup="true"><a class="menu-link " asp-controller="QRCode" asp-action="Index"><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">QR Kod Listesi</span></a></li>
+							</ul>
+						</div>
+					</li>
+				}
 
 				@* Yönetim menüsü geçici olarak gizlendi
 					<li class="menu-item  menu-item-submenu @ManageNavPages.YonetimNavClass(ViewContext)" aria-haspopup="true" data-menu-toggle="hover">

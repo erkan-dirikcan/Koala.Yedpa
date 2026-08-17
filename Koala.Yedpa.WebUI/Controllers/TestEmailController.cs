@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Koala.Yedpa.Core.Dtos;
 using Koala.Yedpa.Core.Services;
+using Koala.Yedpa.WebUI.Authorization;
 
 namespace Koala.Yedpa.WebUI.Controllers
 {
@@ -9,6 +10,7 @@ namespace Koala.Yedpa.WebUI.Controllers
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
+    [Permission(PermissionCatalog.SystemMaintenance.TestEmail)]
     public class TestEmailController : ControllerBase
     {
         private readonly IMessage34EmailService _message34EmailService;

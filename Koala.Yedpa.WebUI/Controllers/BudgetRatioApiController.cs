@@ -1,6 +1,7 @@
 using Koala.Yedpa.Core.Dtos;
 using Koala.Yedpa.Core.Models.ViewModels;
 using Koala.Yedpa.Core.Services;
+using Koala.Yedpa.WebUI.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
@@ -35,6 +36,7 @@ public class BudgetRatioApiController : ControllerBase
     [SwaggerResponse(400, "Geçersiz istek")]
     [SwaggerResponse(401, "Yetkisiz erişim")]
     [SwaggerResponse(500, "Sunucu hatası")]
+    [Permission(PermissionCatalog.BudgetOrder.RatioView)]
     public async Task<IActionResult> GetById(string id)
     {
         _logger.LogInformation("GetById called with ID {BudgetRatioId}", id);
@@ -58,6 +60,7 @@ public class BudgetRatioApiController : ControllerBase
     [SwaggerResponse(400, "Geçersiz istek")]
     [SwaggerResponse(401, "Yetkisiz erişim")]
     [SwaggerResponse(500, "Sunucu hatası")]
+    [Permission(PermissionCatalog.BudgetOrder.RatioView)]
     public async Task<IActionResult> GetAll()
     {
         _logger.LogInformation("GetAll called");
@@ -82,6 +85,7 @@ public class BudgetRatioApiController : ControllerBase
     [SwaggerResponse(400, "Geçersiz istek")]
     [SwaggerResponse(401, "Yetkisiz erişim")]
     [SwaggerResponse(500, "Sunucu hatası")]
+    [Permission(PermissionCatalog.BudgetOrder.RatioView)]
     public async Task<IActionResult> GetByYear(int year)
     {
         _logger.LogInformation("GetByYear called with year {Year}", year);
@@ -106,6 +110,7 @@ public class BudgetRatioApiController : ControllerBase
     [SwaggerResponse(400, "Geçersiz istek")]
     [SwaggerResponse(401, "Yetkisiz erişim")]
     [SwaggerResponse(500, "Sunucu hatası")]
+    [Permission(PermissionCatalog.BudgetOrder.RatioManage)]
     public async Task<IActionResult> Create([FromBody] CreateBudgetRatioViewModel model)
     {
         _logger.LogInformation("Create called with Code={Code}, Year={Year}", model?.Code, model?.Year);
@@ -136,6 +141,7 @@ public class BudgetRatioApiController : ControllerBase
     [SwaggerResponse(400, "Geçersiz istek")]
     [SwaggerResponse(401, "Yetkisiz erişim")]
     [SwaggerResponse(500, "Sunucu hatası")]
+    [Permission(PermissionCatalog.BudgetOrder.RatioManage)]
     public async Task<IActionResult> Update([FromBody] UpdateBudgetRatioViewModel model)
     {
         _logger.LogInformation("Update called for budget ratio ID {BudgetRatioId}", model?.Id);
@@ -166,6 +172,7 @@ public class BudgetRatioApiController : ControllerBase
     [SwaggerResponse(400, "Geçersiz istek")]
     [SwaggerResponse(401, "Yetkisiz erişim")]
     [SwaggerResponse(500, "Sunucu hatası")]
+    [Permission(PermissionCatalog.BudgetOrder.RatioManage)]
     public async Task<IActionResult> Delete(string id)
     {
         _logger.LogInformation("Delete called for budget ratio ID {BudgetRatioId}", id);
@@ -191,6 +198,7 @@ public class BudgetRatioApiController : ControllerBase
     [SwaggerResponse(400, "Geçersiz istek")]
     [SwaggerResponse(401, "Yetkisiz erişim")]
     [SwaggerResponse(500, "Sunucu hatası")]
+    [Permission(PermissionCatalog.BudgetOrder.RatioView)]
     public async Task<IActionResult> CheckExists([FromQuery] string code, [FromQuery] int year)
     {
         _logger.LogInformation("CheckExists called with Code={Code}, Year={Year}", code, year);

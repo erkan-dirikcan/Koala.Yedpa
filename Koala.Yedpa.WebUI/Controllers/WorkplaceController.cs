@@ -1,5 +1,6 @@
 using Koala.Yedpa.Core.Models.ViewModels;
 using Koala.Yedpa.Core.Services;
+using Koala.Yedpa.WebUI.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,6 +22,7 @@ public class WorkplaceController : Controller
         _webHostEnvironment = webHostEnvironment;
     }
 
+    [Permission(PermissionCatalog.Workplace.View)]
     public async Task<IActionResult> Index()
     {
         ViewData["ActivePage"] = "WorkplaceIndex";
@@ -34,6 +36,7 @@ public class WorkplaceController : Controller
     }
 
     [HttpGet]
+    [Permission(PermissionCatalog.Workplace.View)]
     public async Task<IActionResult> Detail(string id)
     {
         if (string.IsNullOrWhiteSpace(id))
@@ -54,6 +57,7 @@ public class WorkplaceController : Controller
     }
 
     [HttpGet]
+    [Permission(PermissionCatalog.Workplace.Update)]
     public async Task<IActionResult> Update(string id)
     {
         if (string.IsNullOrWhiteSpace(id))
@@ -75,6 +79,7 @@ public class WorkplaceController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Permission(PermissionCatalog.Workplace.Update)]
     public async Task<IActionResult> Update(WorkplaceDetailViewModel model)
     {
         if (!ModelState.IsValid)
@@ -96,6 +101,7 @@ public class WorkplaceController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Permission(PermissionCatalog.Workplace.SendBudgetEmail)]
     public async Task<IActionResult> SendBulkBudgetEmails(int year)
     {
         try
@@ -129,6 +135,7 @@ public class WorkplaceController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Permission(PermissionCatalog.Workplace.ExportBudgetExcel)]
     public async Task<IActionResult> GenerateBudgetExcel(int year)
     {
         try

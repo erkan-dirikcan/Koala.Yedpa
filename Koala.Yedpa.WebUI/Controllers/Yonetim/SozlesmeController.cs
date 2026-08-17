@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authorization;
+using Koala.Yedpa.WebUI.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Koala.Yedpa.WebUI.Controllers.Yonetim;
@@ -6,7 +6,6 @@ namespace Koala.Yedpa.WebUI.Controllers.Yonetim;
 /// <summary>
 /// Sözleşme Yönetimi MVC Controller
 /// </summary>
-[Authorize]
 public class SozlesmeController : Controller
 {
     private readonly ILogger<SozlesmeController> _logger;
@@ -20,6 +19,7 @@ public class SozlesmeController : Controller
     /// Sözleşme listesi sayfası
     /// </summary>
     [HttpGet]
+    [Permission(PermissionCatalog.Management.SozlesmeView)]
     public IActionResult Index()
     {
         return View();
@@ -29,6 +29,7 @@ public class SozlesmeController : Controller
     /// Sözleşme detay sayfası
     /// </summary>
     [HttpGet]
+    [Permission(PermissionCatalog.Management.SozlesmeView)]
     public IActionResult Detay(int id)
     {
         ViewData["SozlesmeId"] = id;
@@ -39,6 +40,7 @@ public class SozlesmeController : Controller
     /// Yeni sözleşme oluşturma sayfası
     /// </summary>
     [HttpGet]
+    [Permission(PermissionCatalog.Management.SozlesmeManage)]
     public IActionResult Yeni()
     {
         return View();
@@ -48,6 +50,7 @@ public class SozlesmeController : Controller
     /// Sözleşme düzenleme sayfası
     /// </summary>
     [HttpGet]
+    [Permission(PermissionCatalog.Management.SozlesmeManage)]
     public IActionResult Duzenle(int id)
     {
         ViewData["SozlesmeID"] = id;
@@ -58,6 +61,7 @@ public class SozlesmeController : Controller
     /// Sözleşme PDF yazdırma
     /// </summary>
     [HttpGet]
+    [Permission(PermissionCatalog.Management.SozlesmeView)]
     public async Task<IActionResult> Yazdir(int id)
     {
         // API'den PDF çek ve download et

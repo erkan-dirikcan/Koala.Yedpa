@@ -646,7 +646,18 @@ public class QRCodeService : IQRCodeService
     {
         try
         {
-            var fullPath = Path.Combine(_environment.WebRootPath, filePath);
+            // GÜVENLİK: filePath dışarıdan (query string) geliyor. Path.Combine tek başına
+            // "..\..\appsettings.json" gibi bir girdiyi engellemez; wwwroot dışına çıkılıp
+            // sunucudaki herhangi bir dosya okunabilir. Bu yüzden çözümlenmiş tam yolun
+            // wwwroot altında kaldığını doğruluyoruz.
+            var webRoot = Path.GetFullPath(_environment.WebRootPath);
+            var fullPath = Path.GetFullPath(Path.Combine(webRoot, filePath));
+
+            if (!fullPath.StartsWith(webRoot + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
+            {
+                _logger.LogWarning("GetQRCodeImageAsync: wwwroot disina cikma denemesi engellendi. FilePath: {FilePath}", filePath);
+                return ResponseDto<byte[]>.FailData(400, "Geçersiz dosya yolu", $"Dosya: {filePath}", false);
+            }
 
             if (!File.Exists(fullPath))
             {

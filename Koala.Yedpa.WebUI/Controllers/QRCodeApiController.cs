@@ -1,6 +1,6 @@
 using Koala.Yedpa.Core.Dtos;
 using Koala.Yedpa.Core.Services;
-using Microsoft.AspNetCore.Authorization;
+using Koala.Yedpa.WebUI.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Koala.Yedpa.WebUI.Controllers;
@@ -10,7 +10,6 @@ namespace Koala.Yedpa.WebUI.Controllers;
 /// </summary>
 [Route("api/[controller]")]
 [ApiController]
-[Authorize]
 [ApiExplorerSettings(IgnoreApi = true)]
 public class QRCodeApiController : ControllerBase
 {
@@ -31,6 +30,7 @@ public class QRCodeApiController : ControllerBase
     /// <param name="request">QR Code generation request</param>
     /// <returns>QR Code image bytes</returns>
     [HttpPost("Generate")]
+    [Permission(PermissionCatalog.QRCode.Create)]
     public async Task<IActionResult> Generate([FromBody] QRCodeDto request)
     {
         _logger.LogInformation("Generate called with Text: {Text}, Size: {Width}x{Height}", request?.Text, request?.Width, request?.Height);
@@ -60,6 +60,7 @@ public class QRCodeApiController : ControllerBase
     /// <param name="request">QR Code generation request</param>
     /// <returns>QR Code image bytes</returns>
     [HttpPost("GenerateWithLogo")]
+    [Permission(PermissionCatalog.QRCode.Create)]
     public async Task<IActionResult> GenerateWithLogo([FromBody] QRCodeDto request)
     {
         _logger.LogInformation("GenerateWithLogo called with Text: {Text}, Size: {Width}x{Height}", request?.Text, request?.Width, request?.Height);
@@ -90,6 +91,7 @@ public class QRCodeApiController : ControllerBase
     /// <param name="partnerNo">Partner number</param>
     /// <returns>QR Code file path</returns>
     [HttpGet("GenerateForWorkplace")]
+    [Permission(PermissionCatalog.QRCode.Create)]
     public async Task<IActionResult> GenerateForWorkplace([FromQuery] string workplaceCode, [FromQuery] string partnerNo)
     {
         _logger.LogInformation("GenerateForWorkplace called with WorkplaceCode: {WorkplaceCode}, PartnerNo: {PartnerNo}", workplaceCode, partnerNo);
@@ -118,8 +120,11 @@ public class QRCodeApiController : ControllerBase
     /// </summary>
     /// <param name="filePath">QR code file path</param>
     /// <returns>QR Code image</returns>
+    // GÜVENLİK: Bu uç eskiden [AllowAnonymous] idi ve filePath doğrulanmıyordu;
+    // kimlik doğrulamasız dizin geçişiyle wwwroot dışındaki dosyalar okunabiliyordu.
+    // Kod tabanında bu ucu çağıran hiçbir view/JS bulunamadı.
     [HttpGet("GetImage")]
-    [AllowAnonymous]
+    [Permission(PermissionCatalog.QRCode.View)]
     public async Task<IActionResult> GetImage([FromQuery] string filePath)
     {
         _logger.LogInformation("GetImage called for FilePath: {FilePath}", filePath);

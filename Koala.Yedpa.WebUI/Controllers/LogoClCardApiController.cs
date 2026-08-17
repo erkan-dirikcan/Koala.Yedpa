@@ -1,6 +1,7 @@
 ﻿using Koala.Yedpa.Core.Dtos;
 using Koala.Yedpa.Core.Models.ViewModels;
 using Koala.Yedpa.Core.Services;
+using Koala.Yedpa.WebUI.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -22,7 +23,8 @@ namespace Koala.Yedpa.WebUI.Controllers
         }
         [HttpGet()]
         [ApiExplorerSettings(IgnoreApi = true)]
-        public IActionResult Test1()
+        [Permission(PermissionCatalog.SystemMaintenance.ConnectionTest)]
+    public IActionResult Test1()
         {
             return Ok();
         }
@@ -35,7 +37,8 @@ namespace Koala.Yedpa.WebUI.Controllers
         [SwaggerResponse(200, "Başarılı", typeof(ResponseListDto<List<ClCardInfoViewModel>>))]
         [SwaggerResponse(401, "Yetkisiz erişim")]
         [SwaggerResponse(500, "Sunucu hatası")]
-        public async Task<IActionResult> ClCardInfoAll(
+        [Permission(PermissionCatalog.CurrentAccount.View)]
+    public async Task<IActionResult> ClCardInfoAll(
             [FromQuery] int perPage = 50,
             [FromQuery] int pageNo = 1)
         {
@@ -53,7 +56,8 @@ namespace Koala.Yedpa.WebUI.Controllers
         [SwaggerResponse(400, "Geçersiz istek")]
         [SwaggerResponse(401, "Yetkisiz erişim")]
         [SwaggerResponse(500, "Sunucu hatası")]
-        public async Task<IActionResult> Search(
+        [Permission(PermissionCatalog.CurrentAccount.View)]
+    public async Task<IActionResult> Search(
             [FromBody] ClCardInfoSearchViewModel searchModel,
             [FromQuery] int perPage = 50,
             [FromQuery] int pageNo = 1)
@@ -71,7 +75,8 @@ namespace Koala.Yedpa.WebUI.Controllers
         [HttpGet("test")]
         [ApiExplorerSettings(IgnoreApi = true)]
         [SwaggerOperation(Summary = "API erişim testi - token geçerli mi?")]
-        public IActionResult Test()
+        [Permission(PermissionCatalog.SystemMaintenance.ConnectionTest)]
+    public IActionResult Test()
         {
             //return Ok();
             return Ok(new { message = "LogoClCard API çalışıyor! Token geçerli.", user = User.Identity?.Name });

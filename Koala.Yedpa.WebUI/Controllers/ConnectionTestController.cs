@@ -1,3 +1,4 @@
+using Koala.Yedpa.WebUI.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -9,6 +10,7 @@ namespace Koala.Yedpa.WebUI.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [ApiExplorerSettings(IgnoreApi = true)]
+[Permission(PermissionCatalog.SystemMaintenance.ConnectionTest)]
 public class ConnectionTestController : ControllerBase
 {
     /// <summary>

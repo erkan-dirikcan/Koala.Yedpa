@@ -1,7 +1,7 @@
 using Koala.Yedpa.Core.Dtos;
 using Koala.Yedpa.Core.Dtos.BulkInvoice;
 using Koala.Yedpa.Core.Services;
-using Microsoft.AspNetCore.Authorization;
+using Koala.Yedpa.WebUI.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -12,7 +12,9 @@ namespace Koala.Yedpa.WebUI.Controllers;
 /// </summary>
 [Route("api/BulkInvoice")]
 [ApiController]
-[Authorize]
+// Sınıf seviyesinde View, aktarım tetikleyen uçta ayrıca Transfer istenir
+// (iki AuthorizeAttribute VE mantığıyla çalışır).
+[Permission(PermissionCatalog.BulkInvoice.View)]
 [ApiExplorerSettings(IgnoreApi = true)]
 public class BulkInvoiceApiController : ControllerBase
 {
@@ -77,6 +79,7 @@ public class BulkInvoiceApiController : ControllerBase
     /// <param name="model">Oturum oluşturma modeli</param>
     /// <returns>Oluşturulan oturum ID'si</returns>
     [HttpPost("create-session")]
+    [Permission(PermissionCatalog.BulkInvoice.Transfer)]
     public async Task<IActionResult> CreateSession([FromBody] CreateBulkInvoiceSessionDto model)
     {
         _logger.LogInformation("CreateSession called with InvoiceDate={InvoiceDate}, SelectedLinesCount={SelectedLinesCount}",

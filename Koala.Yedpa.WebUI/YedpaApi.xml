@@ -45,6 +45,26 @@
              3. Controller/action üzerine [Permission(...)] koy
              </summary>
         </member>
+        <member name="T:Koala.Yedpa.WebUI.Authorization.PermissionCatalog.DuesStatistic">
+            <summary>
+            Aidat istatistiği okuma izni. DİKKAT: bu uçları HEM bütçe emri ekranı
+            HEM DE işyerleri ekranı çağırıyor (yıl listesi açılır kutusu).
+            Bu yüzden BudgetOrder altına değil, ayrı modül olarak konuldu;
+            Workplace.View verilen role bu izin de verilmezse işyerleri ekranındaki
+            yıl listesi sessizce boş kalır.
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.WebUI.Authorization.PermissionCatalog.Management">
+            <summary>
+            Controllers/Yonetim altındaki arıza, arşiv, otopark ve sözleşme ekranları.
+            Menüsü şu an gizli ama controller'lar URL'den erişilebilir durumda.
+            </summary>
+        </member>
+        <member name="T:Koala.Yedpa.WebUI.Authorization.PermissionCatalog.SystemMaintenance">
+            <summary>
+            Bakım/teşhis uçları. Normal kullanıcıya verilmez; sadece sistem yöneticisi rolüne.
+            </summary>
+        </member>
         <member name="F:Koala.Yedpa.WebUI.Authorization.PermissionCatalog.AllPermissionNames">
             <summary>Katalogdaki tüm izin adları (düz liste).</summary>
         </member>

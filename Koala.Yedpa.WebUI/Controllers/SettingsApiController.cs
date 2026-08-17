@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Koala.Yedpa.WebUI.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Koala.Yedpa.WebUI.Controllers
 {
@@ -8,6 +9,7 @@ namespace Koala.Yedpa.WebUI.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [ApiExplorerSettings(IgnoreApi = true)]
+    [Permission(PermissionCatalog.Settings.View)]
     public class SettingsApiController : ControllerBase
     {
         /// <summary>

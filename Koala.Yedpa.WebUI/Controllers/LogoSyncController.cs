@@ -1,4 +1,5 @@
 using Koala.Yedpa.Core.Services;
+using Koala.Yedpa.WebUI.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Koala.Yedpa.WebUI.Controllers
@@ -6,6 +7,7 @@ namespace Koala.Yedpa.WebUI.Controllers
     [Route("api/[controller]/[action]")]
     [ApiController]
    //[ApiExplorerSettings(IgnoreApi = true)]
+    [Permission(PermissionCatalog.SystemMaintenance.LogoSync)]
     public class LogoSyncController : ControllerBase
     {
 

@@ -1,6 +1,6 @@
 using Koala.Yedpa.Core.Dtos;
 using Koala.Yedpa.Core.Services;
-using Microsoft.AspNetCore.Authorization;
+using Koala.Yedpa.WebUI.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Koala.Yedpa.WebUI.Controllers;
@@ -10,7 +10,7 @@ namespace Koala.Yedpa.WebUI.Controllers;
 /// </summary>
 [Route("api/Dashboard")]
 [ApiController]
-[Authorize]
+[Permission(PermissionCatalog.Dashboard.View)]
 public class DashboardApiController : ControllerBase
 {
     private readonly IApiLogoSqlDataService _logoService;

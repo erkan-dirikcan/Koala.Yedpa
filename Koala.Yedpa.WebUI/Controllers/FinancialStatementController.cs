@@ -1,6 +1,7 @@
 using Koala.Yedpa.Core.Dtos;
 using Koala.Yedpa.Core.Models.ViewModels;
 using Koala.Yedpa.Core.Services;
+using Koala.Yedpa.WebUI.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -10,7 +11,7 @@ namespace Koala.Yedpa.WebUI.Controllers
     [ApiController]
     [Produces("application/json")]
     [SwaggerTag("Financial Statement API")]
-
+    [Permission(PermissionCatalog.CurrentAccount.StatementView)]
     public class FinancialStatementController : ControllerBase
     {
         private readonly IApiLogoSqlDataService _service;

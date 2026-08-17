@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authorization;
+using Koala.Yedpa.WebUI.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Koala.Yedpa.WebUI.Controllers.Yonetim;
@@ -6,7 +6,6 @@ namespace Koala.Yedpa.WebUI.Controllers.Yonetim;
 /// <summary>
 /// Otopark Yönetimi MVC Controller
 /// </summary>
-[Authorize]
 public class OtoparkController : Controller
 {
     private readonly ILogger<OtoparkController> _logger;
@@ -20,6 +19,7 @@ public class OtoparkController : Controller
     /// Otopark durumu/listesi sayfası
     /// </summary>
     [HttpGet]
+    [Permission(PermissionCatalog.Management.OtoparkView)]
     public IActionResult Index()
     {
         return View();
@@ -29,6 +29,7 @@ public class OtoparkController : Controller
     /// Giriş işlemi sayfası
     /// </summary>
     [HttpGet]
+    [Permission(PermissionCatalog.Management.OtoparkManage)]
     public IActionResult Giris()
     {
         return View();
@@ -38,6 +39,7 @@ public class OtoparkController : Controller
     /// Çıkış işlemi sayfası
     /// </summary>
     [HttpGet]
+    [Permission(PermissionCatalog.Management.OtoparkManage)]
     public IActionResult Cikis()
     {
         return View();
@@ -47,6 +49,7 @@ public class OtoparkController : Controller
     /// Abonelik yönetimi sayfası
     /// </summary>
     [HttpGet]
+    [Permission(PermissionCatalog.Management.OtoparkManage)]
     public IActionResult Abonelik()
     {
         return View();

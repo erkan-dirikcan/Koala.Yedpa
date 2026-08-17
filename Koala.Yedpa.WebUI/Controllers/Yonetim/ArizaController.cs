@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authorization;
+using Koala.Yedpa.WebUI.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Koala.Yedpa.WebUI.Controllers.Yonetim;
@@ -6,7 +6,6 @@ namespace Koala.Yedpa.WebUI.Controllers.Yonetim;
 /// <summary>
 /// Arıza Yönetimi MVC Controller
 /// </summary>
-[Authorize]
 public class ArizaController : Controller
 {
     private readonly ILogger<ArizaController> _logger;
@@ -20,6 +19,7 @@ public class ArizaController : Controller
     /// Arıza listesi sayfası
     /// </summary>
     [HttpGet]
+    [Permission(PermissionCatalog.Management.ArizaView)]
     public IActionResult Index()
     {
         return View();
@@ -29,6 +29,7 @@ public class ArizaController : Controller
     /// Arıza detay sayfası (hareketler ile birlikte)
     /// </summary>
     [HttpGet]
+    [Permission(PermissionCatalog.Management.ArizaView)]
     public IActionResult Detay(int id)
     {
         ViewData["ArizaId"] = id;
@@ -39,6 +40,7 @@ public class ArizaController : Controller
     /// Yeni arıza oluşturma sayfası
     /// </summary>
     [HttpGet]
+    [Permission(PermissionCatalog.Management.ArizaManage)]
     public IActionResult Yeni()
     {
         return View();
@@ -48,6 +50,7 @@ public class ArizaController : Controller
     /// Arıza atama/personel atama sayfası
     /// </summary>
     [HttpGet]
+    [Permission(PermissionCatalog.Management.ArizaManage)]
     public IActionResult Atama(int id)
     {
         ViewData["ArizaId"] = id;
