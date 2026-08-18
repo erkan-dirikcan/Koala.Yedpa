@@ -1,4 +1,6 @@
 using Koala.Yedpa.Core.Models;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -40,6 +42,25 @@ public static class IdentityMocks
             new IdentityErrorDescriber(),
             Mock.Of<IServiceProvider>(),
             Mock.Of<ILogger<UserManager<AppUser>>>())
+        {
+            CallBase = false
+        };
+    }
+
+    /// <summary>
+    /// SignInManager de UserManager gibi virtual metotlarla (PasswordSignInAsync vb.)
+    /// doğrudan mock'lanabilir; constructor bağımlılıkları boş mock'larla doldurulur.
+    /// </summary>
+    public static Mock<SignInManager<AppUser>> CreateSignInManagerMock(UserManager<AppUser> userManager)
+    {
+        return new Mock<SignInManager<AppUser>>(
+            userManager,
+            Mock.Of<IHttpContextAccessor>(),
+            Mock.Of<IUserClaimsPrincipalFactory<AppUser>>(),
+            Options.Create(new IdentityOptions()),
+            Mock.Of<ILogger<SignInManager<AppUser>>>(),
+            Mock.Of<IAuthenticationSchemeProvider>(),
+            Mock.Of<IUserConfirmation<AppUser>>())
         {
             CallBase = false
         };

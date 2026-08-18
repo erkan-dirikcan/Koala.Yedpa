@@ -113,8 +113,27 @@ namespace Koala.Yedpa.WebUI.Controllers
                 //TODO : Bu alan daha sonra doldurulacak
             }
 
+            // res.Succeeded kontrolu ZORUNLU. Eskiden yoktu: sifre yanlis oldugunda
+            // IsLockedOut/IsNotAllowed/RequiresTwoFactor dallarinin hicbirine girmiyor,
+            // asagi dusup Redirect calisiyordu. Oturum acilmadigi icin global FallbackPolicy
+            // kullaniciyi Login'e geri atiyor, disaridan "sifreyi kabul etti ama atti" gibi
+            // gorunuyordu. Her deneme AccessFailedCount'u artirdigi icin kullanici
+            // 5. denemede kilitleniyor ve hatanin sebebini hicbir yerde goremiyordu.
+            // 18.08.2026'da canlida boyle yasandi.
+            if (!res.Succeeded)
+            {
+                ModelState.AddModelError(string.Empty,
+                    "Kullanıcı adı veya şifre hatalı. Lütfen kontrol ederek tekrar deneyiniz.");
+                return View(model);
+            }
 
-            returnUrl = returnUrl ?? Url.Action("Index", "Dashboard");
+            // Acik yonlendirme (open redirect) korumasi: returnUrl disaridan geliyor,
+            // yalnizca uygulama ici goreli adreslere izin ver.
+            if (string.IsNullOrWhiteSpace(returnUrl) || !Url.IsLocalUrl(returnUrl))
+            {
+                returnUrl = Url.Action("Index", "Dashboard")!;
+            }
+
             return Redirect(returnUrl);
 
         }
