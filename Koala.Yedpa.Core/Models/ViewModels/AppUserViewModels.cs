@@ -111,8 +111,22 @@ namespace Koala.Yedpa.Core.Models.ViewModels
     {
         [email: EmailAddress]
         public string? Email { get; set; }
+
+        [Required(ErrorMessage = "Geçersiz veya süresi dolmuş şifre sıfırlama bağlantısı.")]
+        public string? UserId { get; set; }
+
+        [Required(ErrorMessage = "Geçersiz veya süresi dolmuş şifre sıfırlama bağlantısı.")]
         public string? Token { get; set; }
+
+        [Required(ErrorMessage = "Şifre Alanı Boş Bırakılamaz")]
+        [DataType(DataType.Password)]
+        [Display(Name = "Şifre")]
         public string? Password { get; set; }
+
+        [DataType(DataType.Password)]
+        [Display(Name = "Şifre Tekrar")]
+        [Compare(nameof(Password), ErrorMessage = "Şifreler eşleşmiyor.")]
+        public string? ConfirmPassword { get; set; }
     }
     public class LoginViewModel
     {

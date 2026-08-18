@@ -171,40 +171,44 @@ namespace Koala.Yedpa.WebUI.Controllers
         [AllowAnonymous]
         public IActionResult ResetPassword(string userId, string token)
         {
-            TempData["UserId"] = userId;
-            TempData["Token"] = token;
+            if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(token))
+            {
+                TempData["Error"] = "Geçersiz veya süresi dolmuş şifre sıfırlama bağlantısı.";
+                return RedirectToAction("Login", "User");
+            }
 
-            return View();
+            return View(new ResetPasswordViewModel { UserId = userId, Token = token });
         }
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
         {
+            if (string.IsNullOrWhiteSpace(model.UserId) || string.IsNullOrWhiteSpace(model.Token))
+            {
+                ModelState.AddModelError(string.Empty, "Geçersiz veya süresi dolmuş şifre sıfırlama bağlantısı.");
+                return View(model);
+            }
+
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
             //TODO : Try Catch eklenecek
 
-            var userId = TempData["UserId"];
-            var token = TempData["Token"];
-            if (userId == null || token == null)
-            {
-                throw new Exception("İşlem sırasında bir hata meydana geldi");
-            }
-            var user = await _userManager.FindByIdAsync(userId!.ToString());
+            var user = await _userManager.FindByIdAsync(model.UserId);
             if (user == null)
             {
                 ModelState.AddModelError(string.Empty, "Kullanıcı bilgilerine ulaşılamadı.");
                 return View(model);
             }
 
-            var res = await _userManager.ResetPasswordAsync(user, token!.ToString(), model.Password);
+            var res = await _userManager.ResetPasswordAsync(user, model.Token, model.Password);
             if (res.Succeeded)
             {
                 await _emailService.SendChangePasswordEmailAsync(new CustomEmailDto
                 { Email = user.Email, Lastname = user.LastName, Name = user.FirstName });
-                return RedirectToAction("Index", "Dashboard");
+                TempData["InfoMessage"] = "Şifreniz başarıyla değiştirildi. Yeni şifrenizle giriş yapabilirsiniz.";
+                return RedirectToAction("Login", "User");
             }
 
             ModelState.AddModelError(string.Empty, "Şifreniz değiştirilirken bazı sorunlarla karşılaşıldı");
